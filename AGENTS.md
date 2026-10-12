@@ -1,0 +1,60 @@
+# AGENTS.md
+
+Project memory for humans and coding agents. Keep it current: a trap found while working goes here, in the PR that found it.
+
+## What Spotarr is
+
+Personal service on an Umbrel: an iOS share (reel, link, screenshot, text) is identified as a movie or TV show in the background, then added to the library through Seerr once Mathieu picks a candidate in the history. One user, one server. Vocabulary: [GLOSSARY.md](./GLOSSARY.md). Decisions: [docs/adr/](./docs/adr/).
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `pnpm install --frozen-lockfile` | Install exactly what the lockfile says |
+| `pnpm check` | The whole gate: Biome → `buf lint` → generate (contract, tokens) → stale-output guard → `buf breaking` → `tsc` → `bun test` |
+| `pnpm format` | Rewrite files to Biome's format |
+| `pnpm generate` | Regenerate `packages/contract/src/gen` and `packages/design-tokens/gen` |
+| `pnpm --filter @spotarr/server dev` | Run the service |
+
+## Layout
+
+- `packages/contract`: `proto/spotarr/v1/spotarr.proto` is the single source of the API. Generated TypeScript lives in `src/gen`, committed, re-exported by `@spotarr/contract`.
+- `packages/design-tokens`: `tokens.json` is the single source of style. `build.ts` emits `gen/tokens.css` (`:root` light, `.dark` dark).
+- `apps/server`: Hono on Bun, Connect-RPC under `/api`, SQLite in `DATA_DIR`.
+- `apps/web`, `apps/ios`, `umbrel/`: arrive with their milestones.
+
+## How work happens
+
+- One GitHub issue per task, one branch and one PR per issue, `Closes #N` in the PR body. `main` is protected: PR and green CI required, admins included.
+- Conventional Commits, scoped: `feat(contract): …`, `fix(server): …`, `chore: …`. Everything in the repo is in English.
+- The PR description says what was done, why, and explains any new notion in plain words: Mathieu learns by reading PRs.
+- `pnpm check` passes locally before the PR. A PR whose CI fails is not done.
+- Move the issue's card on the [project board](https://github.com/users/mathieuletyrant/projects/1): In progress → In review → Done.
+- No tool swap without proposing it first. Documented integrations first; a workaround is flagged in the code and in the README.
+- Nothing touches production: the Umbrel, the `mathieu-` store, Cloudflare. Tests never call the real LLM, TMDB or Seerr.
+- A bug or idea found on the way becomes a new issue, not a detour in the current PR.
+
+## Decisions that differ from the original spec
+
+The spec document predates the grilling session of 2026-10-12. Where they disagree, the glossary, the ADRs and the issues win.
+
+- Name is Spotarr (ex-Sharr). V1 target is Seerr only; the `Target` enum keeps `ARR` for a later milestone. Seerr decides profile and root folder.
+- A TV show requests season 1 only. No manual TMDB search in V1 (no `Search` RPC).
+- `Share` is the entity; RPCs are `CreateShare`, `GetShare`, `ListShares`, `RetryIdentification`, `Add`. Candidate carries a `LibraryState` enum, not `in_library`.
+- Secrets are stored plain in SQLite under `/data`, visible and copyable in the UI, never logged. No encryption layer.
+- Webhooks carry the full payload (poster, confidence, library state); Spotarr has no Home Assistant code.
+- SQLite from milestone 1. No history purge, no `VACUUM INTO`. Design tokens from milestone 0; macOS CI job only with the SwiftUI app.
+
+## Known traps
+
+- **pnpm 12 build scripts**: `onlyBuiltDependencies` is ignored; approve scripts with `allowBuilds` in `pnpm-workspace.yaml`, else `pnpm install` fails with `ERR_PNPM_IGNORED_BUILDS`.
+- **`pnpm -r <name>` with no such script**: pnpm falls back to `exec <name>` and fails. Only add a root script once a package implements it.
+- **Biome 2.5 config keys**: `linter.rules.preset` (not `recommended`), `vcs.useIgnoreFile` (singular).
+- **Stale generated output**: `pnpm check` regenerates and fails if `**/gen/**` differs from what is committed. Run `pnpm generate` and commit. On a brand-new generated file the guard also fails until the file is committed once.
+- **`buf breaking`** compares against `main` on GitHub over the network; it needs the repo to stay public (or a token later).
+- **Style Dictionary collision warning**: light and dark tokens share one CSS name on purpose; `log.warnings` is disabled in `build.ts` for that reason.
+- **`pnpm exec biome`** may print an odd "ESLint output" line from a shell hook; use `pnpm lint` / `pnpm format`.
+
+## Versions
+
+Pinned at the latest stable on 2026-10-12 and bumped weekly by Renovate: pnpm 12.11.2, Bun 1.4.3, TypeScript 7.0.2, Biome 2.5.15, buf 1.73.0, protobuf-es 2.16.0, style-dictionary 5.6.1. If a newer version breaks another tool, keep the newest that works and note it here.
