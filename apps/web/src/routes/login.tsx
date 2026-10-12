@@ -36,7 +36,7 @@ function Showcase() {
       </div>
       <ul className="hidden flex-col gap-4 sm:flex">
         <Point icon={<Share aria-hidden className="size-4" />}>
-          Share an Instagram reel from your iPhone, or paste a link.
+          Share an Instagram reel, a TikTok or a YouTube Short from your iPhone, or paste a link.
         </Point>
         <Point icon={<ScanSearch aria-hidden className="size-4" />}>
           An LLM watches the frames and hears the sound; TMDB confirms the titles.

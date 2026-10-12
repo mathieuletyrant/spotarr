@@ -80,7 +80,7 @@ The Docker image (`Dockerfile`, Alpine + Bun + ffmpeg + yt-dlp, about 440 MB) is
 2. On main: `git tag vX.Y.Z && git push origin vX.Y.Z`. The workflow refuses a tag that differs from that version.
 3. It pushes `ghcr.io/mathieuletyrant/spotarr:X.Y.Z` and `:latest` for amd64 and arm64. The Umbrel store app (`mathieu-spotarr`) pins the new digest.
 
-Bump `YT_DLP_VERSION` in the `Dockerfile` when Instagram reels stop downloading: yt-dlp follows Instagram's changes.
+Bump `YT_DLP_VERSION` in the `Dockerfile` when Instagram, TikTok or YouTube videos stop downloading: yt-dlp follows Instagram's changes.
 
 ## Evaluation
 
@@ -110,7 +110,7 @@ Bump `YT_DLP_VERSION` in the `Dockerfile` when Instagram reels stop downloading:
 - **Seerr's spec does not match its answers** (same on v3.5.0, main, develop: `watchProviders` nesting, nullable `modifiedBy`…). Orval generates its client and fakes from the spec pinned to v3.5.0, without zod validation of answers. Its address being a setting, every generated call goes through `integrations/seerr/seerr-fetch.ts` (an Orval "mutator") with `{ seerr: { url, apiKey } }` in its options.
 - **openapi-typescript does not run with TypeScript 7** (it drives the compiler API, gone in 7). Orval does not need it.
 - **MSW 3 does not intercept fetch under Bun 1.4** ("Failed to replace a global value"). Tests fake `fetch` with `spyOn` instead: `src/integrations/tmdb/fake-fetch.ts`, undone by `mock.restore()`.
-- **yt-dlp on Instagram**: format selectors with conditions (`worst[ext=mp4]`) fail, because Instagram announces neither size nor resolution. Plain `--format worst` works. Public reels need no cookies: the cookies.txt setting was removed on 2026-10-12, to come back only if private reels or a login wall show up.
+- **yt-dlp on Instagram**: format selectors with conditions (`worst[ext=mp4]`) fail, because Instagram announces neither size nor resolution. Plain `--format worst` works. YouTube offers no file with both sound and picture: the selector falls back to `wv[height>=360][width>=360]+wa` (width too, a Short being vertical), merged by ffmpeg. YouTube also needs a JavaScript runtime: `--js-runtimes bun`, yt-dlp only looks for Deno by default. Public reels need no cookies: the cookies.txt setting was removed on 2026-10-12, to come back only if private reels or a login wall show up.
 - **Programs are run through `integrations/process.ts`**: one place for timeouts and error messages. Tests use the real ffmpeg on `integrations/ffmpeg/fixtures/test-pattern.mp4`; yt-dlp is never run in tests (no network), only its recorded JSON is parsed.
 - **Integrations take plain config, never a repository**: `new Tmdb({ token, language })`, `chat(config, messages)`. `src/index.ts` reads the settings once per Identification and hands each integration its part.
 - **Errors are `SpotarrError`s** (`src/errors.ts`): one class, six codes (`invalid_input`, `not_found`, `busy`, `not_configured`, `unavailable`, `timeout`). Never `throw new Error(...)` in production code; integrations turn their failures (status, network, timeout) into a code and a message naming the service. `api/rpc/errors.ts` maps codes to Connect codes for the UI; zod errors become `invalid_argument`; anything else is `internal` and logged.

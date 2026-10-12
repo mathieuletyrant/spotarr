@@ -68,7 +68,7 @@ struct ShareView: View {
     }
   }
 
-  // Instagram shares a URL; some apps share a text holding one.
+  // Instagram shares a URL; some apps, like TikTok, share a text holding one.
   private func sharedLink() async -> URL? {
     for provider in providers {
       if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier),
