@@ -3,6 +3,7 @@ import { useMutation } from "@connectrpc/connect-query";
 import { SpotarrService } from "@spotarr/contract";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Check } from "lucide-react";
 import { type SubmitEvent, useState } from "react";
 import { ApiTokenField } from "../../components/settings/api-token-field";
 import { DependenciesCard } from "../../components/settings/dependencies-card";
@@ -61,10 +62,13 @@ function SettingsForm({ saved }: { saved: Values }) {
   const queryClient = useQueryClient();
   const [values, setValues] = useState(saved);
   const [errors, setErrors] = useState<Values>({});
+  const [justSaved, setJustSaved] = useState(false);
   const save = useMutation(SpotarrService.method.updateSettings, {
     onSuccess: async ({ settings }) => {
       if (settings) setValues(toValues(settings));
       setErrors({});
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 3000);
       await queryClient.invalidateQueries({ queryKey: settingsQuery().queryKey });
       // New keys or URLs: check the Dependencies again.
       await queryClient.invalidateQueries({ queryKey: dependenciesQuery().queryKey });
@@ -181,7 +185,17 @@ function SettingsForm({ saved }: { saved: Values }) {
         <ApiTokenField token={values["access.apiToken"] ?? ""} />
       </Section>
 
-      {(changed > 0 || errors[""]) && (
+      {justSaved && (
+        <p
+          role="status"
+          className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-md border border-border bg-surface-raised px-4 py-2 text-sm font-medium text-status-ok shadow-lg"
+        >
+          <Check aria-hidden className="size-4" />
+          Settings saved
+        </p>
+      )}
+
+      {(changed > 0 || errors[""]) && !justSaved && (
         <div className="fixed inset-x-0 bottom-0 border-t border-border bg-surface px-4 py-3 md:px-6">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
             <p className="text-sm">
