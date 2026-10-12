@@ -10,8 +10,7 @@
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm -r test",
-    "build": "pnpm -r build"
+    "test": "pnpm -r test"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
