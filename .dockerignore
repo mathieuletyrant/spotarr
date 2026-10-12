@@ -1,0 +1,10 @@
+# Secrets and local data never go into the image.
+.env
+data
+**/node_modules
+**/dist
+.git
+.claude
+.agents
+docs
+shortcuts
