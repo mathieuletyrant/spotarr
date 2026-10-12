@@ -1,5 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
 import { queryClient } from "../lib/api";
 import { statusQuery } from "../queries/status";
 
@@ -25,7 +26,7 @@ export const Route = createFileRoute("/_app")({
 function AppLayout() {
   return (
     <div className="min-h-screen">
-      <header className="flex items-center gap-6 border-b border-border bg-surface px-6 py-3">
+      <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
         <span className="font-semibold">Spotarr</span>
         <nav className="flex gap-1 text-sm">
           <Link
@@ -35,18 +36,20 @@ function AppLayout() {
             History
           </Link>
           <Link
-            to="/share"
-            className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
-          >
-            Share
-          </Link>
-          <Link
             to="/settings"
             className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
           >
             Settings
           </Link>
         </nav>
+        {/* The page's main action, on every page: share a link from the computer. */}
+        <Link
+          to="/share"
+          className="ml-auto flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          <Plus aria-hidden className="size-4" />
+          Share
+        </Link>
       </header>
       <main className="mx-auto max-w-7xl p-4 md:p-6">
         <Outlet />

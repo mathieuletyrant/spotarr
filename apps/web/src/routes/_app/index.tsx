@@ -1,7 +1,6 @@
 import type { Summary } from "@spotarr/contract";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
 import { useDeferredValue, useState } from "react";
 import { HistoryFilters } from "../../components/history/history-filters";
 import { HistoryTable } from "../../components/history/history-table";
@@ -21,20 +20,9 @@ function HistoryPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold">History</h1>
-          <p className="mt-1 text-text-muted">
-            Every share, what was suggested and what was added.
-          </p>
-        </div>
-        <Link
-          to="/share"
-          className="flex h-11 w-fit items-center gap-2 rounded-md bg-accent px-5 font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          <Plus aria-hidden className="size-4" />
-          Share a link
-        </Link>
+      <div>
+        <h1 className="text-3xl font-semibold">History</h1>
+        <p className="mt-1 text-text-muted">Every share, what was suggested and what was added.</p>
       </div>
 
       <HistoryFilters
