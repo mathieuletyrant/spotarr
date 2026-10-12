@@ -23,5 +23,8 @@ jobs:
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version-file: .bun-version
+      # The frame extraction tests run the real ffmpeg on a tiny bundled video.
+      - name: ffmpeg
+        run: command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
       - run: pnpm install --frozen-lockfile
       - run: pnpm check

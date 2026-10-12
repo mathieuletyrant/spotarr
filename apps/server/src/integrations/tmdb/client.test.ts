@@ -1,8 +1,8 @@
 import { afterEach, expect, mock, test } from "bun:test";
 import { openDatabase } from "../../db";
 import { SettingsRepository } from "../../domain/settings/repository";
+import { fakeFetch } from "../../testing/fake-fetch";
 import { Tmdb } from "./client";
-import { fakeTmdb } from "./fake-fetch";
 import {
   getFindByIdResponseMock,
   getMovieDetailsResponseMock,
@@ -27,7 +27,7 @@ const dune = getMovieDetailsResponseMock({
 });
 
 test("an IMDb id finds a movie, sending the token and the language", async () => {
-  const fetch = fakeTmdb({
+  const fetch = fakeFetch({
     "/3/find/tt15239678": getFindByIdResponseMock({ movie_results: [dune], tv_results: [] }),
   });
 
@@ -46,7 +46,7 @@ test("an IMDb id finds a movie, sending the token and the language", async () =>
 });
 
 test("an IMDb id of a TV show is completed with the show's details", async () => {
-  fakeTmdb({
+  fakeFetch({
     "/3/find/tt11280740": getFindByIdResponseMock({
       movie_results: [],
       tv_results: [{ id: 95396 }],
@@ -67,7 +67,7 @@ test("an IMDb id of a TV show is completed with the show's details", async () =>
 });
 
 test("an id TMDB does not know gives nothing", async () => {
-  fakeTmdb({
+  fakeFetch({
     "/3/find/tt0000001": getFindByIdResponseMock({ movie_results: [], tv_results: [] }),
     "/3/movie/1": 404,
   });
@@ -77,7 +77,7 @@ test("an id TMDB does not know gives nothing", async () => {
 });
 
 test("a refused token names TMDB", async () => {
-  fakeTmdb({ "/3/find/tt15239678": 401 });
+  fakeFetch({ "/3/find/tt15239678": 401 });
   await expect((await tmdb()).findByImdbId("tt15239678")).rejects.toThrow("TMDB answered 401");
 });
 
