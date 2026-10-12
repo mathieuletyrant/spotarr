@@ -28,7 +28,6 @@ export function AutoAddFields({ form }: { form: Form }) {
             type="range"
             min={50}
             max={100}
-            step={5}
             value={minConfidence}
             onChange={(e) => form.change("autoAdd.minConfidence", e.target.value)}
             className="h-10 accent-accent disabled:opacity-50"
