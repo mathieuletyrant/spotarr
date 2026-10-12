@@ -20,6 +20,9 @@ export type TmdbTitle = {
   originalTitle?: string;
   year?: number;
   posterUrl?: string;
+  // TMDB's users' average, out of 10, and how many votes it rests on.
+  tmdbRating?: number;
+  tmdbVotes?: number;
   // Help choosing between namesakes: "fr", "en"…, and TMDB's popularity score.
   originalLanguage?: string;
   popularity?: number;
@@ -133,6 +136,7 @@ function movieTitle(
     originalTitle: movie.original_title,
     year: yearOf(movie.release_date),
     posterUrl: movie.poster_path ? POSTERS + movie.poster_path : undefined,
+    ...ratingOf(movie.vote_average, movie.vote_count),
     originalLanguage: movie.original_language,
     popularity: movie.popularity,
   };
@@ -147,9 +151,16 @@ function showTitle(show: TvSeriesDetails200 | SearchTv200ResultsItem): TmdbTitle
     originalTitle: show.original_name,
     year: yearOf(show.first_air_date),
     posterUrl: show.poster_path ? POSTERS + show.poster_path : undefined,
+    ...ratingOf(show.vote_average, show.vote_count),
     originalLanguage: show.original_language,
     popularity: show.popularity,
   };
+}
+
+// TMDB sends 0 for a title nobody rated: that is no rating, not a bad one.
+function ratingOf(average?: number, votes?: number) {
+  if (!average || !votes) return {};
+  return { tmdbRating: average, tmdbVotes: votes };
 }
 
 // "2024-02-27" → 2024. TMDB sends "" when the date is unknown.

@@ -9,6 +9,10 @@ export const CandidateSchema = z.object({
   originalTitle: z.string().optional(),
   year: z.int().optional(),
   posterUrl: z.string().optional(),
+  // TMDB's average, out of 10. Absent when nobody rated the title, and on
+  // Shares identified before ratings were kept.
+  tmdbRating: z.number().min(0).max(10).optional(),
+  tmdbVotes: z.int().optional(),
   // Absent for a direct ID, which is certain.
   confidence: z.number().min(0).max(1).optional(),
   libraryState: z.enum(["ABSENT", "REQUESTED", "PARTIAL", "AVAILABLE"]),

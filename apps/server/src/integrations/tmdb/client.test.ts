@@ -20,6 +20,8 @@ const dune = getMovieDetailsResponseMock({
   original_title: "Dune: Part Two",
   release_date: "2024-02-27",
   poster_path: "/qpyaW4xUPeIiYA5ckg5zAZFHvsb.jpg",
+  vote_average: 8.1,
+  vote_count: 7012,
 });
 
 test("an IMDb id finds a movie, sending the token and the language", async () => {
@@ -34,6 +36,8 @@ test("an IMDb id finds a movie, sending the token and the language", async () =>
     originalTitle: "Dune: Part Two",
     year: 2024,
     posterUrl: "https://image.tmdb.org/t/p/w500/qpyaW4xUPeIiYA5ckg5zAZFHvsb.jpg",
+    tmdbRating: 8.1,
+    tmdbVotes: 7012,
   });
 
   const [url, init] = fetch.mock.calls[0] ?? [];
@@ -60,6 +64,20 @@ test("an IMDb id of a TV show is completed with the show's details", async () =>
     title: "Severance",
     year: 2022,
   });
+});
+
+test("a title nobody rated has no rating, not a zero", async () => {
+  fakeFetch({
+    "/3/movie/1": getMovieDetailsResponseMock({
+      id: 1,
+      title: "Unknown",
+      vote_average: 0,
+      vote_count: 0,
+    }),
+  });
+  const title = await tmdb().movie(1);
+  expect(title?.tmdbRating).toBeUndefined();
+  expect(title?.tmdbVotes).toBeUndefined();
 });
 
 test("an id TMDB does not know gives nothing", async () => {

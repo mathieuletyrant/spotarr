@@ -13,8 +13,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Plus } from "lucide-react";
 import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
+import { TmdbRating } from "../tmdb-rating";
 
-// One Candidate: poster, titles, confidence, and what can be done with it.
+// One Candidate: poster, titles, TMDB rating, confidence, and what can be done with it.
 export function CandidateCard({ share, candidate }: { share: Share; candidate: Candidate }) {
   return (
     <li className="flex gap-4 py-4 first:pt-0 last:pb-0">
@@ -39,6 +40,7 @@ export function CandidateCard({ share, candidate }: { share: Share; candidate: C
         {candidate.originalTitle && candidate.originalTitle !== candidate.title && (
           <p className="text-sm text-text-muted">{candidate.originalTitle}</p>
         )}
+        <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} />
         <Confidence value={candidate.confidence} />
       </div>
       <div className="shrink-0">
