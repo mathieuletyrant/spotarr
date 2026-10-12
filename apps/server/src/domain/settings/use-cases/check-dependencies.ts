@@ -17,7 +17,7 @@ export async function checkDependencies(settings: Settings): Promise<Dependency[
     checkLlm(settings),
     checkTmdb(settings),
     checkSeerr(settings),
-    checkYtDlp(settings),
+    checkYtDlp(),
     checkFfmpeg(),
   ]);
 }
@@ -65,11 +65,9 @@ async function checkSeerr({ seerr }: Settings): Promise<Dependency> {
   }
 }
 
-async function checkYtDlp({ extraction }: Settings): Promise<Dependency> {
+async function checkYtDlp(): Promise<Dependency> {
   try {
-    const version = await ytDlpVersion();
-    const cookies = extraction.cookiesTxt ? "cookies set" : "no cookies";
-    return { name: "yt-dlp", state: "OK", detail: `${version} · ${cookies}` };
+    return { name: "yt-dlp", state: "OK", detail: await ytDlpVersion() };
   } catch (error) {
     return { name: "yt-dlp", state: "ERROR", detail: reason(error) };
   }

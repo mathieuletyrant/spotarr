@@ -29,7 +29,6 @@ export const SettingsSchema = z.object({
     .prefault({}),
   extraction: z
     .object({
-      cookiesTxt: z.string().default(""),
       // 8 images at most reach the LLM per Identification.
       framesPerVideo: z.int().min(1).max(8).default(6),
       maxVideoMb: z.int().min(1).max(2000).default(200),

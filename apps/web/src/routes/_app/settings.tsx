@@ -5,7 +5,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { type SubmitEvent, useState } from "react";
 import { ApiTokenField } from "../../components/settings/api-token-field";
-import { CookiesField } from "../../components/settings/cookies-field";
 import { DependenciesCard } from "../../components/settings/dependencies-card";
 import { Field, type Form, inputClass, Section, TextField } from "../../components/settings/fields";
 import {
@@ -136,7 +135,6 @@ function SettingsForm({ saved }: { saved: Values }) {
         title="Extraction"
         description="What Spotarr reads from shared videos."
       >
-        <CookiesField form={form} />
         <Field
           form={form}
           name="extraction.framesPerVideo"

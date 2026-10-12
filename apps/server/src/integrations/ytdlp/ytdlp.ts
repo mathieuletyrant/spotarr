@@ -12,16 +12,9 @@ const YtDlpJson = z.object({
   channel: z.string().nullish(),
 });
 
-export async function readVideoInfo(url: string, cookiesFile?: string): Promise<VideoInfo> {
+export async function readVideoInfo(url: string): Promise<VideoInfo> {
   const json = await run(
-    [
-      "yt-dlp",
-      "--dump-single-json",
-      "--skip-download",
-      "--no-warnings",
-      ...cookies(cookiesFile),
-      url,
-    ],
+    ["yt-dlp", "--dump-single-json", "--skip-download", "--no-warnings", url],
     45_000,
   );
   return parseVideoInfo(json);
@@ -37,12 +30,7 @@ export function parseVideoInfo(json: string): VideoInfo {
 
 // Downloads the lowest quality, which is enough for a few frames, into `dir`.
 // Returns the file's path.
-export async function downloadVideo(
-  url: string,
-  dir: string,
-  maxMb: number,
-  cookiesFile?: string,
-): Promise<string> {
+export async function downloadVideo(url: string, dir: string, maxMb: number): Promise<string> {
   const printed = await run(
     [
       "yt-dlp",
@@ -51,7 +39,6 @@ export async function downloadVideo(
       ...["--output", join(dir, "video.%(ext)s")],
       // Print the downloaded file's path, and nothing else.
       ...["--print", "after_move:filepath", "--no-simulate", "--no-warnings"],
-      ...cookies(cookiesFile),
       url,
     ],
     120_000,
@@ -60,10 +47,6 @@ export async function downloadVideo(
   // yt-dlp skips a file over --max-filesize without failing.
   if (!path) throw new SpotarrError("invalid_input", `video larger than ${maxMb} MB`);
   return path;
-}
-
-function cookies(cookiesFile?: string): string[] {
-  return cookiesFile ? ["--cookies", cookiesFile] : [];
 }
 
 // "2026.08.19". Instagram changes often: an old yt-dlp is the first suspect.
