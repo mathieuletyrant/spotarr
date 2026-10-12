@@ -22,8 +22,10 @@ export async function readVideo(url: string, extraction: Settings["extraction"])
 
     const info = await readVideoInfo(url, cookiesFile);
     const video = await downloadVideo(url, dir, extraction.maxVideoMb, cookiesFile);
-    const frames = await extractFrames(video, extraction.framesPerVideo);
-    const audio = await extractAudio(video);
+    const [frames, audio] = await Promise.all([
+      extractFrames(video, extraction.framesPerVideo),
+      extractAudio(video),
+    ]);
     return { ...info, frames, audio };
   } finally {
     await rm(dir, { recursive: true, force: true });
