@@ -1,6 +1,6 @@
 # 🎬 Spotarr
 
-Share an Instagram reel, a TikTok or a YouTube Short from your iPhone: Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
+Share an Instagram reel or photo post, a TikTok or a YouTube Short from your iPhone: Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
 
 ![The History page, in dark mode](docs/screenshots/history-dark.png)
 
@@ -117,7 +117,7 @@ Needs [pnpm](https://pnpm.io) (its version comes from `package.json`), [Bun](htt
 | 📱 `shortcuts` | The iOS Shortcut and the script that builds it |
 | 🧭 `docs/adr` | Architecture decisions |
 
-Two documented workarounds: Connect-RPC is mounted inside Hono through a small adapter ([ADR 0001](docs/adr/0001-connect-rpc-mounted-in-hono.md)), and Kysely talks to `bun:sqlite` through an in-house dialect ([ADR 0002](docs/adr/0002-kysely-over-bun-sqlite-with-custom-dialect.md)).
+Three documented workarounds: Connect-RPC is mounted inside Hono through a small adapter ([ADR 0001](docs/adr/0001-connect-rpc-mounted-in-hono.md)), Kysely talks to `bun:sqlite` through an in-house dialect ([ADR 0002](docs/adr/0002-kysely-over-bun-sqlite-with-custom-dialect.md)), and an Instagram photo post, which yt-dlp cannot read, is read from the Open Graph tags of its public page (`apps/server/src/integrations/instagram/post.ts`): its caption, its author and its first picture only. Instagram may show a login wall instead; share a screenshot then.
 
 Roadmap: [milestones](https://github.com/mathieuletyrant/spotarr/milestones) and the [project board](https://github.com/users/mathieuletyrant/projects/1).
 

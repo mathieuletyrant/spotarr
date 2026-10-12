@@ -32,3 +32,20 @@ export async function extractFrames(videoPath: string, count: number): Promise<F
   }
   return frames;
 }
+
+// Turns a picture into one frame, at 0 ms, sized like a video's.
+export async function pictureFrame(picturePath: string): Promise<Frame> {
+  const full = `${picturePath}-full.jpg`;
+  const thumbnail = `${picturePath}-thumbnail.jpg`;
+  await run(
+    ["ffmpeg", "-v", "error", "-y", "-i", picturePath]
+      .concat(["-frames:v", "1", "-vf", "scale=768:-2", "-q:v", "4", full])
+      .concat(["-frames:v", "1", "-vf", "scale=240:-2", "-q:v", "5", thumbnail]),
+    15_000,
+  );
+  return {
+    atMs: 0,
+    jpeg: await Bun.file(full).bytes(),
+    thumbnail: await Bun.file(thumbnail).bytes(),
+  };
+}

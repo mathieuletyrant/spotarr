@@ -22,7 +22,12 @@ const dune = getMovieDetailsResponseMock({
   release_date: "2024-02-27",
 });
 const frame = { atMs: 2500, jpeg: new Uint8Array([1]), thumbnail: new Uint8Array([2]) };
-const reel: Video = { caption: "tu as du choix sur Netflix", author: "CameraCam", frames: [frame] };
+const reel: Video = {
+  extractor: "video",
+  caption: "tu as du choix sur Netflix",
+  author: "CameraCam",
+  frames: [frame],
+};
 
 const notCalled = async (): Promise<never> => {
   throw new Error("should not be called");
@@ -78,6 +83,32 @@ test("a reel is read, then the LLM explains what it sees (Candidates come with #
     candidates: [],
     frames: [{ atMs: 2500, thumbnail: new Uint8Array([2]) }],
     llmCostUsd: 0.0012,
+  });
+});
+
+test("an Instagram photo post is read from its page: its source says so", async () => {
+  const photo: Video = {
+    extractor: "instagram-photo",
+    caption: "NARNIA : LE NEVEU DU MAGICIEN. Bande-annonce demain.",
+    author: "Netflix France",
+    frames: [{ atMs: 0, jpeg: new Uint8Array([1]), thumbnail: new Uint8Array([2]) }],
+  };
+  const llm = llmAnswering({ reasoning: "La légende nomme le film.", guesses: [] });
+
+  const result = await identifyShare(
+    "shr_test",
+    { url: "https://www.instagram.com/p/DeZTyvuF9aF/" },
+    { tmdb, seerr, readVideo: async () => photo, llm },
+  );
+
+  expect(result).toMatchObject({
+    method: "LLM",
+    extractors: ["instagram-photo"],
+    clues: {
+      caption: "NARNIA : LE NEVEU DU MAGICIEN. Bande-annonce demain.",
+      author: "Netflix France",
+    },
+    frames: [{ atMs: 0, thumbnail: new Uint8Array([2]) }],
   });
 });
 

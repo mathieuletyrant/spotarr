@@ -78,7 +78,7 @@ export async function identifyShare(
   return {
     status: candidates.length > 0 ? "READY" : "NO_MATCH",
     method: "LLM",
-    extractors: ["video"],
+    extractors: [video.extractor],
     clues,
     reasoning: answer.reasoning,
     candidates,
