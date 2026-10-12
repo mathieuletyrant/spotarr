@@ -14,7 +14,7 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 | `pnpm check` | The whole gate: Biome → `buf lint` → generate (contract, tokens) → stale-output guard → `buf breaking` → `tsc` → `bun test` |
 | `pnpm format` | Rewrite files to Biome's format |
 | `pnpm generate` | Regenerate `packages/contract/src/gen` and `packages/design-tokens/gen` |
-| `pnpm --filter @spotarr/server dev` | Run the service |
+| `pnpm dev` | Run the service on :3000 with its data in `./data`; the API token is printed at first start |
 
 ## Layout
 
@@ -50,7 +50,7 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - **pnpm 12 build scripts**: `onlyBuiltDependencies` is ignored; approve scripts with `allowBuilds` in `pnpm-workspace.yaml`, else `pnpm install` fails with `ERR_PNPM_IGNORED_BUILDS`.
 - **`pnpm -r <name>` with no such script**: pnpm falls back to `exec <name>` and fails. Only add a root script once a package implements it.
 - **Biome 2.5 config keys**: `linter.rules.preset` (not `recommended`), `vcs.useIgnoreFile` (singular).
-- **Stale generated output**: `pnpm check` regenerates and fails if `**/gen/**` differs from what is committed. Run `pnpm generate` and commit. On a brand-new generated file the guard also fails until the file is committed once.
+- **Stale generated output**: `pnpm check` regenerates and fails if `**/gen/**` differs from what is committed. Run `pnpm generate` and commit. On a brand-new generated file the guard also fails until the file is committed once. The guard is `scripts/check-generated.ts`.
 - **`buf breaking`** compares against `main` on GitHub over the network; it needs the repo to stay public (or a token later).
 - **Style Dictionary collision warning**: light and dark tokens share one CSS name on purpose; `log.warnings` is disabled in `build.ts` for that reason.
 - **Kysely 0.29 moved migrations**: `Migrator` and `Migration` come from `kysely/migration`, not `kysely`. The root import fails at runtime with "Export named 'Migrator' not found".
