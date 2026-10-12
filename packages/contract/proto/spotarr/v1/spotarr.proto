@@ -41,15 +41,18 @@ message IdentificationSettings {
   // Any OpenAI-compatible API; OpenRouter by default.
   optional string llm_api_url = 1;
   optional string llm_api_key = 2;
-  optional string text_model = 3;
-  // Must handle images. Empty means: same as text_model.
-  optional string image_model = 4;
+  // Replaced by `model`.
+  optional string text_model = 3 [deprecated = true];
+  // Replaced by `model`.
+  optional string image_model = 4 [deprecated = true];
   // No longer used: the LLM always gets a strict JSON schema (structured outputs).
   optional bool force_json = 5 [deprecated = true];
   // TMDB read access token.
   optional string tmdb_token = 6;
   // Language of TMDB titles and overviews, e.g. "fr-FR".
   optional string language = 7;
+  // The LLM model; it must read images, since it gets the video's frames.
+  optional string model = 8;
 }
 
 message SeerrSettings {

@@ -5,7 +5,7 @@ export function settingsRpcs(settings: SettingsRepository): Rpcs<"getSettings" |
   return {
     getSettings: async () => ({ settings: await settings.get() }),
 
-    // An invalid value throws a ZodError, turned into invalid_argument by rpc/errors.ts.
+    // An invalid value throws a ZodError: rpc/errors.ts answers invalid_argument.
     updateSettings: async (req) => ({ settings: await settings.update(req.settings ?? {}) }),
   };
 }

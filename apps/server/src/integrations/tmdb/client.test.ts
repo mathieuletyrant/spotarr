@@ -72,11 +72,22 @@ test("an id TMDB does not know gives nothing", async () => {
   expect(await client.movie(1)).toBeUndefined();
 });
 
-test("a refused token names TMDB", async () => {
+test("a refused token is unavailable, naming TMDB", async () => {
   fakeFetch({ "/3/find/tt15239678": 401 });
-  await expect(tmdb().findByImdbId("tt15239678")).rejects.toThrow("TMDB answered 401");
+  await expect(tmdb().findByImdbId("tt15239678")).rejects.toMatchObject({
+    code: "unavailable",
+    message: "TMDB answered 401",
+  });
+});
+
+test("a network failure is unavailable too", async () => {
+  fakeFetch({});
+  await expect(tmdb().findByImdbId("tt15239678")).rejects.toMatchObject({ code: "unavailable" });
 });
 
 test("no token configured says where to set it", async () => {
-  await expect(tmdb("").findByImdbId("tt15239678")).rejects.toThrow("Settings → Identification");
+  await expect(tmdb("").findByImdbId("tt15239678")).rejects.toMatchObject({
+    code: "not_configured",
+    message: "TMDB token not configured (Settings → Identification)",
+  });
 });

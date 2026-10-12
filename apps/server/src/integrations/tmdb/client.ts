@@ -1,3 +1,4 @@
+import { SpotarrError } from "../../errors";
 import {
   type FindById200MovieResultsItem,
   findById,
@@ -27,7 +28,9 @@ export class Tmdb {
 
   async findByImdbId(imdbId: string): Promise<TmdbTitle | undefined> {
     const { language, options } = this.request();
-    const res = await findById(imdbId, { external_source: "imdb_id", language }, options);
+    const res = await findById(imdbId, { external_source: "imdb_id", language }, options).catch(
+      unreachable,
+    );
     checkStatus(res.status);
 
     const movie = res.data.movie_results?.[0];
@@ -42,7 +45,7 @@ export class Tmdb {
 
   async movie(id: number): Promise<TmdbTitle | undefined> {
     const { language, options } = this.request();
-    const res = await movieDetails(id, { language }, options);
+    const res = await movieDetails(id, { language }, options).catch(unreachable);
     if (isMissing(res.status)) return undefined;
     checkStatus(res.status);
     return movieTitle(res.data);
@@ -50,7 +53,7 @@ export class Tmdb {
 
   async show(id: number): Promise<TmdbTitle | undefined> {
     const { language, options } = this.request();
-    const res = await tvSeriesDetails(id, { language }, options);
+    const res = await tvSeriesDetails(id, { language }, options).catch(unreachable);
     if (isMissing(res.status)) return undefined;
     checkStatus(res.status);
     return showTitle(res.data);
@@ -58,7 +61,12 @@ export class Tmdb {
 
   private request() {
     const { token, language } = this.config;
-    if (!token) throw new Error("TMDB token not configured (Settings → Identification)");
+    if (!token) {
+      throw new SpotarrError(
+        "not_configured",
+        "TMDB token not configured (Settings → Identification)",
+      );
+    }
     const options = {
       headers: { Authorization: `Bearer ${token}` },
       signal: AbortSignal.timeout(10_000),
@@ -73,7 +81,15 @@ function isMissing(status: number) {
 }
 
 function checkStatus(status: number) {
-  if (status !== 200) throw new Error(`TMDB answered ${status}`);
+  if (status !== 200) throw new SpotarrError("unavailable", `TMDB answered ${status}`);
+}
+
+// fetch itself failed: no network, or the 10 s timeout ran out.
+function unreachable(error: unknown): never {
+  if (error instanceof Error && error.name === "TimeoutError") {
+    throw new SpotarrError("timeout", "TMDB took more than 10 s");
+  }
+  throw new SpotarrError("unavailable", `TMDB could not be reached: ${String(error)}`);
 }
 
 function movieTitle(movie: FindById200MovieResultsItem | MovieDetails200): TmdbTitle | undefined {

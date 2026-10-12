@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import { z } from "zod";
+import { SpotarrError } from "../../errors";
 import { run } from "../process";
 
 export type VideoInfo = { caption?: string; author?: string };
@@ -57,7 +58,7 @@ export async function downloadVideo(
   );
   const path = printed.trim();
   // yt-dlp skips a file over --max-filesize without failing.
-  if (!path) throw new Error(`video larger than ${maxMb} MB`);
+  if (!path) throw new SpotarrError("invalid_input", `video larger than ${maxMb} MB`);
   return path;
 }
 

@@ -37,12 +37,11 @@ async function identifyShare(input: ShareInput) {
   });
 }
 
-// V1 identifies videos only, so frames are always attached: the image model answers.
 function llmConfig(identification: Settings["identification"]): LlmConfig {
   return {
     apiUrl: identification.llmApiUrl,
     apiKey: identification.llmApiKey,
-    model: identification.imageModel || identification.textModel,
+    model: identification.model,
   };
 }
 
