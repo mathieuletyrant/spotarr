@@ -19,6 +19,15 @@ export function CluesCard({ share }: { share: Share }) {
     ["Method", methodOf(share)],
   ];
 
+  // Nothing to show yet: say so rather than listing "None" everywhere.
+  if (share.summary === Summary.IN_PROGRESS) {
+    return (
+      <Card title="Clues">
+        <p className="text-text-muted">Reading the video…</p>
+      </Card>
+    );
+  }
+
   return (
     <Card title="Clues">
       <dl className="grid grid-cols-[7rem_minmax(0,1fr)] gap-x-4 gap-y-3">
@@ -57,7 +66,6 @@ export function CluesCard({ share }: { share: Share }) {
 
 function methodOf(share: Share): string | undefined {
   const idf = share.identification;
-  if (share.summary === Summary.IN_PROGRESS) return "Identifying…";
   if (!idf?.durationMs) return undefined;
   const duration = seconds(idf.durationMs);
   if (idf.method === Method.DIRECT_ID) return `Direct link · ${duration}`;

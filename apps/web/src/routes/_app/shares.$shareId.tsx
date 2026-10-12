@@ -1,3 +1,4 @@
+import { Summary } from "@spotarr/contract";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { CandidateCard } from "../../components/share/candidate-card";
@@ -32,7 +33,11 @@ function SharePage() {
           )}
         </div>
         <Card title="Candidates">
-          {share.candidates.length === 0 ? (
+          {share.summary === Summary.IN_PROGRESS ? (
+            <p className="text-text-muted">
+              Identifying… This takes 10 to 30 seconds; the page follows on its own.
+            </p>
+          ) : share.candidates.length === 0 ? (
             <p className="text-text-muted">
               No candidates. Retry the identification, or open the source.
             </p>

@@ -23,7 +23,7 @@ export const errorsToConnect: Interceptor = (next) => async (req) => {
       throw new ConnectError(error.message, CONNECT_CODES[error.code]);
     }
     if (error instanceof z.ZodError) {
-      throw new ConnectError(z.prettifyError(error), Code.InvalidArgument);
+      throw new ConnectError(validationMessage(error), Code.InvalidArgument);
     }
     if (error instanceof ConnectError) throw error;
 
@@ -34,3 +34,12 @@ export const errorsToConnect: Interceptor = (next) => async (req) => {
     throw new ConnectError(String(error), Code.Internal);
   }
 };
+
+// One readable line for the UI: "url: only http and https links".
+function validationMessage(error: z.ZodError): string {
+  return error.issues
+    .map((issue) =>
+      issue.path.length > 0 ? `${issue.path.join(".")}: ${issue.message}` : issue.message,
+    )
+    .join("; ");
+}

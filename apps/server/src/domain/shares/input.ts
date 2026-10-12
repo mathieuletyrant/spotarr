@@ -6,7 +6,7 @@ const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 // Invalid input throws a ZodError, which the RPC layer turns into invalid_argument.
 const InputSchema = z
   .object({
-    url: z.url({ protocol: /^https?$/ }).optional(),
+    url: z.url({ protocol: /^https?$/, error: "only http and https links" }).optional(),
     text: z.string().trim().min(1).optional(),
     image: z
       .instanceof(Uint8Array)
