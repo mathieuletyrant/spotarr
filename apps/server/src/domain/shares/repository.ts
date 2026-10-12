@@ -34,7 +34,11 @@ export type Stats = {
   moviesAdded: number;
   showsAdded: number;
   recentlyAdded: AddedTitle[];
+  authors: { author: string; source: string; shares: number; identified: number }[];
 };
+
+// How many authors the stats page ranks.
+const TOP_AUTHORS = 5;
 
 // How many posters the stats page stacks in its Added tile.
 const RECENTLY_ADDED = 5;
@@ -285,6 +289,22 @@ export class ShareRepository {
       });
     }
 
+    // The author is a Clue, read by yt-dlp from the shared video.
+    const author = sql<string>`json_extract(clues, '$.author')`;
+    const authors = await this.db
+      .selectFrom("shares")
+      .select((eb) => [
+        author.as("author"),
+        eb.fn.coalesce("source", sql<string>`''`).as("source"),
+        eb.fn.countAll<number>().as("shares"),
+        sql<number>`count(*) filter (where status = 'READY')`.as("identified"),
+      ])
+      .where(author, "is not", null)
+      .groupBy(["author", "source"])
+      .orderBy("shares", "desc")
+      .limit(TOP_AUTHORS)
+      .execute();
+
     // A month may have Additions without Shares (a Share from the month before).
     const months = new Map<string, MonthStats>();
     for (const row of shareMonths) {
@@ -312,6 +332,7 @@ export class ShareRepository {
       moviesAdded: byType.find((row) => row.media_type === "MOVIE")?.count ?? 0,
       showsAdded: byType.find((row) => row.media_type === "TV")?.count ?? 0,
       recentlyAdded,
+      authors,
     };
   }
 

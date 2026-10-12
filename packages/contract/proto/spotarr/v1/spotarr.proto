@@ -85,6 +85,18 @@ message GetStatsResponse {
   int32 shows_added = 4;
   // The last titles added, newest first.
   repeated AddedTitle recently_added = 5;
+  // The accounts whose videos are shared the most, most Shares first.
+  repeated AuthorStats authors = 6;
+}
+
+message AuthorStats {
+  // As the video's site shows it: "Marion ciné 🎬".
+  string author = 1;
+  // Where the account posts: "instagram.com".
+  string source = 2;
+  int32 shares = 3;
+  // Of those Shares, how many found at least one Candidate.
+  int32 identified = 4;
 }
 
 message AddedTitle {

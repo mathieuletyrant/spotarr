@@ -487,6 +487,30 @@ public nonisolated struct Spotarr_V1_GetStatsResponse: Sendable {
   /// The last titles added, newest first.
   public var recentlyAdded: [Spotarr_V1_AddedTitle] = []
 
+  /// The accounts whose videos are shared the most, most Shares first.
+  public var authors: [Spotarr_V1_AuthorStats] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_AuthorStats: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// As the video's site shows it: "Marion ciné 🎬".
+  public var author: String = String()
+
+  /// Where the account posts: "instagram.com".
+  public var source: String = String()
+
+  public var shares: Int32 = 0
+
+  /// Of those Shares, how many found at least one Candidate.
+  public var identified: Int32 = 0
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -2153,7 +2177,7 @@ nonisolated extension Spotarr_V1_GetStatsRequest: SwiftProtobuf.Message, SwiftPr
 
 nonisolated extension Spotarr_V1_GetStatsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".GetStatsResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}months\0\u{1}sources\0\u{3}movies_added\0\u{3}shows_added\0\u{3}recently_added\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}months\0\u{1}sources\0\u{3}movies_added\0\u{3}shows_added\0\u{3}recently_added\0\u{1}authors\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2166,6 +2190,7 @@ nonisolated extension Spotarr_V1_GetStatsResponse: SwiftProtobuf.Message, SwiftP
       case 3: try { try decoder.decodeSingularInt32Field(value: &self.moviesAdded) }()
       case 4: try { try decoder.decodeSingularInt32Field(value: &self.showsAdded) }()
       case 5: try { try decoder.decodeRepeatedMessageField(value: &self.recentlyAdded) }()
+      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.authors) }()
       default: break
       }
     }
@@ -2187,6 +2212,9 @@ nonisolated extension Spotarr_V1_GetStatsResponse: SwiftProtobuf.Message, SwiftP
     if !self.recentlyAdded.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.recentlyAdded, fieldNumber: 5)
     }
+    if !self.authors.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.authors, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2196,6 +2224,52 @@ nonisolated extension Spotarr_V1_GetStatsResponse: SwiftProtobuf.Message, SwiftP
     if lhs.moviesAdded != rhs.moviesAdded {return false}
     if lhs.showsAdded != rhs.showsAdded {return false}
     if lhs.recentlyAdded != rhs.recentlyAdded {return false}
+    if lhs.authors != rhs.authors {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_AuthorStats: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AuthorStats"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}author\0\u{1}source\0\u{1}shares\0\u{1}identified\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.author) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.source) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.shares) }()
+      case 4: try { try decoder.decodeSingularInt32Field(value: &self.identified) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.author.isEmpty {
+      try visitor.visitSingularStringField(value: self.author, fieldNumber: 1)
+    }
+    if !self.source.isEmpty {
+      try visitor.visitSingularStringField(value: self.source, fieldNumber: 2)
+    }
+    if self.shares != 0 {
+      try visitor.visitSingularInt32Field(value: self.shares, fieldNumber: 3)
+    }
+    if self.identified != 0 {
+      try visitor.visitSingularInt32Field(value: self.identified, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_AuthorStats, rhs: Spotarr_V1_AuthorStats) -> Bool {
+    if lhs.author != rhs.author {return false}
+    if lhs.source != rhs.source {return false}
+    if lhs.shares != rhs.shares {return false}
+    if lhs.identified != rhs.identified {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
