@@ -6,7 +6,7 @@
     "bun": ">=1.4.3"
   },
   "scripts": {
-    "check": "pnpm lint && pnpm generate && pnpm generated:fresh && pnpm typecheck && pnpm test",
+    "check": "pnpm lint && pnpm generate && pnpm generated:fresh && pnpm --filter @spotarr/contract breaking && pnpm typecheck && pnpm test",
     "lint": "biome check .",
     "format": "biome check --write .",
     "generate": "pnpm -r run generate",
