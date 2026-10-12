@@ -1,6 +1,8 @@
-// Turns tokens.json into gen/tokens.css: one block of CSS variables for light
-// (on :root) and one for dark (on .dark). Colors are the only themed tokens;
-// everything else is emitted once, on :root. Swift output comes with the iOS app.
+// Turns tokens.json into gen/tokens.css, read by Tailwind v4: an @theme block
+// (light colors and every other token, which become Tailwind utilities like
+// bg-surface or rounded-md) and a .dark block that swaps the colors.
+// Icons are names for the components, not CSS: they are left out here.
+// Swift output comes with the iOS app.
 import StyleDictionary from "style-dictionary";
 import type { TransformedToken } from "style-dictionary/types";
 
@@ -27,10 +29,10 @@ function block(selector: string, tokens: TransformedToken[]): string {
 StyleDictionary.registerFormat({
   name: "css/themed-variables",
   format: ({ dictionary }) => {
-    const all = dictionary.allTokens;
-    const light = all.filter((t) => t.path[1] !== "dark");
-    const dark = all.filter((t) => t.path[0] === "color" && t.path[1] === "dark");
-    return `/* Generated from tokens.json by build.ts. Do not edit. */\n${block(":root", light)}\n${block(".dark", dark)}`;
+    const css = dictionary.allTokens.filter((t) => t.path[0] !== "icon");
+    const light = css.filter((t) => t.path[1] !== "dark");
+    const dark = css.filter((t) => t.path[0] === "color" && t.path[1] === "dark");
+    return `/* Generated from tokens.json by build.ts. Do not edit. */\n${block("@theme", light)}\n${block(".dark", dark)}`;
   },
 });
 

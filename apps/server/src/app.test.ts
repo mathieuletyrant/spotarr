@@ -85,3 +85,21 @@ test("an invalid setting is a Connect invalid_argument naming the field", async 
   expect(body.code).toBe("invalid_argument");
   expect(body.message).toContain("extraction.concurrency");
 });
+
+test("login checks the token and sets an HttpOnly cookie", async () => {
+  const refused = await app.request("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ token: "nope" }),
+  });
+  expect(refused.status).toBe(401);
+
+  const accepted = await app.request("/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ token: "secret-token" }),
+  });
+  expect(accepted.status).toBe(204);
+  const cookie = accepted.headers.get("Set-Cookie") ?? "";
+  expect(cookie).toContain("spotarr_token=secret-token");
+  expect(cookie).toContain("HttpOnly");
+  expect(cookie).toContain("SameSite=Strict");
+});

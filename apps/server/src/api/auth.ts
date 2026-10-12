@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
-import type { MiddlewareHandler } from "hono";
-import { getCookie } from "hono/cookie";
+import type { Handler, MiddlewareHandler } from "hono";
+import { getCookie, setCookie } from "hono/cookie";
 
 export const TOKEN_COOKIE = "spotarr_token";
 
@@ -15,6 +15,25 @@ export function requireToken(getToken: () => string): MiddlewareHandler {
       return c.json({ code: "unauthenticated", message: "missing or invalid API token" }, 401);
     }
     await next();
+  };
+}
+
+// The web UI's login: checks the token once and keeps it in an HttpOnly cookie,
+// which the browser sends with every call and page scripts cannot read.
+export function login(getToken: () => string): Handler {
+  return async (c) => {
+    const { token } = await c.req.json<{ token?: string }>();
+    if (!token || !sameSecret(token, getToken())) {
+      return c.json({ code: "unauthenticated", message: "wrong API token" }, 401);
+    }
+    setCookie(c, TOKEN_COOKIE, token, {
+      httpOnly: true,
+      sameSite: "Strict",
+      secure: new URL(c.req.url).protocol === "https:",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 400, // the longest browsers allow
+    });
+    return c.body(null, 204);
   };
 }
 

@@ -28,7 +28,7 @@ services:
 
 `docker compose up -d`, then open http://localhost:3000. The API token is printed in the container logs at first start (`docker compose logs spotarr`); the UI asks for it once. Everything else (LLM, TMDB, Seerr, webhooks) is configured in Settings. Only two environment variables exist: `PORT` (default `3000`) and `DATA_DIR` (default `/data`).
 
-⏳ The image is published from milestone 5 on. Until then, run from source: `pnpm dev`.
+⏳ The image is published from milestone 5 on. Until then, run from source: `pnpm dev`, then open http://localhost:5173.
 
 ## 🗂️ Repository
 
@@ -37,6 +37,7 @@ services:
 | 📜 `packages/contract` | Protobuf contract of the API, generated TypeScript |
 | 🎨 `packages/design-tokens` | Design tokens, generated CSS variables |
 | ⚙️ `apps/server` | The service: Hono on Bun, Connect-RPC, SQLite |
+| 🖥️ `apps/web` | The web UI: React, TanStack Router and Query, Tailwind |
 | 🧭 `docs/adr` | Architecture decisions |
 | 📖 `GLOSSARY.md` | The project's vocabulary |
 | 🤖 `AGENTS.md` | Commands, conventions, known traps |
