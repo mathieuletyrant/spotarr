@@ -192,7 +192,7 @@ function SettingsForm({ saved }: { saved: Values }) {
       <Section
         id="webhooks"
         title="Webhooks"
-        description="Spotarr calls these URLs when something happens to a share: Home Assistant, n8n…"
+        description="Spotarr calls these URLs when something happens to a share."
       >
         <TextField
           form={form}
