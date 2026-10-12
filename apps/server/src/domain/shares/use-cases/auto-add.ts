@@ -10,12 +10,12 @@ export function candidatesToAutoAdd(
   rule: Settings["autoAdd"],
 ): Candidate[] {
   if (!rule.enabled) return [];
-  const confident = candidates.filter(
-    (c) => Math.round((c.confidence ?? 1) * 100) >= rule.minConfidence,
+  // Only one: the Identification must have found a single Candidate at all.
+  if (rule.onlyOne && candidates.length !== 1) return [];
+  return candidates.filter(
+    (c) =>
+      Math.round((c.confidence ?? 1) * 100) >= rule.minConfidence && c.libraryState === "ABSENT",
   );
-  // Two confident Candidates is a doubt, even if one is already in the library.
-  if (rule.onlyOne && confident.length !== 1) return [];
-  return confident.filter((c) => c.libraryState === "ABSENT");
 }
 
 // Requests them through Seerr, as a click on Add would, marked automatic.

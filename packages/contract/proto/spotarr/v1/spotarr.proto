@@ -94,8 +94,8 @@ message AutoAddSettings {
   optional bool enabled = 1;
   // Percent, 50 to 100.
   optional int32 min_confidence = 2;
-  // True: only when exactly one Candidate reaches min_confidence.
-  // False: every Candidate that reaches it.
+  // True: only when the Identification found a single Candidate, and it reaches
+  // min_confidence. False: every Candidate that reaches it.
   optional bool only_one = 3;
 }
 

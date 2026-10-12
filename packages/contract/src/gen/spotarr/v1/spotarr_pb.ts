@@ -204,8 +204,8 @@ export type AutoAddSettings = Message<"spotarr.v1.AutoAddSettings"> & {
   minConfidence?: number | undefined;
 
   /**
-   * True: only when exactly one Candidate reaches min_confidence.
-   * False: every Candidate that reaches it.
+   * True: only when the Identification found a single Candidate, and it reaches
+   * min_confidence. False: every Candidate that reaches it.
    *
    * @generated from field: optional bool only_one = 3;
    */
