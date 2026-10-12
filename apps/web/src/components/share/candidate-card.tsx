@@ -10,6 +10,7 @@ import {
   Summary,
 } from "@spotarr/contract";
 import { useQueryClient } from "@tanstack/react-query";
+import { ExternalLink } from "lucide-react";
 import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
 
@@ -20,7 +21,16 @@ export function CandidateCard({ share, candidate }: { share: Share; candidate: C
       <Poster title={candidate.title} url={candidate.posterUrl} />
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <p className="flex flex-wrap items-baseline gap-x-2">
-          <span className="text-lg font-semibold">{candidate.title}</span>
+          <a
+            href={tmdbUrl(candidate)}
+            target="_blank"
+            rel="noreferrer"
+            className="group inline-flex items-center gap-1.5 text-lg font-semibold hover:underline focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            {candidate.title}
+            <ExternalLink aria-hidden className="size-3.5 text-text-muted group-hover:text-text" />
+            <span className="sr-only">(on TMDB, opens a new tab)</span>
+          </a>
           <span className="text-text-muted">{candidate.year}</span>
           <span className="rounded-sm border border-border px-1.5 text-xs text-text-muted">
             {candidate.type === MediaType.TV ? "TV show" : "Movie"}
@@ -86,6 +96,12 @@ function CandidateAction({ share, candidate }: { share: Share; candidate: Candid
       {failure && <p className="max-w-48 text-right text-xs text-status-error">{failure}</p>}
     </div>
   );
+}
+
+// The Candidate's page on TMDB.
+function tmdbUrl(candidate: Candidate): string {
+  const kind = candidate.type === MediaType.TV ? "tv" : "movie";
+  return `https://www.themoviedb.org/${kind}/${candidate.tmdbId}`;
 }
 
 function latestAdditionOf(share: Share, candidate: Candidate): Addition | undefined {

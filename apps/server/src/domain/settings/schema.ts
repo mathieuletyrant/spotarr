@@ -10,8 +10,9 @@ export const SettingsSchema = z.object({
     .object({
       llmApiUrl: z.url().default("https://openrouter.ai/api/v1"),
       llmApiKey: z.string().default(""),
-      // Must read images: it gets the video's frames. Chosen on 2026-10-12, the only
-      // one of 4 vision models to find all 3 films of a test reel.
+      // Must read images and hear audio: it gets the video's frames and sound.
+      // Chosen on 2026-10-12, the only one of 4 vision models to find all 3
+      // films of a test reel.
       model: z.string().default("google/gemini-3.8-flash"),
       tmdbToken: z.string().default(""),
       language: z
