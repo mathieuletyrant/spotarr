@@ -1,6 +1,7 @@
 import { Code, ConnectError, type Interceptor } from "@connectrpc/connect";
 import { z } from "zod";
 import { type ErrorCode, SpotarrError } from "../../errors";
+import { log } from "../../log";
 
 // Each error code becomes the Connect code the UI and the iPhone receive,
 // as JSON: {"code": "unavailable", "message": "TMDB answered 401"}.
@@ -28,9 +29,7 @@ export const errorsToConnect: Interceptor = (next) => async (req) => {
     if (error instanceof ConnectError) throw error;
 
     // A bug: logged in full, answered as internal.
-    console.error(
-      JSON.stringify({ step: "rpc", error: String(error), stack: (error as Error).stack }),
-    );
+    log({ step: "rpc", error: String(error), stack: (error as Error).stack });
     throw new ConnectError(String(error), Code.Internal);
   }
 };

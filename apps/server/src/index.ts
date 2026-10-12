@@ -14,6 +14,7 @@ import type { ShareInput } from "./domain/shares/types";
 import { chat, type LlmConfig } from "./integrations/llm/client";
 import { Seerr } from "./integrations/seerr/client";
 import { Tmdb } from "./integrations/tmdb/client";
+import { log } from "./log";
 
 // The only two environment variables; everything else is set in the UI.
 const port = Number(process.env.PORT ?? 3000);
@@ -31,9 +32,9 @@ console.log(`API token${created ? " (new)" : ""}: ${token}`);
 const shares = new ShareRepository(db);
 
 // Settings are read once per Identification, so a change applies to the next share.
-async function runIdentification(input: ShareInput) {
+async function runIdentification(shareId: string, input: ShareInput) {
   const { identification, extraction } = await settings.get();
-  return identifyShare(input, {
+  return identifyShare(shareId, input, {
     tmdb: new Tmdb({ token: identification.tmdbToken, language: identification.language }),
     seerr: await seerrFromSettings(),
     readVideo: (url) => readVideo(url, extraction),
@@ -73,4 +74,4 @@ const app = createApp({
   webDir: existsSync(webDir) ? webDir : undefined,
 });
 Bun.serve({ port, fetch: app.fetch });
-console.log(`spotarr listening on :${port}`);
+log({ step: "start", port });
