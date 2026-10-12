@@ -3,10 +3,10 @@ import type { MiddlewareHandler } from "hono";
 import { getCookie } from "hono/cookie";
 import { serialize } from "hono/utils/cookie";
 
-export const TOKEN_COOKIE = "spotarr_token";
+const TOKEN_COOKIE = "spotarr_token";
 
 // The only RPC callable without the token: the web UI's sign-in.
-export const LOGIN_PATH = "/api/spotarr.v1.SpotarrService/Login";
+const LOGIN_PATH = "/api/spotarr.v1.SpotarrService/Login";
 
 // Accepts the API token as `Authorization: Bearer <token>` (iPhone, scripts)
 // or as an HttpOnly cookie (web UI). Answers like Connect does, so every

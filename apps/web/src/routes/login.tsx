@@ -95,7 +95,7 @@ function SignInForm() {
             onChange={(e) => setToken(e.target.value)}
             spellCheck={false}
             autoComplete="current-password"
-            className="h-11 w-full rounded-md border border-border bg-surface pr-10 pl-9 font-mono text-sm focus-visible:outline-2 focus-visible:outline-accent"
+            className="h-11 w-full rounded-md border border-border bg-surface pr-10 pl-9 font-mono text-sm"
           />
           <button
             type="button"
@@ -118,7 +118,7 @@ function SignInForm() {
       <button
         type="submit"
         disabled={login.isPending}
-        className="h-11 rounded-md bg-accent font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+        className="h-11 rounded-md bg-accent font-medium text-accent-text"
       >
         {login.isPending ? "Signing in…" : "Sign in"}
       </button>

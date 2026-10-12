@@ -27,7 +27,7 @@ export function ShareRow({ share }: { share: Share }) {
       <Link
         to="/shares/$shareId"
         params={{ shareId: share.id }}
-        className={`hidden px-4 py-4 hover:bg-text/4 focus-visible:outline-2 focus-visible:outline-accent lg:items-center ${HISTORY_COLUMNS}`}
+        className={`hidden px-4 py-4 hover:bg-text/4 lg:items-center ${HISTORY_COLUMNS}`}
       >
         <ShareDate share={share} />
         <SharedContent share={share} />
@@ -49,7 +49,7 @@ function ShareCard({ share }: { share: Share }) {
     <Link
       to="/shares/$shareId"
       params={{ shareId: share.id }}
-      className="flex gap-3 p-3 hover:bg-text/4 focus-visible:outline-2 focus-visible:outline-accent lg:hidden"
+      className="flex gap-3 p-3 hover:bg-text/4 lg:hidden"
     >
       {first ? (
         <Poster title={first.title} url={first.posterUrl} />

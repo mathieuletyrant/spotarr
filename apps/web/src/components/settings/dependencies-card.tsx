@@ -35,7 +35,7 @@ export function DependenciesCard() {
           type="button"
           onClick={() => refetch()}
           disabled={isFetching}
-          className="flex h-9 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium whitespace-nowrap hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+          className="flex h-9 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium whitespace-nowrap hover:bg-surface"
         >
           <RefreshCw aria-hidden className={`size-4 ${isFetching ? "animate-spin" : ""}`} />
           {isFetching ? "Checking…" : "Check again"}

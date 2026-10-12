@@ -35,10 +35,7 @@ function AppLayout() {
   return (
     <div className="min-h-screen">
       <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
-        <Link
-          to="/"
-          className="flex items-center gap-2 font-semibold focus-visible:outline-2 focus-visible:outline-accent"
-        >
+        <Link to="/" className="flex items-center gap-2 font-semibold">
           <img src="/favicon.svg" alt="Spotarr" className="size-6" />
           <span className="hidden sm:inline">Spotarr</span>
         </Link>
@@ -63,7 +60,7 @@ function AppLayout() {
             to="."
             search={(previous) => ({ ...previous, share: true })}
             aria-label="Share a link"
-            className="flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
+            className="flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text"
           >
             <Plus aria-hidden className="size-4" />
             <span className="hidden sm:inline">Share</span>

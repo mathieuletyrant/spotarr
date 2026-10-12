@@ -15,7 +15,7 @@ export function EmptyHistory({ filtered, onClear }: { filtered: boolean; onClear
         <button
           type="button"
           onClick={onClear}
-          className="flex h-10 items-center gap-2 rounded-md border border-border bg-bg px-4 text-sm font-medium hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent"
+          className="flex h-10 items-center gap-2 rounded-md border border-border bg-bg px-4 text-sm font-medium hover:bg-surface"
         >
           <X aria-hidden className="size-4" />
           Clear the search and filter
@@ -50,7 +50,7 @@ export function EmptyHistory({ filtered, onClear }: { filtered: boolean; onClear
       <Link
         to="."
         search={(previous) => ({ ...previous, share: true })}
-        className="flex h-10 items-center gap-2 rounded-md bg-accent px-4 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
+        className="flex h-10 items-center gap-2 rounded-md bg-accent px-4 text-sm font-medium text-accent-text"
       >
         <Plus aria-hidden className="size-4" />
         Share a link

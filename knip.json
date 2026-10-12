@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignore": ["**/gen/**", "apps/ios/**"],
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.ts", "shortcuts/build.ts"]
+    },
+    "apps/server": {
+      "entry": ["src/index.ts", "scripts/*.ts", "src/db/migrations/*.ts"]
+    },
+    "packages/contract": {
+      "ignoreDependencies": ["@bufbuild/protoc-gen-es"]
+    }
+  },
+  "ignoreBinaries": ["plutil", "shortcuts"]
+}

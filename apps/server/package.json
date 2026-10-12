@@ -18,7 +18,6 @@
     "hono": "4.13.13",
     "kysely": "0.29.6",
     "openai": "7.32.0",
-    "openapi-fetch": "0.17.0",
     "zod": "4.6.6"
   },
   "devDependencies": {

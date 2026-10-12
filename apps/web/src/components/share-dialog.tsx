@@ -87,7 +87,7 @@ export function ShareDialog({ open, onClose }: { open: boolean; onClose: () => v
           <button
             type="submit"
             disabled={create.isPending}
-            className="h-10 rounded-md bg-accent px-5 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+            className="h-10 rounded-md bg-accent px-5 text-sm font-medium text-accent-text"
           >
             {create.isPending ? "Sending…" : "Identify"}
           </button>

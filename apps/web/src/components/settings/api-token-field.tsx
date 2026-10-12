@@ -43,7 +43,7 @@ export function ApiTokenField({ token }: { token: string }) {
         <button
           type="button"
           onClick={copy}
-          className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent"
+          className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium hover:bg-surface"
         >
           <Copy aria-hidden className="size-4" />
           {copied ? "Copied" : "Copy"}

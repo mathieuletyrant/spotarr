@@ -18,7 +18,7 @@ export function AutoAddFields({ form }: { form: Form }) {
           aria-checked={enabled}
           aria-labelledby="auto-add-label"
           onClick={() => form.change("autoAdd.enabled", String(!enabled))}
-          className="relative h-6 w-11 shrink-0 rounded-full bg-text/15 transition-colors focus-visible:outline-2 focus-visible:outline-accent aria-checked:bg-accent"
+          className="relative h-6 w-11 shrink-0 rounded-full bg-text/15 transition-colors aria-checked:bg-accent"
         >
           <span
             aria-hidden
@@ -39,7 +39,7 @@ export function AutoAddFields({ form }: { form: Form }) {
             max={100}
             value={minConfidence}
             onChange={(e) => form.change("autoAdd.minConfidence", e.target.value)}
-            className="h-10 accent-accent disabled:opacity-50"
+            className="h-10 accent-accent"
           />
         </Field>
 

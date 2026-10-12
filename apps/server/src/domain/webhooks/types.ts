@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // The glossary's Events, as sent in a body's "event" field.
-export const EVENTS = [
+const EVENTS = [
   "identification.ready",
   "identification.no_match",
   "identification.failed",

@@ -13,8 +13,7 @@ const EVENTS = [
   ["media.added", "Added"],
 ];
 
-const buttonClass =
-  "h-9 rounded-md border border-border px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50";
+const buttonClass = "h-9 rounded-md border border-border px-3 text-sm font-medium";
 
 // One Webhook, edited in place and saved on its own. Without `webhook`, a new one.
 export function WebhookCard({ webhook, onDone }: { webhook?: Webhook; onDone?: () => void }) {

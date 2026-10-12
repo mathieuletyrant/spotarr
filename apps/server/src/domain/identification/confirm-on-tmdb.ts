@@ -50,7 +50,7 @@ function search(tmdb: Tmdb, type: Guess["type"], query: string, year?: number) {
 }
 
 // Each step keeps only the results that pass it, when at least one does.
-export function pickBest(results: TmdbTitle[], guess: Guess): TmdbTitle | undefined {
+function pickBest(results: TmdbTitle[], guess: Guess): TmdbTitle | undefined {
   let best = keepIfAny(results, (result) => sameTitle(result, guess));
   best = keepIfAny(best, (result) => sameEra(result, guess));
   best = keepIfAny(best, (result) => result.originalLanguage === guess.originalLanguage);
