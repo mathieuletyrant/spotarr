@@ -6,10 +6,12 @@
     <title>Spotarr</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script>
-      // The theme follows the system. Set before the page draws, so it never flashes.
-      if (matchMedia("(prefers-color-scheme: dark)").matches) {
-        document.documentElement.classList.add("dark");
-      }
+      // The theme follows the system, set before the page draws (no flash) and
+      // again whenever the system switches, without a reload.
+      const dark = matchMedia("(prefers-color-scheme: dark)");
+      const applyTheme = () => document.documentElement.classList.toggle("dark", dark.matches);
+      applyTheme();
+      dark.addEventListener("change", applyTheme);
     </script>
   </head>
   <body>
