@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package spotarr.v1;
+
+// Placeholder service: the real RPCs arrive with milestone 1 issues (#8–#19).
+service SpotarrService {
+  // State of each dependency Spotarr talks to.
+  rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+}
+
+message GetStatusRequest {}
+
+message GetStatusResponse {
+  // Spotarr's own version, from the Docker image tag.
+  string version = 1;
+}

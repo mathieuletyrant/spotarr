@@ -1,0 +1,7 @@
+version: v2
+clean: true
+plugins:
+  # protoc-gen-es generates both messages and service descriptors; Connect v2 needs nothing else.
+  - local: protoc-gen-es
+    out: src/gen
+    opt: target=ts
