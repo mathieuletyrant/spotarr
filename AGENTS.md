@@ -17,6 +17,7 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 | `pnpm --filter @spotarr/server clients` | Regenerate the TMDB and Seerr clients from their OpenAPI specs (network; not part of `pnpm generate`). Add a route to `TMDB_ROUTES` or `SEERR_ROUTES` in `apps/server/orval.config.ts` first |
 | `brew install ffmpeg yt-dlp` | Programs the video extractor runs (tests need ffmpeg only) |
 | `pnpm dev` | Run the service on :3000 (data in `./data`, API token printed at first start) and the web UI on http://localhost:5173, which forwards `/api` to the service |
+| `pnpm dev:setup` | Fill the dev database: copies the `.env` keys into its settings, queues 3 sample shares, prints the API token. Run once, before `pnpm dev` |
 | `pnpm build` | Build the web UI into `apps/web/dist`; the service then serves it on `/` |
 
 ## Layout

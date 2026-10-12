@@ -8,10 +8,11 @@ import {
   Summary,
   Target,
 } from "@spotarr/contract";
-import { seconds, shareDate } from "../lib/format";
-import { Poster } from "./poster";
-import { SourceIcon } from "./source-icon";
-import { StatusBadge } from "./status-badge";
+import { seconds, shareDate } from "../../lib/format";
+import { Poster } from "../poster";
+import { SourceIcon } from "../source-icon";
+import { StatusBadge } from "../status-badge";
+import { HISTORY_COLUMNS } from "./columns";
 
 // Additions that put the work in the library, or found it there already.
 const SUCCESSES = [AdditionStatus.ADDED, AdditionStatus.REQUESTED, AdditionStatus.ALREADY_PRESENT];
@@ -19,7 +20,7 @@ const SUCCESSES = [AdditionStatus.ADDED, AdditionStatus.REQUESTED, AdditionStatu
 // One Share of the history: a row of six columns on a wide screen, a card on a phone.
 export function ShareRow({ share }: { share: Share }) {
   return (
-    <li className="grid gap-3 px-4 py-4 md:grid-cols-[6rem_minmax(0,1fr)_minmax(0,1.4fr)_6rem_10rem_7rem] md:items-center md:gap-4">
+    <li className={`grid gap-3 px-4 py-4 md:items-center ${HISTORY_COLUMNS}`}>
       <ShareDate share={share} />
       <SharedContent share={share} />
       <Result share={share} />
