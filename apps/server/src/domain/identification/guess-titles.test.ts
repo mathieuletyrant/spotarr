@@ -21,7 +21,7 @@ test("sends the caption, the author and every frame, and returns the LLM's answe
   let sent: ChatMessage[] = [];
   const llm = async (messages: ChatMessage[]) => {
     sent = messages;
-    return answer;
+    return { answer };
   };
 
   const result = await guessTitles(
@@ -32,7 +32,7 @@ test("sends the caption, the author and every frame, and returns the LLM's answe
     llm,
   );
 
-  expect(result).toEqual(answer);
+  expect(result).toEqual({ answer });
   const user = sent[1]?.content as { type: string; text?: string }[];
   expect(user[0]?.text).toBe("Caption: mood ?\nAuthor: CameraCam");
   expect(user.filter((part) => part.type === "image_url")).toHaveLength(2);
@@ -42,7 +42,7 @@ test("the video's sound goes with the frames, as MP3", async () => {
   let sent: ChatMessage[] = [];
   const llm = async (messages: ChatMessage[]) => {
     sent = messages;
-    return answer;
+    return { answer };
   };
 
   await guessTitles(
@@ -65,7 +65,7 @@ test("the LLM is told today's date, so this year's films are not dated to past y
   let sent: ChatMessage[] = [];
   const llm = async (messages: ChatMessage[]) => {
     sent = messages;
-    return answer;
+    return { answer };
   };
   await guessTitles({ clues: {}, frames: [] }, llm, new Date("2026-10-12T10:00:00Z"));
   expect(String(sent[0]?.content)).toContain("Today is 2026-10-12.");

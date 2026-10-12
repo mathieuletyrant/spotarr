@@ -145,6 +145,7 @@ export class ShareRepository {
       clues: JSON.stringify(CluesSchema.parse(result.clues)),
       reasoning: result.reasoning ?? null,
       candidates: JSON.stringify(CandidateSchema.array().parse(result.candidates)),
+      llm_cost_usd: result.llmCostUsd ?? null,
       error: null,
     });
   }
@@ -164,8 +165,24 @@ export class ShareRepository {
       clues: "{}",
       reasoning: null,
       candidates: "[]",
+      llm_cost_usd: null,
       error: null,
     });
+  }
+
+  // What the LLM cost for the Shares of the last 30 days, counting only the
+  // Identifications whose cost is known.
+  async llmCostLast30Days(): Promise<{ identifications: number; totalUsd: number }> {
+    const since = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
+    const row = await this.db
+      .selectFrom("shares")
+      .select((eb) => [
+        eb.fn.count<number>("llm_cost_usd").as("identifications"),
+        eb.fn.sum<number>("llm_cost_usd").as("totalUsd"),
+      ])
+      .where("created_at", ">=", since)
+      .executeTakeFirstOrThrow();
+    return { identifications: row.identifications, totalUsd: row.totalUsd ?? 0 };
   }
 
   // Records what happened when adding a Candidate. Returns nothing: read the Share again.

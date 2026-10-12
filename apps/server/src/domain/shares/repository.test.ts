@@ -141,3 +141,22 @@ test("the video's thumbnails are stored, replaced by a new Identification and cl
   expect((await shares.get(id))?.frames).toEqual([]);
   expect(await shares.frameThumbnail(id, 0)).toBeUndefined();
 });
+
+test("the LLM cost adds up the Identifications whose cost is known", async () => {
+  const { shares } = await repository();
+  const result = { status: "NO_MATCH" as const, extractors: [], clues: {}, candidates: [] };
+  const a = await shares.create({ text: "a" }, "text");
+  const b = await shares.create({ text: "b" }, "text");
+  const c = await shares.create({ text: "c" }, "text");
+  await shares.finish(a, { ...result, llmCostUsd: 0.001 }, 10);
+  await shares.finish(b, { ...result, llmCostUsd: 0.002 }, 10);
+  await shares.finish(c, result, 10);
+
+  const cost = await shares.llmCostLast30Days();
+  expect(cost.identifications).toBe(2);
+  expect(cost.totalUsd).toBeCloseTo(0.003);
+
+  // A retry clears the cost of the run it replaces.
+  await shares.requeue(a);
+  expect((await shares.llmCostLast30Days()).identifications).toBe(1);
+});

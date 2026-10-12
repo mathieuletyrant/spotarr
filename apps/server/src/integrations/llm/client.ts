@@ -1,41 +1,22 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-import type { z } from "zod";
+import { z } from "zod";
 import { SpotarrError } from "../../errors";
 
 export type LlmConfig = { apiUrl: string; apiKey: string; model: string };
 export type ChatMessage = OpenAI.Chat.ChatCompletionMessageParam;
 
 // Sends a conversation to any OpenAI-compatible API (OpenRouter by default) and
-// returns the answer parsed with `schema`. The schema goes to the provider as a
-// strict JSON schema ("structured outputs"): the model cannot answer anything else.
+// returns the answer parsed with `schema`, and its cost when the provider says.
+// The schema goes to the provider as a strict JSON schema ("structured
+// outputs"): the model cannot answer anything else.
 export async function chat<Schema extends z.ZodType>(
   config: LlmConfig,
   messages: ChatMessage[],
   schema: Schema,
 ) {
-  if (!config.apiKey) {
-    throw new SpotarrError(
-      "not_configured",
-      "LLM API key not configured (Settings → Identification)",
-    );
-  }
-  if (!config.model) {
-    throw new SpotarrError(
-      "not_configured",
-      "LLM model not configured (Settings → Identification)",
-    );
-  }
-
-  // One automatic retry on a network error, not the SDK's default two.
-  const client = new OpenAI({
-    baseURL: config.apiUrl,
-    apiKey: config.apiKey,
-    timeout: 60_000,
-    maxRetries: 1,
-  });
-  const completion = await client.chat.completions
-    .parse({
+  const completion = await newClient(config)
+    .chat.completions.parse({
       model: config.model,
       messages,
       response_format: zodResponseFormat(schema, "answer"),
@@ -50,7 +31,51 @@ export async function chat<Schema extends z.ZodType>(
   const answer = completion.choices[0]?.message;
   if (answer?.refusal) throw new SpotarrError("unavailable", `the LLM refused: ${answer.refusal}`);
   if (!answer?.parsed) throw new SpotarrError("unavailable", "the LLM gave no answer");
-  return answer.parsed;
+  return { answer: answer.parsed, costUsd: costOf(completion.usage) };
+}
+
+// The smallest call that proves the key and the model work: a one-word answer,
+// about $0.00001.
+export async function ping(config: LlmConfig): Promise<void> {
+  await newClient(config)
+    .chat.completions.create({
+      model: config.model,
+      messages: [{ role: "user", content: "Answer ok." }],
+      max_completion_tokens: 16,
+    })
+    .catch((error) => {
+      throw llmError(error);
+    });
+}
+
+// OpenRouter adds the price of each call to `usage`; other providers may not.
+function costOf(usage: unknown): number | undefined {
+  const withCost = z.object({ cost: z.number() }).safeParse(usage);
+  if (!withCost.success) return undefined;
+  return withCost.data.cost;
+}
+
+function newClient(config: LlmConfig): OpenAI {
+  if (!config.apiKey) {
+    throw new SpotarrError(
+      "not_configured",
+      "LLM API key not configured (Settings → Identification)",
+    );
+  }
+  if (!config.model) {
+    throw new SpotarrError(
+      "not_configured",
+      "LLM model not configured (Settings → Identification)",
+    );
+  }
+
+  // One automatic retry on a network error, not the SDK's default two.
+  return new OpenAI({
+    baseURL: config.apiUrl,
+    apiKey: config.apiKey,
+    timeout: 60_000,
+    maxRetries: 1,
+  });
 }
 
 function llmError(error: unknown): SpotarrError {

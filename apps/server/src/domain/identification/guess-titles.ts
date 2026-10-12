@@ -26,7 +26,9 @@ export const AnswerSchema = z.object({
 });
 export type Answer = z.infer<typeof AnswerSchema>;
 
-export type Llm = (messages: ChatMessage[]) => Promise<Answer>;
+// The LLM's answer, and what it cost when its provider says.
+export type LlmReply = { answer: Answer; costUsd?: number };
+export type Llm = (messages: ChatMessage[]) => Promise<LlmReply>;
 
 const INSTRUCTIONS = `You identify films and TV shows from a short social media video.
 You get the caption, the author, frames taken across the video, and usually its sound. The person speaking often says the title out loud: listen for it. On-screen text, posters and actors' faces are good clues too.
@@ -46,7 +48,7 @@ export async function guessTitles(
   { clues, frames, audio }: VideoClues,
   llm: Llm,
   today = new Date(),
-): Promise<Answer> {
+): Promise<LlmReply> {
   return llm([
     {
       role: "system",

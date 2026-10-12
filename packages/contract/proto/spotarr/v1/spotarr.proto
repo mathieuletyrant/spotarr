@@ -8,8 +8,11 @@ service SpotarrService {
   // The web UI's sign-in: checks the API token and keeps it in an HttpOnly cookie.
   // The only RPC callable without the token.
   rpc Login(LoginRequest) returns (LoginResponse);
-  // State of each dependency Spotarr talks to.
+  // Spotarr's version. Cheap: the web UI also calls it to check the sign-in.
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+  // Calls each Dependency (LLM, TMDB, Seerr, yt-dlp, ffmpeg) and says whether it
+  // works, with the reason when it does not. Takes a few seconds.
+  rpc CheckDependencies(CheckDependenciesRequest) returns (CheckDependenciesResponse);
   // Every setting, secrets included: this is a single-user app and the UI shows them.
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   // Changes only the fields that are present; returns the settings as saved.
@@ -25,6 +28,37 @@ service SpotarrService {
   // Adds one Candidate of a Share to the library. The Share comes back with the new Addition,
   // whose status says what happened: requested, already present, or failed (with the reason).
   rpc Add(AddRequest) returns (AddResponse);
+}
+
+message CheckDependenciesRequest {}
+
+message CheckDependenciesResponse {
+  repeated Dependency dependencies = 1;
+  // What the LLM cost over the last 30 days, as its provider reports it
+  // (OpenRouter does). Absent when no Identification recorded a cost.
+  optional LlmCost llm_cost = 2;
+}
+
+message Dependency {
+  // "LLM", "TMDB", "Seerr", "yt-dlp" or "ffmpeg".
+  string name = 1;
+  DependencyState state = 2;
+  // What was checked, or why it failed: "google/gemini-3.8-flash", "Seerr answered 401".
+  string detail = 3;
+}
+
+enum DependencyState {
+  DEPENDENCY_STATE_UNSPECIFIED = 0;
+  DEPENDENCY_STATE_OK = 1;
+  // A setting it needs is empty, e.g. no API key.
+  DEPENDENCY_STATE_NOT_CONFIGURED = 2;
+  DEPENDENCY_STATE_ERROR = 3;
+}
+
+message LlmCost {
+  // How many Identifications the total covers.
+  int32 identifications = 1;
+  double total_usd = 2;
 }
 
 message GetStatusRequest {}

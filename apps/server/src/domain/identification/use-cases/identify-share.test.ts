@@ -29,8 +29,7 @@ const notCalled = async (): Promise<never> => {
 };
 const llmAnswering =
   (answer: Answer): Llm =>
-  async () =>
-    answer;
+  async () => ({ answer, costUsd: 0.0012 });
 
 test("an IMDb link gives a certain Candidate, without video nor LLM", async () => {
   fakeFetch({
@@ -75,6 +74,7 @@ test("a reel is read, then the LLM explains what it sees (Candidates come with #
     reasoning: "On reconnaît Zach Galifianakis.",
     candidates: [],
     frames: [{ atMs: 2500, thumbnail: new Uint8Array([2]) }],
+    llmCostUsd: 0.0012,
   });
 });
 

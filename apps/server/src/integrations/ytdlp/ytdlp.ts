@@ -65,3 +65,8 @@ export async function downloadVideo(
 function cookies(cookiesFile?: string): string[] {
   return cookiesFile ? ["--cookies", cookiesFile] : [];
 }
+
+// "2026.08.19". Instagram changes often: an old yt-dlp is the first suspect.
+export async function ytDlpVersion(): Promise<string> {
+  return (await run(["yt-dlp", "--version"], 10_000)).trim();
+}

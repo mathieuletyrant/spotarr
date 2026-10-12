@@ -43,6 +43,7 @@ export interface Shares {
   input_image: Uint8Array | null;
   input_text: string | null;
   input_url: string | null;
+  llm_cost_usd: number | null;
   method: string | null;
   reasoning: string | null;
   source: string | null;
