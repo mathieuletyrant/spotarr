@@ -19,6 +19,9 @@ service SpotarrService {
   rpc ListShares(ListSharesRequest) returns (ListSharesResponse);
   // Resets a finished Identification and queues it again. Additions are kept.
   rpc RetryIdentification(RetryIdentificationRequest) returns (RetryIdentificationResponse);
+  // Adds one Candidate of a Share to the library. The Share comes back with the new Addition,
+  // whose status says what happened: requested, already present, or failed (with the reason).
+  rpc Add(AddRequest) returns (AddResponse);
 }
 
 message GetStatusRequest {}
@@ -253,5 +256,17 @@ message RetryIdentificationRequest {
 }
 
 message RetryIdentificationResponse {
+  Share share = 1;
+}
+
+message AddRequest {
+  string share_id = 1;
+  int32 tmdb_id = 2;
+  MediaType type = 3;
+  // Seerr when unspecified; V1 supports Seerr only.
+  Target target = 4;
+}
+
+message AddResponse {
   Share share = 1;
 }

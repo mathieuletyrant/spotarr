@@ -19,7 +19,6 @@ export async function confirmOnTmdb(guesses: Guess[], tmdb: Tmdb): Promise<Candi
     if (same) {
       same.confidence = Math.max(same.confidence ?? 0, guess.confidence);
     } else {
-      // The library state comes from Seerr (#18).
       candidates.push({ ...title, confidence: guess.confidence, libraryState: "ABSENT" });
     }
   }

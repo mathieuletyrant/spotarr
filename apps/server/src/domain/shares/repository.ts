@@ -145,6 +145,25 @@ export class ShareRepository {
     });
   }
 
+  // Records what happened when adding a Candidate. Returns nothing: read the Share again.
+  async addAddition(
+    shareId: string,
+    addition: Pick<Addition, "tmdbId" | "type" | "target" | "status" | "error">,
+  ): Promise<void> {
+    await this.db
+      .insertInto("additions")
+      .values({
+        id: `add_${Bun.randomUUIDv7()}`,
+        share_id: shareId,
+        tmdb_id: addition.tmdbId,
+        media_type: addition.type,
+        target: addition.target,
+        status: addition.status,
+        error: addition.error ?? null,
+      })
+      .execute();
+  }
+
   // At startup: Identifications cut short by a restart start over.
   async requeueInterrupted(): Promise<void> {
     await this.db

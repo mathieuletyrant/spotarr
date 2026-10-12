@@ -9,22 +9,25 @@ import { statusRpcs } from "./api/rpc/status";
 import type { SettingsRepository } from "./domain/settings/repository";
 import type { ShareQueue } from "./domain/shares/queue";
 import type { ShareRepository } from "./domain/shares/repository";
+import type { Seerr } from "./integrations/seerr/client";
 
 export type AppDeps = {
   apiToken: () => string;
   settings: SettingsRepository;
   shares: ShareRepository;
   queue: ShareQueue;
+  // Built from the settings at each call, so a change applies at once.
+  seerr: () => Promise<Seerr>;
 };
 
 // Routes: GET /health (open), POST /api/* (Connect RPCs, token required).
 // Each file in rpc/ implements the RPCs of one domain.
-export function createApp({ apiToken, settings, shares, queue }: AppDeps): Hono {
+export function createApp({ apiToken, settings, shares, queue, seerr }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
     router.service(SpotarrService, {
       ...statusRpcs(),
       ...settingsRpcs(settings),
-      ...shareRpcs(shares, queue),
+      ...shareRpcs(shares, queue, seerr),
     }),
   );
 
