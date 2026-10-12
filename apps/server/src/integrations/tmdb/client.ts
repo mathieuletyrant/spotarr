@@ -1,4 +1,3 @@
-import type { SettingsRepository } from "../../domain/settings/repository";
 import {
   type FindById200MovieResultsItem,
   findById,
@@ -20,13 +19,14 @@ export type TmdbTitle = {
 
 const POSTERS = "https://image.tmdb.org/t/p/w500";
 
-// Calls TMDB through the client generated from its OpenAPI spec (src/tmdb/gen).
-// Reads the token and the language on every call, so a change in Settings applies at once.
+export type TmdbConfig = { token: string; language: string };
+
+// Calls TMDB through the client generated from its OpenAPI spec (gen/).
 export class Tmdb {
-  constructor(private readonly settings: SettingsRepository) {}
+  constructor(private readonly config: TmdbConfig) {}
 
   async findByImdbId(imdbId: string): Promise<TmdbTitle | undefined> {
-    const { language, options } = await this.config();
+    const { language, options } = this.request();
     const res = await findById(imdbId, { external_source: "imdb_id", language }, options);
     checkStatus(res.status);
 
@@ -41,7 +41,7 @@ export class Tmdb {
   }
 
   async movie(id: number): Promise<TmdbTitle | undefined> {
-    const { language, options } = await this.config();
+    const { language, options } = this.request();
     const res = await movieDetails(id, { language }, options);
     if (isMissing(res.status)) return undefined;
     checkStatus(res.status);
@@ -49,18 +49,18 @@ export class Tmdb {
   }
 
   async show(id: number): Promise<TmdbTitle | undefined> {
-    const { language, options } = await this.config();
+    const { language, options } = this.request();
     const res = await tvSeriesDetails(id, { language }, options);
     if (isMissing(res.status)) return undefined;
     checkStatus(res.status);
     return showTitle(res.data);
   }
 
-  private async config() {
-    const { tmdbToken, language } = (await this.settings.get()).identification;
-    if (!tmdbToken) throw new Error("TMDB token not configured (Settings → Identification)");
+  private request() {
+    const { token, language } = this.config;
+    if (!token) throw new Error("TMDB token not configured (Settings → Identification)");
     const options = {
-      headers: { Authorization: `Bearer ${tmdbToken}` },
+      headers: { Authorization: `Bearer ${token}` },
       signal: AbortSignal.timeout(10_000),
     };
     return { language, options };

@@ -1,21 +1,17 @@
 import { afterEach, expect, mock, test } from "bun:test";
-import { openDatabase } from "../../db";
 import { Tmdb } from "../../integrations/tmdb/client";
 import {
   getFindByIdResponseMock,
   getMovieDetailsResponseMock,
 } from "../../integrations/tmdb/gen/tmdb.faker";
 import { fakeFetch } from "../../testing/fake-fetch";
-import { SettingsRepository } from "../settings/repository";
 import type { Video } from "./extractors/video";
+import type { Llm } from "./guess-titles";
 import { identify } from "./identify";
 
 afterEach(() => mock.restore());
 
-const settings = new SettingsRepository(await openDatabase(":memory:"));
-await settings.update({ identification: { tmdbToken: "tok" } });
-const tmdb = new Tmdb(settings);
-
+const tmdb = new Tmdb({ token: "tok", language: "fr-FR" });
 const dune = getMovieDetailsResponseMock({
   id: 693134,
   title: "Dune : Deuxième partie",
@@ -26,16 +22,21 @@ const reel: Video = {
   author: "CameraCam",
   frames: [new Uint8Array([1])],
 };
-const noVideo = async (): Promise<Video> => {
-  throw new Error("readVideo should not be called");
-};
 
-test("an IMDb link gives a certain Candidate, without reading any video", async () => {
+const notCalled = async (): Promise<never> => {
+  throw new Error("should not be called");
+};
+const llmAnswering =
+  (answer: object): Llm =>
+  async () =>
+    JSON.stringify(answer);
+
+test("an IMDb link gives a certain Candidate, without video nor LLM", async () => {
   fakeFetch({ "/3/find/tt15239678": getFindByIdResponseMock({ movie_results: [dune] }) });
 
   const result = await identify(
     { url: "https://www.imdb.com/title/tt15239678/" },
-    { tmdb, readVideo: noVideo },
+    { tmdb, readVideo: notCalled, llm: notCalled },
   );
 
   expect(result).toMatchObject({ status: "READY", method: "DIRECT_ID", extractors: ["id-link"] });
@@ -49,20 +50,25 @@ test("a TMDB link works the same way", async () => {
   fakeFetch({ "/3/movie/693134": dune });
   const result = await identify(
     { url: "https://www.themoviedb.org/movie/693134" },
-    { tmdb, readVideo: noVideo },
+    { tmdb, readVideo: notCalled, llm: notCalled },
   );
   expect(result.candidates.map((c) => c.title)).toEqual(["Dune : Deuxième partie"]);
 });
 
-test("a reel gives its caption and author as clues (no candidates until the LLM, #16)", async () => {
+test("a reel is read, then the LLM explains what it sees (Candidates come with #17)", async () => {
+  const llm = llmAnswering({ reasoning: "On reconnaît Zach Galifianakis.", candidates: [] });
+
   const result = await identify(
     { url: "https://www.instagram.com/reel/DeHYOAbo14f/" },
-    { tmdb, readVideo: async () => reel },
+    { tmdb, readVideo: async () => reel, llm },
   );
+
   expect(result).toEqual({
     status: "NO_MATCH",
+    method: "LLM",
     extractors: ["video"],
     clues: { caption: "tu as du choix sur Netflix", author: "CameraCam" },
+    reasoning: "On reconnaît Zach Galifianakis.",
     candidates: [],
   });
 });
@@ -72,6 +78,6 @@ test("a video that cannot be read fails the Identification with the reason", asy
     throw new Error("yt-dlp failed: ERROR: Requested content is not available");
   };
   await expect(
-    identify({ url: "https://www.instagram.com/reel/x/" }, { tmdb, readVideo }),
+    identify({ url: "https://www.instagram.com/reel/x/" }, { tmdb, readVideo, llm: notCalled }),
   ).rejects.toThrow("Requested content is not available");
 });
