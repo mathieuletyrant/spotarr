@@ -1,7 +1,7 @@
 import { useMutation } from "@connectrpc/connect-query";
 import { SpotarrService } from "@spotarr/contract";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { type FormEvent, useState } from "react";
+import { type SubmitEvent, useState } from "react";
 
 export const Route = createFileRoute("/login")({ component: Login });
 
@@ -14,7 +14,7 @@ function Login() {
     onSuccess: () => navigate({ to: "/" }),
   });
 
-  function submit(event: FormEvent) {
+  function submit(event: SubmitEvent) {
     event.preventDefault();
     login.mutate({ token });
   }
