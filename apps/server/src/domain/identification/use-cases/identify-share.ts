@@ -43,17 +43,17 @@ export async function identifyShare(
 
   // 3. The LLM reads the caption, looks at the frames and listens to the sound;
   // TMDB confirms its guesses.
-  const guesses = await guessTitles(
+  const answer = await guessTitles(
     { clues, frames: video.frames.map((frame) => frame.jpeg), audio: video.audio },
     llm,
   );
-  const candidates = await checkLibrary(await confirmOnTmdb(guesses.candidates, tmdb), seerr);
+  const candidates = await checkLibrary(await confirmOnTmdb(answer.guesses, tmdb), seerr);
   return {
     status: candidates.length > 0 ? "READY" : "NO_MATCH",
     method: "LLM",
     extractors: ["video"],
     clues,
-    reasoning: guesses.reasoning,
+    reasoning: answer.reasoning,
     candidates,
     // Kept to show on the Share's page; the full frames only served the LLM.
     frames: video.frames.map(({ atMs, thumbnail }) => ({ atMs, thumbnail })),

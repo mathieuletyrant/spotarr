@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { readVideo } from "./domain/identification/extractors/video";
-import { GuessesSchema } from "./domain/identification/guess-titles";
+import { AnswerSchema } from "./domain/identification/guess-titles";
 import { identifyShare } from "./domain/identification/use-cases/identify-share";
 import { SettingsRepository } from "./domain/settings/repository";
 import type { Settings } from "./domain/settings/schema";
@@ -37,7 +37,7 @@ async function runIdentification(input: ShareInput) {
     tmdb: new Tmdb({ token: identification.tmdbToken, language: identification.language }),
     seerr: await seerrFromSettings(),
     readVideo: (url) => readVideo(url, extraction),
-    llm: (messages) => chat(llmConfig(identification), messages, GuessesSchema),
+    llm: (messages) => chat(llmConfig(identification), messages, AnswerSchema),
   });
 }
 
