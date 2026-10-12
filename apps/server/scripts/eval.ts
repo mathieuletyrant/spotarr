@@ -36,6 +36,15 @@ const CASES: Case[] = [
     reel: "DdrX8Rzo0Z9",
     expected: [{ title: "Otec (2025)", tmdbId: 1516518 }],
   },
+  {
+    // An Italian TV show, out two weeks before this case was added.
+    reel: "DdekpoZoJr7",
+    expected: [{ title: "Académie Minerva (TV, 2026)", tmdbId: 312557 }],
+  },
+  {
+    reel: "DdO4J0uIxfh",
+    expected: [{ title: "The Uprising (2026)", tmdbId: 977942 }],
+  },
 ];
 
 const settings = SettingsSchema.parse({});
@@ -70,5 +79,13 @@ for (const { reel, expected } of CASES) {
   console.log(
     `${ok ? "✅" : "❌"} ${reel}  expected ${expected.map((w) => w.title).join(", ")}  got ${got.join(", ") || "nothing"}`,
   );
+  if (!ok) {
+    // What the LLM said, to tell a wrong guess from a wrong TMDB match.
+    for (const guess of answer.guesses) {
+      console.log(
+        `     LLM: ${guess.title} / ${guess.originalTitle} ${guess.year} ${guess.originalLanguage} ${guess.type}`,
+      );
+    }
+  }
 }
 console.log(`\n${model}: ${passed}/${CASES.length}`);
