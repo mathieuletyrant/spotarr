@@ -110,6 +110,7 @@ function isMissing(status: number) {
 }
 
 function checkStatus(status: number) {
+  if (status === 401) throw new SpotarrError("unavailable", "TMDB refused the token (401)");
   if (status !== 200) throw new SpotarrError("unavailable", `TMDB answered ${status}`);
 }
 

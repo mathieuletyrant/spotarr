@@ -43,7 +43,7 @@ export async function identifyShare(
 
   // 3. The LLM reads the caption, looks at the frames and listens to the sound;
   // TMDB confirms its guesses.
-  const answer = await guessTitles(
+  const { answer, costUsd } = await guessTitles(
     { clues, frames: video.frames.map((frame) => frame.jpeg), audio: video.audio },
     llm,
   );
@@ -57,6 +57,7 @@ export async function identifyShare(
     candidates,
     // Kept to show on the Share's page; the full frames only served the LLM.
     frames: video.frames.map(({ atMs, thumbnail }) => ({ atMs, thumbnail })),
+    llmCostUsd: costUsd,
   };
 }
 

@@ -25,6 +25,9 @@ export async function seerrFetch<T>(
     signal: AbortSignal.timeout(10_000),
   }).catch(unreachable);
 
+  if (res.status === 401 || res.status === 403) {
+    throw new SpotarrError("unavailable", `Seerr refused the API key (${res.status})`);
+  }
   if (!res.ok) throw new SpotarrError("unavailable", `Seerr answered ${res.status}`);
   return { data: await res.json(), status: res.status, headers: res.headers } as T;
 }

@@ -76,4 +76,6 @@ export type IdentificationResult = {
   reasoning?: string;
   candidates: Candidate[];
   frames?: { atMs: number; thumbnail: Uint8Array }[];
+  // In US dollars, when the LLM's provider reports it.
+  llmCostUsd?: number;
 };

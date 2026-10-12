@@ -2,6 +2,7 @@ import type { Migration } from "kysely/migration";
 import * as initial from "./2026-10-12-initial";
 import * as settingsDocument from "./2026-10-12-settings-document";
 import * as frames from "./2026-10-12T1400-frames";
+import * as llmCost from "./2026-10-12T1800-llm-cost";
 
 // Listed by hand rather than read from disk: the list survives bundling.
 // Kysely applies them in the alphabetical order of their names, so a name is
@@ -11,4 +12,5 @@ export const migrations: Record<string, Migration> = {
   "2026-10-12-initial": initial,
   "2026-10-12-settings-document": settingsDocument,
   "2026-10-12T1400-frames": frames,
+  "2026-10-12T1800-llm-cost": llmCost,
 };

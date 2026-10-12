@@ -60,6 +60,10 @@ _Avoid_: addition result
 The state of a Share as shown in the history. Derived, never stored: the Addition status when at least one Addition exists; otherwise the Identification status, where `READY` reads "already present" if the best Candidate is `AVAILABLE` or `PARTIAL`, "to choose" otherwise.
 _Avoid_: status (alone), global status
 
+**Dependency**:
+A program or service Spotarr needs to identify and add: the LLM, TMDB, Seerr, yt-dlp, ffmpeg. Each one is OK, not configured, or in error with the reason.
+_Avoid_: service, health, integration
+
 **Event**:
 Something a Share went through that outside services may react to: `identification.ready`, `identification.no_match`, `identification.failed`, `media.added`.
 _Avoid_: notification, hook, trigger

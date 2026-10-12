@@ -33,7 +33,7 @@ export function createApp({ apiToken, settings, shares, queue, seerr, webDir }: 
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
     router.service(SpotarrService, {
       ...authRpcs(apiToken),
-      ...statusRpcs(),
+      ...statusRpcs(settings, shares),
       ...settingsRpcs(settings),
       ...shareRpcs(shares, queue, seerr),
     }),

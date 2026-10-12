@@ -76,7 +76,7 @@ test("a refused token is unavailable, naming TMDB", async () => {
   fakeFetch({ "/3/find/tt15239678": 401 });
   await expect(tmdb().findByImdbId("tt15239678")).rejects.toMatchObject({
     code: "unavailable",
-    message: "TMDB answered 401",
+    message: "TMDB refused the token (401)",
   });
 });
 
