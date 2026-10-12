@@ -3,7 +3,7 @@ import { SpotarrService, Summary } from "@spotarr/contract";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { transport } from "../lib/api";
 
-export const HISTORY_PAGE_SIZE = 20;
+const HISTORY_PAGE_SIZE = 20;
 
 export type HistoryFilter = { summary?: Summary; query: string };
 

@@ -24,7 +24,7 @@ export type Clues = z.infer<typeof CluesSchema>;
 
 export type IdentificationStatus = "QUEUED" | "PROCESSING" | "READY" | "NO_MATCH" | "FAILED";
 export type Method = "DIRECT_ID" | "LLM";
-export type AdditionStatus = "ADDED" | "REQUESTED" | "ALREADY_PRESENT" | "FAILED";
+type AdditionStatus = "ADDED" | "REQUESTED" | "ALREADY_PRESENT" | "FAILED";
 export type Summary =
   | "IN_PROGRESS"
   | "TO_CHOOSE"

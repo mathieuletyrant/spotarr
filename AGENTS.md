@@ -11,7 +11,7 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 | Command | What it does |
 | --- | --- |
 | `pnpm install --frozen-lockfile` | Install exactly what the lockfile says |
-| `pnpm check` | The whole gate: Biome → `buf lint` → generate (contract, tokens) → stale-output guard → `buf breaking` → `tsc` → `bun test` |
+| `pnpm check` | The whole gate: Biome → knip (unused files, exports and dependencies; `knip.json`) → `buf lint` → generate (contract, tokens) → stale-output guard → `buf breaking` → `tsc` → `bun test` |
 | `pnpm format` | Rewrite files to Biome's format |
 | `pnpm generate` | Regenerate `packages/contract/src/gen`, `packages/design-tokens/gen` and the database types |
 | `pnpm --filter @spotarr/server clients` | Regenerate the TMDB and Seerr clients from their OpenAPI specs (network; not part of `pnpm generate`). Add a route to `TMDB_ROUTES` or `SEERR_ROUTES` in `apps/server/orval.config.ts` first |
@@ -116,6 +116,7 @@ Bump `YT_DLP_VERSION` in the `Dockerfile` when Instagram reels stop downloading:
 - **Errors are `SpotarrError`s** (`src/errors.ts`): one class, six codes (`invalid_input`, `not_found`, `busy`, `not_configured`, `unavailable`, `timeout`). Never `throw new Error(...)` in production code; integrations turn their failures (status, network, timeout) into a code and a message naming the service. `api/rpc/errors.ts` maps codes to Connect codes for the UI; zod errors become `invalid_argument`; anything else is `internal` and logged.
 - **LLM answers are typed by structured outputs**: `chat(config, messages, schema)` sends the zod schema as a strict JSON schema (`zodResponseFormat`) and returns the parsed object. Never describe the JSON format in a prompt. In a strict schema every field is required: use `.nullable()`, not `.optional()`, and `.describe()` to explain a field to the model.
 - **Live checks use the gitignored `.env`** at the repo root (OpenRouter key, TMDB token, Seerr). Spotarr itself never reads it; push the values into a dev server with `UpdateSettings`. Never print them.
+- **knip** reports code nobody uses. Its `knip.json` declares what it cannot see: the entry points (scripts, migrations, the Shortcut's build), `protoc-gen-es` (run by buf), and macOS's `plutil` and `shortcuts`. Generated code and `apps/ios` are ignored. An export used only in its own file is reported: drop the `export`.
 - **`pnpm exec biome`** may print an odd "ESLint output" line from a shell hook; use `pnpm lint` / `pnpm format`.
 
 ## Versions

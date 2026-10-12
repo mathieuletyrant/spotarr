@@ -25,7 +25,7 @@ export function CandidateCard({ share, candidate }: { share: Share; candidate: C
             href={tmdbUrl(candidate)}
             target="_blank"
             rel="noreferrer"
-            className="group inline-flex items-center gap-1.5 text-lg font-semibold hover:underline focus-visible:outline-2 focus-visible:outline-accent"
+            className="group inline-flex items-center gap-1.5 text-lg font-semibold hover:underline"
           >
             {candidate.title}
             <ExternalLink aria-hidden className="size-3.5 text-text-muted group-hover:text-text" />
@@ -95,7 +95,7 @@ function CandidateAction({ share, candidate }: { share: Share; candidate: Candid
           add.mutate({ shareId: share.id, tmdbId: candidate.tmdbId, type: candidate.type })
         }
         disabled={add.isPending}
-        className="flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+        className="flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 font-medium text-accent-text"
       >
         <Plus aria-hidden className="size-4" />
         {add.isPending ? "Adding…" : failure ? "Try again" : "Add"}

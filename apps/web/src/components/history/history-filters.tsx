@@ -114,7 +114,7 @@ function FilterButton(props: {
       type="button"
       aria-pressed={props.active}
       onClick={props.onClick}
-      className="flex h-8 shrink-0 items-center gap-2 rounded-md px-3 text-sm whitespace-nowrap text-text-muted hover:text-text focus-visible:outline-2 focus-visible:outline-accent aria-pressed:bg-bg aria-pressed:font-medium aria-pressed:text-text aria-pressed:shadow-sm"
+      className="flex h-8 shrink-0 items-center gap-2 rounded-md px-3 text-sm whitespace-nowrap text-text-muted hover:text-text aria-pressed:bg-bg aria-pressed:font-medium aria-pressed:text-text aria-pressed:shadow-sm"
     >
       {props.dot && <span aria-hidden className={`size-2 rounded-full ${props.dot}`} />}
       {props.label}

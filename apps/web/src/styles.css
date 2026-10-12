@@ -6,10 +6,19 @@ body {
   @apply bg-bg font-sans text-text antialiased;
 }
 
-/* Tailwind v4 dropped the pointer cursor on buttons; bring it back everywhere. */
 @layer base {
+  /* Tailwind v4 dropped the pointer cursor on buttons; bring it back everywhere. */
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+
+  /* The keyboard's focus, in amber, on every control. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+  }
+
+  :disabled {
+    opacity: 0.5;
   }
 }

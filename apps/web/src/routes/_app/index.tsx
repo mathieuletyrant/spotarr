@@ -53,7 +53,7 @@ function HistoryPage() {
           type="button"
           onClick={() => history.fetchNextPage()}
           disabled={history.isFetchingNextPage}
-          className="self-center rounded-md border border-border px-4 py-2 hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+          className="self-center rounded-md border border-border px-4 py-2 hover:bg-surface"
         >
           Load older
         </button>

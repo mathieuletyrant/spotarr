@@ -31,7 +31,7 @@ export function ShareHeader({ share }: { share: Share }) {
             type="button"
             onClick={() => retry.mutate({ id: share.id })}
             disabled={retry.isPending || share.summary === Summary.IN_PROGRESS}
-            className="flex h-10 items-center gap-2 rounded-md border border-border px-4 whitespace-nowrap hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+            className="flex h-10 items-center gap-2 rounded-md border border-border px-4 whitespace-nowrap hover:bg-surface"
           >
             <RotateCw aria-hidden className="size-4" />
             Retry identification
@@ -41,7 +41,7 @@ export function ShareHeader({ share }: { share: Share }) {
               href={share.input.url}
               target="_blank"
               rel="noreferrer"
-              className="flex h-10 items-center gap-2 rounded-md border border-border px-4 whitespace-nowrap hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent"
+              className="flex h-10 items-center gap-2 rounded-md border border-border px-4 whitespace-nowrap hover:bg-surface"
             >
               <ExternalLink aria-hidden className="size-4" />
               Open the source

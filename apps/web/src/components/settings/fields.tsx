@@ -74,8 +74,7 @@ export function Field({
   );
 }
 
-export const inputClass =
-  "h-10 w-full rounded-md border border-border bg-surface px-3 text-sm focus-visible:outline-2 focus-visible:outline-accent";
+export const inputClass = "h-10 w-full rounded-md border border-border bg-surface px-3 text-sm";
 
 export function TextField({
   form,

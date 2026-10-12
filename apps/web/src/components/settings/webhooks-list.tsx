@@ -19,7 +19,7 @@ export function WebhooksList() {
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="h-9 w-fit rounded-md border border-border px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-accent"
+          className="h-9 w-fit rounded-md border border-border px-3 text-sm font-medium"
         >
           Add a webhook
         </button>

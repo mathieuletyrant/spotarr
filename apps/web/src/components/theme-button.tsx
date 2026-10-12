@@ -45,7 +45,7 @@ export function ThemeButton() {
       onClick={next}
       title={label}
       aria-label={label}
-      className="flex size-9 items-center justify-center rounded-md text-text-muted hover:bg-text/8 hover:text-text focus-visible:outline-2 focus-visible:outline-accent"
+      className="flex size-9 items-center justify-center rounded-md text-text-muted hover:bg-text/8 hover:text-text"
     >
       {theme === "system" && <Monitor aria-hidden className="size-4" />}
       {theme === "light" && <Sun aria-hidden className="size-4" />}

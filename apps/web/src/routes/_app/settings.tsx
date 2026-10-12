@@ -284,14 +284,14 @@ function SettingsForm({ saved }: { saved: Values }) {
               <button
                 type="button"
                 onClick={cancel}
-                className="h-9 rounded-full px-4 text-sm font-medium text-text-muted hover:bg-text/8 hover:text-text focus-visible:outline-2 focus-visible:outline-accent"
+                className="h-9 rounded-full px-4 text-sm font-medium text-text-muted hover:bg-text/8 hover:text-text"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={save.isPending || changed === 0}
-                className="h-9 rounded-full bg-accent px-5 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+                className="h-9 rounded-full bg-accent px-5 text-sm font-medium text-accent-text"
               >
                 {save.isPending ? "Saving…" : "Save"}
               </button>
