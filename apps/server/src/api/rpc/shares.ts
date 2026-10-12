@@ -8,18 +8,21 @@ import {
   Summary,
   Target,
 } from "@spotarr/contract";
+import { addCandidate } from "../../domain/shares/add";
 import { historyPage } from "../../domain/shares/history";
 import { parseInput } from "../../domain/shares/input";
 import type { ShareQueue } from "../../domain/shares/queue";
 import type { ShareRepository } from "../../domain/shares/repository";
 import type { Share } from "../../domain/shares/types";
 import { SpotarrError } from "../../errors";
+import type { Seerr } from "../../integrations/seerr/client";
 import type { Rpcs } from "./types";
 
 export function shareRpcs(
   shares: ShareRepository,
   queue: ShareQueue,
-): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification"> {
+  seerr: () => Promise<Seerr>,
+): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification" | "add"> {
   async function getOrFail(id: string): Promise<Share> {
     const share = await shares.get(id);
     if (!share) throw new SpotarrError("not_found", `no share ${id}`);
@@ -57,6 +60,24 @@ export function shareRpcs(
       await shares.requeue(req.id);
       queue.wake();
       return { share: toMessage(await getOrFail(req.id)) };
+    },
+
+    async add(req) {
+      if (req.target === Target.ARR) {
+        throw new SpotarrError(
+          "invalid_input",
+          "adding to Radarr or Sonarr directly is not supported yet",
+        );
+      }
+      if (req.type === MediaType.UNSPECIFIED)
+        throw new SpotarrError("invalid_input", "type is required");
+      const type = req.type === MediaType.TV ? "TV" : "MOVIE";
+      await addCandidate(
+        req.shareId,
+        { tmdbId: req.tmdbId, type },
+        { shares, seerr: await seerr() },
+      );
+      return { share: toMessage(await getOrFail(req.shareId)) };
     },
   };
 }

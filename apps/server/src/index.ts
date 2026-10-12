@@ -12,6 +12,7 @@ import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
 import type { ShareInput } from "./domain/shares/types";
 import { chat, type LlmConfig } from "./integrations/llm/client";
+import { Seerr } from "./integrations/seerr/client";
 import { Tmdb } from "./integrations/tmdb/client";
 
 // The only two environment variables; everything else is set in the UI.
@@ -32,9 +33,15 @@ async function identifyShare(input: ShareInput) {
   const { identification, extraction } = await settings.get();
   return identify(input, {
     tmdb: new Tmdb({ token: identification.tmdbToken, language: identification.language }),
+    seerr: await seerrFromSettings(),
     readVideo: (url) => readVideo(url, extraction),
     llm: (messages) => chat(llmConfig(identification), messages, GuessesSchema),
   });
+}
+
+async function seerrFromSettings() {
+  const { seerr } = await settings.get();
+  return new Seerr({ url: seerr.url, apiKey: seerr.apiKey });
 }
 
 function llmConfig(identification: Settings["identification"]): LlmConfig {
@@ -52,6 +59,6 @@ const queue = new ShareQueue(
 );
 await queue.start();
 
-const app = createApp({ apiToken: () => token, settings, shares, queue });
+const app = createApp({ apiToken: () => token, settings, shares, queue, seerr: seerrFromSettings });
 Bun.serve({ port, fetch: app.fetch });
 console.log(`spotarr listening on :${port}`);
