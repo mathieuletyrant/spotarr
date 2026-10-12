@@ -11,10 +11,10 @@ import { z } from "zod";
 import pkg from "../package.json";
 import { requireToken } from "./http/auth";
 import { connectHandler } from "./http/connect";
+import type { SettingsRepository } from "./settings/repository";
 import type { Settings } from "./settings/schema";
-import type { SettingsService } from "./settings/service";
 
-export type AppDeps = { apiToken: () => string; settings: SettingsService };
+export type AppDeps = { apiToken: () => string; settings: SettingsRepository };
 
 export function createApp({ apiToken, settings }: AppDeps): Hono {
   const app = new Hono();

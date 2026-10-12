@@ -21,8 +21,9 @@ export interface Additions {
 }
 
 export interface Settings {
-  key: string;
-  value: string;
+  api_token: string | null;
+  data: Generated<string>;
+  id: Generated<number>;
 }
 
 export interface Shares {

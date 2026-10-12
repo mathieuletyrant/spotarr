@@ -2,12 +2,11 @@ import { expect, test } from "bun:test";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { SettingsRepository } from "./settings/repository";
-import { SettingsService } from "./settings/service";
 
 const db = await openDatabase(":memory:");
 const app = createApp({
   apiToken: () => "secret-token",
-  settings: new SettingsService(new SettingsRepository(db)),
+  settings: new SettingsRepository(db),
 });
 const call = (method: string, body: unknown = {}, headers: Record<string, string> = {}) =>
   app.request(`/api/spotarr.v1.SpotarrService/${method}`, {
