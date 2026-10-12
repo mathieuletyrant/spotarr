@@ -5,6 +5,7 @@ import { SettingsRepository } from "../../domain/settings/repository";
 import { ShareQueue } from "../../domain/shares/queue";
 import { ShareRepository } from "../../domain/shares/repository";
 import { identifyNothing, until } from "../../domain/shares/test-helpers";
+import { Seerr } from "../../integrations/seerr/client";
 
 const db = await openDatabase(":memory:");
 const shares = new ShareRepository(db);
@@ -14,6 +15,7 @@ const app = createApp({
   settings: new SettingsRepository(db),
   shares,
   queue,
+  seerr: async () => new Seerr({ url: "http://seerr.test", apiKey: "key" }),
 });
 const call = async (method: string, body: unknown) => {
   const res = await app.request(`/api/spotarr.v1.SpotarrService/${method}`, {
@@ -79,4 +81,15 @@ test("RetryIdentification queues a finished Share again", async () => {
     "IDENTIFICATION_STATUS_NO_MATCH",
   ]).toContain(retried.body.share.identification.status);
   expect((await call("RetryIdentification", { id: "shr_nope" })).body.code).toBe("not_found");
+});
+
+test("Add refuses Radarr and Sonarr directly, for now", async () => {
+  const { body } = await call("CreateShare", { text: "x" });
+  const res = await call("Add", {
+    shareId: body.share.id,
+    tmdbId: 1,
+    type: "MEDIA_TYPE_MOVIE",
+    target: "TARGET_ARR",
+  });
+  expect(res.body.code).toBe("invalid_argument");
 });
