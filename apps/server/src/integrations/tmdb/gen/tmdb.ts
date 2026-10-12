@@ -116,6 +116,79 @@ export type MovieDetails200 = {
   vote_count?: number;
 };
 
+export type SearchMovieParams = {
+query: string;
+include_adult?: boolean;
+language?: string;
+primary_release_year?: string;
+page?: number;
+region?: string;
+year?: string;
+};
+
+export type SearchMovie200ResultsItem = {
+  adult?: boolean;
+  backdrop_path?: string;
+  genre_ids?: number[];
+  id?: number;
+  original_language?: string;
+  original_title?: string;
+  overview?: string;
+  popularity?: number;
+  poster_path?: string;
+  release_date?: string;
+  title?: string;
+  video?: boolean;
+  vote_average?: number;
+  vote_count?: number;
+};
+
+export type SearchMovie200 = {
+  page?: number;
+  results?: SearchMovie200ResultsItem[];
+  total_pages?: number;
+  total_results?: number;
+};
+
+export type SearchTvParams = {
+query: string;
+/**
+ * Search only the first air date. Valid values are: 1000..9999
+ */
+first_air_date_year?: number;
+include_adult?: boolean;
+language?: string;
+page?: number;
+/**
+ * Search the first air date and all episode air dates. Valid values are: 1000..9999
+ */
+year?: number;
+};
+
+export type SearchTv200ResultsItem = {
+  adult?: boolean;
+  backdrop_path?: string;
+  genre_ids?: number[];
+  id?: number;
+  origin_country?: string[];
+  original_language?: string;
+  original_name?: string;
+  overview?: string;
+  popularity?: number;
+  poster_path?: string;
+  first_air_date?: string;
+  name?: string;
+  vote_average?: number;
+  vote_count?: number;
+};
+
+export type SearchTv200 = {
+  page?: number;
+  results?: SearchTv200ResultsItem[];
+  total_pages?: number;
+  total_results?: number;
+};
+
 export type TvSeriesDetailsParams = {
 /**
  * comma separated list of endpoints within this namespace, 20 items max
@@ -325,6 +398,108 @@ export const movieDetails = async (movieId: number,
 
   const data: movieDetailsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as movieDetailsResponse
+}
+
+
+
+export type searchMovieResponse200 = {
+  data: SearchMovie200
+  status: 200
+}
+
+export type searchMovieResponseSuccess = (searchMovieResponse200) & {
+  headers: Headers;
+};
+;
+
+export type searchMovieResponse = (searchMovieResponseSuccess)
+
+export const getSearchMovieUrl = (params: SearchMovieParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `https://api.themoviedb.org/3/search/movie?${stringifiedParams}` : `https://api.themoviedb.org/3/search/movie`
+}
+
+/**
+ * Search for movies by their original, translated and alternative titles.
+ * @summary Movie
+ */
+export const searchMovie = async (params: SearchMovieParams, options?: RequestInit): Promise<searchMovieResponse> => {
+
+  const res = await fetch(getSearchMovieUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: searchMovieResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as searchMovieResponse
+}
+
+
+
+export type searchTvResponse200 = {
+  data: SearchTv200
+  status: 200
+}
+
+export type searchTvResponseSuccess = (searchTvResponse200) & {
+  headers: Headers;
+};
+;
+
+export type searchTvResponse = (searchTvResponseSuccess)
+
+export const getSearchTvUrl = (params: SearchTvParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `https://api.themoviedb.org/3/search/tv?${stringifiedParams}` : `https://api.themoviedb.org/3/search/tv`
+}
+
+/**
+ * Search for TV shows by their original, translated and also known as names.
+ * @summary TV
+ */
+export const searchTv = async (params: SearchTvParams, options?: RequestInit): Promise<searchTvResponse> => {
+
+  const res = await fetch(getSearchTvUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: searchTvResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as searchTvResponse
 }
 
 

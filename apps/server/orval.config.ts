@@ -2,7 +2,13 @@ import { defineConfig } from "orval";
 
 // TMDB publishes an OpenAPI spec of its whole API. We generate a typed client,
 // and typed fake responses for tests, for the routes Spotarr uses only.
-const TMDB_ROUTES = ["/3/find/{external_id}", "/3/movie/{movie_id}", "/3/tv/{series_id}"];
+const TMDB_ROUTES = [
+  "/3/find/{external_id}",
+  "/3/movie/{movie_id}",
+  "/3/tv/{series_id}",
+  "/3/search/movie",
+  "/3/search/tv",
+];
 
 export default defineConfig({
   tmdb: {
