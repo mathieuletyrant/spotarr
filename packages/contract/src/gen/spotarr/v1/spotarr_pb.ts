@@ -2,15 +2,17 @@
 // @generated from file spotarr/v1/spotarr.proto (package spotarr.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file spotarr/v1/spotarr.proto.
  */
 export const file_spotarr_v1_spotarr: GenFile = /*@__PURE__*/
-  fileDesc("ChhzcG90YXJyL3YxL3Nwb3RhcnIucHJvdG8SCnNwb3RhcnIudjEiEgoQR2V0U3RhdHVzUmVxdWVzdCIkChFHZXRTdGF0dXNSZXNwb25zZRIPCgd2ZXJzaW9uGAEgASgJItABCghTZXR0aW5ncxI6Cg5pZGVudGlmaWNhdGlvbhgBIAEoCzIiLnNwb3RhcnIudjEuSWRlbnRpZmljYXRpb25TZXR0aW5ncxIoCgVzZWVychgCIAEoCzIZLnNwb3RhcnIudjEuU2VlcnJTZXR0aW5ncxIyCgpleHRyYWN0aW9uGAMgASgLMh4uc3BvdGFyci52MS5FeHRyYWN0aW9uU2V0dGluZ3MSKgoGYWNjZXNzGAQgASgLMhouc3BvdGFyci52MS5BY2Nlc3NTZXR0aW5ncyKyAgoWSWRlbnRpZmljYXRpb25TZXR0aW5ncxIYCgtsbG1fYXBpX3VybBgBIAEoCUgAiAEBEhgKC2xsbV9hcGlfa2V5GAIgASgJSAGIAQESFwoKdGV4dF9tb2RlbBgDIAEoCUgCiAEBEhgKC2ltYWdlX21vZGVsGAQgASgJSAOIAQESFwoKZm9yY2VfanNvbhgFIAEoCEgEiAEBEhcKCnRtZGJfdG9rZW4YBiABKAlIBYgBARIVCghsYW5ndWFnZRgHIAEoCUgGiAEBQg4KDF9sbG1fYXBpX3VybEIOCgxfbGxtX2FwaV9rZXlCDQoLX3RleHRfbW9kZWxCDgoMX2ltYWdlX21vZGVsQg0KC19mb3JjZV9qc29uQg0KC190bWRiX3Rva2VuQgsKCV9sYW5ndWFnZSJLCg1TZWVyclNldHRpbmdzEhAKA3VybBgBIAEoCUgAiAEBEhQKB2FwaV9rZXkYAiABKAlIAYgBAUIGCgRfdXJsQgoKCF9hcGlfa2V5IsgBChJFeHRyYWN0aW9uU2V0dGluZ3MSGAoLY29va2llc190eHQYASABKAlIAIgBARIdChBmcmFtZXNfcGVyX3ZpZGVvGAIgASgFSAGIAQESGQoMbWF4X3ZpZGVvX21iGAMgASgFSAKIAQESGAoLY29uY3VycmVuY3kYBCABKAVIA4gBAUIOCgxfY29va2llc190eHRCEwoRX2ZyYW1lc19wZXJfdmlkZW9CDwoNX21heF92aWRlb19tYkIOCgxfY29uY3VycmVuY3kirAEKDkFjY2Vzc1NldHRpbmdzEhYKCWFwaV90b2tlbhgBIAEoCUgAiAEBEhwKD3B1YmxpY19ob3N0bmFtZRgCIAEoCUgBiAEBEhgKC3RlYW1fZG9tYWluGAMgASgJSAKIAQESEAoDYXVkGAQgASgJSAOIAQFCDAoKX2FwaV90b2tlbkISChBfcHVibGljX2hvc3RuYW1lQg4KDF90ZWFtX2RvbWFpbkIGCgRfYXVkIhQKEkdldFNldHRpbmdzUmVxdWVzdCI9ChNHZXRTZXR0aW5nc1Jlc3BvbnNlEiYKCHNldHRpbmdzGAEgASgLMhQuc3BvdGFyci52MS5TZXR0aW5ncyI/ChVVcGRhdGVTZXR0aW5nc1JlcXVlc3QSJgoIc2V0dGluZ3MYASABKAsyFC5zcG90YXJyLnYxLlNldHRpbmdzIkAKFlVwZGF0ZVNldHRpbmdzUmVzcG9uc2USJgoIc2V0dGluZ3MYASABKAsyFC5zcG90YXJyLnYxLlNldHRpbmdzMoMCCg5TcG90YXJyU2VydmljZRJICglHZXRTdGF0dXMSHC5zcG90YXJyLnYxLkdldFN0YXR1c1JlcXVlc3QaHS5zcG90YXJyLnYxLkdldFN0YXR1c1Jlc3BvbnNlEk4KC0dldFNldHRpbmdzEh4uc3BvdGFyci52MS5HZXRTZXR0aW5nc1JlcXVlc3QaHy5zcG90YXJyLnYxLkdldFNldHRpbmdzUmVzcG9uc2USVwoOVXBkYXRlU2V0dGluZ3MSIS5zcG90YXJyLnYxLlVwZGF0ZVNldHRpbmdzUmVxdWVzdBoiLnNwb3RhcnIudjEuVXBkYXRlU2V0dGluZ3NSZXNwb25zZWIGcHJvdG8z");
+  fileDesc("ChhzcG90YXJyL3YxL3Nwb3RhcnIucHJvdG8SCnNwb3RhcnIudjEiEgoQR2V0U3RhdHVzUmVxdWVzdCIkChFHZXRTdGF0dXNSZXNwb25zZRIPCgd2ZXJzaW9uGAEgASgJItABCghTZXR0aW5ncxI6Cg5pZGVudGlmaWNhdGlvbhgBIAEoCzIiLnNwb3RhcnIudjEuSWRlbnRpZmljYXRpb25TZXR0aW5ncxIoCgVzZWVychgCIAEoCzIZLnNwb3RhcnIudjEuU2VlcnJTZXR0aW5ncxIyCgpleHRyYWN0aW9uGAMgASgLMh4uc3BvdGFyci52MS5FeHRyYWN0aW9uU2V0dGluZ3MSKgoGYWNjZXNzGAQgASgLMhouc3BvdGFyci52MS5BY2Nlc3NTZXR0aW5ncyKyAgoWSWRlbnRpZmljYXRpb25TZXR0aW5ncxIYCgtsbG1fYXBpX3VybBgBIAEoCUgAiAEBEhgKC2xsbV9hcGlfa2V5GAIgASgJSAGIAQESFwoKdGV4dF9tb2RlbBgDIAEoCUgCiAEBEhgKC2ltYWdlX21vZGVsGAQgASgJSAOIAQESFwoKZm9yY2VfanNvbhgFIAEoCEgEiAEBEhcKCnRtZGJfdG9rZW4YBiABKAlIBYgBARIVCghsYW5ndWFnZRgHIAEoCUgGiAEBQg4KDF9sbG1fYXBpX3VybEIOCgxfbGxtX2FwaV9rZXlCDQoLX3RleHRfbW9kZWxCDgoMX2ltYWdlX21vZGVsQg0KC19mb3JjZV9qc29uQg0KC190bWRiX3Rva2VuQgsKCV9sYW5ndWFnZSJLCg1TZWVyclNldHRpbmdzEhAKA3VybBgBIAEoCUgAiAEBEhQKB2FwaV9rZXkYAiABKAlIAYgBAUIGCgRfdXJsQgoKCF9hcGlfa2V5IsgBChJFeHRyYWN0aW9uU2V0dGluZ3MSGAoLY29va2llc190eHQYASABKAlIAIgBARIdChBmcmFtZXNfcGVyX3ZpZGVvGAIgASgFSAGIAQESGQoMbWF4X3ZpZGVvX21iGAMgASgFSAKIAQESGAoLY29uY3VycmVuY3kYBCABKAVIA4gBAUIOCgxfY29va2llc190eHRCEwoRX2ZyYW1lc19wZXJfdmlkZW9CDwoNX21heF92aWRlb19tYkIOCgxfY29uY3VycmVuY3kirAEKDkFjY2Vzc1NldHRpbmdzEhYKCWFwaV90b2tlbhgBIAEoCUgAiAEBEhwKD3B1YmxpY19ob3N0bmFtZRgCIAEoCUgBiAEBEhgKC3RlYW1fZG9tYWluGAMgASgJSAKIAQESEAoDYXVkGAQgASgJSAOIAQFCDAoKX2FwaV90b2tlbkISChBfcHVibGljX2hvc3RuYW1lQg4KDF90ZWFtX2RvbWFpbkIGCgRfYXVkIhQKEkdldFNldHRpbmdzUmVxdWVzdCI9ChNHZXRTZXR0aW5nc1Jlc3BvbnNlEiYKCHNldHRpbmdzGAEgASgLMhQuc3BvdGFyci52MS5TZXR0aW5ncyI/ChVVcGRhdGVTZXR0aW5nc1JlcXVlc3QSJgoIc2V0dGluZ3MYASABKAsyFC5zcG90YXJyLnYxLlNldHRpbmdzIkAKFlVwZGF0ZVNldHRpbmdzUmVzcG9uc2USJgoIc2V0dGluZ3MYASABKAsyFC5zcG90YXJyLnYxLlNldHRpbmdzIqgCCgVTaGFyZRIKCgJpZBgBIAEoCRIuCgpjcmVhdGVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIlCgVpbnB1dBgDIAEoCzIWLnNwb3RhcnIudjEuU2hhcmVJbnB1dBIOCgZzb3VyY2UYBCABKAkSMgoOaWRlbnRpZmljYXRpb24YBSABKAsyGi5zcG90YXJyLnYxLklkZW50aWZpY2F0aW9uEikKCmNhbmRpZGF0ZXMYBiADKAsyFS5zcG90YXJyLnYxLkNhbmRpZGF0ZRInCglhZGRpdGlvbnMYByADKAsyFC5zcG90YXJyLnYxLkFkZGl0aW9uEiQKB3N1bW1hcnkYCCABKA4yEy5zcG90YXJyLnYxLlN1bW1hcnkiVQoKU2hhcmVJbnB1dBIQCgN1cmwYASABKAlIAIgBARIRCgR0ZXh0GAIgASgJSAGIAQESEQoJaGFzX2ltYWdlGAMgASgIQgYKBF91cmxCBwoFX3RleHQiigIKDklkZW50aWZpY2F0aW9uEjAKBnN0YXR1cxgBIAEoDjIgLnNwb3RhcnIudjEuSWRlbnRpZmljYXRpb25TdGF0dXMSIgoGbWV0aG9kGAIgASgOMhIuc3BvdGFyci52MS5NZXRob2QSGAoLZHVyYXRpb25fbXMYAyABKAVIAIgBARISCgpleHRyYWN0b3JzGAQgAygJEiAKBWNsdWVzGAUgASgLMhEuc3BvdGFyci52MS5DbHVlcxIWCglyZWFzb25pbmcYBiABKAlIAYgBARISCgVlcnJvchgHIAEoCUgCiAEBQg4KDF9kdXJhdGlvbl9tc0IMCgpfcmVhc29uaW5nQggKBl9lcnJvciJvCgVDbHVlcxIUCgdjYXB0aW9uGAEgASgJSACIAQESEwoGYXV0aG9yGAIgASgJSAGIAQESFgoJc3VidGl0bGVzGAMgASgJSAKIAQFCCgoIX2NhcHRpb25CCQoHX2F1dGhvckIMCgpfc3VidGl0bGVzIp0CCglDYW5kaWRhdGUSDwoHdG1kYl9pZBgBIAEoBRIjCgR0eXBlGAIgASgOMhUuc3BvdGFyci52MS5NZWRpYVR5cGUSDQoFdGl0bGUYAyABKAkSGwoOb3JpZ2luYWxfdGl0bGUYBCABKAlIAIgBARIRCgR5ZWFyGAUgASgFSAGIAQESFwoKcG9zdGVyX3VybBgGIAEoCUgCiAEBEhcKCmNvbmZpZGVuY2UYByABKAJIA4gBARIvCg1saWJyYXJ5X3N0YXRlGAggASgOMhguc3BvdGFyci52MS5MaWJyYXJ5U3RhdGVCEQoPX29yaWdpbmFsX3RpdGxlQgcKBV95ZWFyQg0KC19wb3N0ZXJfdXJsQg0KC19jb25maWRlbmNlIuoBCghBZGRpdGlvbhIKCgJpZBgBIAEoCRIuCgpjcmVhdGVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIPCgd0bWRiX2lkGAMgASgFEiMKBHR5cGUYBCABKA4yFS5zcG90YXJyLnYxLk1lZGlhVHlwZRIiCgZ0YXJnZXQYBSABKA4yEi5zcG90YXJyLnYxLlRhcmdldBIqCgZzdGF0dXMYBiABKA4yGi5zcG90YXJyLnYxLkFkZGl0aW9uU3RhdHVzEhIKBWVycm9yGAcgASgJSACIAQFCCAoGX2Vycm9yImgKEkNyZWF0ZVNoYXJlUmVxdWVzdBIQCgN1cmwYASABKAlIAIgBARIRCgR0ZXh0GAIgASgJSAGIAQESEgoFaW1hZ2UYAyABKAxIAogBAUIGCgRfdXJsQgcKBV90ZXh0QggKBl9pbWFnZSI3ChNDcmVhdGVTaGFyZVJlc3BvbnNlEiAKBXNoYXJlGAEgASgLMhEuc3BvdGFyci52MS5TaGFyZSIdCg9HZXRTaGFyZVJlcXVlc3QSCgoCaWQYASABKAkiNAoQR2V0U2hhcmVSZXNwb25zZRIgCgVzaGFyZRgBIAEoCzIRLnNwb3RhcnIudjEuU2hhcmUinwEKEUxpc3RTaGFyZXNSZXF1ZXN0EhYKCXBhZ2Vfc2l6ZRgBIAEoBUgAiAEBEhMKBmN1cnNvchgCIAEoCUgBiAEBEiYKCXN1bW1hcmllcxgDIAMoDjITLnNwb3RhcnIudjEuU3VtbWFyeRISCgVxdWVyeRgEIAEoCUgCiAEBQgwKCl9wYWdlX3NpemVCCQoHX2N1cnNvckIICgZfcXVlcnkiYQoSTGlzdFNoYXJlc1Jlc3BvbnNlEiEKBnNoYXJlcxgBIAMoCzIRLnNwb3RhcnIudjEuU2hhcmUSGAoLbmV4dF9jdXJzb3IYAiABKAlIAIgBAUIOCgxfbmV4dF9jdXJzb3IiKAoaUmV0cnlJZGVudGlmaWNhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiPwobUmV0cnlJZGVudGlmaWNhdGlvblJlc3BvbnNlEiAKBXNoYXJlGAEgASgLMhEuc3BvdGFyci52MS5TaGFyZSrsAQoUSWRlbnRpZmljYXRpb25TdGF0dXMSJQohSURFTlRJRklDQVRJT05fU1RBVFVTX1VOU1BFQ0lGSUVEEAASIAocSURFTlRJRklDQVRJT05fU1RBVFVTX1FVRVVFRBABEiQKIElERU5USUZJQ0FUSU9OX1NUQVRVU19QUk9DRVNTSU5HEAISHwobSURFTlRJRklDQVRJT05fU1RBVFVTX1JFQURZEAMSIgoeSURFTlRJRklDQVRJT05fU1RBVFVTX05PX01BVENIEAQSIAocSURFTlRJRklDQVRJT05fU1RBVFVTX0ZBSUxFRBAFKkYKBk1ldGhvZBIWChJNRVRIT0RfVU5TUEVDSUZJRUQQABIUChBNRVRIT0RfRElSRUNUX0lEEAESDgoKTUVUSE9EX0xMTRACKlAKCU1lZGlhVHlwZRIaChZNRURJQV9UWVBFX1VOU1BFQ0lGSUVEEAASFAoQTUVESUFfVFlQRV9NT1ZJRRABEhEKDU1FRElBX1RZUEVfVFYQAiqcAQoMTGlicmFyeVN0YXRlEh0KGUxJQlJBUllfU1RBVEVfVU5TUEVDSUZJRUQQABIYChRMSUJSQVJZX1NUQVRFX0FCU0VOVBABEhsKF0xJQlJBUllfU1RBVEVfUkVRVUVTVEVEEAISGQoVTElCUkFSWV9TVEFURV9QQVJUSUFMEAMSGwoXTElCUkFSWV9TVEFURV9BVkFJTEFCTEUQBCpCCgZUYXJnZXQSFgoSVEFSR0VUX1VOU1BFQ0lGSUVEEAASDgoKVEFSR0VUX0FSUhABEhAKDFRBUkdFVF9TRUVSUhACKqwBCg5BZGRpdGlvblN0YXR1cxIfChtBRERJVElPTl9TVEFUVVNfVU5TUEVDSUZJRUQQABIZChVBRERJVElPTl9TVEFUVVNfQURERUQQARIdChlBRERJVElPTl9TVEFUVVNfUkVRVUVTVEVEEAISIwofQURESVRJT05fU1RBVFVTX0FMUkVBRFlfUFJFU0VOVBADEhoKFkFERElUSU9OX1NUQVRVU19GQUlMRUQQBCrDAQoHU3VtbWFyeRIXChNTVU1NQVJZX1VOU1BFQ0lGSUVEEAASFwoTU1VNTUFSWV9JTl9QUk9HUkVTUxABEhUKEVNVTU1BUllfVE9fQ0hPT1NFEAISEQoNU1VNTUFSWV9BRERFRBADEhUKEVNVTU1BUllfUkVRVUVTVEVEEAQSGwoXU1VNTUFSWV9BTFJFQURZX1BSRVNFTlQQBRIUChBTVU1NQVJZX05PX01BVENIEAYSEgoOU1VNTUFSWV9GQUlMRUQQBzLPBAoOU3BvdGFyclNlcnZpY2USSAoJR2V0U3RhdHVzEhwuc3BvdGFyci52MS5HZXRTdGF0dXNSZXF1ZXN0Gh0uc3BvdGFyci52MS5HZXRTdGF0dXNSZXNwb25zZRJOCgtHZXRTZXR0aW5ncxIeLnNwb3RhcnIudjEuR2V0U2V0dGluZ3NSZXF1ZXN0Gh8uc3BvdGFyci52MS5HZXRTZXR0aW5nc1Jlc3BvbnNlElcKDlVwZGF0ZVNldHRpbmdzEiEuc3BvdGFyci52MS5VcGRhdGVTZXR0aW5nc1JlcXVlc3QaIi5zcG90YXJyLnYxLlVwZGF0ZVNldHRpbmdzUmVzcG9uc2USTgoLQ3JlYXRlU2hhcmUSHi5zcG90YXJyLnYxLkNyZWF0ZVNoYXJlUmVxdWVzdBofLnNwb3RhcnIudjEuQ3JlYXRlU2hhcmVSZXNwb25zZRJFCghHZXRTaGFyZRIbLnNwb3RhcnIudjEuR2V0U2hhcmVSZXF1ZXN0Ghwuc3BvdGFyci52MS5HZXRTaGFyZVJlc3BvbnNlEksKCkxpc3RTaGFyZXMSHS5zcG90YXJyLnYxLkxpc3RTaGFyZXNSZXF1ZXN0Gh4uc3BvdGFyci52MS5MaXN0U2hhcmVzUmVzcG9uc2USZgoTUmV0cnlJZGVudGlmaWNhdGlvbhImLnNwb3RhcnIudjEuUmV0cnlJZGVudGlmaWNhdGlvblJlcXVlc3QaJy5zcG90YXJyLnYxLlJldHJ5SWRlbnRpZmljYXRpb25SZXNwb25zZWIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message spotarr.v1.GetStatusRequest
@@ -299,6 +301,698 @@ export const UpdateSettingsResponseSchema: GenMessage<UpdateSettingsResponse> = 
   messageDesc(file_spotarr_v1_spotarr, 10);
 
 /**
+ * A piece of content sent to Spotarr and everything that follows from it.
+ *
+ * @generated from message spotarr.v1.Share
+ */
+export type Share = Message<"spotarr.v1.Share"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 2;
+   */
+  createdAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: spotarr.v1.ShareInput input = 3;
+   */
+  input?: ShareInput | undefined;
+
+  /**
+   * Domain of the URL ("instagram.com"), or "image" / "text".
+   *
+   * @generated from field: string source = 4;
+   */
+  source: string;
+
+  /**
+   * @generated from field: spotarr.v1.Identification identification = 5;
+   */
+  identification?: Identification | undefined;
+
+  /**
+   * @generated from field: repeated spotarr.v1.Candidate candidates = 6;
+   */
+  candidates: Candidate[];
+
+  /**
+   * @generated from field: repeated spotarr.v1.Addition additions = 7;
+   */
+  additions: Addition[];
+
+  /**
+   * What the history shows. Derived, never stored.
+   *
+   * @generated from field: spotarr.v1.Summary summary = 8;
+   */
+  summary: Summary;
+};
+
+/**
+ * Describes the message spotarr.v1.Share.
+ * Use `create(ShareSchema)` to create a new message.
+ */
+export const ShareSchema: GenMessage<Share> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 11);
+
+/**
+ * @generated from message spotarr.v1.ShareInput
+ */
+export type ShareInput = Message<"spotarr.v1.ShareInput"> & {
+  /**
+   * @generated from field: optional string url = 1;
+   */
+  url?: string | undefined;
+
+  /**
+   * @generated from field: optional string text = 2;
+   */
+  text?: string | undefined;
+
+  /**
+   * The image itself is never sent back.
+   *
+   * @generated from field: bool has_image = 3;
+   */
+  hasImage: boolean;
+};
+
+/**
+ * Describes the message spotarr.v1.ShareInput.
+ * Use `create(ShareInputSchema)` to create a new message.
+ */
+export const ShareInputSchema: GenMessage<ShareInput> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 12);
+
+/**
+ * @generated from message spotarr.v1.Identification
+ */
+export type Identification = Message<"spotarr.v1.Identification"> & {
+  /**
+   * @generated from field: spotarr.v1.IdentificationStatus status = 1;
+   */
+  status: IdentificationStatus;
+
+  /**
+   * @generated from field: spotarr.v1.Method method = 2;
+   */
+  method: Method;
+
+  /**
+   * @generated from field: optional int32 duration_ms = 3;
+   */
+  durationMs?: number | undefined;
+
+  /**
+   * Which extractors succeeded, e.g. "web", "video".
+   *
+   * @generated from field: repeated string extractors = 4;
+   */
+  extractors: string[];
+
+  /**
+   * @generated from field: spotarr.v1.Clues clues = 5;
+   */
+  clues?: Clues | undefined;
+
+  /**
+   * @generated from field: optional string reasoning = 6;
+   */
+  reasoning?: string | undefined;
+
+  /**
+   * Set when status is FAILED.
+   *
+   * @generated from field: optional string error = 7;
+   */
+  error?: string | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.Identification.
+ * Use `create(IdentificationSchema)` to create a new message.
+ */
+export const IdentificationSchema: GenMessage<Identification> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 13);
+
+/**
+ * @generated from message spotarr.v1.Clues
+ */
+export type Clues = Message<"spotarr.v1.Clues"> & {
+  /**
+   * @generated from field: optional string caption = 1;
+   */
+  caption?: string | undefined;
+
+  /**
+   * @generated from field: optional string author = 2;
+   */
+  author?: string | undefined;
+
+  /**
+   * @generated from field: optional string subtitles = 3;
+   */
+  subtitles?: string | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.Clues.
+ * Use `create(CluesSchema)` to create a new message.
+ */
+export const CluesSchema: GenMessage<Clues> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 14);
+
+/**
+ * @generated from message spotarr.v1.Candidate
+ */
+export type Candidate = Message<"spotarr.v1.Candidate"> & {
+  /**
+   * @generated from field: int32 tmdb_id = 1;
+   */
+  tmdbId: number;
+
+  /**
+   * @generated from field: spotarr.v1.MediaType type = 2;
+   */
+  type: MediaType;
+
+  /**
+   * @generated from field: string title = 3;
+   */
+  title: string;
+
+  /**
+   * @generated from field: optional string original_title = 4;
+   */
+  originalTitle?: string | undefined;
+
+  /**
+   * @generated from field: optional int32 year = 5;
+   */
+  year?: number | undefined;
+
+  /**
+   * @generated from field: optional string poster_url = 6;
+   */
+  posterUrl?: string | undefined;
+
+  /**
+   * 0 to 1. Absent for a direct ID, which is certain.
+   *
+   * @generated from field: optional float confidence = 7;
+   */
+  confidence?: number | undefined;
+
+  /**
+   * @generated from field: spotarr.v1.LibraryState library_state = 8;
+   */
+  libraryState: LibraryState;
+};
+
+/**
+ * Describes the message spotarr.v1.Candidate.
+ * Use `create(CandidateSchema)` to create a new message.
+ */
+export const CandidateSchema: GenMessage<Candidate> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 15);
+
+/**
+ * @generated from message spotarr.v1.Addition
+ */
+export type Addition = Message<"spotarr.v1.Addition"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 2;
+   */
+  createdAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: int32 tmdb_id = 3;
+   */
+  tmdbId: number;
+
+  /**
+   * @generated from field: spotarr.v1.MediaType type = 4;
+   */
+  type: MediaType;
+
+  /**
+   * @generated from field: spotarr.v1.Target target = 5;
+   */
+  target: Target;
+
+  /**
+   * @generated from field: spotarr.v1.AdditionStatus status = 6;
+   */
+  status: AdditionStatus;
+
+  /**
+   * @generated from field: optional string error = 7;
+   */
+  error?: string | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.Addition.
+ * Use `create(AdditionSchema)` to create a new message.
+ */
+export const AdditionSchema: GenMessage<Addition> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 16);
+
+/**
+ * @generated from message spotarr.v1.CreateShareRequest
+ */
+export type CreateShareRequest = Message<"spotarr.v1.CreateShareRequest"> & {
+  /**
+   * @generated from field: optional string url = 1;
+   */
+  url?: string | undefined;
+
+  /**
+   * @generated from field: optional string text = 2;
+   */
+  text?: string | undefined;
+
+  /**
+   * 4 MB at most.
+   *
+   * @generated from field: optional bytes image = 3;
+   */
+  image?: Uint8Array | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.CreateShareRequest.
+ * Use `create(CreateShareRequestSchema)` to create a new message.
+ */
+export const CreateShareRequestSchema: GenMessage<CreateShareRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 17);
+
+/**
+ * @generated from message spotarr.v1.CreateShareResponse
+ */
+export type CreateShareResponse = Message<"spotarr.v1.CreateShareResponse"> & {
+  /**
+   * @generated from field: spotarr.v1.Share share = 1;
+   */
+  share?: Share | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.CreateShareResponse.
+ * Use `create(CreateShareResponseSchema)` to create a new message.
+ */
+export const CreateShareResponseSchema: GenMessage<CreateShareResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 18);
+
+/**
+ * @generated from message spotarr.v1.GetShareRequest
+ */
+export type GetShareRequest = Message<"spotarr.v1.GetShareRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message spotarr.v1.GetShareRequest.
+ * Use `create(GetShareRequestSchema)` to create a new message.
+ */
+export const GetShareRequestSchema: GenMessage<GetShareRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 19);
+
+/**
+ * @generated from message spotarr.v1.GetShareResponse
+ */
+export type GetShareResponse = Message<"spotarr.v1.GetShareResponse"> & {
+  /**
+   * @generated from field: spotarr.v1.Share share = 1;
+   */
+  share?: Share | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.GetShareResponse.
+ * Use `create(GetShareResponseSchema)` to create a new message.
+ */
+export const GetShareResponseSchema: GenMessage<GetShareResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 20);
+
+/**
+ * @generated from message spotarr.v1.ListSharesRequest
+ */
+export type ListSharesRequest = Message<"spotarr.v1.ListSharesRequest"> & {
+  /**
+   * 50 when absent, 100 at most.
+   *
+   * @generated from field: optional int32 page_size = 1;
+   */
+  pageSize?: number | undefined;
+
+  /**
+   * next_cursor of the previous page.
+   *
+   * @generated from field: optional string cursor = 2;
+   */
+  cursor?: string | undefined;
+
+  /**
+   * Only these summaries; all when empty.
+   *
+   * @generated from field: repeated spotarr.v1.Summary summaries = 3;
+   */
+  summaries: Summary[];
+
+  /**
+   * Matches the source, the URL, the text and the candidates' titles.
+   *
+   * @generated from field: optional string query = 4;
+   */
+  query?: string | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.ListSharesRequest.
+ * Use `create(ListSharesRequestSchema)` to create a new message.
+ */
+export const ListSharesRequestSchema: GenMessage<ListSharesRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 21);
+
+/**
+ * @generated from message spotarr.v1.ListSharesResponse
+ */
+export type ListSharesResponse = Message<"spotarr.v1.ListSharesResponse"> & {
+  /**
+   * @generated from field: repeated spotarr.v1.Share shares = 1;
+   */
+  shares: Share[];
+
+  /**
+   * Absent on the last page.
+   *
+   * @generated from field: optional string next_cursor = 2;
+   */
+  nextCursor?: string | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.ListSharesResponse.
+ * Use `create(ListSharesResponseSchema)` to create a new message.
+ */
+export const ListSharesResponseSchema: GenMessage<ListSharesResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 22);
+
+/**
+ * @generated from message spotarr.v1.RetryIdentificationRequest
+ */
+export type RetryIdentificationRequest = Message<"spotarr.v1.RetryIdentificationRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message spotarr.v1.RetryIdentificationRequest.
+ * Use `create(RetryIdentificationRequestSchema)` to create a new message.
+ */
+export const RetryIdentificationRequestSchema: GenMessage<RetryIdentificationRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 23);
+
+/**
+ * @generated from message spotarr.v1.RetryIdentificationResponse
+ */
+export type RetryIdentificationResponse = Message<"spotarr.v1.RetryIdentificationResponse"> & {
+  /**
+   * @generated from field: spotarr.v1.Share share = 1;
+   */
+  share?: Share | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.RetryIdentificationResponse.
+ * Use `create(RetryIdentificationResponseSchema)` to create a new message.
+ */
+export const RetryIdentificationResponseSchema: GenMessage<RetryIdentificationResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 24);
+
+/**
+ * @generated from enum spotarr.v1.IdentificationStatus
+ */
+export enum IdentificationStatus {
+  /**
+   * @generated from enum value: IDENTIFICATION_STATUS_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: IDENTIFICATION_STATUS_QUEUED = 1;
+   */
+  QUEUED = 1,
+
+  /**
+   * @generated from enum value: IDENTIFICATION_STATUS_PROCESSING = 2;
+   */
+  PROCESSING = 2,
+
+  /**
+   * @generated from enum value: IDENTIFICATION_STATUS_READY = 3;
+   */
+  READY = 3,
+
+  /**
+   * @generated from enum value: IDENTIFICATION_STATUS_NO_MATCH = 4;
+   */
+  NO_MATCH = 4,
+
+  /**
+   * @generated from enum value: IDENTIFICATION_STATUS_FAILED = 5;
+   */
+  FAILED = 5,
+}
+
+/**
+ * Describes the enum spotarr.v1.IdentificationStatus.
+ */
+export const IdentificationStatusSchema: GenEnum<IdentificationStatus> = /*@__PURE__*/
+  enumDesc(file_spotarr_v1_spotarr, 0);
+
+/**
+ * @generated from enum spotarr.v1.Method
+ */
+export enum Method {
+  /**
+   * @generated from enum value: METHOD_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * An IMDb or TMDB ID was found in the clues; no LLM involved.
+   *
+   * @generated from enum value: METHOD_DIRECT_ID = 1;
+   */
+  DIRECT_ID = 1,
+
+  /**
+   * @generated from enum value: METHOD_LLM = 2;
+   */
+  LLM = 2,
+}
+
+/**
+ * Describes the enum spotarr.v1.Method.
+ */
+export const MethodSchema: GenEnum<Method> = /*@__PURE__*/
+  enumDesc(file_spotarr_v1_spotarr, 1);
+
+/**
+ * @generated from enum spotarr.v1.MediaType
+ */
+export enum MediaType {
+  /**
+   * @generated from enum value: MEDIA_TYPE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: MEDIA_TYPE_MOVIE = 1;
+   */
+  MOVIE = 1,
+
+  /**
+   * @generated from enum value: MEDIA_TYPE_TV = 2;
+   */
+  TV = 2,
+}
+
+/**
+ * Describes the enum spotarr.v1.MediaType.
+ */
+export const MediaTypeSchema: GenEnum<MediaType> = /*@__PURE__*/
+  enumDesc(file_spotarr_v1_spotarr, 2);
+
+/**
+ * @generated from enum spotarr.v1.LibraryState
+ */
+export enum LibraryState {
+  /**
+   * @generated from enum value: LIBRARY_STATE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: LIBRARY_STATE_ABSENT = 1;
+   */
+  ABSENT = 1,
+
+  /**
+   * @generated from enum value: LIBRARY_STATE_REQUESTED = 2;
+   */
+  REQUESTED = 2,
+
+  /**
+   * Some seasons only.
+   *
+   * @generated from enum value: LIBRARY_STATE_PARTIAL = 3;
+   */
+  PARTIAL = 3,
+
+  /**
+   * @generated from enum value: LIBRARY_STATE_AVAILABLE = 4;
+   */
+  AVAILABLE = 4,
+}
+
+/**
+ * Describes the enum spotarr.v1.LibraryState.
+ */
+export const LibraryStateSchema: GenEnum<LibraryState> = /*@__PURE__*/
+  enumDesc(file_spotarr_v1_spotarr, 3);
+
+/**
+ * @generated from enum spotarr.v1.Target
+ */
+export enum Target {
+  /**
+   * @generated from enum value: TARGET_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * Radarr or Sonarr directly. Not in V1.
+   *
+   * @generated from enum value: TARGET_ARR = 1;
+   */
+  ARR = 1,
+
+  /**
+   * @generated from enum value: TARGET_SEERR = 2;
+   */
+  SEERR = 2,
+}
+
+/**
+ * Describes the enum spotarr.v1.Target.
+ */
+export const TargetSchema: GenEnum<Target> = /*@__PURE__*/
+  enumDesc(file_spotarr_v1_spotarr, 4);
+
+/**
+ * @generated from enum spotarr.v1.AdditionStatus
+ */
+export enum AdditionStatus {
+  /**
+   * @generated from enum value: ADDITION_STATUS_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: ADDITION_STATUS_ADDED = 1;
+   */
+  ADDED = 1,
+
+  /**
+   * @generated from enum value: ADDITION_STATUS_REQUESTED = 2;
+   */
+  REQUESTED = 2,
+
+  /**
+   * @generated from enum value: ADDITION_STATUS_ALREADY_PRESENT = 3;
+   */
+  ALREADY_PRESENT = 3,
+
+  /**
+   * @generated from enum value: ADDITION_STATUS_FAILED = 4;
+   */
+  FAILED = 4,
+}
+
+/**
+ * Describes the enum spotarr.v1.AdditionStatus.
+ */
+export const AdditionStatusSchema: GenEnum<AdditionStatus> = /*@__PURE__*/
+  enumDesc(file_spotarr_v1_spotarr, 5);
+
+/**
+ * @generated from enum spotarr.v1.Summary
+ */
+export enum Summary {
+  /**
+   * @generated from enum value: SUMMARY_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: SUMMARY_IN_PROGRESS = 1;
+   */
+  IN_PROGRESS = 1,
+
+  /**
+   * @generated from enum value: SUMMARY_TO_CHOOSE = 2;
+   */
+  TO_CHOOSE = 2,
+
+  /**
+   * @generated from enum value: SUMMARY_ADDED = 3;
+   */
+  ADDED = 3,
+
+  /**
+   * @generated from enum value: SUMMARY_REQUESTED = 4;
+   */
+  REQUESTED = 4,
+
+  /**
+   * @generated from enum value: SUMMARY_ALREADY_PRESENT = 5;
+   */
+  ALREADY_PRESENT = 5,
+
+  /**
+   * @generated from enum value: SUMMARY_NO_MATCH = 6;
+   */
+  NO_MATCH = 6,
+
+  /**
+   * @generated from enum value: SUMMARY_FAILED = 7;
+   */
+  FAILED = 7,
+}
+
+/**
+ * Describes the enum spotarr.v1.Summary.
+ */
+export const SummarySchema: GenEnum<Summary> = /*@__PURE__*/
+  enumDesc(file_spotarr_v1_spotarr, 6);
+
+/**
  * @generated from service spotarr.v1.SpotarrService
  */
 export const SpotarrService: GenService<{
@@ -331,6 +1025,44 @@ export const SpotarrService: GenService<{
     methodKind: "unary";
     input: typeof UpdateSettingsRequestSchema;
     output: typeof UpdateSettingsResponseSchema;
+  },
+  /**
+   * Records a Share and queues its Identification. Answers at once, status QUEUED.
+   *
+   * @generated from rpc spotarr.v1.SpotarrService.CreateShare
+   */
+  createShare: {
+    methodKind: "unary";
+    input: typeof CreateShareRequestSchema;
+    output: typeof CreateShareResponseSchema;
+  },
+  /**
+   * @generated from rpc spotarr.v1.SpotarrService.GetShare
+   */
+  getShare: {
+    methodKind: "unary";
+    input: typeof GetShareRequestSchema;
+    output: typeof GetShareResponseSchema;
+  },
+  /**
+   * Newest first, paginated, filterable by Summary and by text.
+   *
+   * @generated from rpc spotarr.v1.SpotarrService.ListShares
+   */
+  listShares: {
+    methodKind: "unary";
+    input: typeof ListSharesRequestSchema;
+    output: typeof ListSharesResponseSchema;
+  },
+  /**
+   * Resets a finished Identification and queues it again. Additions are kept.
+   *
+   * @generated from rpc spotarr.v1.SpotarrService.RetryIdentification
+   */
+  retryIdentification: {
+    methodKind: "unary";
+    input: typeof RetryIdentificationRequestSchema;
+    output: typeof RetryIdentificationResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_spotarr_v1_spotarr, 0);

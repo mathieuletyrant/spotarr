@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package spotarr.v1;
 
+import "google/protobuf/timestamp.proto";
+
 service SpotarrService {
   // State of each dependency Spotarr talks to.
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
@@ -9,6 +11,14 @@ service SpotarrService {
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   // Changes only the fields that are present; returns the settings as saved.
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
+
+  // Records a Share and queues its Identification. Answers at once, status QUEUED.
+  rpc CreateShare(CreateShareRequest) returns (CreateShareResponse);
+  rpc GetShare(GetShareRequest) returns (GetShareResponse);
+  // Newest first, paginated, filterable by Summary and by text.
+  rpc ListShares(ListSharesRequest) returns (ListSharesResponse);
+  // Resets a finished Identification and queues it again. Additions are kept.
+  rpc RetryIdentification(RetryIdentificationRequest) returns (RetryIdentificationResponse);
 }
 
 message GetStatusRequest {}
@@ -79,4 +89,166 @@ message UpdateSettingsRequest {
 
 message UpdateSettingsResponse {
   Settings settings = 1;
+}
+
+// A piece of content sent to Spotarr and everything that follows from it.
+message Share {
+  string id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  ShareInput input = 3;
+  // Domain of the URL ("instagram.com"), or "image" / "text".
+  string source = 4;
+  Identification identification = 5;
+  repeated Candidate candidates = 6;
+  repeated Addition additions = 7;
+  // What the history shows. Derived, never stored.
+  Summary summary = 8;
+}
+
+message ShareInput {
+  optional string url = 1;
+  optional string text = 2;
+  // The image itself is never sent back.
+  bool has_image = 3;
+}
+
+message Identification {
+  IdentificationStatus status = 1;
+  Method method = 2;
+  optional int32 duration_ms = 3;
+  // Which extractors succeeded, e.g. "web", "video".
+  repeated string extractors = 4;
+  Clues clues = 5;
+  optional string reasoning = 6;
+  // Set when status is FAILED.
+  optional string error = 7;
+}
+
+message Clues {
+  optional string caption = 1;
+  optional string author = 2;
+  optional string subtitles = 3;
+}
+
+message Candidate {
+  int32 tmdb_id = 1;
+  MediaType type = 2;
+  string title = 3;
+  optional string original_title = 4;
+  optional int32 year = 5;
+  optional string poster_url = 6;
+  // 0 to 1. Absent for a direct ID, which is certain.
+  optional float confidence = 7;
+  LibraryState library_state = 8;
+}
+
+message Addition {
+  string id = 1;
+  google.protobuf.Timestamp created_at = 2;
+  int32 tmdb_id = 3;
+  MediaType type = 4;
+  Target target = 5;
+  AdditionStatus status = 6;
+  optional string error = 7;
+}
+
+enum IdentificationStatus {
+  IDENTIFICATION_STATUS_UNSPECIFIED = 0;
+  IDENTIFICATION_STATUS_QUEUED = 1;
+  IDENTIFICATION_STATUS_PROCESSING = 2;
+  IDENTIFICATION_STATUS_READY = 3;
+  IDENTIFICATION_STATUS_NO_MATCH = 4;
+  IDENTIFICATION_STATUS_FAILED = 5;
+}
+
+enum Method {
+  METHOD_UNSPECIFIED = 0;
+  // An IMDb or TMDB ID was found in the clues; no LLM involved.
+  METHOD_DIRECT_ID = 1;
+  METHOD_LLM = 2;
+}
+
+enum MediaType {
+  MEDIA_TYPE_UNSPECIFIED = 0;
+  MEDIA_TYPE_MOVIE = 1;
+  MEDIA_TYPE_TV = 2;
+}
+
+enum LibraryState {
+  LIBRARY_STATE_UNSPECIFIED = 0;
+  LIBRARY_STATE_ABSENT = 1;
+  LIBRARY_STATE_REQUESTED = 2;
+  // Some seasons only.
+  LIBRARY_STATE_PARTIAL = 3;
+  LIBRARY_STATE_AVAILABLE = 4;
+}
+
+enum Target {
+  TARGET_UNSPECIFIED = 0;
+  // Radarr or Sonarr directly. Not in V1.
+  TARGET_ARR = 1;
+  TARGET_SEERR = 2;
+}
+
+enum AdditionStatus {
+  ADDITION_STATUS_UNSPECIFIED = 0;
+  ADDITION_STATUS_ADDED = 1;
+  ADDITION_STATUS_REQUESTED = 2;
+  ADDITION_STATUS_ALREADY_PRESENT = 3;
+  ADDITION_STATUS_FAILED = 4;
+}
+
+enum Summary {
+  SUMMARY_UNSPECIFIED = 0;
+  SUMMARY_IN_PROGRESS = 1;
+  SUMMARY_TO_CHOOSE = 2;
+  SUMMARY_ADDED = 3;
+  SUMMARY_REQUESTED = 4;
+  SUMMARY_ALREADY_PRESENT = 5;
+  SUMMARY_NO_MATCH = 6;
+  SUMMARY_FAILED = 7;
+}
+
+message CreateShareRequest {
+  optional string url = 1;
+  optional string text = 2;
+  // 4 MB at most.
+  optional bytes image = 3;
+}
+
+message CreateShareResponse {
+  Share share = 1;
+}
+
+message GetShareRequest {
+  string id = 1;
+}
+
+message GetShareResponse {
+  Share share = 1;
+}
+
+message ListSharesRequest {
+  // 50 when absent, 100 at most.
+  optional int32 page_size = 1;
+  // next_cursor of the previous page.
+  optional string cursor = 2;
+  // Only these summaries; all when empty.
+  repeated Summary summaries = 3;
+  // Matches the source, the URL, the text and the candidates' titles.
+  optional string query = 4;
+}
+
+message ListSharesResponse {
+  repeated Share shares = 1;
+  // Absent on the last page.
+  optional string next_cursor = 2;
+}
+
+message RetryIdentificationRequest {
+  string id = 1;
+}
+
+message RetryIdentificationResponse {
+  Share share = 1;
 }
