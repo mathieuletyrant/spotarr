@@ -1,6 +1,6 @@
 # 🎬 Spotarr
 
-Share a reel, a link, a screenshot or a text from your iPhone; Spotarr identifies the movie or TV show in the background and lets you add it to your library through Seerr. Personal project, one user, runs on an Umbrel.
+Share a reel, a link, a screenshot or a text from your iPhone; Spotarr identifies the movie or TV show in the background and lets you add it to your library through Seerr. Personal project, one user, self-hosted with Docker. Also listed in [Mathieu's Umbrel community store](https://github.com/mathieuletyrant/umbrel-community-app-store).
 
 🚧 Status: milestone 0 (repo foundation). Nothing to run yet beyond the toolchain.
 
@@ -12,6 +12,23 @@ pnpm check
 ```
 
 `pnpm check` is the single gate: lint, contract lint, code generation, breaking-change detection, type check, tests. Needs [pnpm](https://pnpm.io) (the version in `package.json` is picked up automatically) and [Bun](https://bun.sh) (`.bun-version`).
+
+## 🐳 Run it with Docker Compose
+
+```yaml
+services:
+  spotarr:
+    image: ghcr.io/mathieuletyrant/spotarr:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+```
+
+`docker compose up -d`, then open http://localhost:3000. The API token is printed in the container logs at first start (`docker compose logs spotarr`); the UI asks for it once. Everything else (LLM, TMDB, Seerr, webhooks) is configured in Settings. Only two environment variables exist: `PORT` (default `3000`) and `DATA_DIR` (default `/data`).
+
+⏳ The image is published from milestone 5 on. Until then, run from source: `pnpm --filter @spotarr/server dev`.
 
 ## 🗂️ Repository
 
