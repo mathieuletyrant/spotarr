@@ -1,14 +1,20 @@
 import { timingSafeEqual } from "node:crypto";
-import type { Handler, MiddlewareHandler } from "hono";
-import { getCookie, setCookie } from "hono/cookie";
+import type { MiddlewareHandler } from "hono";
+import { getCookie } from "hono/cookie";
+import { serialize } from "hono/utils/cookie";
 
 export const TOKEN_COOKIE = "spotarr_token";
+
+// The only RPC callable without the token: the web UI's sign-in.
+export const LOGIN_PATH = "/api/spotarr.v1.SpotarrService/Login";
 
 // Accepts the API token as `Authorization: Bearer <token>` (iPhone, scripts)
 // or as an HttpOnly cookie (web UI). Answers like Connect does, so every
 // client sees one error shape: {"code":"unauthenticated","message":"…"}.
 export function requireToken(getToken: () => string): MiddlewareHandler {
   return async (c, next) => {
+    if (c.req.path === LOGIN_PATH) return next();
+
     const header = c.req.header("Authorization");
     const given = header?.startsWith("Bearer ") ? header.slice(7) : getCookie(c, TOKEN_COOKIE);
     if (!given || !sameSecret(given, getToken())) {
@@ -18,28 +24,21 @@ export function requireToken(getToken: () => string): MiddlewareHandler {
   };
 }
 
-// The web UI's login: checks the token once and keeps it in an HttpOnly cookie,
-// which the browser sends with every call and page scripts cannot read.
-export function login(getToken: () => string): Handler {
-  return async (c) => {
-    const { token } = await c.req.json<{ token?: string }>();
-    if (!token || !sameSecret(token, getToken())) {
-      return c.json({ code: "unauthenticated", message: "wrong API token" }, 401);
-    }
-    setCookie(c, TOKEN_COOKIE, token, {
-      httpOnly: true,
-      sameSite: "Strict",
-      secure: new URL(c.req.url).protocol === "https:",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 400, // the longest browsers allow
-    });
-    return c.body(null, 204);
-  };
-}
-
 // Constant-time comparison, so response timing reveals nothing about the token.
-function sameSecret(a: string, b: string): boolean {
+export function sameSecret(a: string, b: string): boolean {
   const x = Buffer.from(a);
   const y = Buffer.from(b);
   return x.length === y.length && timingSafeEqual(x, y);
+}
+
+// The cookie the browser keeps after Login, sent with every call afterwards;
+// page scripts cannot read it (HttpOnly).
+export function tokenCookie(token: string, https: boolean): string {
+  return serialize(TOKEN_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "Strict",
+    secure: https,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 400, // the longest browsers allow
+  });
 }

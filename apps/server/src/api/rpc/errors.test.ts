@@ -18,6 +18,7 @@ async function connectErrorFor(error: unknown): Promise<ConnectError> {
 }
 
 test.each([
+  ["unauthenticated", Code.Unauthenticated],
   ["invalid_input", Code.InvalidArgument],
   ["not_found", Code.NotFound],
   ["busy", Code.FailedPrecondition],

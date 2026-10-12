@@ -1,7 +1,8 @@
 import { SpotarrService } from "@spotarr/contract";
 import { Hono } from "hono";
-import { login, requireToken } from "./api/auth";
+import { requireToken } from "./api/auth";
 import { connectHandler } from "./api/connect";
+import { authRpcs } from "./api/rpc/auth";
 import { errorsToConnect } from "./api/rpc/errors";
 import { settingsRpcs } from "./api/rpc/settings";
 import { shareRpcs } from "./api/rpc/shares";
@@ -23,12 +24,13 @@ export type AppDeps = {
   webDir?: string;
 };
 
-// Routes: GET /health (open), POST /auth/login (the web UI's login),
-// POST /api/* (Connect RPCs, token required), and the web UI on every other GET.
+// Routes: GET /health (open), POST /api/* (Connect RPCs, token required but
+// for Login), and the web UI on every other GET.
 // Each file in api/rpc/ implements the RPCs of one domain.
 export function createApp({ apiToken, settings, shares, queue, seerr, webDir }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
     router.service(SpotarrService, {
+      ...authRpcs(apiToken),
       ...statusRpcs(),
       ...settingsRpcs(settings),
       ...shareRpcs(shares, queue, seerr),
@@ -44,7 +46,6 @@ export function createApp({ apiToken, settings, shares, queue, seerr, webDir }: 
   });
 
   app.get("/health", (c) => c.json({ ok: true }));
-  app.post("/auth/login", login(apiToken));
   app.use("/api/*", requireToken(apiToken));
   app.post("/api/*", (c) => rpc(c, "/api"));
   if (webDir) app.get("*", serveWebApp(webDir));

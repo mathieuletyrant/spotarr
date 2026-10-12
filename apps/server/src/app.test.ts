@@ -86,20 +86,21 @@ test("an invalid setting is a Connect invalid_argument naming the field", async 
   expect(body.message).toContain("extraction.concurrency");
 });
 
-test("login checks the token and sets an HttpOnly cookie", async () => {
-  const refused = await app.request("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ token: "nope" }),
-  });
+test("Login checks the token without needing it, then sets an HttpOnly cookie", async () => {
+  const refused = await call("Login", { token: "nope" });
   expect(refused.status).toBe(401);
+  expect((await refused.json()).code).toBe("unauthenticated");
 
-  const accepted = await app.request("/auth/login", {
-    method: "POST",
-    body: JSON.stringify({ token: "secret-token" }),
-  });
-  expect(accepted.status).toBe(204);
+  const accepted = await call("Login", { token: "secret-token" });
+  expect(accepted.status).toBe(200);
   const cookie = accepted.headers.get("Set-Cookie") ?? "";
   expect(cookie).toContain("spotarr_token=secret-token");
   expect(cookie).toContain("HttpOnly");
   expect(cookie).toContain("SameSite=Strict");
+  expect(cookie).not.toContain("Secure");
+});
+
+test("behind https the cookie is Secure", async () => {
+  const accepted = await call("Login", { token: "secret-token" }, { "X-Forwarded-Proto": "https" });
+  expect(accepted.headers.get("Set-Cookie")).toContain("Secure");
 });

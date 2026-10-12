@@ -12,9 +12,6 @@ export default defineConfig({
   ],
   // In dev the service runs on its own port: Vite forwards API calls to it.
   server: {
-    proxy: {
-      "/api": "http://localhost:3000",
-      "/auth": "http://localhost:3000",
-    },
+    proxy: { "/api": "http://localhost:3000" },
   },
 });

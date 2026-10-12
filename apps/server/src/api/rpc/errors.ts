@@ -5,6 +5,7 @@ import { type ErrorCode, SpotarrError } from "../../errors";
 // Each error code becomes the Connect code the UI and the iPhone receive,
 // as JSON: {"code": "unavailable", "message": "TMDB answered 401"}.
 const CONNECT_CODES: Record<ErrorCode, Code> = {
+  unauthenticated: Code.Unauthenticated,
   invalid_input: Code.InvalidArgument,
   not_found: Code.NotFound,
   busy: Code.FailedPrecondition,

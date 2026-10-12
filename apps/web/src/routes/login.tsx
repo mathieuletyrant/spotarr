@@ -1,3 +1,5 @@
+import { useMutation } from "@connectrpc/connect-query";
+import { SpotarrService } from "@spotarr/contract";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { type FormEvent, useState } from "react";
 
@@ -8,17 +10,13 @@ export const Route = createFileRoute("/login")({ component: Login });
 function Login() {
   const navigate = useNavigate();
   const [token, setToken] = useState("");
-  const [error, setError] = useState<string>();
+  const login = useMutation(SpotarrService.method.login, {
+    onSuccess: () => navigate({ to: "/" }),
+  });
 
-  async function submit(event: FormEvent) {
+  function submit(event: FormEvent) {
     event.preventDefault();
-    const res = await fetch("/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token: token.trim() }),
-    });
-    if (res.ok) await navigate({ to: "/" });
-    else setError("Wrong token. Spotarr prints it in its logs at first start.");
+    login.mutate({ token });
   }
 
   return (
@@ -33,8 +31,16 @@ function Login() {
           className="rounded-md border border-border bg-surface px-3 py-2"
         />
       </label>
-      {error && <p className="text-sm text-status-error">{error}</p>}
-      <button type="submit" className="rounded-md bg-accent px-3 py-2 font-medium text-accent-text">
+      {login.isError && (
+        <p className="text-sm text-status-error">
+          Wrong token. Spotarr prints it in its logs at first start.
+        </p>
+      )}
+      <button
+        type="submit"
+        disabled={login.isPending}
+        className="rounded-md bg-accent px-3 py-2 font-medium text-accent-text disabled:opacity-50"
+      >
         Sign in
       </button>
     </form>
