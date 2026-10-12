@@ -3,14 +3,16 @@
 // `shortcuts` and `plutil` commands). Run: bun shortcuts/build.ts
 //
 // A Shortcut is a property list of actions. It holds no secret: once imported,
-// paste the API token into its second action (iOS "import questions" left the
+// paste the API token into its second action, and the Cloudflare Access
+// service token into the third and fourth when going through Cloudflare (iOS "import questions" left the
 // Set Up button doing nothing on the iPhone, so there are none).
 import { $ } from "bun";
 
 const ADDRESS = "address";
 const TOKEN = "token";
+const CF_ID = "cf-id";
+const CF_SECRET = "cf-secret";
 const SEND = "send";
-const ERROR = "error";
 
 // A text made of plain parts and the outputs of earlier actions.
 // Shortcuts marks each output with U+FFFC and says, by position, which one it is.
@@ -62,10 +64,14 @@ function action(identifier: string, parameters: object) {
 }
 
 const actions = [
-  // 0 and 1: Spotarr's address and API token, edited once after import.
+  // 0 to 3: edited once after import. The Cloudflare Access service token
+  // (client id and secret) is only needed when the address goes through
+  // Cloudflare; empty, the headers are sent empty and Spotarr ignores them.
   action("gettext", { UUID: ADDRESS, WFTextActionText: text("http://umbrel.local:3838") }),
   action("gettext", { UUID: TOKEN, WFTextActionText: text("PASTE-YOUR-API-TOKEN-HERE") }),
-  // 2: CreateShare, as plain JSON over HTTP.
+  action("gettext", { UUID: CF_ID, WFTextActionText: text("") }),
+  action("gettext", { UUID: CF_SECRET, WFTextActionText: text("") }),
+  // 4: CreateShare, as plain JSON over HTTP.
   action("downloadurl", {
     UUID: SEND,
     WFURL: text({ output: ADDRESS, name: "Text" }, "/api/spotarr.v1.SpotarrService/CreateShare"),
@@ -73,34 +79,32 @@ const actions = [
     ShowHeaders: true,
     WFHTTPHeaders: dictionary([
       ["Authorization", text("Bearer ", { output: TOKEN, name: "Text" })],
+      ["CF-Access-Client-Id", text({ output: CF_ID, name: "Text" })],
+      ["CF-Access-Client-Secret", text({ output: CF_SECRET, name: "Text" })],
     ]),
     WFHTTPBodyType: "JSON",
     WFJSONValues: dictionary([["url", text("input")]]),
   }),
-  // 3: Spotarr's errors are {"code": …, "message": …}; a Share has no "message".
-  action("getvalueforkey", {
-    UUID: ERROR,
-    WFInput: output(SEND, "Contents of URL"),
-    WFDictionaryKey: "message",
-  }),
-  // 4 to 8: if there is a message, show it; otherwise say it was sent.
+  // 5 to 9: a created Share comes back as {"share": …}. Anything else is
+  // Spotarr's error ({"code", "message"}) or Cloudflare's page: show it.
   action("conditional", {
-    GroupingIdentifier: "ifError",
+    GroupingIdentifier: "ifSent",
     WFControlFlowMode: 0,
-    WFCondition: 100, // "has any value"
-    WFInput: { Type: "Variable", Variable: output(ERROR, "Dictionary Value") },
+    WFCondition: 99, // "contains"
+    WFConditionalActionString: text('"share"'),
+    WFInput: { Type: "Variable", Variable: output(SEND, "Contents of URL") },
   }),
-  action("notification", {
-    WFNotificationActionTitle: "Not sent to Spotarr",
-    WFNotificationActionBody: text({ output: ERROR, name: "Dictionary Value" }),
-  }),
-  action("conditional", { GroupingIdentifier: "ifError", WFControlFlowMode: 1 }),
   action("notification", {
     WFNotificationActionTitle: "Sent to Spotarr",
     WFNotificationActionBody: text("input"),
     WFNotificationActionSound: false,
   }),
-  action("conditional", { GroupingIdentifier: "ifError", WFControlFlowMode: 2 }),
+  action("conditional", { GroupingIdentifier: "ifSent", WFControlFlowMode: 1 }),
+  action("notification", {
+    WFNotificationActionTitle: "Not sent to Spotarr",
+    WFNotificationActionBody: text({ output: SEND, name: "Contents of URL" }),
+  }),
+  action("conditional", { GroupingIdentifier: "ifSent", WFControlFlowMode: 2 }),
 ];
 
 const shortcut = {
