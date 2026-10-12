@@ -80,6 +80,22 @@ message GetStatsResponse {
   repeated MonthStats months = 1;
   // Where the Shares come from, most Shares first.
   repeated SourceStats sources = 2;
+  // Additions that did not fail, by type.
+  int32 movies_added = 3;
+  int32 shows_added = 4;
+  // The last titles added, newest first.
+  repeated AddedTitle recently_added = 5;
+}
+
+message AddedTitle {
+  // The Share it was added from.
+  string share_id = 1;
+  MediaType type = 2;
+  string title = 3;
+  optional int32 year = 4;
+  optional string poster_url = 5;
+  // Made by auto add, without a click.
+  bool automatic = 6;
 }
 
 message MonthStats {

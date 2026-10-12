@@ -183,7 +183,18 @@ test("stats count Shares and Additions by month, and Shares by source", async ()
     .where("id", "=", c)
     .execute();
 
-  const { months, sources } = await shares.stats();
+  const { months, sources, moviesAdded, showsAdded, recentlyAdded } = await shares.stats();
+  expect([moviesAdded, showsAdded]).toEqual([1, 0]);
+  expect(recentlyAdded).toEqual([
+    {
+      shareId: a,
+      type: "MOVIE",
+      title: dune.title,
+      year: 2024,
+      posterUrl: undefined,
+      automatic: true,
+    },
+  ]);
   const thisMonth = new Date().toISOString().slice(0, 7);
   expect(months).toEqual([
     {

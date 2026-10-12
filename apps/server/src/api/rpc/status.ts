@@ -1,4 +1,4 @@
-import { DependencyState } from "@spotarr/contract";
+import { DependencyState, MediaType } from "@spotarr/contract";
 import pkg from "../../../package.json";
 import type { SettingsRepository } from "../../domain/settings/repository";
 import { checkDependencies } from "../../domain/settings/use-cases/check-dependencies";
@@ -21,6 +21,15 @@ export function statusRpcs(
       };
     },
 
-    getStats: () => shares.stats(),
+    getStats: async () => {
+      const stats = await shares.stats();
+      return {
+        ...stats,
+        recentlyAdded: stats.recentlyAdded.map((title) => ({
+          ...title,
+          type: MediaType[title.type],
+        })),
+      };
+    },
   };
 }

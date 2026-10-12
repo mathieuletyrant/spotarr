@@ -4,6 +4,7 @@ import type { Shares } from "../../db/gen/types";
 import { summaryOf } from "./summary";
 import {
   type Addition,
+  type Candidate,
   CandidateSchema,
   CluesSchema,
   type IdentificationResult,
@@ -23,7 +24,20 @@ type MonthStats = {
   automaticAdditions: number;
   llmCostUsd: number;
 };
-export type Stats = { months: MonthStats[]; sources: { source: string; shares: number }[] };
+type AddedTitle = Pick<Candidate, "type" | "title" | "year" | "posterUrl"> & {
+  shareId: string;
+  automatic: boolean;
+};
+export type Stats = {
+  months: MonthStats[];
+  sources: { source: string; shares: number }[];
+  moviesAdded: number;
+  showsAdded: number;
+  recentlyAdded: AddedTitle[];
+};
+
+// How many titles the stats page shows as posters.
+const RECENTLY_ADDED = 12;
 
 const NOW = sql<string>`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`;
 
@@ -232,6 +246,45 @@ export class ShareRepository {
       .orderBy("shares", "desc")
       .execute();
 
+    const byType = await this.db
+      .selectFrom("additions")
+      .select(["media_type", (eb) => eb.fn.countAll<number>().as("count")])
+      .where("status", "!=", "FAILED")
+      .groupBy("media_type")
+      .execute();
+    // The Addition only keeps the TMDB id: title and poster come from the
+    // Share's Candidate it was made from.
+    const recent = await this.db
+      .selectFrom("additions")
+      .innerJoin("shares", "shares.id", "additions.share_id")
+      .select([
+        "additions.share_id",
+        "additions.tmdb_id",
+        "additions.media_type",
+        "additions.automatic",
+        "shares.candidates",
+      ])
+      .where("additions.status", "!=", "FAILED")
+      .orderBy("additions.created_at", "desc")
+      .limit(RECENTLY_ADDED)
+      .execute();
+    const recentlyAdded: AddedTitle[] = [];
+    for (const row of recent) {
+      const candidates = CandidateSchema.array().parse(JSON.parse(row.candidates));
+      const candidate = candidates.find(
+        (c) => c.tmdbId === row.tmdb_id && c.type === row.media_type,
+      );
+      if (!candidate) continue;
+      recentlyAdded.push({
+        shareId: row.share_id,
+        type: candidate.type,
+        title: candidate.title,
+        year: candidate.year,
+        posterUrl: candidate.posterUrl,
+        automatic: row.automatic === 1,
+      });
+    }
+
     // A month may have Additions without Shares (a Share from the month before).
     const months = new Map<string, MonthStats>();
     for (const row of shareMonths) {
@@ -256,6 +309,9 @@ export class ShareRepository {
     return {
       months: [...months.values()].sort((a, b) => a.month.localeCompare(b.month)),
       sources,
+      moviesAdded: byType.find((row) => row.media_type === "MOVIE")?.count ?? 0,
+      showsAdded: byType.find((row) => row.media_type === "TV")?.count ?? 0,
+      recentlyAdded,
     };
   }
 
