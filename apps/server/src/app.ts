@@ -4,18 +4,27 @@ import { requireToken } from "./http/auth";
 import { connectHandler } from "./http/connect";
 import { validationErrors } from "./rpc/errors";
 import { settingsRpcs } from "./rpc/settings";
+import { shareRpcs } from "./rpc/shares";
 import { statusRpcs } from "./rpc/status";
 import type { SettingsRepository } from "./settings/repository";
+import type { ShareQueue } from "./shares/queue";
+import type { ShareRepository } from "./shares/repository";
 
-export type AppDeps = { apiToken: () => string; settings: SettingsRepository };
+export type AppDeps = {
+  apiToken: () => string;
+  settings: SettingsRepository;
+  shares: ShareRepository;
+  queue: ShareQueue;
+};
 
 // Routes: GET /health (open), POST /api/* (Connect RPCs, token required).
 // Each file in rpc/ implements the RPCs of one domain.
-export function createApp({ apiToken, settings }: AppDeps): Hono {
+export function createApp({ apiToken, settings, shares, queue }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [validationErrors] }, (router) =>
     router.service(SpotarrService, {
       ...statusRpcs(),
       ...settingsRpcs(settings),
+      ...shareRpcs(shares, queue),
     }),
   );
 

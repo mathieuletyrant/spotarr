@@ -1,11 +1,17 @@
 import { expect, test } from "bun:test";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
+import { identifyNothing } from "./identification/placeholder";
 import { SettingsRepository } from "./settings/repository";
+import { ShareQueue } from "./shares/queue";
+import { ShareRepository } from "./shares/repository";
 
-const settings = new SettingsRepository(await openDatabase(":memory:"));
+const db = await openDatabase(":memory:");
+const settings = new SettingsRepository(db);
 await settings.setApiToken("secret-token");
-const app = createApp({ apiToken: () => "secret-token", settings });
+const shares = new ShareRepository(db);
+const queue = new ShareQueue(shares, identifyNothing, async () => 2);
+const app = createApp({ apiToken: () => "secret-token", settings, shares, queue });
 const call = (method: string, body: unknown = {}, headers: Record<string, string> = {}) =>
   app.request(`/api/spotarr.v1.SpotarrService/${method}`, {
     method: "POST",
