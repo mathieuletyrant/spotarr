@@ -42,3 +42,8 @@ export function tokenCookie(token: string, https: boolean): string {
     maxAge: 60 * 60 * 24 * 400, // the longest browsers allow
   });
 }
+
+// The same cookie, already expired: the browser drops it (Logout).
+export function expiredTokenCookie(): string {
+  return serialize(TOKEN_COOKIE, "", { httpOnly: true, sameSite: "Strict", path: "/", maxAge: 0 });
+}

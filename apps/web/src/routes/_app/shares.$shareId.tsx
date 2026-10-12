@@ -1,6 +1,7 @@
 import { Summary } from "@spotarr/contract";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { Film, Sparkles } from "lucide-react";
 import { CandidateCard } from "../../components/share/candidate-card";
 import { Card } from "../../components/share/card";
 import { CluesCard } from "../../components/share/clues-card";
@@ -27,12 +28,14 @@ function SharePage() {
         <div className="flex flex-col gap-6">
           <CluesCard share={share} />
           {share.identification?.reasoning && (
-            <Card title="LLM reasoning">
-              <p className="leading-relaxed">{share.identification.reasoning}</p>
+            <Card icon={<Sparkles aria-hidden className="size-4" />} title="LLM reasoning">
+              <p className="rounded-lg bg-accent/10 p-4 leading-relaxed">
+                {share.identification.reasoning}
+              </p>
             </Card>
           )}
         </div>
-        <Card title="Candidates">
+        <Card icon={<Film aria-hidden className="size-4" />} title="Candidates">
           {share.summary === Summary.IN_PROGRESS ? (
             <p className="text-text-muted">
               Identifying… This takes 10 to 30 seconds; the page follows on its own.

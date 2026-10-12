@@ -8,15 +8,24 @@ export function AutoAddFields({ form }: { form: Form }) {
 
   return (
     <>
-      <label className="flex items-center gap-3 md:col-span-2">
-        <input
-          type="checkbox"
-          checked={enabled}
-          onChange={(e) => form.change("autoAdd.enabled", String(e.target.checked))}
-          className="size-5 accent-accent"
-        />
-        <span className="font-medium">Add automatically when the identification is confident</span>
-      </label>
+      <div className="flex items-center justify-between gap-4 rounded-lg border border-border p-4 md:col-span-2">
+        <span id="auto-add-label" className="font-medium">
+          Add automatically when the identification is confident
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={enabled}
+          aria-labelledby="auto-add-label"
+          onClick={() => form.change("autoAdd.enabled", String(!enabled))}
+          className="relative h-6 w-11 shrink-0 rounded-full bg-text/15 transition-colors focus-visible:outline-2 focus-visible:outline-accent aria-checked:bg-accent"
+        >
+          <span
+            aria-hidden
+            className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-bg shadow transition-transform ${enabled ? "translate-x-5" : ""}`}
+          />
+        </button>
+      </div>
 
       <fieldset disabled={!enabled} className="contents">
         <Field

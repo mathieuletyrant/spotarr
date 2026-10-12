@@ -29,8 +29,8 @@ export const SettingsSchema = z.object({
     .prefault({}),
   extraction: z
     .object({
-      // 8 images at most reach the LLM per Identification.
-      framesPerVideo: z.int().min(1).max(8).default(6),
+      // 15 images at most reach the LLM per Identification: each one costs tokens.
+      framesPerVideo: z.int().min(1).max(15).default(6),
       maxVideoMb: z.int().min(1).max(2000).default(200),
       concurrency: z.int().min(1).max(4).default(2),
     })

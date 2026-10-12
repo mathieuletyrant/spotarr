@@ -2,6 +2,7 @@ import type { Summary } from "@spotarr/contract";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useDeferredValue, useState } from "react";
+import { EmptyHistory } from "../../components/history/empty-history";
 import { HistoryFilters } from "../../components/history/history-filters";
 import { HistoryTable } from "../../components/history/history-table";
 import { historyQuery } from "../../queries/shares";
@@ -37,7 +38,13 @@ function HistoryPage() {
       {history.isPending && <p className="text-text-muted">Loading…</p>}
       {history.error && <p className="text-status-error">{history.error.message}</p>}
       {history.isSuccess && shares.length === 0 && (
-        <p className="text-text-muted">Nothing here yet.</p>
+        <EmptyHistory
+          filtered={summary !== undefined || query !== ""}
+          onClear={() => {
+            setSummary(undefined);
+            setSearch("");
+          }}
+        />
       )}
       {shares.length > 0 && <HistoryTable shares={shares} />}
 

@@ -6,10 +6,21 @@
     <title>Spotarr</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script>
-      // The theme follows the system. Set before the page draws, so it never flashes.
-      if (matchMedia("(prefers-color-scheme: dark)").matches) {
-        document.documentElement.classList.add("dark");
-      }
+      // The theme: the one chosen with the header's button (saved in this
+      // browser), or the system's. Applied before the page draws, so it never
+      // flashes, and again when the system switches. The button calls
+      // window.applyTheme after saving a new choice.
+      const systemDark = matchMedia("(prefers-color-scheme: dark)");
+      window.applyTheme = () => {
+        let choice = "system";
+        try {
+          choice = localStorage.getItem("theme") || "system";
+        } catch {}
+        const dark = choice === "dark" || (choice === "system" && systemDark.matches);
+        document.documentElement.classList.toggle("dark", dark);
+      };
+      window.applyTheme();
+      systemDark.addEventListener("change", window.applyTheme);
     </script>
   </head>
   <body>

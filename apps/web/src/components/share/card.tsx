@@ -1,10 +1,21 @@
 import type { ReactNode } from "react";
 
-// A bordered panel with a small upper-case title, as in the mockups.
-export function Card({ title, children }: { title: string; children: ReactNode }) {
+// A bordered panel, its title next to a small amber icon.
+export function Card({
+  icon,
+  title,
+  children,
+}: {
+  icon: ReactNode;
+  title: string;
+  children: ReactNode;
+}) {
   return (
-    <section className="rounded-lg border border-border bg-surface-raised p-5">
-      <h2 className="mb-4 text-xs font-semibold tracking-wide text-text-muted uppercase">
+    <section className="rounded-xl border border-border bg-surface-raised p-5">
+      <h2 className="mb-4 flex items-center gap-2.5 font-semibold">
+        <span className="flex size-7 items-center justify-center rounded-md bg-accent/15 text-accent">
+          {icon}
+        </span>
         {title}
       </h2>
       {children}

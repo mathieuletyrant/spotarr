@@ -3,12 +3,29 @@ import { useMutation } from "@connectrpc/connect-query";
 import { SpotarrService } from "@spotarr/contract";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Check } from "lucide-react";
-import { type SubmitEvent, useState } from "react";
+import {
+  Activity,
+  Check,
+  Film,
+  KeyRound,
+  Library,
+  type LucideIcon,
+  Sparkles,
+  Webhook,
+  Zap,
+} from "lucide-react";
+import { type SubmitEvent, useEffect, useState } from "react";
 import { ApiTokenField } from "../../components/settings/api-token-field";
 import { AutoAddFields } from "../../components/settings/auto-add-fields";
 import { DependenciesCard } from "../../components/settings/dependencies-card";
-import { Field, type Form, inputClass, Section, TextField } from "../../components/settings/fields";
+import {
+  Field,
+  type Form,
+  inputClass,
+  SecretField,
+  Section,
+  TextField,
+} from "../../components/settings/fields";
 import { WebhooksList } from "../../components/settings/webhooks-list";
 import {
   changedFields,
@@ -21,18 +38,40 @@ import { dependenciesQuery, settingsQuery } from "../../queries/settings";
 
 export const Route = createFileRoute("/_app/settings")({ component: SettingsPage });
 
-const MENU = [
-  ["status", "Status"],
-  ["identification", "Identification"],
-  ["seerr", "Seerr"],
-  ["auto-add", "Auto add"],
-  ["extraction", "Extraction"],
-  ["webhooks", "Webhooks"],
-  ["access", "Access"],
+const MENU: { id: string; label: string; icon: LucideIcon }[] = [
+  { id: "status", label: "Status", icon: Activity },
+  { id: "identification", label: "Identification", icon: Sparkles },
+  { id: "seerr", label: "Seerr", icon: Library },
+  { id: "auto-add", label: "Auto add", icon: Zap },
+  { id: "extraction", label: "Extraction", icon: Film },
+  { id: "webhooks", label: "Webhooks", icon: Webhook },
+  { id: "access", label: "Access", icon: KeyRound },
 ];
+
+// The section at the top of the screen, to highlight it in the menu.
+function useSectionInView(ready: boolean): string {
+  const [inView, setInView] = useState("status");
+  useEffect(() => {
+    if (!ready) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) if (entry.isIntersecting) setInView(entry.target.id);
+      },
+      // A section counts once it reaches the top third of the screen.
+      { rootMargin: "0px 0px -66% 0px" },
+    );
+    for (const { id } of MENU) {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    }
+    return () => observer.disconnect();
+  }, [ready]);
+  return inView;
+}
 
 function SettingsPage() {
   const { data, error } = useQuery(settingsQuery());
+  const inView = useSectionInView(data !== undefined);
 
   return (
     <div className="flex flex-col gap-6">
@@ -41,13 +80,15 @@ function SettingsPage() {
         <p className="mt-1 text-text-muted">Everything Spotarr needs, saved on the server.</p>
       </div>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-[12rem_minmax(0,1fr)] md:items-start">
-        <nav className="hidden flex-col gap-1 text-sm md:sticky md:top-6 md:flex">
-          {MENU.map(([id, label]) => (
+        <nav className="hidden flex-col gap-0.5 text-sm md:sticky md:top-6 md:flex">
+          {MENU.map(({ id, label, icon: Icon }) => (
             <a
               key={id}
               href={`#${id}`}
-              className="rounded-md px-3 py-1.5 text-text-muted hover:bg-text/8 hover:text-text"
+              aria-current={inView === id ? "location" : undefined}
+              className="flex items-center gap-2.5 rounded-md px-3 py-2 text-text-muted hover:bg-text/8 hover:text-text aria-[current]:bg-text/8 aria-[current]:font-medium aria-[current]:text-text"
             >
+              <Icon aria-hidden className="size-4" />
               {label}
             </a>
           ))}
@@ -101,11 +142,12 @@ function SettingsForm({ saved }: { saved: Values }) {
     <form onSubmit={submit} className="flex flex-col gap-6 pb-24">
       <Section
         id="identification"
+        icon={<Sparkles aria-hidden className="size-5" />}
         title="Identification"
         description="The LLM names the works, TMDB confirms them. Any OpenAI-compatible API works."
       >
         <TextField form={form} name="identification.llmApiUrl" label="API URL" wide />
-        <TextField form={form} name="identification.llmApiKey" label="API key" wide />
+        <SecretField form={form} name="identification.llmApiKey" label="API key" wide />
         <TextField
           form={form}
           name="identification.model"
@@ -114,7 +156,7 @@ function SettingsForm({ saved }: { saved: Values }) {
           hint="It gets the video's frames and sound: it must read images and hear audio."
           wide
         />
-        <TextField form={form} name="identification.tmdbToken" label="TMDB token (read access)" />
+        <SecretField form={form} name="identification.tmdbToken" label="TMDB token (read access)" />
         <TextField
           form={form}
           name="identification.language"
@@ -126,11 +168,12 @@ function SettingsForm({ saved }: { saved: Values }) {
 
       <Section
         id="seerr"
+        icon={<Library aria-hidden className="size-5" />}
         title="Seerr"
         description="Where Spotarr checks the library and sends additions."
       >
         <TextField form={form} name="seerr.url" label="URL" placeholder="http://seerr:5055" />
-        <TextField
+        <SecretField
           form={form}
           name="seerr.apiKey"
           label="API key"
@@ -140,6 +183,7 @@ function SettingsForm({ saved }: { saved: Values }) {
 
       <Section
         id="auto-add"
+        icon={<Zap aria-hidden className="size-5" />}
         title="Auto add"
         description="Request a candidate without a click, when Spotarr is sure of it."
       >
@@ -148,6 +192,7 @@ function SettingsForm({ saved }: { saved: Values }) {
 
       <Section
         id="extraction"
+        icon={<Film aria-hidden className="size-5" />}
         title="Extraction"
         description="What Spotarr reads from shared videos."
       >
@@ -160,7 +205,7 @@ function SettingsForm({ saved }: { saved: Values }) {
           <input
             type="range"
             min={1}
-            max={8}
+            max={15}
             value={values["extraction.framesPerVideo"]}
             onChange={(e) => form.change("extraction.framesPerVideo", e.target.value)}
             className="h-10 accent-accent"
@@ -191,6 +236,7 @@ function SettingsForm({ saved }: { saved: Values }) {
 
       <Section
         id="webhooks"
+        icon={<Webhook aria-hidden className="size-5" />}
         title="Webhooks"
         description="Spotarr calls these URLs when something happens to a share."
       >
@@ -207,6 +253,7 @@ function SettingsForm({ saved }: { saved: Values }) {
 
       <Section
         id="access"
+        icon={<KeyRound aria-hidden className="size-5" />}
         title="Access"
         description="The token that lets the iPhone and scripts call Spotarr."
       >
@@ -216,7 +263,7 @@ function SettingsForm({ saved }: { saved: Values }) {
       {justSaved && (
         <p
           role="status"
-          className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-md border border-border bg-surface-raised px-4 py-2 text-sm font-medium text-status-ok shadow-lg"
+          className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-surface-raised px-5 py-2.5 text-sm font-medium text-status-ok shadow-lg"
         >
           <Check aria-hidden className="size-4" />
           Settings saved
@@ -224,8 +271,8 @@ function SettingsForm({ saved }: { saved: Values }) {
       )}
 
       {(changed > 0 || errors[""]) && !justSaved && (
-        <div className="fixed inset-x-0 bottom-0 border-t border-border bg-surface px-4 py-3 md:px-6">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+        <div className="fixed inset-x-0 bottom-6 z-10 flex justify-center px-4">
+          <div className="flex items-center gap-4 rounded-full border border-border bg-surface-raised py-2 pr-2 pl-5 shadow-lg">
             <p className="text-sm">
               {errors[""] ? (
                 <span className="text-status-error">{errors[""]}</span>
@@ -237,14 +284,14 @@ function SettingsForm({ saved }: { saved: Values }) {
               <button
                 type="button"
                 onClick={cancel}
-                className="h-9 rounded-md border border-border px-4 text-sm font-medium focus-visible:outline-2 focus-visible:outline-accent"
+                className="h-9 rounded-full px-4 text-sm font-medium text-text-muted hover:bg-text/8 hover:text-text focus-visible:outline-2 focus-visible:outline-accent"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={save.isPending || changed === 0}
-                className="h-9 rounded-md bg-accent px-4 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+                className="h-9 rounded-full bg-accent px-5 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
               >
                 {save.isPending ? "Saving…" : "Save"}
               </button>

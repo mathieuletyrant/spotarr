@@ -8,6 +8,8 @@ service SpotarrService {
   // The web UI's sign-in: checks the API token and keeps it in an HttpOnly cookie.
   // The only RPC callable without the token.
   rpc Login(LoginRequest) returns (LoginResponse);
+  // Signs the web UI out: clears the cookie Login set.
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
   // Spotarr's version. Cheap: the web UI also calls it to check the sign-in.
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
   // Calls each Dependency (LLM, TMDB, Seerr, yt-dlp, ffmpeg) and says whether it
@@ -130,6 +132,7 @@ message SeerrSettings {
 message ExtractionSettings {
   // Removed: public reels need no account. Back if private reels ever matter.
   optional string cookies_txt = 1 [deprecated = true];
+  // 1 to 15.
   optional int32 frames_per_video = 2;
   optional int32 max_video_mb = 3;
   // How many Identifications run at the same time.
@@ -362,6 +365,10 @@ message LoginRequest {
 }
 
 message LoginResponse {}
+
+message LogoutRequest {}
+
+message LogoutResponse {}
 
 // Spotarr POSTs this, as JSON, to every Webhook that chose the event.
 message WebhookEvent {
