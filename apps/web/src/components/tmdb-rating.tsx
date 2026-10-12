@@ -1,9 +1,7 @@
-import { Star } from "lucide-react";
-
 const count = new Intl.NumberFormat("en-US");
 
-// TMDB's rating, "★ 7.8", with the number of votes beside it, or only on hover
-// when compact. Nothing when TMDB has no votes for the title.
+// TMDB's logo and rating, "TMDB 7.8", with the number of votes beside it, or
+// only on hover when compact. Nothing when TMDB has no votes for the title.
 export function TmdbRating({
   rating,
   votes,
@@ -19,9 +17,10 @@ export function TmdbRating({
   return (
     <span
       title={`TMDB rating: ${score}/10${voteText && `, ${voteText}`}`}
-      className="inline-flex items-center gap-1 whitespace-nowrap text-sm"
+      className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm"
     >
-      <Star aria-hidden className="size-3.5 fill-accent text-accent" />
+      {/* TMDB's official short logo, as its attribution guidelines ask: unaltered. */}
+      <img src="/tmdb.svg" alt="" className="h-2.5 w-auto" />
       <span className="sr-only">TMDB rating</span>
       <span className="font-medium">{score}</span>
       {!compact && voteText && <span className="text-text-muted">· {voteText}</span>}

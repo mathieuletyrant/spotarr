@@ -67,8 +67,12 @@ function ShareCard({ share }: { share: Share }) {
         <p className="truncate text-sm text-text-muted">
           {share.source} · {day} {time}
         </p>
-        <div className="mt-1">
+        <div className="mt-1 flex items-start gap-3">
           <Status share={share} />
+          {/* Outside the title, whose line is cut short on a phone. */}
+          {first && share.candidates.length === 1 && (
+            <TmdbRating rating={first.tmdbRating} votes={first.tmdbVotes} compact />
+          )}
         </div>
       </div>
     </Link>
@@ -91,8 +95,7 @@ function CardTitle({ share }: { share: Share }) {
   return (
     <>
       <span className="font-semibold">{first.title}</span>{" "}
-      <span className="text-text-muted">{first.year}</span>{" "}
-      <TmdbRating rating={first.tmdbRating} votes={first.tmdbVotes} compact />
+      <span className="text-text-muted">{first.year}</span>
     </>
   );
 }
