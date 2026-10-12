@@ -48,7 +48,8 @@ export function EmptyHistory({ filtered, onClear }: { filtered: boolean; onClear
         />
       </ol>
       <Link
-        to="/share"
+        to="."
+        search={(previous) => ({ ...previous, share: true })}
         className="flex h-10 items-center gap-2 rounded-md bg-accent px-4 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
       >
         <Plus aria-hidden className="size-4" />

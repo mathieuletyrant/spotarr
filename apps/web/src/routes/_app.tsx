@@ -1,6 +1,7 @@
 import { Code, ConnectError } from "@connectrpc/connect";
-import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
+import { ShareDialog } from "../components/share-dialog";
 import { ThemeButton } from "../components/theme-button";
 import { queryClient } from "../lib/api";
 import { statusQuery } from "../queries/status";
@@ -8,6 +9,9 @@ import { statusQuery } from "../queries/status";
 // Every page but /login: the header and the page. Before showing anything, a
 // first call checks the API token's cookie; without it, off to /login.
 export const Route = createFileRoute("/_app")({
+  // ?share=true opens the Share dialog over any page.
+  validateSearch: (search: Record<string, unknown>): { share?: true } =>
+    search.share === true || search.share === "true" ? { share: true } : {},
   beforeLoad: async () => {
     try {
       // Asked once, then kept: a signed-in browser is not checked again on every page.
@@ -25,6 +29,9 @@ export const Route = createFileRoute("/_app")({
 });
 
 function AppLayout() {
+  const { share } = Route.useSearch();
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen">
       <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
@@ -53,7 +60,8 @@ function AppLayout() {
         <div className="ml-auto flex items-center gap-1">
           <ThemeButton />
           <Link
-            to="/share"
+            to="."
+            search={(previous) => ({ ...previous, share: true })}
             className="flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
           >
             <Plus aria-hidden className="size-4" />
@@ -64,6 +72,12 @@ function AppLayout() {
       <main className="mx-auto max-w-7xl p-4 md:p-6">
         <Outlet />
       </main>
+      <ShareDialog
+        open={share === true}
+        onClose={() =>
+          navigate({ to: ".", search: (previous) => ({ ...previous, share: undefined }) })
+        }
+      />
     </div>
   );
 }
