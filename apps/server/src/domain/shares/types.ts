@@ -19,6 +19,8 @@ export const CluesSchema = z.object({
   caption: z.string().optional(),
   author: z.string().optional(),
   subtitles: z.string().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
 });
 export type Clues = z.infer<typeof CluesSchema>;
 

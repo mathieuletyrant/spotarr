@@ -128,6 +128,9 @@ message Clues {
   optional string caption = 1;
   optional string author = 2;
   optional string subtitles = 3;
+  // Title and description of the shared web page.
+  optional string title = 4;
+  optional string description = 5;
 }
 
 message Candidate {

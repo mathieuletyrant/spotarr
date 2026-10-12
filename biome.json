@@ -21,6 +21,6 @@
     }
   },
   "files": {
-    "includes": ["**", "!**/gen"]
+    "includes": ["**", "!**/gen", "!**/fixtures"]
   }
 }
