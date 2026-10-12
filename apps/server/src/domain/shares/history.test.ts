@@ -47,3 +47,9 @@ test("searches the text and the candidates' titles, ignoring case", () => {
     ),
   ).toEqual(["shr_2"]);
 });
+
+test("counts cover the whole history, whatever the filters", () => {
+  const page = historyPage(history, { limit: 1, summaries: ["NO_MATCH"] });
+  expect(page.total).toBe(3);
+  expect(Object.fromEntries(page.counts)).toEqual({ TO_CHOOSE: 2, NO_MATCH: 1 });
+});

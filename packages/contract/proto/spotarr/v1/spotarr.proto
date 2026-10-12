@@ -252,6 +252,15 @@ message ListSharesResponse {
   repeated Share shares = 1;
   // Absent on the last page.
   optional string next_cursor = 2;
+  // How many Shares the whole history has, in total and per Summary, whatever
+  // the filters: the counts of the history's filter buttons.
+  int32 total = 3;
+  repeated SummaryCount counts = 4;
+}
+
+message SummaryCount {
+  Summary summary = 1;
+  int32 count = 2;
 }
 
 message RetryIdentificationRequest {
