@@ -75,6 +75,8 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - **MSW 3 does not intercept fetch under Bun 1.4** ("Failed to replace a global value"). Tests fake `fetch` with `spyOn` instead: `src/integrations/tmdb/fake-fetch.ts`, undone by `mock.restore()`.
 - **yt-dlp on Instagram**: format selectors with conditions (`worst[ext=mp4]`) fail, because Instagram announces neither size nor resolution. Plain `--format worst` works. Public reels need no cookies so far.
 - **Programs are run through `integrations/process.ts`**: one place for timeouts and error messages. Tests use the real ffmpeg on `integrations/ffmpeg/fixtures/test-pattern.mp4`; yt-dlp is never run in tests (no network), only its recorded JSON is parsed.
+- **Integrations take plain config, never a repository**: `new Tmdb({ token, language })`, `chat(config, messages)`. `src/index.ts` reads the settings once per Identification and hands each integration its part.
+- **Live checks use the gitignored `.env`** at the repo root (OpenRouter key, TMDB token, Seerr). Spotarr itself never reads it; push the values into a dev server with `UpdateSettings`. Never print them.
 - **`pnpm exec biome`** may print an odd "ESLint output" line from a shell hook; use `pnpm lint` / `pnpm format`.
 
 ## Versions
