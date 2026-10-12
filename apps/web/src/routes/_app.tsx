@@ -40,6 +40,12 @@ function AppLayout() {
           >
             Share
           </Link>
+          <Link
+            to="/settings"
+            className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
+          >
+            Settings
+          </Link>
         </nav>
       </header>
       <main className="mx-auto max-w-7xl p-4 md:p-6">
