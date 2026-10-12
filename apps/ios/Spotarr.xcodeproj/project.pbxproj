@@ -20,6 +20,13 @@
 			remoteGlobalIDString = AA0000000000000000000031;
 			remoteInfo = ShareExtension;
 		};
+		AA0000000000000000000062 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000030;
+			remoteInfo = Spotarr;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -43,11 +50,25 @@
 		AA0000000000000000000016 /* Spotarr-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Spotarr-Info.plist"; sourceTree = "<group>"; };
 		AA0000000000000000000020 /* Spotarr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Spotarr.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA0000000000000000000021 /* ShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000022 /* SpotarrUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpotarrUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		AA0000000000000000000010 /* Spotarr */ = {isa = PBXFileSystemSynchronizedRootGroup; path = Spotarr; sourceTree = "<group>"; };
-		AA0000000000000000000011 /* ShareExtension */ = {isa = PBXFileSystemSynchronizedRootGroup; path = ShareExtension; sourceTree = "<group>"; };
+		AA0000000000000000000010 /* Spotarr */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Spotarr;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000011 /* ShareExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = ShareExtension;
+			sourceTree = "<group>";
+		};
+		AA0000000000000000000017 /* SpotarrUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SpotarrUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +88,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA0000000000000000000048 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -75,6 +103,7 @@
 			children = (
 				AA0000000000000000000010 /* Spotarr */,
 				AA0000000000000000000011 /* ShareExtension */,
+				AA0000000000000000000017 /* SpotarrUITests */,
 				AA0000000000000000000016 /* Spotarr-Info.plist */,
 				AA0000000000000000000012 /* ShareExtension-Info.plist */,
 				AA0000000000000000000013 /* Spotarr.entitlements */,
@@ -88,6 +117,7 @@
 			children = (
 				AA0000000000000000000020 /* Spotarr.app */,
 				AA0000000000000000000021 /* ShareExtension.appex */,
+				AA0000000000000000000022 /* SpotarrUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -143,6 +173,26 @@
 			productReference = AA0000000000000000000021 /* ShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		AA0000000000000000000032 /* SpotarrUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0000000000000000000073 /* Build configuration list for PBXNativeTarget "SpotarrUITests" */;
+			buildPhases = (
+				AA0000000000000000000047 /* Sources */,
+				AA0000000000000000000048 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA0000000000000000000063 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				AA0000000000000000000017 /* SpotarrUITests */,
+			);
+			name = SpotarrUITests;
+			productName = SpotarrUITests;
+			productReference = AA0000000000000000000022 /* SpotarrUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -172,6 +222,7 @@
 			targets = (
 				AA0000000000000000000030 /* Spotarr */,
 				AA0000000000000000000031 /* ShareExtension */,
+				AA0000000000000000000032 /* SpotarrUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -208,6 +259,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA0000000000000000000047 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -215,6 +273,11 @@
 			isa = PBXTargetDependency;
 			target = AA0000000000000000000031 /* ShareExtension */;
 			targetProxy = AA0000000000000000000060 /* PBXContainerItemProxy */;
+		};
+		AA0000000000000000000063 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000030 /* Spotarr */;
+			targetProxy = AA0000000000000000000062 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -271,9 +334,11 @@
 				CODE_SIGN_ENTITLEMENTS = Spotarr.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FFGWB5G2PN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Spotarr-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Spotarr;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Spotarr sends what you share to your Spotarr server on your home network.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -296,9 +361,11 @@
 				CODE_SIGN_ENTITLEMENTS = Spotarr.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FFGWB5G2PN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Spotarr-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Spotarr;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Spotarr sends what you share to your Spotarr server on your home network.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -320,9 +387,11 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FFGWB5G2PN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ShareExtension-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Spotarr;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Spotarr sends what you share to your Spotarr server on your home network.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -343,9 +412,11 @@
 				CODE_SIGN_ENTITLEMENTS = ShareExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = FFGWB5G2PN;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ShareExtension-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = Spotarr;
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Spotarr sends what you share to your Spotarr server on your home network.";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -356,6 +427,34 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+		AA0000000000000000000086 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mathieuletyrant.spotarr.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = Spotarr;
+			};
+			name = Debug;
+		};
+		AA0000000000000000000087 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.2.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mathieuletyrant.spotarr.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TEST_TARGET_NAME = Spotarr;
 			};
 			name = Release;
 		};
@@ -385,6 +484,15 @@
 			buildConfigurations = (
 				AA0000000000000000000084 /* Debug */,
 				AA0000000000000000000085 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA0000000000000000000073 /* Build configuration list for PBXNativeTarget "SpotarrUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000000000086 /* Debug */,
+				AA0000000000000000000087 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

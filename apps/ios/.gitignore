@@ -4,3 +4,4 @@ build/
 DerivedData/
 SpotarrKit/.build/
 SpotarrKit/.swiftpm/
+build-device/
