@@ -2,7 +2,9 @@
 
 Share a reel, a link, a screenshot or a text from your iPhone; Spotarr identifies the movie or TV show in the background and lets you add it to your library through Seerr. Personal project, one user, self-hosted with Docker. Also listed in [Mathieu's Umbrel community store](https://github.com/mathieuletyrant/umbrel-community-app-store).
 
-🚧 Status: milestone 0 (repo foundation). Nothing to run yet beyond the toolchain.
+🚧 Status: milestone 2 (web UI). Instagram reels are identified (frames and sound to the LLM, TMDB to confirm) and added through Seerr. Webhooks, then the iOS Shortcut, come next.
+
+![The History page, in dark mode](docs/screenshots/history-dark.png)
 
 ## ✅ Run the checks
 
