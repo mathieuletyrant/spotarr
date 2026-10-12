@@ -13,6 +13,7 @@ import { seconds, shareDate } from "../../lib/format";
 import { Poster } from "../poster";
 import { SourceIcon } from "../source-icon";
 import { StatusBadge } from "../status-badge";
+import { TmdbRating } from "../tmdb-rating";
 import { HISTORY_COLUMNS } from "./columns";
 
 // Additions that put the work in the library, or found it there already.
@@ -90,7 +91,8 @@ function CardTitle({ share }: { share: Share }) {
   return (
     <>
       <span className="font-semibold">{first.title}</span>{" "}
-      <span className="text-text-muted">{first.year}</span>
+      <span className="text-text-muted">{first.year}</span>{" "}
+      <TmdbRating rating={first.tmdbRating} votes={first.tmdbVotes} compact />
     </>
   );
 }
@@ -159,9 +161,12 @@ function OneCandidate({ candidate }: { candidate: Candidate }) {
           <span className="font-semibold">{candidate.title}</span>{" "}
           <span className="text-text-muted">{candidate.year}</span>
         </p>
-        <span className="mt-1 inline-block rounded-sm border border-border px-1.5 text-xs text-text-muted">
-          {candidate.type === MediaType.TV ? "TV show" : "Movie"}
-        </span>
+        <div className="mt-1 flex items-center gap-2">
+          <span className="rounded-sm border border-border px-1.5 text-xs text-text-muted">
+            {candidate.type === MediaType.TV ? "TV show" : "Movie"}
+          </span>
+          <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} compact />
+        </div>
       </div>
     </div>
   );

@@ -285,6 +285,10 @@ message Candidate {
   // 0 to 1. Absent for a direct ID, which is certain.
   optional float confidence = 7;
   LibraryState library_state = 8;
+  // TMDB's users' average, out of 10, and how many votes it rests on.
+  // Absent when nobody rated it, and on Shares identified before ratings were kept.
+  optional float tmdb_rating = 9;
+  optional int32 tmdb_votes = 10;
 }
 
 message Addition {

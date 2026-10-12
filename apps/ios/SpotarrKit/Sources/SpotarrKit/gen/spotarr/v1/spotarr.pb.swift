@@ -1363,6 +1363,26 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
 
   public var libraryState: Spotarr_V1_LibraryState = .unspecified
 
+  /// TMDB's users' average, out of 10, and how many votes it rests on.
+  /// Absent when nobody rated it, and on Shares identified before ratings were kept.
+  public var tmdbRating: Float {
+    get {_tmdbRating ?? 0}
+    set {_tmdbRating = newValue}
+  }
+  /// Returns true if `tmdbRating` has been explicitly set.
+  public var hasTmdbRating: Bool {self._tmdbRating != nil}
+  /// Clears the value of `tmdbRating`. Subsequent reads from it will return its default value.
+  public mutating func clearTmdbRating() {self._tmdbRating = nil}
+
+  public var tmdbVotes: Int32 {
+    get {_tmdbVotes ?? 0}
+    set {_tmdbVotes = newValue}
+  }
+  /// Returns true if `tmdbVotes` has been explicitly set.
+  public var hasTmdbVotes: Bool {self._tmdbVotes != nil}
+  /// Clears the value of `tmdbVotes`. Subsequent reads from it will return its default value.
+  public mutating func clearTmdbVotes() {self._tmdbVotes = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1371,6 +1391,8 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   fileprivate var _year: Int32? = nil
   fileprivate var _posterURL: String? = nil
   fileprivate var _confidence: Float? = nil
+  fileprivate var _tmdbRating: Float? = nil
+  fileprivate var _tmdbVotes: Int32? = nil
 }
 
 public nonisolated struct Spotarr_V1_Addition: Sendable {
@@ -3308,7 +3330,7 @@ nonisolated extension Spotarr_V1_Clues: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Candidate"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3324,6 +3346,8 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
       case 6: try { try decoder.decodeSingularStringField(value: &self._posterURL) }()
       case 7: try { try decoder.decodeSingularFloatField(value: &self._confidence) }()
       case 8: try { try decoder.decodeSingularEnumField(value: &self.libraryState) }()
+      case 9: try { try decoder.decodeSingularFloatField(value: &self._tmdbRating) }()
+      case 10: try { try decoder.decodeSingularInt32Field(value: &self._tmdbVotes) }()
       default: break
       }
     }
@@ -3358,6 +3382,12 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     if self.libraryState != .unspecified {
       try visitor.visitSingularEnumField(value: self.libraryState, fieldNumber: 8)
     }
+    try { if let v = self._tmdbRating {
+      try visitor.visitSingularFloatField(value: v, fieldNumber: 9)
+    } }()
+    try { if let v = self._tmdbVotes {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 10)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3370,6 +3400,8 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     if lhs._posterURL != rhs._posterURL {return false}
     if lhs._confidence != rhs._confidence {return false}
     if lhs.libraryState != rhs.libraryState {return false}
+    if lhs._tmdbRating != rhs._tmdbRating {return false}
+    if lhs._tmdbVotes != rhs._tmdbVotes {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
