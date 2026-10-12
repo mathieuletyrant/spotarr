@@ -1,5 +1,5 @@
 /* Generated from tokens.json by build.ts. Do not edit. */
-:root {
+@theme {
   --color-bg: #FFFFFF;
   --color-surface: #F6F7F9;
   --color-surface-raised: #FFFFFF;
@@ -17,22 +17,11 @@
   --color-status-error: #D9403B;
   --font-sans: Inter, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --spacing-unit: 0.25rem;
+  --spacing: 0.25rem;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-full: 9999px;
-  --icon-status-progress: loader-circle;
-  --icon-status-ready: list-checks;
-  --icon-status-added: check;
-  --icon-status-requested: send;
-  --icon-status-present: library;
-  --icon-status-no-match: circle-dashed;
-  --icon-status-error: circle-alert;
-  --icon-source-video: clapperboard;
-  --icon-source-web: globe;
-  --icon-source-image: image;
-  --icon-source-text: type;
 }
 
 .dark {

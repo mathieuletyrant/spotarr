@@ -1,0 +1,7 @@
+@import "tailwindcss";
+/* Colors, fonts, spacing and radii from packages/design-tokens: bg-surface, text-muted, rounded-md… */
+@import "@spotarr/design-tokens/tokens.css";
+
+body {
+  @apply bg-bg font-sans text-text antialiased;
+}

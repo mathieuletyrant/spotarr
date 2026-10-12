@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
@@ -59,6 +59,16 @@ const queue = new ShareQueue(
 );
 await queue.start();
 
-const app = createApp({ apiToken: () => token, settings, shares, queue, seerr: seerrFromSettings });
+// The web UI, once built (pnpm build). In dev, Vite serves it instead.
+const webDir = new URL("../../web/dist", import.meta.url).pathname;
+
+const app = createApp({
+  apiToken: () => token,
+  settings,
+  shares,
+  queue,
+  seerr: seerrFromSettings,
+  webDir: existsSync(webDir) ? webDir : undefined,
+});
 Bun.serve({ port, fetch: app.fetch });
 console.log(`spotarr listening on :${port}`);

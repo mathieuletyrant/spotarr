@@ -16,7 +16,8 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 | `pnpm generate` | Regenerate `packages/contract/src/gen`, `packages/design-tokens/gen` and the database types |
 | `pnpm --filter @spotarr/server clients` | Regenerate the TMDB and Seerr clients from their OpenAPI specs (network; not part of `pnpm generate`). Add a route to `TMDB_ROUTES` or `SEERR_ROUTES` in `apps/server/orval.config.ts` first |
 | `brew install ffmpeg yt-dlp` | Programs the video extractor runs (tests need ffmpeg only) |
-| `pnpm dev` | Run the service on :3000 with its data in `./data`; the API token is printed at first start |
+| `pnpm dev` | Run the service on :3000 (data in `./data`, API token printed at first start) and the web UI on http://localhost:5173, which forwards `/api` to the service |
+| `pnpm build` | Build the web UI into `apps/web/dist`; the service then serves it on `/` |
 
 ## Layout
 
@@ -27,11 +28,23 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
     - `domain/`: what Spotarr does, one folder per domain: `settings/`, `shares/`, `identification/`. Each has a `use-cases/` folder, one file per action triggered by the user or the queue (`create-share`, `retry-identification`, `list-history`, `add-candidate`, `identify-share`, `ensure-api-token`), next to the model it uses (types, repository, summary, history, queue, extractors…). An action that only forwards to a repository (`GetShare`, `GetSettings`) gets no use case until a rule appears. Repositories are the only code that sees Kysely; they take and return domain types.
     - `integrations/`: the services Spotarr calls. `tmdb/` today; Seerr, the LLM and yt-dlp come next to it.
     - `db/`: SQLite, dated migrations, `openDatabase()`; `db/gen/types.ts` is generated from the migrated schema.
-- `apps/web`, `apps/ios`, `umbrel/`: arrive with their milestones.
+- `apps/web`: the web UI. React, TanStack Router (one file per page in `src/routes`, route tree generated into `src/gen` by `pnpm generate`), TanStack Query through connect-query (`useQuery(SpotarrService.method.listShares, {})`, typed by the contract), Tailwind v4 themed by the design tokens (`bg-surface`, `text-text-muted`, `rounded-md`…). Sign-in: the `Login` RPC (the only one callable without the token) checks the API token and sets an HttpOnly cookie; any `unauthenticated` answer sends the page to `/login`.
+- `apps/ios`, `umbrel/`: arrive with their milestones.
 
 ## Code style
 
 Mathieu learns by reading every PR. Write the most obvious code: small functions with plain names, concrete types rather than generics, a little repetition rather than an abstraction, `if` rather than nested ternaries, one-line comments that say why. If a reader needs to stop and decode a line, rewrite it.
+
+## Web UI
+
+Tailwind v4 syntax: the `tailwind-best-practices` skill (`.agents/skills/`, linked in `.claude/skills/`). On top of it, Spotarr's rules:
+
+- **Colors, fonts, radii and spacing come from the design tokens only**: `bg-surface`, `text-text-muted`, `border-border`, `text-status-added`, `rounded-md`. Never Tailwind's palette (`gray-900`, `blue-500`) and never arbitrary colors (`bg-[#…]`). A missing color is added to `packages/design-tokens/tokens.json`, then `pnpm generate`.
+- **No `dark:` variants**: the tokens switch every color in dark mode on their own (`.dark` block).
+- **Repeated class lists become a React component** (`<StatusBadge>`, `<Poster>`), not an `@apply` class. `@apply` is for `styles.css` base rules only.
+- **Mobile first**: base classes for a phone, `md:` and up for wider screens. The History table becomes cards on a phone.
+- **Accessible by default**: real `<button>` and `<a>`, a label on every field, visible focus (`focus-visible:`), no `autoFocus`.
+- **Everything in English**, UI text included. The mockups are in French: translate their labels.
 
 ## How work happens
 

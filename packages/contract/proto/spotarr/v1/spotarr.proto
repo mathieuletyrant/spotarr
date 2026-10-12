@@ -5,6 +5,9 @@ package spotarr.v1;
 import "google/protobuf/timestamp.proto";
 
 service SpotarrService {
+  // The web UI's sign-in: checks the API token and keeps it in an HttpOnly cookie.
+  // The only RPC callable without the token.
+  rpc Login(LoginRequest) returns (LoginResponse);
   // State of each dependency Spotarr talks to.
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
   // Every setting, secrets included: this is a single-user app and the UI shows them.
@@ -270,3 +273,9 @@ message AddRequest {
 message AddResponse {
   Share share = 1;
 }
+
+message LoginRequest {
+  string token = 1;
+}
+
+message LoginResponse {}
