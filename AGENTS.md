@@ -67,6 +67,7 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - `Share` is the entity; RPCs are `CreateShare`, `GetShare`, `ListShares`, `RetryIdentification`, `Add`. Candidate carries a `LibraryState` enum, not `in_library`.
 - Secrets are stored plain in SQLite under `/data`, visible and copyable in the UI, never logged. No encryption layer.
 - Webhooks carry the full payload (poster, confidence, library state); Spotarr has no Home Assistant code.
+- The shared video is never kept, but a 240 px thumbnail of each frame is (≈10 KB each, table `frames`), shown on the Share's page and served by `GET /frames/<share id>/<n>.jpg` behind the token. Decided 2026-10-12, against the spec's "no images kept".
 - SQLite from milestone 1. No history purge, no `VACUUM INTO`. Design tokens from milestone 0; macOS CI job only with the SwiftUI app.
 
 ## Known traps
@@ -77,6 +78,7 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - **Stale generated output**: `pnpm check` regenerates and fails if `**/gen/**` differs from what is committed. Run `pnpm generate` and commit. On a brand-new generated file the guard also fails until the file is committed once. The guard is `scripts/check-generated.ts`.
 - **`buf breaking`** compares against `main` on GitHub over the network; it needs the repo to stay public (or a token later).
 - **Style Dictionary collision warning**: light and dark tokens share one CSS name on purpose; `log.warnings` is disabled in `build.ts` for that reason.
+- **Migrations run in the alphabetical order of their names**: name a new one `YYYY-MM-DDTHHMM-what.ts` (e.g. `2026-10-12T1400-frames`). A name that sorts before an applied migration makes Kysely refuse to start on an existing database.
 - **Kysely 0.29 moved migrations**: `Migrator` and `Migration` come from `kysely/migration`, not `kysely`. The root import fails at runtime with "Export named 'Migrator' not found".
 - **kysely-codegen CLI**: its bun:sqlite path needs `kysely-bun-sqlite`, the broken dialect. `apps/server/scripts/codegen.ts` calls `generate()` with our own Kysely instance instead.
 - **SQLite TEXT primary keys accept NULL** unless declared `notNull()`; the generated type then reads `string | null`.

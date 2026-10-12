@@ -109,6 +109,10 @@ function toMessage(share: Share) {
       target: Target[addition.target],
       status: AdditionStatus[addition.status],
     })),
+    frames: share.frames.map((frame) => ({
+      atSeconds: frame.atMs / 1000,
+      url: `/frames/${share.id}/${frame.position}.jpg`,
+    })),
     summary: Summary[share.summary],
   };
 }

@@ -66,7 +66,13 @@ export class ShareRepository {
       .where("share_id", "=", id)
       .orderBy("id")
       .execute();
-    return toShare(row, additions);
+    const frames = await this.db
+      .selectFrom("frames")
+      .select(["share_id", "position", "at_ms"])
+      .where("share_id", "=", id)
+      .orderBy("position")
+      .execute();
+    return toShare(row, additions, frames);
   }
 
   // The whole history, newest first.
@@ -79,10 +85,16 @@ export class ShareRepository {
       .orderBy("id", "desc")
       .execute();
     const additions = await this.db.selectFrom("additions").selectAll().orderBy("id").execute();
+    const frames = await this.db
+      .selectFrom("frames")
+      .select(["share_id", "position", "at_ms"])
+      .orderBy("position")
+      .execute();
     return rows.map((row) =>
       toShare(
         row,
         additions.filter((a) => a.share_id === row.id),
+        frames.filter((f) => f.share_id === row.id),
       ),
     );
   }
@@ -114,7 +126,17 @@ export class ShareRepository {
     return row?.id;
   }
 
+  // Stores what the Identification found, and replaces the video's thumbnails.
   async finish(id: string, result: IdentificationResult, durationMs: number): Promise<void> {
+    await this.db.transaction().execute(async (trx) => {
+      await trx.deleteFrom("frames").where("share_id", "=", id).execute();
+      for (const [position, frame] of (result.frames ?? []).entries()) {
+        await trx
+          .insertInto("frames")
+          .values({ share_id: id, position, at_ms: frame.atMs, thumbnail: frame.thumbnail })
+          .execute();
+      }
+    });
     await this.update(id, {
       status: result.status,
       method: result.method ?? null,
@@ -133,6 +155,7 @@ export class ShareRepository {
 
   // Puts a Share back in the queue, clearing what its Identification found. Additions stay.
   async requeue(id: string): Promise<void> {
+    await this.db.deleteFrom("frames").where("share_id", "=", id).execute();
     await this.update(id, {
       status: "QUEUED",
       method: null,
@@ -162,6 +185,17 @@ export class ShareRepository {
         error: addition.error ?? null,
       })
       .execute();
+  }
+
+  // One thumbnail of a shared video, as JPEG.
+  async frameThumbnail(shareId: string, position: number): Promise<Uint8Array | undefined> {
+    const row = await this.db
+      .selectFrom("frames")
+      .select("thumbnail")
+      .where("share_id", "=", shareId)
+      .where("position", "=", position)
+      .executeTakeFirst();
+    return row?.thumbnail;
   }
 
   // At startup: Identifications cut short by a restart start over.
@@ -210,7 +244,9 @@ type AdditionRow = {
 };
 
 // SQLite stores enums as text and lists as JSON: this turns a row back into a Share.
-function toShare(row: ShareRow, additionRows: AdditionRow[]): Share {
+type FrameRow = { position: number; at_ms: number };
+
+function toShare(row: ShareRow, additionRows: AdditionRow[], frameRows: FrameRow[]): Share {
   const status = row.status as IdentificationStatus;
   const candidates = CandidateSchema.array().parse(JSON.parse(row.candidates));
   const additions = additionRows.map(toAddition);
@@ -235,6 +271,7 @@ function toShare(row: ShareRow, additionRows: AdditionRow[]): Share {
     },
     candidates,
     additions,
+    frames: frameRows.map((f) => ({ position: f.position, atMs: f.at_ms })),
     summary: summaryOf(status, candidates, additions),
   };
 }

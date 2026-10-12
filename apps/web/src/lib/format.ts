@@ -13,6 +13,13 @@ export function shareDate(date: Date, now = new Date()): { day: string; time: st
   return { day: label, time: time.format(date) };
 }
 
+// 65.4 s → "1:05", the way a video player shows a time.
+export function videoTime(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const secs = Math.floor(totalSeconds % 60);
+  return `${minutes}:${String(secs).padStart(2, "0")}`;
+}
+
 // 14 479 ms → "14 s".
 export function seconds(ms: number): string {
   return `${Math.max(1, Math.round(ms / 1000))} s`;

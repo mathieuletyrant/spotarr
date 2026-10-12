@@ -1,6 +1,6 @@
-import { createInfiniteQueryOptions } from "@connectrpc/connect-query";
+import { createInfiniteQueryOptions, createQueryOptions } from "@connectrpc/connect-query";
 import { SpotarrService, Summary } from "@spotarr/contract";
-import { infiniteQueryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { transport } from "../lib/api";
 
 export const HISTORY_PAGE_SIZE = 20;
@@ -31,5 +31,13 @@ export function historyQuery({ summary, query }: HistoryFilter) {
       );
       return inProgress ? 2000 : false;
     },
+  });
+}
+
+// One Share, asked again every 2 s while it is being identified.
+export function shareQuery(id: string) {
+  return queryOptions({
+    ...createQueryOptions(SpotarrService.method.getShare, { id }, { transport }),
+    refetchInterval: (q) => (q.state.data?.share?.summary === Summary.IN_PROGRESS ? 2000 : false),
   });
 }

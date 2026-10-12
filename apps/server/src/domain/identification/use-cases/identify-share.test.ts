@@ -21,11 +21,8 @@ const dune = getMovieDetailsResponseMock({
   title: "Dune : Deuxième partie",
   release_date: "2024-02-27",
 });
-const reel: Video = {
-  caption: "tu as du choix sur Netflix",
-  author: "CameraCam",
-  frames: [new Uint8Array([1])],
-};
+const frame = { atMs: 2500, jpeg: new Uint8Array([1]), thumbnail: new Uint8Array([2]) };
+const reel: Video = { caption: "tu as du choix sur Netflix", author: "CameraCam", frames: [frame] };
 
 const notCalled = async (): Promise<never> => {
   throw new Error("should not be called");
@@ -77,6 +74,7 @@ test("a reel is read, then the LLM explains what it sees (Candidates come with #
     clues: { caption: "tu as du choix sur Netflix", author: "CameraCam" },
     reasoning: "On reconnaît Zach Galifianakis.",
     candidates: [],
+    frames: [{ atMs: 2500, thumbnail: new Uint8Array([2]) }],
   });
 });
 

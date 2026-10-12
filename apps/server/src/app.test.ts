@@ -104,3 +104,35 @@ test("behind https the cookie is Secure", async () => {
   const accepted = await call("Login", { token: "secret-token" }, { "X-Forwarded-Proto": "https" });
   expect(accepted.headers.get("Set-Cookie")).toContain("Secure");
 });
+
+test("a video thumbnail is served as JPEG, and only with the token", async () => {
+  const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
+  await shares.finish(
+    id,
+    {
+      status: "NO_MATCH",
+      extractors: ["video"],
+      clues: {},
+      candidates: [],
+      frames: [{ atMs: 0, thumbnail: new Uint8Array([0xff, 0xd8]) }],
+    },
+    10,
+  );
+
+  expect((await app.request(`/frames/${id}/0.jpg`)).status).toBe(401);
+
+  const res = await app.request(`/frames/${id}/0.jpg`, {
+    headers: { Cookie: "spotarr_token=secret-token" },
+  });
+  expect(res.status).toBe(200);
+  expect(res.headers.get("Content-Type")).toBe("image/jpeg");
+  expect(new Uint8Array(await res.arrayBuffer())).toEqual(new Uint8Array([0xff, 0xd8]));
+
+  expect(
+    (
+      await app.request(`/frames/${id}/7.jpg`, {
+        headers: { Cookie: "spotarr_token=secret-token" },
+      })
+    ).status,
+  ).toBe(404);
+});

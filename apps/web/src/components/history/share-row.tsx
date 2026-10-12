@@ -8,6 +8,7 @@ import {
   Summary,
   Target,
 } from "@spotarr/contract";
+import { Link } from "@tanstack/react-router";
 import { seconds, shareDate } from "../../lib/format";
 import { Poster } from "../poster";
 import { SourceIcon } from "../source-icon";
@@ -17,20 +18,27 @@ import { HISTORY_COLUMNS } from "./columns";
 // Additions that put the work in the library, or found it there already.
 const SUCCESSES = [AdditionStatus.ADDED, AdditionStatus.REQUESTED, AdditionStatus.ALREADY_PRESENT];
 
-// One Share of the history: a row of six columns on a wide screen, a card on a phone.
+// One Share of the history: a row of six columns on a wide screen, a card on
+// a phone. The whole row links to the Share's page.
 export function ShareRow({ share }: { share: Share }) {
   return (
-    <li className={`grid gap-3 px-4 py-4 md:items-center ${HISTORY_COLUMNS}`}>
-      <ShareDate share={share} />
-      <SharedContent share={share} />
-      <Result share={share} />
-      <span className="hidden text-sm md:block">{targetOf(share)}</span>
-      {/* On a phone, status and method share one line; from md on, `contents`
+    <li>
+      <Link
+        to="/shares/$shareId"
+        params={{ shareId: share.id }}
+        className={`grid gap-3 px-4 py-4 hover:bg-text/4 focus-visible:outline-2 focus-visible:outline-accent md:items-center ${HISTORY_COLUMNS}`}
+      >
+        <ShareDate share={share} />
+        <SharedContent share={share} />
+        <Result share={share} />
+        <span className="hidden text-sm md:block">{targetOf(share)}</span>
+        {/* On a phone, status and method share one line; from md on, `contents`
           makes them two cells of the row's grid again. */}
-      <div className="flex items-center justify-between gap-3 md:contents">
-        <Status share={share} />
-        <span className="text-sm text-text-muted">{methodOf(share)}</span>
-      </div>
+        <div className="flex items-center justify-between gap-3 md:contents">
+          <Status share={share} />
+          <span className="text-sm text-text-muted">{methodOf(share)}</span>
+        </div>
+      </Link>
     </li>
   );
 }

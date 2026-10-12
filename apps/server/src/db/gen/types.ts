@@ -20,6 +20,13 @@ export interface Additions {
   tmdb_id: number;
 }
 
+export interface Frames {
+  at_ms: number;
+  position: number;
+  share_id: string;
+  thumbnail: Uint8Array;
+}
+
 export interface Settings {
   data: Generated<string>;
   id: Generated<number>;
@@ -45,6 +52,7 @@ export interface Shares {
 
 export interface DB {
   additions: Additions;
+  frames: Frames;
   settings: Settings;
   shares: Shares;
 }

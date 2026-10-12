@@ -2,6 +2,7 @@ import { SpotarrService } from "@spotarr/contract";
 import { Hono } from "hono";
 import { requireToken } from "./api/auth";
 import { connectHandler } from "./api/connect";
+import { serveFrame } from "./api/frames";
 import { authRpcs } from "./api/rpc/auth";
 import { errorsToConnect } from "./api/rpc/errors";
 import { settingsRpcs } from "./api/rpc/settings";
@@ -25,7 +26,8 @@ export type AppDeps = {
 };
 
 // Routes: GET /health (open), POST /api/* (Connect RPCs, token required but
-// for Login), and the web UI on every other GET.
+// for Login), GET /frames/* (video thumbnails, token required), and the web UI
+// on every other GET.
 // Each file in api/rpc/ implements the RPCs of one domain.
 export function createApp({ apiToken, settings, shares, queue, seerr, webDir }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
@@ -48,6 +50,8 @@ export function createApp({ apiToken, settings, shares, queue, seerr, webDir }: 
   app.get("/health", (c) => c.json({ ok: true }));
   app.use("/api/*", requireToken(apiToken));
   app.post("/api/*", (c) => rpc(c, "/api"));
+  app.use("/frames/*", requireToken(apiToken));
+  app.get("/frames/:shareId/:file", serveFrame(shares));
   if (webDir) app.get("*", serveWebApp(webDir));
 
   return app;

@@ -62,6 +62,8 @@ export type Share = {
   };
   candidates: Candidate[];
   additions: Addition[];
+  // Thumbnails of the shared video, in order; served by api/frames.ts.
+  frames: { position: number; atMs: number }[];
   summary: Summary;
 };
 
@@ -73,4 +75,5 @@ export type IdentificationResult = {
   clues: Clues;
   reasoning?: string;
   candidates: Candidate[];
+  frames?: { atMs: number; thumbnail: Uint8Array }[];
 };

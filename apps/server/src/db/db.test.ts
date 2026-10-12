@@ -63,6 +63,7 @@ test("a file database runs in WAL mode and migrates only once", async () => {
     expect(applied.rows.map((r) => r.name)).toEqual([
       "2026-10-12-initial",
       "2026-10-12-settings-document",
+      "2026-10-12T1400-frames",
     ]);
     await db.destroy();
   } finally {
