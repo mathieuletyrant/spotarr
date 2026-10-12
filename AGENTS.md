@@ -20,7 +20,7 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 
 - `packages/contract`: `proto/spotarr/v1/spotarr.proto` is the single source of the API. Generated TypeScript lives in `src/gen`, committed, re-exported by `@spotarr/contract`.
 - `packages/design-tokens`: `tokens.json` is the single source of style. `build.ts` emits `gen/tokens.css` (`:root` light, `.dark` dark).
-- `apps/server`: Hono on Bun, Connect-RPC under `/api`, SQLite in `DATA_DIR`. `src/db`: dialect, dated migrations, `openDatabase()`; `src/db/gen/types.ts` is generated from the migrated schema.
+- `apps/server`: Hono on Bun, Connect-RPC under `/api`, SQLite in `DATA_DIR`. `src/app.ts` only assembles the routes; RPC handlers live in `src/rpc/<domain>.ts`, one file per domain, typed with `Rpcs<"methodName">` from `src/rpc/types.ts`. A new RPC goes in its domain file, then is spread into `router.service` in `app.ts`. Errors shared by all RPCs (zod → `invalid_argument`) are interceptors in `src/rpc/errors.ts`. `src/db`: dialect, dated migrations, `openDatabase()`; `src/db/gen/types.ts` is generated from the migrated schema.
 - `apps/web`, `apps/ios`, `umbrel/`: arrive with their milestones.
 
 ## How work happens
@@ -56,8 +56,10 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - **Kysely 0.29 moved migrations**: `Migrator` and `Migration` come from `kysely/migration`, not `kysely`. The root import fails at runtime with "Export named 'Migrator' not found".
 - **kysely-codegen CLI**: its bun:sqlite path needs `kysely-bun-sqlite`, the broken dialect. `apps/server/scripts/codegen.ts` calls `generate()` with our own Kysely instance instead.
 - **SQLite TEXT primary keys accept NULL** unless declared `notNull()`; the generated type then reads `string | null`.
+- **zod 4 object defaults**: `.default({})` on an object returns `{}` as is, without the inner defaults. Use `.prefault({})`, which parses `{}` and so fills them.
+- **Connect messages carry `$typeName`**: a request object has an extra `$typeName` key on every message. Code iterating over its keys must skip it; zod strips it when parsing.
 - **`pnpm exec biome`** may print an odd "ESLint output" line from a shell hook; use `pnpm lint` / `pnpm format`.
 
 ## Versions
 
-Pinned at the latest stable on 2026-10-12 and bumped weekly by Renovate: pnpm 12.11.2, Bun 1.4.3, TypeScript 7.0.2, Biome 2.5.15, buf 1.73.0, protobuf-es 2.16.0, style-dictionary 5.6.1, kysely 0.29.6, kysely-codegen 0.20.0. If a newer version breaks another tool, keep the newest that works and note it here.
+Pinned at the latest stable on 2026-10-12 and bumped weekly by Renovate: pnpm 12.11.2, Bun 1.4.3, TypeScript 7.0.2, Biome 2.5.15, buf 1.73.0, protobuf-es 2.16.0, style-dictionary 5.6.1, kysely 0.29.6, kysely-codegen 0.20.0, hono 4.13.13, @connectrpc/connect 2.2.0, zod 4.6.6. If a newer version breaks another tool, keep the newest that works and note it here.

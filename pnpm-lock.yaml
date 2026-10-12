@@ -193,6 +193,9 @@ importers:
       kysely:
         specifier: 0.29.6
         version: 0.29.6
+      zod:
+        specifier: 4.6.6
+        version: 4.6.6
     devDependencies:
       '@types/bun':
         specifier: 1.4.2
@@ -1142,8 +1145,8 @@ packages:
     resolution: {integrity: sha512-wk4Mf4pR5mRP7eYuuTBCIQ9d0ud2Fv2jRLQpfgnRjbOxAFHmjKFValgTpitVKzJJS8ajnYQV2Du1SZ8j6b/EUQ==}
     engines: {node: '>= 0.4'}
 
-  zod@4.6.5:
-    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
+  zod@4.6.6:
+    resolution: {integrity: sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==}
 
 snapshots:
 
@@ -1741,7 +1744,7 @@ snapshots:
       micromatch: 4.0.8
       minimist: 1.2.8
       pluralize: 8.0.0
-      zod: 4.6.5
+      zod: 4.6.6
     transitivePeerDependencies:
       - typescript
 
@@ -1990,4 +1993,4 @@ snapshots:
       gopd: 1.2.0
       has-tostringtag: 1.0.2
 
-  zod@4.6.5: {}
+  zod@4.6.6: {}

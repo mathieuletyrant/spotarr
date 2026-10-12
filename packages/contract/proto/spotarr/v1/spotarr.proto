@@ -2,10 +2,13 @@ syntax = "proto3";
 
 package spotarr.v1;
 
-// Placeholder service: the real RPCs arrive with milestone 1 issues (#8–#19).
 service SpotarrService {
   // State of each dependency Spotarr talks to.
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
+  // Every setting, secrets included: this is a single-user app and the UI shows them.
+  rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
+  // Changes only the fields that are present; returns the settings as saved.
+  rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
 }
 
 message GetStatusRequest {}
@@ -13,4 +16,67 @@ message GetStatusRequest {}
 message GetStatusResponse {
   // Spotarr's own version, from the Docker image tag.
   string version = 1;
+}
+
+// Every field is optional: in UpdateSettings an absent field means "leave unchanged".
+// GetSettings always fills them all.
+message Settings {
+  IdentificationSettings identification = 1;
+  SeerrSettings seerr = 2;
+  ExtractionSettings extraction = 3;
+  AccessSettings access = 4;
+}
+
+message IdentificationSettings {
+  // Any OpenAI-compatible API; OpenRouter by default.
+  optional string llm_api_url = 1;
+  optional string llm_api_key = 2;
+  optional string text_model = 3;
+  // Must handle images. Empty means: same as text_model.
+  optional string image_model = 4;
+  // Sends response_format json_object; turn off for models that refuse it.
+  optional bool force_json = 5;
+  // TMDB read access token.
+  optional string tmdb_token = 6;
+  // Language of TMDB titles and overviews, e.g. "fr-FR".
+  optional string language = 7;
+}
+
+message SeerrSettings {
+  optional string url = 1;
+  optional string api_key = 2;
+}
+
+message ExtractionSettings {
+  // Netscape cookies.txt of a logged-in account; Instagram needs it.
+  optional string cookies_txt = 1;
+  optional int32 frames_per_video = 2;
+  optional int32 max_video_mb = 3;
+  // How many Identifications run at the same time.
+  optional int32 concurrency = 4;
+}
+
+message AccessSettings {
+  // Generated at first start. Read-only: ignored by UpdateSettings.
+  optional string api_token = 1;
+  // Requests addressed to this host must carry a valid Cloudflare Access JWT.
+  optional string public_hostname = 2;
+  // e.g. "myteam.cloudflareaccess.com"
+  optional string team_domain = 3;
+  // Application audience (AUD) tag from Cloudflare Zero Trust.
+  optional string aud = 4;
+}
+
+message GetSettingsRequest {}
+
+message GetSettingsResponse {
+  Settings settings = 1;
+}
+
+message UpdateSettingsRequest {
+  Settings settings = 1;
+}
+
+message UpdateSettingsResponse {
+  Settings settings = 1;
 }

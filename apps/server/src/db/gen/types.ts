@@ -21,8 +21,8 @@ export interface Additions {
 }
 
 export interface Settings {
-  key: string;
-  value: string;
+  data: Generated<string>;
+  id: Generated<number>;
 }
 
 export interface Shares {

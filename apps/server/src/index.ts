@@ -11,9 +11,10 @@ const dataDir = process.env.DATA_DIR ?? "/data";
 
 mkdirSync(dataDir, { recursive: true });
 const db = await openDatabase(join(dataDir, "spotarr.db"));
-const { token, created } = await ensureApiToken(new SettingsRepository(db));
+const settings = new SettingsRepository(db);
+const { token, created } = await ensureApiToken(settings);
 if (created) console.log(`API token (also in Settings → Access): ${token}`);
 
-const app = createApp({ apiToken: () => token });
+const app = createApp({ apiToken: () => token, settings });
 Bun.serve({ port, fetch: app.fetch });
 console.log(`spotarr listening on :${port}`);

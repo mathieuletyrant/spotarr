@@ -1,26 +1,26 @@
-import type { MessageInitShape } from "@bufbuild/protobuf";
-import { type GetStatusResponseSchema, SpotarrService } from "@spotarr/contract";
+import { SpotarrService } from "@spotarr/contract";
 import { Hono } from "hono";
-import pkg from "../package.json";
 import { requireToken } from "./http/auth";
 import { connectHandler } from "./http/connect";
+import { validationErrors } from "./rpc/errors";
+import { settingsRpcs } from "./rpc/settings";
+import { statusRpcs } from "./rpc/status";
+import type { SettingsRepository } from "./settings/repository";
 
-export type AppDeps = { apiToken: () => string };
+export type AppDeps = { apiToken: () => string; settings: SettingsRepository };
 
-export function createApp({ apiToken }: AppDeps): Hono {
-  const app = new Hono();
-
-  app.get("/health", (c) => c.json({ ok: true }));
-
-  const rpc = connectHandler((router) =>
+// Routes: GET /health (open), POST /api/* (Connect RPCs, token required).
+// Each file in rpc/ implements the RPCs of one domain.
+export function createApp({ apiToken, settings }: AppDeps): Hono {
+  const rpc = connectHandler({ interceptors: [validationErrors] }, (router) =>
     router.service(SpotarrService, {
-      // `satisfies` makes a renamed contract field a type error here.
-      getStatus: () =>
-        ({ version: pkg.version }) satisfies MessageInitShape<typeof GetStatusResponseSchema>,
+      ...statusRpcs(),
+      ...settingsRpcs(settings),
     }),
   );
-  app.use("/api/*", requireToken(apiToken));
-  app.post("/api/*", (c) => rpc(c, "/api"));
 
-  return app;
+  return new Hono()
+    .get("/health", (c) => c.json({ ok: true }))
+    .use("/api/*", requireToken(apiToken))
+    .post("/api/*", (c) => rpc(c, "/api"));
 }

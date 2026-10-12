@@ -60,7 +60,10 @@ test("a file database runs in WAL mode and migrates only once", async () => {
     const { rows } = await sql<{ journal_mode: string }>`PRAGMA journal_mode`.execute(db);
     expect(rows[0]?.journal_mode).toBe("wal");
     const applied = await sql<{ name: string }>`SELECT name FROM kysely_migration`.execute(db);
-    expect(applied.rows.map((r) => r.name)).toEqual(["2026-10-12-initial"]);
+    expect(applied.rows.map((r) => r.name)).toEqual([
+      "2026-10-12-initial",
+      "2026-10-12-settings-document",
+    ]);
     await db.destroy();
   } finally {
     rmSync(dir, { recursive: true, force: true });
