@@ -71,6 +71,14 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - No Cloudflare Access JWT check in Spotarr for now (the spec's third layer): Access in front plus the API token are enough. Its settings (public hostname, team domain, AUD) were removed on 2026-10-12; to be decided again at the real deployment.
 - SQLite from milestone 1. No history purge, no `VACUUM INTO`. Design tokens from milestone 0; macOS CI job only with the SwiftUI app.
 
+## Evaluation
+
+`pnpm --filter @spotarr/server eval` runs the real Identification on the reels listed in `apps/server/scripts/eval.ts` (keys from `.env`, about $0.01 a reel, `MODEL=… ` to try another model). A reel passes when its works are in the first 3 Candidates. Re-run it after any change to the prompt, the model or the TMDB matching, and add a case for every misidentified reel.
+
+| Date | Model | Score | Note |
+| --- | --- | --- | --- |
+| 2026-10-12 | google/gemini-3.8-flash | 6/6 | twice in a row; L'Invitation failed once in 4 earlier runs (a 2022 namesake) |
+
 ## Known traps
 
 - **pnpm 12 build scripts**: `onlyBuiltDependencies` is ignored; approve scripts with `allowBuilds` in `pnpm-workspace.yaml`, else `pnpm install` fails with `ERR_PNPM_IGNORED_BUILDS`.
