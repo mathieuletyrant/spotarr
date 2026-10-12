@@ -2,8 +2,9 @@
 // Spotarr, and signs it so an iPhone can import it. Needs macOS (the
 // `shortcuts` and `plutil` commands). Run: bun shortcuts/build.ts
 //
-// A Shortcut is a property list of actions. It holds no secret: on import,
-// iOS asks for Spotarr's address and the API token (the import questions).
+// A Shortcut is a property list of actions. It holds no secret: once imported,
+// paste the API token into its second action (iOS "import questions" left the
+// Set Up button doing nothing on the iPhone, so there are none).
 import { $ } from "bun";
 
 const ADDRESS = "address";
@@ -61,9 +62,9 @@ function action(identifier: string, parameters: object) {
 }
 
 const actions = [
-  // 0 and 1: answered on import.
-  action("gettext", { UUID: ADDRESS, WFTextActionText: "http://umbrel.local:3000" }),
-  action("gettext", { UUID: TOKEN, WFTextActionText: "" }),
+  // 0 and 1: Spotarr's address and API token, edited once after import.
+  action("gettext", { UUID: ADDRESS, WFTextActionText: text("http://umbrel.local:3838") }),
+  action("gettext", { UUID: TOKEN, WFTextActionText: text("PASTE-YOUR-API-TOKEN-HERE") }),
   // 2: CreateShare, as plain JSON over HTTP.
   action("downloadurl", {
     UUID: SEND,
@@ -111,21 +112,6 @@ const shortcut = {
   WFWorkflowTypes: ["ActionExtension"],
   WFWorkflowInputContentItemClasses: ["WFURLContentItem"],
   WFWorkflowHasShortcutInputVariables: true,
-  WFWorkflowImportQuestions: [
-    {
-      ActionIndex: 0,
-      Category: "Parameter",
-      ParameterKey: "WFTextActionText",
-      Text: "Spotarr's address, e.g. http://umbrel.local:3000",
-      DefaultValue: "http://umbrel.local:3000",
-    },
-    {
-      ActionIndex: 1,
-      Category: "Parameter",
-      ParameterKey: "WFTextActionText",
-      Text: "Spotarr's API token (Settings → Access → Copy)",
-    },
-  ],
   WFWorkflowActions: actions,
 };
 
