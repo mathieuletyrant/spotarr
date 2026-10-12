@@ -160,3 +160,55 @@ test("the LLM cost adds up the Identifications whose cost is known", async () =>
   await shares.requeue(a);
   expect((await shares.llmCostLast30Days()).identifications).toBe(1);
 });
+
+test("stats count Shares and Additions by month, and Shares by source", async () => {
+  const { db, shares } = await repository();
+  const a = await shares.create({ url: "https://www.tiktok.com/@x/video/1" }, "tiktok.com");
+  const b = await shares.create({ url: "https://www.instagram.com/reel/x" }, "instagram.com");
+  const c = await shares.create({ url: "https://www.instagram.com/reel/y" }, "instagram.com");
+  await shares.finish(
+    a,
+    { status: "READY", extractors: [], clues: {}, candidates: [dune], llmCostUsd: 0.01 },
+    10,
+  );
+  await shares.finish(b, { status: "NO_MATCH", extractors: [], clues: {}, candidates: [] }, 10);
+  await shares.fail(c, "boom", 10);
+  const added = { tmdbId: 693134, type: "MOVIE", target: "SEERR" } as const;
+  await shares.addAddition(a, { ...added, status: "REQUESTED", automatic: true });
+  await shares.addAddition(a, { ...added, status: "FAILED", automatic: false });
+  // One Share from the month before.
+  await db
+    .updateTable("shares")
+    .set({ created_at: "2026-09-30T23:00:00.000Z" })
+    .where("id", "=", c)
+    .execute();
+
+  const { months, sources } = await shares.stats();
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  expect(months).toEqual([
+    {
+      month: "2026-09",
+      shares: 1,
+      identified: 0,
+      noMatch: 0,
+      failed: 1,
+      llmCostUsd: 0,
+      additions: 0,
+      automaticAdditions: 0,
+    },
+    {
+      month: thisMonth,
+      shares: 2,
+      identified: 1,
+      noMatch: 1,
+      failed: 0,
+      llmCostUsd: 0.01,
+      additions: 1,
+      automaticAdditions: 1,
+    },
+  ]);
+  expect(sources).toEqual([
+    { source: "instagram.com", shares: 2 },
+    { source: "tiktok.com", shares: 1 },
+  ]);
+});

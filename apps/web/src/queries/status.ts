@@ -8,3 +8,7 @@ import { transport } from "../lib/api";
 export function statusQuery() {
   return queryOptions(createQueryOptions(SpotarrService.method.getStatus, {}, { transport }));
 }
+
+export function statsQuery() {
+  return queryOptions(createQueryOptions(SpotarrService.method.getStats, {}, { transport }));
+}

@@ -8,7 +8,7 @@ import type { Rpcs } from "./types";
 export function statusRpcs(
   settings: SettingsRepository,
   shares: ShareRepository,
-): Rpcs<"getStatus" | "checkDependencies"> {
+): Rpcs<"getStatus" | "checkDependencies" | "getStats"> {
   return {
     getStatus: () => ({ version: pkg.version }),
 
@@ -20,5 +20,7 @@ export function statusRpcs(
         llmCost: llmCost.identifications > 0 ? llmCost : undefined,
       };
     },
+
+    getStats: () => shares.stats(),
   };
 }

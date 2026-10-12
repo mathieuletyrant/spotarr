@@ -13,6 +13,18 @@ import {
   type ShareInput,
 } from "./types";
 
+type MonthStats = {
+  month: string;
+  shares: number;
+  identified: number;
+  noMatch: number;
+  failed: number;
+  additions: number;
+  automaticAdditions: number;
+  llmCostUsd: number;
+};
+export type Stats = { months: MonthStats[]; sources: { source: string; shares: number }[] };
+
 const NOW = sql<string>`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`;
 
 // Every column but the image, which is only read by the Identification (see input()).
@@ -183,6 +195,68 @@ export class ShareRepository {
       .where("created_at", ">=", since)
       .executeTakeFirstOrThrow();
     return { identifications: row.identifications, totalUsd: row.totalUsd ?? 0 };
+  }
+
+  // Shares and Additions counted by month ("2026-10", from the ISO date), oldest
+  // first, and Shares by source. Counted by SQLite: no Share is loaded.
+  async stats(): Promise<Stats> {
+    const shareMonths = await this.db
+      .selectFrom("shares")
+      .select((eb) => [
+        sql<string>`substr(created_at, 1, 7)`.as("month"),
+        eb.fn.countAll<number>().as("shares"),
+        sql<number>`count(*) filter (where status = 'READY')`.as("identified"),
+        sql<number>`count(*) filter (where status = 'NO_MATCH')`.as("noMatch"),
+        sql<number>`count(*) filter (where status = 'FAILED')`.as("failed"),
+        eb.fn.sum<number>("llm_cost_usd").as("llmCostUsd"),
+      ])
+      .groupBy("month")
+      .execute();
+    const additionMonths = await this.db
+      .selectFrom("additions")
+      .select((eb) => [
+        sql<string>`substr(created_at, 1, 7)`.as("month"),
+        eb.fn.countAll<number>().as("additions"),
+        sql<number>`count(*) filter (where automatic = 1)`.as("automaticAdditions"),
+      ])
+      .where("status", "!=", "FAILED")
+      .groupBy("month")
+      .execute();
+    const sources = await this.db
+      .selectFrom("shares")
+      .select((eb) => [
+        eb.fn.coalesce("source", sql<string>`'unknown'`).as("source"),
+        eb.fn.countAll<number>().as("shares"),
+      ])
+      .groupBy("source")
+      .orderBy("shares", "desc")
+      .execute();
+
+    // A month may have Additions without Shares (a Share from the month before).
+    const months = new Map<string, MonthStats>();
+    for (const row of shareMonths) {
+      months.set(row.month, {
+        ...row,
+        llmCostUsd: row.llmCostUsd ?? 0,
+        additions: 0,
+        automaticAdditions: 0,
+      });
+    }
+    for (const row of additionMonths) {
+      const month = months.get(row.month) ?? {
+        month: row.month,
+        shares: 0,
+        identified: 0,
+        noMatch: 0,
+        failed: 0,
+        llmCostUsd: 0,
+      };
+      months.set(row.month, { ...month, ...row });
+    }
+    return {
+      months: [...months.values()].sort((a, b) => a.month.localeCompare(b.month)),
+      sources,
+    };
   }
 
   // Records what happened when adding a Candidate. Returns nothing: read the Share again.
