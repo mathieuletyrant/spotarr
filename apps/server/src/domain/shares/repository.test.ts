@@ -113,3 +113,31 @@ test("the image is kept for the Identification but never listed", async () => {
   expect((await shares.get(id))?.input.hasImage).toBe(true);
   expect((await shares.input(id)).image).toEqual(new Uint8Array([1, 2, 3]));
 });
+
+test("the video's thumbnails are stored, replaced by a new Identification and cleared by a retry", async () => {
+  const { shares } = await repository();
+  const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
+  const result = (thumbnails: number[]) => ({
+    status: "NO_MATCH" as const,
+    extractors: ["video"],
+    clues: {},
+    candidates: [],
+    frames: thumbnails.map((n, i) => ({ atMs: i * 1000, thumbnail: new Uint8Array([n]) })),
+  });
+
+  await shares.finish(id, result([1, 2, 3]), 10);
+  expect((await shares.get(id))?.frames).toEqual([
+    { position: 0, atMs: 0 },
+    { position: 1, atMs: 1000 },
+    { position: 2, atMs: 2000 },
+  ]);
+  expect(await shares.frameThumbnail(id, 1)).toEqual(new Uint8Array([2]));
+
+  await shares.finish(id, result([9]), 10);
+  expect((await shares.get(id))?.frames).toHaveLength(1);
+  expect(await shares.frameThumbnail(id, 0)).toEqual(new Uint8Array([9]));
+
+  await shares.requeue(id);
+  expect((await shares.get(id))?.frames).toEqual([]);
+  expect(await shares.frameThumbnail(id, 0)).toBeUndefined();
+});

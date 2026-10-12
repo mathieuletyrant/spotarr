@@ -11,6 +11,7 @@ function share(id: string, summary: Share["summary"], text = ""): Share {
     identification: { status: "READY", extractors: [], clues: {} },
     candidates: [{ tmdbId: 1, type: "MOVIE", title: `Title of ${id}`, libraryState: "ABSENT" }],
     additions: [],
+    frames: [],
     summary,
   };
 }

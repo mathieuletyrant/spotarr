@@ -1,11 +1,11 @@
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { extractFrames } from "../../../integrations/ffmpeg/frames";
+import { extractFrames, type Frame } from "../../../integrations/ffmpeg/frames";
 import { downloadVideo, readVideoInfo } from "../../../integrations/ytdlp/ytdlp";
 import type { Settings } from "../../settings/schema";
 
-export type Video = { caption?: string; author?: string; frames: Uint8Array[] };
+export type Video = { caption?: string; author?: string; frames: Frame[] };
 
 // Reads a shared video: what yt-dlp knows about it, and a few frames for the LLM.
 // Everything happens in a temporary folder, deleted at the end: no video is kept.

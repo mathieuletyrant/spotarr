@@ -112,6 +112,17 @@ message Share {
   repeated Addition additions = 7;
   // What the history shows. Derived, never stored.
   Summary summary = 8;
+  // Thumbnails of the shared video, in order.
+  repeated Frame frames = 9;
+}
+
+// A thumbnail taken from the shared video, 240 px wide.
+message Frame {
+  // When, in the video.
+  float at_seconds = 1;
+  // Where to get the JPEG, on the same origin: /frames/<share id>/<n>.jpg.
+  // Needs the API token, like the API.
+  string url = 2;
 }
 
 message ShareInput {

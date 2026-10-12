@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './../routes/__root'
 import { Route as AppRouteImport } from './../routes/_app'
 import { Route as LoginRouteImport } from './../routes/login'
 import { Route as AppIndexRouteImport } from './../routes/_app/index'
+import { Route as AppSharesShareIdRouteImport } from './../routes/_app/shares.$shareId'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -27,27 +28,35 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSharesShareIdRoute = AppSharesShareIdRouteImport.update({
+  id: '/shares/$shareId',
+  path: '/shares/$shareId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
+  '/shares/$shareId': typeof AppSharesShareIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/': typeof AppIndexRoute
+  '/shares/$shareId': typeof AppSharesShareIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/shares/$shareId': typeof AppSharesShareIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login'
+  fullPaths: '/' | '/login' | '/shares/$shareId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/'
-  id: '__root__' | '/_app' | '/login' | '/_app/'
+  to: '/login' | '/' | '/shares/$shareId'
+  id: '__root__' | '/_app' | '/login' | '/_app/' | '/_app/shares/$shareId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -78,15 +87,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/shares/$shareId': {
+      id: '/_app/shares/$shareId'
+      path: '/shares/$shareId'
+      fullPath: '/shares/$shareId'
+      preLoaderRoute: typeof AppSharesShareIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
   AppIndexRoute: typeof AppIndexRoute
+  AppSharesShareIdRoute: typeof AppSharesShareIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppIndexRoute: AppIndexRoute,
+  AppSharesShareIdRoute: AppSharesShareIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

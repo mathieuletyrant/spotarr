@@ -1,0 +1,54 @@
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { CandidateCard } from "../../components/share/candidate-card";
+import { Card } from "../../components/share/card";
+import { CluesCard } from "../../components/share/clues-card";
+import { ShareHeader } from "../../components/share/share-header";
+import { shareQuery } from "../../queries/shares";
+
+export const Route = createFileRoute("/_app/shares/$shareId")({ component: SharePage });
+
+function SharePage() {
+  const { shareId } = Route.useParams();
+  const { data, isPending, error } = useQuery(shareQuery(shareId));
+
+  if (isPending) return <p className="text-text-muted">Loading…</p>;
+  if (error) return <p className="text-status-error">{error.message}</p>;
+  const share = data.share;
+  if (!share) return null;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <ShareHeader share={share} />
+      {/* grid-cols-1 keeps the column to the screen's width on a phone: an implicit
+          column would grow to fit the frames. */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] md:items-start">
+        <div className="flex flex-col gap-6">
+          <CluesCard share={share} />
+          {share.identification?.reasoning && (
+            <Card title="LLM reasoning">
+              <p className="leading-relaxed">{share.identification.reasoning}</p>
+            </Card>
+          )}
+        </div>
+        <Card title="Candidates">
+          {share.candidates.length === 0 ? (
+            <p className="text-text-muted">
+              No candidates. Retry the identification, or open the source.
+            </p>
+          ) : (
+            <ul className="divide-y divide-divider">
+              {share.candidates.map((candidate) => (
+                <CandidateCard
+                  key={`${candidate.type}-${candidate.tmdbId}`}
+                  share={share}
+                  candidate={candidate}
+                />
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
+    </div>
+  );
+}
