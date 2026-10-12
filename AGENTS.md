@@ -14,7 +14,7 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 | `pnpm check` | The whole gate: Biome → `buf lint` → generate (contract, tokens) → stale-output guard → `buf breaking` → `tsc` → `bun test` |
 | `pnpm format` | Rewrite files to Biome's format |
 | `pnpm generate` | Regenerate `packages/contract/src/gen` and `packages/design-tokens/gen` |
-| `pnpm --filter @spotarr/server dev` | Run the service |
+| `DATA_DIR=./data pnpm --filter @spotarr/server dev` | Run the service on :3000; the API token is printed at first start |
 
 ## Layout
 
