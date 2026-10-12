@@ -120,3 +120,7 @@ Needs [pnpm](https://pnpm.io) (its version comes from `package.json`), [Bun](htt
 Two documented workarounds: Connect-RPC is mounted inside Hono through a small adapter ([ADR 0001](docs/adr/0001-connect-rpc-mounted-in-hono.md)), and Kysely talks to `bun:sqlite` through an in-house dialect ([ADR 0002](docs/adr/0002-kysely-over-bun-sqlite-with-custom-dialect.md)).
 
 Roadmap: [milestones](https://github.com/mathieuletyrant/spotarr/milestones) and the [project board](https://github.com/users/mathieuletyrant/projects/1).
+
+## 📄 License
+
+[MIT](LICENSE).
