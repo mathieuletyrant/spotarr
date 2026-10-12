@@ -17,44 +17,60 @@ const dune: Candidate = {
   libraryState: "ABSENT",
 };
 
-test("a new Share is queued and its Summary is IN_PROGRESS", async () => {
+test("a new Share is queued", async () => {
   const { shares } = await repository();
-  const share = await shares.create({ url: "https://www.instagram.com/reel/x" }, "instagram.com");
+  const id = await shares.create({ url: "https://www.instagram.com/reel/x" }, "instagram.com");
+  const share = await shares.get(id);
 
-  expect(share.id).toMatch(/^shr_/);
-  expect(share.identification.status).toBe("QUEUED");
-  expect(share.summary).toBe("IN_PROGRESS");
-  expect(share.input).toEqual({
+  expect(id).toMatch(/^shr_/);
+  expect(share?.identification.status).toBe("QUEUED");
+  expect(share?.summary).toBe("IN_PROGRESS");
+  expect(share?.input).toEqual({
     url: "https://www.instagram.com/reel/x",
     text: undefined,
     hasImage: false,
   });
 });
 
-test("the Summary follows the glossary's rules", async () => {
-  const { db, shares } = await repository();
-  const make = async () => (await shares.create({ text: "x" }, "text")).id;
-  const ready = (state: Candidate["libraryState"]) => ({
-    status: "READY" as const,
-    method: "LLM" as const,
-    extractors: ["text"],
-    clues: {},
-    candidates: [{ ...dune, libraryState: state }],
-  });
+test("finish stores what the Identification found", async () => {
+  const { shares } = await repository();
+  const id = await shares.create({ text: "x" }, "text");
+  await shares.finish(
+    id,
+    {
+      status: "READY",
+      method: "LLM",
+      extractors: ["text"],
+      clues: { caption: "c" },
+      reasoning: "r",
+      candidates: [dune],
+    },
+    12,
+  );
 
-  const toChoose = await make();
-  await shares.finish(toChoose, ready("ABSENT"), 10);
-  const present = await make();
-  await shares.finish(present, ready("PARTIAL"), 10);
-  const failed = await make();
-  await shares.fail(failed, "Seerr unreachable", 10);
-  const requested = await make();
-  await shares.finish(requested, ready("ABSENT"), 10);
+  const share = await shares.get(id);
+  expect(share?.identification).toEqual({
+    status: "READY",
+    method: "LLM",
+    durationMs: 12,
+    extractors: ["text"],
+    clues: { caption: "c" },
+    reasoning: "r",
+    error: undefined,
+  });
+  expect(share?.candidates).toEqual([dune]);
+  expect(share?.summary).toBe("TO_CHOOSE");
+});
+
+test("a Share reads its Additions, and its Summary follows the latest", async () => {
+  const { db, shares } = await repository();
+  const id = await shares.create({ text: "x" }, "text");
+  await shares.finish(id, { status: "READY", extractors: [], clues: {}, candidates: [dune] }, 10);
   await db
     .insertInto("additions")
     .values({
       id: "add_1",
-      share_id: requested,
+      share_id: id,
       tmdb_id: dune.tmdbId,
       media_type: "MOVIE",
       target: "SEERR",
@@ -62,65 +78,37 @@ test("the Summary follows the glossary's rules", async () => {
     })
     .execute();
 
-  const summaryOf = async (id: string) => (await shares.get(id))?.summary;
-  expect(await summaryOf(toChoose)).toBe("TO_CHOOSE");
-  expect(await summaryOf(present)).toBe("ALREADY_PRESENT");
-  expect(await summaryOf(failed)).toBe("FAILED");
-  expect(await summaryOf(requested)).toBe("REQUESTED");
-  expect((await shares.get(requested))?.additions.map((a) => a.status)).toEqual(["REQUESTED"]);
+  const share = await shares.get(id);
+  expect(share?.additions.map((a) => a.status)).toEqual(["REQUESTED"]);
+  expect(share?.summary).toBe("REQUESTED");
 });
 
-test("list pages newest first and filters by Summary and text", async () => {
+test("all() lists newest first", async () => {
   const { shares } = await repository();
-  const a = await shares.create({ url: "https://letterboxd.com/film/dune" }, "letterboxd.com");
-  const b = await shares.create({ text: "the film with Cillian Murphy" }, "text");
-  const c = await shares.create({ url: "https://youtube.com/watch?v=1" }, "youtube.com");
-  await shares.finish(c.id, { status: "READY", extractors: [], clues: {}, candidates: [dune] }, 10);
-
-  const first = await shares.list({ limit: 2, summaries: [] });
-  expect(first.map((s) => s.id)).toEqual([c.id, b.id]);
-  const second = await shares.list({ limit: 2, after: b.id, summaries: [] });
-  expect(second.map((s) => s.id)).toEqual([a.id]);
-
-  expect((await shares.list({ limit: 10, summaries: ["TO_CHOOSE"] })).map((s) => s.id)).toEqual([
-    c.id,
-  ]);
-  expect(
-    (await shares.list({ limit: 10, summaries: [], query: "cillian" })).map((s) => s.id),
-  ).toEqual([b.id]);
-  expect(
-    (await shares.list({ limit: 10, summaries: [], query: "Deuxième" })).map((s) => s.id),
-  ).toEqual([c.id]);
+  const first = await shares.create({ text: "1" }, "text");
+  const second = await shares.create({ text: "2" }, "text");
+  expect((await shares.all()).map((s) => s.id)).toEqual([second, first]);
 });
 
-test("requeue clears what the Identification found and refuses a busy Share", async () => {
+test("requeue clears what the Identification found", async () => {
   const { shares } = await repository();
-  const { id } = await shares.create({ text: "x" }, "text");
-  expect(await shares.requeue(id)).toBe("busy");
-
+  const id = await shares.create({ text: "x" }, "text");
   await shares.finish(
     id,
-    {
-      status: "READY",
-      method: "LLM",
-      reasoning: "r",
-      extractors: ["text"],
-      clues: { caption: "c" },
-      candidates: [dune],
-    },
+    { status: "READY", method: "LLM", extractors: ["text"], clues: {}, candidates: [dune] },
     10,
   );
-  expect(await shares.requeue(id)).toBe("queued");
+
+  await shares.requeue(id);
 
   const share = await shares.get(id);
-  expect(share?.identification).toEqual({ status: "QUEUED", extractors: [], clues: {} });
+  expect(share?.identification).toMatchObject({ status: "QUEUED", extractors: [], clues: {} });
   expect(share?.candidates).toEqual([]);
-  expect(await shares.requeue("shr_missing")).toBe("missing");
 });
 
 test("the image is kept for the Identification but never listed", async () => {
   const { shares } = await repository();
-  const { id } = await shares.create({ image: new Uint8Array([1, 2, 3]) }, "image");
+  const id = await shares.create({ image: new Uint8Array([1, 2, 3]) }, "image");
 
   expect((await shares.get(id))?.input.hasImage).toBe(true);
   expect((await shares.input(id)).image).toEqual(new Uint8Array([1, 2, 3]));

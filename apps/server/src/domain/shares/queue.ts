@@ -22,28 +22,28 @@ export class ShareQueue {
 
   // Call after queuing a Share. Returns at once; the work happens in the background.
   wake(): void {
-    void this.pump();
+    void this.fillFreeSlots();
   }
 
-  private async pump(): Promise<void> {
-    for (;;) {
-      const max = await this.concurrency();
-      // Check and reserve a slot in the same tick, so two pumps cannot both take it.
-      if (this.running >= max) return;
+  // Starts Identifications until every slot is busy or nothing is queued.
+  private async fillFreeSlots(): Promise<void> {
+    const slots = await this.concurrency();
+    while (this.running < slots) {
+      // Take the slot before the next await, so two calls cannot both take it.
       this.running++;
       const id = await this.shares.claimNext();
       if (!id) {
         this.running--;
         return;
       }
-      void this.run(id).finally(() => {
+      void this.identifyShare(id).finally(() => {
         this.running--;
-        this.wake();
+        this.wake(); // a slot just freed up: start the next queued Share
       });
     }
   }
 
-  private async run(id: string): Promise<void> {
+  private async identifyShare(id: string): Promise<void> {
     const started = performance.now();
     const elapsed = () => Math.round(performance.now() - started);
     try {

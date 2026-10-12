@@ -1,35 +1,42 @@
-import { type Kysely, type Selectable, sql } from "kysely";
+import { type Kysely, sql, type Updateable } from "kysely";
 import type { DB } from "../../db";
-import type { Additions, Shares } from "../../db/gen/types";
+import type { Shares } from "../../db/gen/types";
+import { summaryOf } from "./summary";
 import {
   type Addition,
   CandidateSchema,
   CluesSchema,
   type IdentificationResult,
+  type IdentificationStatus,
+  type Method,
   type Share,
   type ShareInput,
-  type Summary,
 } from "./types";
 
-// The Summary of a Share, computed by SQLite so the history can both show it
-// and filter on it. Order matters: the first matching line wins.
-const summary = sql<Summary>`CASE
-  WHEN shares.status IN ('QUEUED', 'PROCESSING') THEN 'IN_PROGRESS'
-  WHEN latest_addition.status IS NOT NULL THEN latest_addition.status
-  WHEN shares.status = 'FAILED' THEN 'FAILED'
-  WHEN shares.status = 'NO_MATCH' THEN 'NO_MATCH'
-  WHEN json_extract(shares.candidates, '$[0].libraryState') IN ('AVAILABLE', 'PARTIAL') THEN 'ALREADY_PRESENT'
-  ELSE 'TO_CHOOSE'
-END`;
+const NOW = sql<string>`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`;
 
-export type ListOptions = { limit: number; after?: string; summaries: Summary[]; query?: string };
+// Every column but the image, which is only read by the Identification (see input()).
+const COLUMNS = [
+  "id",
+  "created_at",
+  "input_url",
+  "input_text",
+  "source",
+  "status",
+  "method",
+  "duration_ms",
+  "extractors",
+  "clues",
+  "reasoning",
+  "candidates",
+  "error",
+] as const;
 
 export class ShareRepository {
   constructor(private readonly db: Kysely<DB>) {}
 
-  async create(input: ShareInput, source: string): Promise<Share> {
-    // UUIDv7 starts with a timestamp: ids sort by creation time, which lets
-    // the history paginate on the id alone.
+  // Returns the new Share's id. UUIDv7 starts with a timestamp, so ids sort by creation time.
+  async create(input: ShareInput, source: string): Promise<string> {
     const id = `shr_${Bun.randomUUIDv7()}`;
     await this.db
       .insertInto("shares")
@@ -41,33 +48,43 @@ export class ShareRepository {
         input_image: input.image ?? null,
       })
       .execute();
-    return (await this.get(id)) as Share;
+    return id;
   }
 
   async get(id: string): Promise<Share | undefined> {
-    const [share] = await this.select((q) => q.where("shares.id", "=", id));
-    return share;
+    const row = await this.db
+      .selectFrom("shares")
+      .select(COLUMNS)
+      .select(sql<number>`input_image IS NOT NULL`.as("has_image"))
+      .where("id", "=", id)
+      .executeTakeFirst();
+    if (!row) return undefined;
+
+    const additions = await this.db
+      .selectFrom("additions")
+      .selectAll()
+      .where("share_id", "=", id)
+      .orderBy("id")
+      .execute();
+    return toShare(row, additions);
   }
 
-  // Newest first. `after` is the id of the last Share of the previous page.
-  async list({ limit, after, summaries, query }: ListOptions): Promise<Share[]> {
-    return this.select((q) => {
-      let page = q.orderBy("shares.id", "desc").limit(limit);
-      if (after) page = page.where("shares.id", "<", after);
-      if (summaries.length > 0) page = page.where(summary, "in", summaries);
-      if (query) {
-        const like = `%${query}%`;
-        page = page.where((eb) =>
-          eb.or([
-            eb("shares.source", "like", like),
-            eb("shares.input_url", "like", like),
-            eb("shares.input_text", "like", like),
-            eb("shares.candidates", "like", like),
-          ]),
-        );
-      }
-      return page;
-    });
+  // The whole history, newest first.
+  // ponytail: loads every Share; paginate in SQL if the history grows past a few thousand.
+  async all(): Promise<Share[]> {
+    const rows = await this.db
+      .selectFrom("shares")
+      .select(COLUMNS)
+      .select(sql<number>`input_image IS NOT NULL`.as("has_image"))
+      .orderBy("id", "desc")
+      .execute();
+    const additions = await this.db.selectFrom("additions").selectAll().orderBy("id").execute();
+    return rows.map((row) =>
+      toShare(
+        row,
+        additions.filter((a) => a.share_id === row.id),
+      ),
+    );
   }
 
   // What the Identification works on, image included.
@@ -88,7 +105,7 @@ export class ShareRepository {
   async claimNext(): Promise<string | undefined> {
     const row = await this.db
       .updateTable("shares")
-      .set({ status: "PROCESSING", updated_at: sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` })
+      .set({ status: "PROCESSING", updated_at: NOW })
       .where("id", "=", (eb) =>
         eb.selectFrom("shares").select("id").where("status", "=", "QUEUED").orderBy("id").limit(1),
       )
@@ -114,12 +131,8 @@ export class ShareRepository {
     await this.update(id, { status: "FAILED", duration_ms: durationMs, error });
   }
 
-  // Puts a finished Share back in the queue, clearing what its Identification
-  // found. Additions are kept. "busy" when it is still queued or processing.
-  async requeue(id: string): Promise<"queued" | "busy" | "missing"> {
-    const share = await this.get(id);
-    if (!share) return "missing";
-    if (share.summary === "IN_PROGRESS") return "busy";
+  // Puts a Share back in the queue, clearing what its Identification found. Additions stay.
+  async requeue(id: string): Promise<void> {
     await this.update(id, {
       status: "QUEUED",
       method: null,
@@ -130,94 +143,59 @@ export class ShareRepository {
       candidates: "[]",
       error: null,
     });
-    return "queued";
   }
 
   // At startup: Identifications cut short by a restart start over.
   async requeueInterrupted(): Promise<void> {
     await this.db
       .updateTable("shares")
-      .set({ status: "QUEUED" })
+      .set({ status: "QUEUED", updated_at: NOW })
       .where("status", "=", "PROCESSING")
       .execute();
   }
 
-  private async update(
-    id: string,
-    values: Partial<Omit<Selectable<Shares>, "id" | "created_at">>,
-  ): Promise<void> {
+  private async update(id: string, values: Updateable<Shares>): Promise<void> {
     await this.db
       .updateTable("shares")
-      .set({ ...values, updated_at: sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))` })
+      .set({ ...values, updated_at: NOW })
       .where("id", "=", id)
       .execute();
   }
-
-  // One query for the Shares, one for all their Additions.
-  private async select(narrow: (query: ShareQuery) => ShareQuery): Promise<Share[]> {
-    const rows = await narrow(shareQuery(this.db)).execute();
-    if (rows.length === 0) return [];
-
-    const additions = await this.db
-      .selectFrom("additions")
-      .selectAll()
-      .where(
-        "share_id",
-        "in",
-        rows.map((r) => r.id),
-      )
-      .orderBy("id")
-      .execute();
-    return rows.map((row) =>
-      toShare(
-        row,
-        additions.filter((a) => a.share_id === row.id),
-      ),
-    );
-  }
 }
 
-// Every column a Share needs, plus its Summary. Kysely infers the row type from it.
-function shareQuery(db: Kysely<DB>) {
-  return db
-    .selectFrom("shares")
-    .leftJoin(
-      (eb) =>
-        eb
-          .selectFrom("additions")
-          .select(["share_id", "status"])
-          .where("id", "in", (sub) =>
-            sub
-              .selectFrom("additions")
-              .select((e) => e.fn.max("id").as("id"))
-              .groupBy("share_id"),
-          )
-          .as("latest_addition"),
-      (join) => join.onRef("latest_addition.share_id", "=", "shares.id"),
-    )
-    .select([
-      "shares.id",
-      "shares.created_at",
-      "shares.input_url",
-      "shares.input_text",
-      sql<number>`shares.input_image IS NOT NULL`.as("has_image"),
-      "shares.source",
-      "shares.status",
-      "shares.method",
-      "shares.duration_ms",
-      "shares.extractors",
-      "shares.clues",
-      "shares.reasoning",
-      "shares.candidates",
-      "shares.error",
-      summary.as("summary"),
-    ]);
-}
+type ShareRow = {
+  id: string;
+  created_at: string;
+  input_url: string | null;
+  input_text: string | null;
+  has_image: number;
+  source: string | null;
+  status: string;
+  method: string | null;
+  duration_ms: number | null;
+  extractors: string;
+  clues: string;
+  reasoning: string | null;
+  candidates: string;
+  error: string | null;
+};
 
-type ShareQuery = ReturnType<typeof shareQuery>;
-type ShareRow = Awaited<ReturnType<ShareQuery["execute"]>>[number];
+type AdditionRow = {
+  id: string;
+  created_at: string;
+  tmdb_id: number;
+  media_type: string;
+  target: string;
+  status: string;
+  error: string | null;
+};
 
-function toShare(row: ShareRow, additions: Selectable<Additions>[]): Share {
+// SQLite stores enums as text and lists as JSON: this turns a row back into a Share.
+function toShare(row: ShareRow, additionRows: AdditionRow[]): Share {
+  const status = row.status as IdentificationStatus;
+  const candidates = CandidateSchema.array().parse(JSON.parse(row.candidates));
+  const additions = additionRows.map(toAddition);
+
   return {
     id: row.id,
     createdAt: row.created_at,
@@ -228,26 +206,28 @@ function toShare(row: ShareRow, additions: Selectable<Additions>[]): Share {
     },
     source: row.source ?? "",
     identification: {
-      status: row.status as Share["identification"]["status"],
-      method: (row.method ?? undefined) as Share["identification"]["method"],
+      status,
+      method: (row.method as Method | null) ?? undefined,
       durationMs: row.duration_ms ?? undefined,
       extractors: JSON.parse(row.extractors),
       clues: CluesSchema.parse(JSON.parse(row.clues)),
       reasoning: row.reasoning ?? undefined,
       error: row.error ?? undefined,
     },
-    candidates: CandidateSchema.array().parse(JSON.parse(row.candidates)),
-    additions: additions.map(
-      (a): Addition => ({
-        id: a.id,
-        createdAt: a.created_at,
-        tmdbId: a.tmdb_id,
-        type: a.media_type as Addition["type"],
-        target: a.target as Addition["target"],
-        status: a.status as Addition["status"],
-        error: a.error ?? undefined,
-      }),
-    ),
-    summary: row.summary,
+    candidates,
+    additions,
+    summary: summaryOf(status, candidates, additions),
+  };
+}
+
+function toAddition(row: AdditionRow): Addition {
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    tmdbId: row.tmdb_id,
+    type: row.media_type as Addition["type"],
+    target: row.target as Addition["target"],
+    status: row.status as Addition["status"],
+    error: row.error ?? undefined,
   };
 }

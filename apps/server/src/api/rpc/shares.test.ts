@@ -51,9 +51,7 @@ test("GetShare on an unknown id is not_found", async () => {
 
 test("ListShares paginates with next_cursor and filters by summary", async () => {
   for (let i = 0; i < 3; i++) await call("CreateShare", { text: `share ${i}` });
-  await until(
-    async () => (await shares.list({ limit: 50, summaries: ["IN_PROGRESS"] })).length === 0,
-  );
+  await until(async () => (await shares.all()).every((s) => s.summary !== "IN_PROGRESS"));
 
   const first = await call("ListShares", { pageSize: 2 });
   expect(first.body.shares).toHaveLength(2);

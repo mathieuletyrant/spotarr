@@ -31,7 +31,7 @@ test("at most `concurrency` Identifications run at once, and all of them finish"
 
   const ids: string[] = [];
   for (let i = 0; i < 3; i++) {
-    ids.push((await shares.create({ text: `share ${i}` }, "text")).id);
+    ids.push(await shares.create({ text: `share ${i}` }, "text"));
     queue.wake();
   }
   await until(async () => running === 2);
@@ -53,7 +53,7 @@ test("an Identification that throws ends FAILED with its error", async () => {
     },
     async () => 2,
   );
-  const { id } = await shares.create({ text: "x" }, "text");
+  const id = await shares.create({ text: "x" }, "text");
   queue.wake();
 
   await until(async () => (await shares.get(id))?.identification.status === "FAILED");
@@ -62,7 +62,7 @@ test("an Identification that throws ends FAILED with its error", async () => {
 
 test("start() resumes an Identification interrupted by a restart", async () => {
   const shares = new ShareRepository(await openDatabase(":memory:"));
-  const { id } = await shares.create({ text: "x" }, "text");
+  const id = await shares.create({ text: "x" }, "text");
   await shares.claimNext(); // the previous process took it, then died
   expect((await shares.get(id))?.identification.status).toBe("PROCESSING");
 

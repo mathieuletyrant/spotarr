@@ -9,6 +9,7 @@ import {
   Summary,
   Target,
 } from "@spotarr/contract";
+import { historyPage } from "../../domain/shares/history";
 import { parseInput } from "../../domain/shares/input";
 import type { ShareQueue } from "../../domain/shares/queue";
 import type { ShareRepository } from "../../domain/shares/repository";
@@ -19,79 +20,71 @@ export function shareRpcs(
   shares: ShareRepository,
   queue: ShareQueue,
 ): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification"> {
-  const found = async (id: string) => {
+  async function getOrFail(id: string): Promise<Share> {
     const share = await shares.get(id);
     if (!share) throw new ConnectError(`no share ${id}`, Code.NotFound);
-    return toMessage(share);
-  };
+    return share;
+  }
 
   return {
     // Invalid input throws a ZodError, turned into invalid_argument by rpc/errors.ts.
-    createShare: async (req) => {
+    async createShare(req) {
       const { input, source } = parseInput(req);
-      const share = await shares.create(input, source);
+      const id = await shares.create(input, source);
       queue.wake();
-      return { share: toMessage(share) };
+      return { share: toMessage(await getOrFail(id)) };
     },
 
-    getShare: async (req) => ({ share: await found(req.id) }),
+    async getShare(req) {
+      return { share: toMessage(await getOrFail(req.id)) };
+    },
 
-    listShares: async (req) => {
-      const limit = Math.min(req.pageSize ?? 50, 100);
-      // One extra row tells whether a next page exists.
-      const page = await shares.list({
-        limit: limit + 1,
-        after: req.cursor,
-        summaries: req.summaries
-          .filter((s) => s !== Summary.UNSPECIFIED)
-          .map((s) => Summary[s] as Share["summary"]),
-        query: req.query?.trim() || undefined,
+    async listShares(req) {
+      const page = historyPage(await shares.all(), {
+        limit: Math.min(req.pageSize ?? 50, 100),
+        cursor: req.cursor,
+        summaries: req.summaries.map((s) => Summary[s] as Share["summary"]),
+        query: req.query?.trim(),
       });
-      const hasMore = page.length > limit;
-      const shown = page.slice(0, limit);
-      return {
-        shares: shown.map(toMessage),
-        nextCursor: hasMore ? shown.at(-1)?.id : undefined,
-      };
+      return { shares: page.shares.map(toMessage), nextCursor: page.nextCursor };
     },
 
-    retryIdentification: async (req) => {
-      const outcome = await shares.requeue(req.id);
-      if (outcome === "missing") throw new ConnectError(`no share ${req.id}`, Code.NotFound);
-      if (outcome === "busy") {
+    async retryIdentification(req) {
+      const share = await getOrFail(req.id);
+      if (share.summary === "IN_PROGRESS") {
         throw new ConnectError("identification still in progress", Code.FailedPrecondition);
       }
+      await shares.requeue(req.id);
       queue.wake();
-      return { share: await found(req.id) };
+      return { share: toMessage(await getOrFail(req.id)) };
     },
   };
 }
 
-// Domain values are plain strings ("READY"); the contract's enums are numbers
-// whose names match them (IdentificationStatus.READY), so the lookup is by name.
+// The domain writes enum values as names ("READY"), the contract as numbers.
+// Each enum of the contract maps a name to its number: IdentificationStatus["READY"] is 3.
 function toMessage(share: Share) {
-  const { identification: idf } = share;
   return {
     id: share.id,
     createdAt: timestampFromDate(new Date(share.createdAt)),
     input: share.input,
     source: share.source,
     identification: {
-      ...idf,
-      status: IdentificationStatus[idf.status],
-      method: idf.method ? Method[idf.method] : Method.UNSPECIFIED,
+      ...share.identification,
+      status: IdentificationStatus[share.identification.status],
+      method: Method[share.identification.method ?? "UNSPECIFIED"],
     },
-    candidates: share.candidates.map((c) => ({
-      ...c,
-      type: MediaType[c.type],
-      libraryState: LibraryState[c.libraryState],
+    candidates: share.candidates.map((candidate) => ({
+      ...candidate,
+      type: MediaType[candidate.type],
+      libraryState: LibraryState[candidate.libraryState],
     })),
-    additions: share.additions.map((a) => ({
-      ...a,
-      createdAt: timestampFromDate(new Date(a.createdAt)),
-      type: MediaType[a.type],
-      target: Target[a.target],
-      status: AdditionStatus[a.status],
+    additions: share.additions.map((addition) => ({
+      ...addition,
+      createdAt: timestampFromDate(new Date(addition.createdAt)),
+      type: MediaType[addition.type],
+      target: Target[addition.target],
+      status: AdditionStatus[addition.status],
     })),
     summary: Summary[share.summary],
   };
