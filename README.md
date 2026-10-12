@@ -28,7 +28,7 @@ services:
     restart: unless-stopped
 ```
 
-`docker compose up -d`, then open http://localhost:3000. The API token is printed in the container logs at every start (`docker compose logs spotarr`); the UI asks for it once. Everything else (LLM, TMDB, Seerr, webhooks) is configured in Settings. Only three environment variables exist: `PORT` (default `3000`), `DATA_DIR` (default `/data`), and `API_TOKEN`, which fixes the API token instead of generating one.
+`docker compose up -d`, then open http://localhost:3000. The API token is printed in the container logs at every start (`docker compose logs spotarr`); the UI asks for it once. Everything else (LLM, TMDB, Seerr, webhooks) is configured in Settings. Environment variables, all optional: `PORT` (default `3000`), `DATA_DIR` (default `/data`), `API_TOKEN` (fixes the API token instead of generating one), and `LLM_API_KEY`, `TMDB_TOKEN`, `SEERR_URL`, `SEERR_API_KEY`, which win over the values saved in Settings at each start (empty ones change nothing).
 
 ⏳ The image is published from milestone 5 on. Until then, run from source: `pnpm dev`, then open http://localhost:5173.
 

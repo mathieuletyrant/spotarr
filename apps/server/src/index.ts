@@ -7,6 +7,7 @@ import { AnswerSchema } from "./domain/identification/guess-titles";
 import { identifyShare } from "./domain/identification/use-cases/identify-share";
 import { SettingsRepository } from "./domain/settings/repository";
 import type { Settings } from "./domain/settings/schema";
+import { applyEnvironment } from "./domain/settings/use-cases/apply-environment";
 import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
@@ -18,8 +19,9 @@ import { Seerr } from "./integrations/seerr/client";
 import { Tmdb } from "./integrations/tmdb/client";
 import { log } from "./log";
 
-// The only environment variables; everything else is set in the UI.
-// API_TOKEN (optional) fixes the API token, e.g. to the Umbrel app password.
+// Everything is set in the UI. Optional environment variables, for Umbrel's
+// app settings: API_TOKEN fixes the API token; LLM_API_KEY, TMDB_TOKEN,
+// SEERR_URL and SEERR_API_KEY win over the saved settings at each start.
 const port = Number(process.env.PORT ?? 3000);
 const dataDir = process.env.DATA_DIR ?? "/data";
 
@@ -28,6 +30,10 @@ const db = await openDatabase(join(dataDir, "spotarr.db"));
 
 const settings = new SettingsRepository(db);
 const { token, created } = await ensureApiToken(settings, process.env.API_TOKEN);
+// A wrong value is logged, not fatal: Spotarr starts with the saved settings.
+await applyEnvironment(settings, process.env).catch((error) =>
+  log({ step: "environment", error: String(error) }),
+);
 // Printed at every start: the logs are where the token is found again if
 // lost, since the Settings page that shows it needs it to sign in.
 console.log(`API token${created ? " (new)" : ""}: ${token}`);
