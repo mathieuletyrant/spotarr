@@ -8,6 +8,14 @@ struct SettingsView: View {
   @State private var showToken = false
   @State private var check: Check = .idle
 
+  // The usual names, picked from the menu next to a header's name; any other can be typed.
+  static let knownHeaders = [
+    "CF-Access-Client-Id",
+    "CF-Access-Client-Secret",
+    "X-Api-Key",
+    "Proxy-Authorization",
+  ]
+
   enum Check: Equatable {
     case idle, checking, ok(String), failed(String)
   }
@@ -46,8 +54,18 @@ struct SettingsView: View {
       Section {
         ForEach($settings.customHeaders) { $header in
           VStack(alignment: .leading, spacing: 6) {
-            TextField("Name", text: $header.name)
-              .font(.body.monospaced())
+            HStack {
+              TextField("Name", text: $header.name)
+                .font(.body.monospaced())
+              Menu {
+                ForEach(Self.knownHeaders, id: \.self) { name in
+                  Button(name) { header.name = name }
+                }
+              } label: {
+                Image(systemName: "chevron.up.chevron.down")
+              }
+              .accessibilityLabel("Choose a header name")
+            }
             SecureField("Value", text: $header.value)
           }
           .textInputAutocapitalization(.never)
