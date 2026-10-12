@@ -8,58 +8,55 @@ import {
   Summary,
   Target,
 } from "@spotarr/contract";
-import { addCandidate } from "../../domain/shares/add";
-import { historyPage } from "../../domain/shares/history";
-import { parseInput } from "../../domain/shares/input";
 import type { ShareQueue } from "../../domain/shares/queue";
 import type { ShareRepository } from "../../domain/shares/repository";
 import type { Share } from "../../domain/shares/types";
+import { addCandidate } from "../../domain/shares/use-cases/add-candidate";
+import { createShare } from "../../domain/shares/use-cases/create-share";
+import { listHistory } from "../../domain/shares/use-cases/list-history";
+import { retryIdentification } from "../../domain/shares/use-cases/retry-identification";
 import { SpotarrError } from "../../errors";
 import type { Seerr } from "../../integrations/seerr/client";
 import type { Rpcs } from "./types";
 
+// Each RPC translates the contract into a use case of domain/shares, and back.
 export function shareRpcs(
   shares: ShareRepository,
   queue: ShareQueue,
   seerr: () => Promise<Seerr>,
 ): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification" | "add"> {
-  async function getOrFail(id: string): Promise<Share> {
+  async function shareMessage(id: string) {
     const share = await shares.get(id);
     if (!share) throw new SpotarrError("not_found", `no share ${id}`);
-    return share;
+    return { share: toMessage(share) };
   }
 
   return {
-    // Invalid input throws a ZodError: rpc/errors.ts answers invalid_argument.
     async createShare(req) {
-      const { input, source } = parseInput(req);
-      const id = await shares.create(input, source);
-      queue.wake();
-      return { share: toMessage(await getOrFail(id)) };
+      const id = await createShare(req, { shares, queue });
+      return shareMessage(id);
     },
 
     async getShare(req) {
-      return { share: toMessage(await getOrFail(req.id)) };
+      return shareMessage(req.id);
     },
 
     async listShares(req) {
-      const page = historyPage(await shares.all(), {
-        limit: Math.min(req.pageSize ?? 50, 100),
-        cursor: req.cursor,
-        summaries: req.summaries.map((s) => Summary[s] as Share["summary"]),
-        query: req.query?.trim(),
-      });
+      const page = await listHistory(
+        {
+          limit: Math.min(req.pageSize ?? 50, 100),
+          cursor: req.cursor,
+          summaries: req.summaries.map((s) => Summary[s] as Share["summary"]),
+          query: req.query?.trim(),
+        },
+        { shares },
+      );
       return { shares: page.shares.map(toMessage), nextCursor: page.nextCursor };
     },
 
     async retryIdentification(req) {
-      const share = await getOrFail(req.id);
-      if (share.summary === "IN_PROGRESS") {
-        throw new SpotarrError("busy", "identification still in progress");
-      }
-      await shares.requeue(req.id);
-      queue.wake();
-      return { share: toMessage(await getOrFail(req.id)) };
+      await retryIdentification(req.id, { shares, queue });
+      return shareMessage(req.id);
     },
 
     async add(req) {
@@ -77,7 +74,7 @@ export function shareRpcs(
         { tmdbId: req.tmdbId, type },
         { shares, seerr: await seerr() },
       );
-      return { share: toMessage(await getOrFail(req.shareId)) };
+      return shareMessage(req.shareId);
     },
   };
 }

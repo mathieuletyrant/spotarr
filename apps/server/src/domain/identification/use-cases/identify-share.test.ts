@@ -1,15 +1,15 @@
 import { afterEach, expect, mock, test } from "bun:test";
-import { Seerr } from "../../integrations/seerr/client";
-import { getGetMovieMovieIdResponseMock } from "../../integrations/seerr/gen/seerr.faker";
-import { Tmdb } from "../../integrations/tmdb/client";
+import { Seerr } from "../../../integrations/seerr/client";
+import { getGetMovieMovieIdResponseMock } from "../../../integrations/seerr/gen/seerr.faker";
+import { Tmdb } from "../../../integrations/tmdb/client";
 import {
   getFindByIdResponseMock,
   getMovieDetailsResponseMock,
-} from "../../integrations/tmdb/gen/tmdb.faker";
-import { fakeFetch } from "../../testing/fake-fetch";
-import type { Video } from "./extractors/video";
-import type { Guesses, Llm } from "./guess-titles";
-import { identify } from "./identify";
+} from "../../../integrations/tmdb/gen/tmdb.faker";
+import { fakeFetch } from "../../../testing/fake-fetch";
+import type { Video } from "../extractors/video";
+import type { Guesses, Llm } from "../guess-titles";
+import { identifyShare } from "./identify-share";
 
 afterEach(() => mock.restore());
 
@@ -41,7 +41,7 @@ test("an IMDb link gives a certain Candidate, without video nor LLM", async () =
     "/api/v1/movie/693134": inLibrary,
   });
 
-  const result = await identify(
+  const result = await identifyShare(
     { url: "https://www.imdb.com/title/tt15239678/" },
     { tmdb, seerr, readVideo: notCalled, llm: notCalled },
   );
@@ -55,7 +55,7 @@ test("an IMDb link gives a certain Candidate, without video nor LLM", async () =
 
 test("a TMDB link works the same way", async () => {
   fakeFetch({ "/3/movie/693134": dune, "/api/v1/movie/693134": inLibrary });
-  const result = await identify(
+  const result = await identifyShare(
     { url: "https://www.themoviedb.org/movie/693134" },
     { tmdb, seerr, readVideo: notCalled, llm: notCalled },
   );
@@ -65,7 +65,7 @@ test("a TMDB link works the same way", async () => {
 test("a reel is read, then the LLM explains what it sees (Candidates come with #17)", async () => {
   const llm = llmAnswering({ reasoning: "On reconnaît Zach Galifianakis.", candidates: [] });
 
-  const result = await identify(
+  const result = await identifyShare(
     { url: "https://www.instagram.com/reel/DeHYOAbo14f/" },
     { tmdb, seerr, readVideo: async () => reel, llm },
   );
@@ -85,7 +85,7 @@ test("a video that cannot be read fails the Identification with the reason", asy
     throw new Error("yt-dlp failed: ERROR: Requested content is not available");
   };
   await expect(
-    identify(
+    identifyShare(
       { url: "https://www.instagram.com/reel/x/" },
       { tmdb, seerr, readVideo, llm: notCalled },
     ),
@@ -94,7 +94,7 @@ test("a video that cannot be read fails the Identification with the reason", asy
 
 test("Seerr being down leaves the Candidates ABSENT, without failing", async () => {
   fakeFetch({ "/3/movie/693134": dune, "/api/v1/movie/693134": 503 });
-  const result = await identify(
+  const result = await identifyShare(
     { url: "https://www.themoviedb.org/movie/693134" },
     { tmdb, seerr, readVideo: notCalled, llm: notCalled },
   );

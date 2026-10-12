@@ -4,10 +4,10 @@ import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { readVideo } from "./domain/identification/extractors/video";
 import { GuessesSchema } from "./domain/identification/guess-titles";
-import { identify } from "./domain/identification/identify";
-import { ensureApiToken } from "./domain/settings/api-token";
+import { identifyShare } from "./domain/identification/use-cases/identify-share";
 import { SettingsRepository } from "./domain/settings/repository";
 import type { Settings } from "./domain/settings/schema";
+import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
 import type { ShareInput } from "./domain/shares/types";
@@ -29,9 +29,9 @@ if (created) console.log(`API token (also in Settings → Access): ${token}`);
 const shares = new ShareRepository(db);
 
 // Settings are read once per Identification, so a change applies to the next share.
-async function identifyShare(input: ShareInput) {
+async function runIdentification(input: ShareInput) {
   const { identification, extraction } = await settings.get();
-  return identify(input, {
+  return identifyShare(input, {
     tmdb: new Tmdb({ token: identification.tmdbToken, language: identification.language }),
     seerr: await seerrFromSettings(),
     readVideo: (url) => readVideo(url, extraction),
@@ -54,7 +54,7 @@ function llmConfig(identification: Settings["identification"]): LlmConfig {
 
 const queue = new ShareQueue(
   shares,
-  identifyShare,
+  runIdentification,
   async () => (await settings.get()).extraction.concurrency,
 );
 await queue.start();

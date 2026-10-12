@@ -1,7 +1,7 @@
-import { SpotarrError } from "../../errors";
-import type { Seerr } from "../../integrations/seerr/client";
-import type { ShareRepository } from "./repository";
-import type { Candidate } from "./types";
+import { SpotarrError } from "../../../errors";
+import type { Seerr } from "../../../integrations/seerr/client";
+import type { ShareRepository } from "../repository";
+import type { Candidate } from "../types";
 
 // Adds one Candidate of a Share to the library through Seerr, and records an
 // Addition saying what happened. Seerr failing is recorded too (FAILED, with

@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
-import { openDatabase } from "../../db";
-import { ensureApiToken } from "./api-token";
-import { SettingsRepository } from "./repository";
+import { openDatabase } from "../../../db";
+import { SettingsRepository } from "../repository";
+import { ensureApiToken } from "./ensure-api-token";
 
 test("the API token is created once, then reused", async () => {
   const db = await openDatabase(":memory:");
