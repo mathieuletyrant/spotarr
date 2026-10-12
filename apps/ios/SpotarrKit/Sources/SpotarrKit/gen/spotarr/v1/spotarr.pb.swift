@@ -574,8 +574,8 @@ public nonisolated struct Spotarr_V1_AutoAddSettings: Sendable {
   /// Clears the value of `minConfidence`. Subsequent reads from it will return its default value.
   public mutating func clearMinConfidence() {self._minConfidence = nil}
 
-  /// True: only when exactly one Candidate reaches min_confidence.
-  /// False: every Candidate that reaches it.
+  /// True: only when the Identification found a single Candidate, and it reaches
+  /// min_confidence. False: every Candidate that reaches it.
   public var onlyOne: Bool {
     get {_onlyOne ?? false}
     set {_onlyOne = newValue}
