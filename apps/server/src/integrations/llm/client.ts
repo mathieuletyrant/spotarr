@@ -9,10 +9,19 @@ export async function chat(config: LlmConfig, messages: ChatMessage[]): Promise<
   if (!config.apiKey) throw new Error("LLM API key not configured (Settings → Identification)");
   if (!config.model) throw new Error("LLM model not configured (Settings → Identification)");
 
-  const client = new OpenAI({ baseURL: config.apiUrl, apiKey: config.apiKey, timeout: 60_000 });
+  // One automatic retry on a network error, not the SDK's default two.
+  const client = new OpenAI({
+    baseURL: config.apiUrl,
+    apiKey: config.apiKey,
+    timeout: 60_000,
+    maxRetries: 1,
+  });
   const completion = await client.chat.completions.create({
     model: config.model,
     messages,
+    // Thinking models (Gemini 3.8 Flash) answered in 15 to 45 s without this,
+    // in 3 to 6 s with it, naming the same films on the test reel.
+    reasoning_effort: "low",
     // Asks for JSON only; some models refuse the option, hence the setting.
     ...(config.forceJson ? { response_format: { type: "json_object" } } : {}),
   });
