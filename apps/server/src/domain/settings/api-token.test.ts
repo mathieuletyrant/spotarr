@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { openDatabase } from "../db";
+import { openDatabase } from "../../db";
 import { ensureApiToken } from "./api-token";
 import { SettingsRepository } from "./repository";
 

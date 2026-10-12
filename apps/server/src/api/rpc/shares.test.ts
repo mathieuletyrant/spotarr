@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
-import { createApp } from "../app";
-import { openDatabase } from "../db";
-import { SettingsRepository } from "../settings/repository";
-import { ShareQueue } from "../shares/queue";
-import { ShareRepository } from "../shares/repository";
-import { identifyNothing, until } from "../shares/test-helpers";
+import { createApp } from "../../app";
+import { openDatabase } from "../../db";
+import { SettingsRepository } from "../../domain/settings/repository";
+import { ShareQueue } from "../../domain/shares/queue";
+import { ShareRepository } from "../../domain/shares/repository";
+import { identifyNothing, until } from "../../domain/shares/test-helpers";
 
 const db = await openDatabase(":memory:");
 const shares = new ShareRepository(db);

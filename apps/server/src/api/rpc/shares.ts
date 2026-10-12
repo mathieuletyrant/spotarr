@@ -9,10 +9,10 @@ import {
   Summary,
   Target,
 } from "@spotarr/contract";
-import { parseInput } from "../shares/input";
-import type { ShareQueue } from "../shares/queue";
-import type { ShareRepository } from "../shares/repository";
-import type { Share } from "../shares/types";
+import { parseInput } from "../../domain/shares/input";
+import type { ShareQueue } from "../../domain/shares/queue";
+import type { ShareRepository } from "../../domain/shares/repository";
+import type { Share } from "../../domain/shares/types";
 import type { Rpcs } from "./types";
 
 export function shareRpcs(

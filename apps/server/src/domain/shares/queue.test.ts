@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { openDatabase } from "../db";
+import { openDatabase } from "../../db";
 import { ShareQueue } from "./queue";
 import { ShareRepository } from "./repository";
 import { deferred, until } from "./test-helpers";

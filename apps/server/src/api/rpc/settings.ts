@@ -1,4 +1,4 @@
-import type { SettingsRepository } from "../settings/repository";
+import type { SettingsRepository } from "../../domain/settings/repository";
 import type { Rpcs } from "./types";
 
 export function settingsRpcs(settings: SettingsRepository): Rpcs<"getSettings" | "updateSettings"> {

@@ -1,6 +1,6 @@
 import { type Kysely, type Selectable, sql } from "kysely";
-import type { DB } from "../db";
-import type { Additions, Shares } from "../db/gen/types";
+import type { DB } from "../../db";
+import type { Additions, Shares } from "../../db/gen/types";
 import {
   type Addition,
   CandidateSchema,

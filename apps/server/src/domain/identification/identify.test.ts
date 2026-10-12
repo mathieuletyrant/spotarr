@@ -1,9 +1,12 @@
 import { afterEach, expect, mock, test } from "bun:test";
-import { openDatabase } from "../db";
+import { openDatabase } from "../../db";
+import { Tmdb } from "../../integrations/tmdb/client";
+import { fakeTmdb } from "../../integrations/tmdb/fake-fetch";
+import {
+  getFindByIdResponseMock,
+  getMovieDetailsResponseMock,
+} from "../../integrations/tmdb/gen/tmdb.faker";
 import { SettingsRepository } from "../settings/repository";
-import { Tmdb } from "../tmdb/client";
-import { fakeTmdb } from "../tmdb/fake-fetch";
-import { getFindByIdResponseMock, getMovieDetailsResponseMock } from "../tmdb/gen/tmdb.faker";
 import { identify } from "./identify";
 
 afterEach(() => mock.restore());

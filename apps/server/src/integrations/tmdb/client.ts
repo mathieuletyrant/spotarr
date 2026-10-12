@@ -1,4 +1,4 @@
-import type { SettingsRepository } from "../settings/repository";
+import type { SettingsRepository } from "../../domain/settings/repository";
 import {
   type FindById200MovieResultsItem,
   findById,

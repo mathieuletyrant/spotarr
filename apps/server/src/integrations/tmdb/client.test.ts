@@ -1,6 +1,6 @@
 import { afterEach, expect, mock, test } from "bun:test";
-import { openDatabase } from "../db";
-import { SettingsRepository } from "../settings/repository";
+import { openDatabase } from "../../db";
+import { SettingsRepository } from "../../domain/settings/repository";
 import { Tmdb } from "./client";
 import { fakeTmdb } from "./fake-fetch";
 import {

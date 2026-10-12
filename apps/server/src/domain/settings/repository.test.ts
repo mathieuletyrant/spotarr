@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { openDatabase } from "../db";
+import { openDatabase } from "../../db";
 import { SettingsRepository } from "./repository";
 
 async function repository() {

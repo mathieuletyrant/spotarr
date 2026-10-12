@@ -1,4 +1,4 @@
-import pkg from "../../package.json";
+import pkg from "../../../package.json";
 import type { Rpcs } from "./types";
 
 export function statusRpcs(): Rpcs<"getStatus"> {
