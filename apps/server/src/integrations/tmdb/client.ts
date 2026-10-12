@@ -1,4 +1,4 @@
-import type { SettingsRepository } from "../../domain/settings/repository";
+import { SpotarrError } from "../../errors";
 import {
   type FindById200MovieResultsItem,
   findById,
@@ -20,14 +20,17 @@ export type TmdbTitle = {
 
 const POSTERS = "https://image.tmdb.org/t/p/w500";
 
-// Calls TMDB through the client generated from its OpenAPI spec (src/tmdb/gen).
-// Reads the token and the language on every call, so a change in Settings applies at once.
+export type TmdbConfig = { token: string; language: string };
+
+// Calls TMDB through the client generated from its OpenAPI spec (gen/).
 export class Tmdb {
-  constructor(private readonly settings: SettingsRepository) {}
+  constructor(private readonly config: TmdbConfig) {}
 
   async findByImdbId(imdbId: string): Promise<TmdbTitle | undefined> {
-    const { language, options } = await this.config();
-    const res = await findById(imdbId, { external_source: "imdb_id", language }, options);
+    const { language, options } = this.request();
+    const res = await findById(imdbId, { external_source: "imdb_id", language }, options).catch(
+      unreachable,
+    );
     checkStatus(res.status);
 
     const movie = res.data.movie_results?.[0];
@@ -41,26 +44,31 @@ export class Tmdb {
   }
 
   async movie(id: number): Promise<TmdbTitle | undefined> {
-    const { language, options } = await this.config();
-    const res = await movieDetails(id, { language }, options);
+    const { language, options } = this.request();
+    const res = await movieDetails(id, { language }, options).catch(unreachable);
     if (isMissing(res.status)) return undefined;
     checkStatus(res.status);
     return movieTitle(res.data);
   }
 
   async show(id: number): Promise<TmdbTitle | undefined> {
-    const { language, options } = await this.config();
-    const res = await tvSeriesDetails(id, { language }, options);
+    const { language, options } = this.request();
+    const res = await tvSeriesDetails(id, { language }, options).catch(unreachable);
     if (isMissing(res.status)) return undefined;
     checkStatus(res.status);
     return showTitle(res.data);
   }
 
-  private async config() {
-    const { tmdbToken, language } = (await this.settings.get()).identification;
-    if (!tmdbToken) throw new Error("TMDB token not configured (Settings → Identification)");
+  private request() {
+    const { token, language } = this.config;
+    if (!token) {
+      throw new SpotarrError(
+        "not_configured",
+        "TMDB token not configured (Settings → Identification)",
+      );
+    }
     const options = {
-      headers: { Authorization: `Bearer ${tmdbToken}` },
+      headers: { Authorization: `Bearer ${token}` },
       signal: AbortSignal.timeout(10_000),
     };
     return { language, options };
@@ -73,7 +81,15 @@ function isMissing(status: number) {
 }
 
 function checkStatus(status: number) {
-  if (status !== 200) throw new Error(`TMDB answered ${status}`);
+  if (status !== 200) throw new SpotarrError("unavailable", `TMDB answered ${status}`);
+}
+
+// fetch itself failed: no network, or the 10 s timeout ran out.
+function unreachable(error: unknown): never {
+  if (error instanceof Error && error.name === "TimeoutError") {
+    throw new SpotarrError("timeout", "TMDB took more than 10 s");
+  }
+  throw new SpotarrError("unavailable", `TMDB could not be reached: ${String(error)}`);
 }
 
 function movieTitle(movie: FindById200MovieResultsItem | MovieDetails200): TmdbTitle | undefined {

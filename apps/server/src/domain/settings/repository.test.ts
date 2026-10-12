@@ -9,7 +9,6 @@ async function repository() {
 test("an empty database gives the defaults", async () => {
   const s = await (await repository()).get();
   expect(s.identification.llmApiUrl).toBe("https://openrouter.ai/api/v1");
-  expect(s.identification.forceJson).toBe(true);
   expect(s.identification.language).toBe("fr-FR");
   expect(s.seerr).toEqual({ url: "", apiKey: "" });
   expect(s.extraction).toEqual({
@@ -23,13 +22,13 @@ test("an empty database gives the defaults", async () => {
 test("an update changes only the fields given, and types survive storage", async () => {
   const settings = await repository();
   await settings.update({ seerr: { url: "http://seerr:5055" }, extraction: { concurrency: 1 } });
-  await settings.update({ identification: { forceJson: false } });
+  await settings.update({ identification: { language: "en-US" } });
 
   const s = await settings.get();
   expect(s.seerr).toEqual({ url: "http://seerr:5055", apiKey: "" });
   expect(s.extraction.concurrency).toBe(1);
   expect(s.extraction.framesPerVideo).toBe(6);
-  expect(s.identification.forceJson).toBe(false);
+  expect(s.identification.language).toBe("en-US");
 });
 
 test("an invalid value is refused and nothing is saved", async () => {

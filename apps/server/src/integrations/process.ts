@@ -1,3 +1,5 @@
+import { SpotarrError } from "../errors";
+
 // Runs a command line program and returns what it printed. Throws when it
 // fails (with its last error line) or when it takes longer than `timeoutMs`.
 export async function run(command: string[], timeoutMs: number): Promise<string> {
@@ -9,10 +11,11 @@ export async function run(command: string[], timeoutMs: number): Promise<string>
   ]);
 
   const program = command[0];
-  if (child.signalCode) throw new Error(`${program} took more than ${timeoutMs / 1000} s`);
+  if (child.signalCode)
+    throw new SpotarrError("timeout", `${program} took more than ${timeoutMs / 1000} s`);
   if (exitCode !== 0) {
     const lastLine = stderr.trim().split("\n").at(-1);
-    throw new Error(`${program} failed: ${lastLine}`);
+    throw new SpotarrError("unavailable", `${program} failed: ${lastLine}`);
   }
   return stdout;
 }

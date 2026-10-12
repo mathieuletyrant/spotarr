@@ -1,5 +1,4 @@
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
-import { Code, ConnectError } from "@connectrpc/connect";
 import {
   AdditionStatus,
   IdentificationStatus,
@@ -14,6 +13,7 @@ import { parseInput } from "../../domain/shares/input";
 import type { ShareQueue } from "../../domain/shares/queue";
 import type { ShareRepository } from "../../domain/shares/repository";
 import type { Share } from "../../domain/shares/types";
+import { SpotarrError } from "../../errors";
 import type { Rpcs } from "./types";
 
 export function shareRpcs(
@@ -22,12 +22,12 @@ export function shareRpcs(
 ): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification"> {
   async function getOrFail(id: string): Promise<Share> {
     const share = await shares.get(id);
-    if (!share) throw new ConnectError(`no share ${id}`, Code.NotFound);
+    if (!share) throw new SpotarrError("not_found", `no share ${id}`);
     return share;
   }
 
   return {
-    // Invalid input throws a ZodError, turned into invalid_argument by rpc/errors.ts.
+    // Invalid input throws a ZodError: rpc/errors.ts answers invalid_argument.
     async createShare(req) {
       const { input, source } = parseInput(req);
       const id = await shares.create(input, source);
@@ -52,7 +52,7 @@ export function shareRpcs(
     async retryIdentification(req) {
       const share = await getOrFail(req.id);
       if (share.summary === "IN_PROGRESS") {
-        throw new ConnectError("identification still in progress", Code.FailedPrecondition);
+        throw new SpotarrError("busy", "identification still in progress");
       }
       await shares.requeue(req.id);
       queue.wake();

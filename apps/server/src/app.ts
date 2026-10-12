@@ -2,7 +2,7 @@ import { SpotarrService } from "@spotarr/contract";
 import { Hono } from "hono";
 import { requireToken } from "./api/auth";
 import { connectHandler } from "./api/connect";
-import { validationErrors } from "./api/rpc/errors";
+import { errorsToConnect } from "./api/rpc/errors";
 import { settingsRpcs } from "./api/rpc/settings";
 import { shareRpcs } from "./api/rpc/shares";
 import { statusRpcs } from "./api/rpc/status";
@@ -20,7 +20,7 @@ export type AppDeps = {
 // Routes: GET /health (open), POST /api/* (Connect RPCs, token required).
 // Each file in rpc/ implements the RPCs of one domain.
 export function createApp({ apiToken, settings, shares, queue }: AppDeps): Hono {
-  const rpc = connectHandler({ interceptors: [validationErrors] }, (router) =>
+  const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
     router.service(SpotarrService, {
       ...statusRpcs(),
       ...settingsRpcs(settings),
@@ -28,8 +28,15 @@ export function createApp({ apiToken, settings, shares, queue }: AppDeps): Hono 
     }),
   );
 
-  return new Hono()
-    .get("/health", (c) => c.json({ ok: true }))
-    .use("/api/*", requireToken(apiToken))
-    .post("/api/*", (c) => rpc(c, "/api"));
+  return (
+    new Hono()
+      // Errors outside the RPCs get the same JSON shape as Connect's.
+      .onError((error, c) => {
+        console.error(JSON.stringify({ step: "http", error: String(error) }));
+        return c.json({ code: "internal", message: String(error) }, 500);
+      })
+      .get("/health", (c) => c.json({ ok: true }))
+      .use("/api/*", requireToken(apiToken))
+      .post("/api/*", (c) => rpc(c, "/api"))
+  );
 }

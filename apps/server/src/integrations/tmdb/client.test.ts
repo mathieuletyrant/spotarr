@@ -1,6 +1,4 @@
 import { afterEach, expect, mock, test } from "bun:test";
-import { openDatabase } from "../../db";
-import { SettingsRepository } from "../../domain/settings/repository";
 import { fakeFetch } from "../../testing/fake-fetch";
 import { Tmdb } from "./client";
 import {
@@ -11,10 +9,8 @@ import {
 
 afterEach(() => mock.restore());
 
-async function tmdb(token = "tok") {
-  const settings = new SettingsRepository(await openDatabase(":memory:"));
-  await settings.update({ identification: { tmdbToken: token } });
-  return new Tmdb(settings);
+function tmdb(token = "tok") {
+  return new Tmdb({ token, language: "fr-FR" });
 }
 
 // Generated from TMDB's spec: every other field gets a random value.
@@ -31,7 +27,7 @@ test("an IMDb id finds a movie, sending the token and the language", async () =>
     "/3/find/tt15239678": getFindByIdResponseMock({ movie_results: [dune], tv_results: [] }),
   });
 
-  expect(await (await tmdb()).findByImdbId("tt15239678")).toEqual({
+  expect(await tmdb().findByImdbId("tt15239678")).toEqual({
     tmdbId: 693134,
     type: "MOVIE",
     title: "Dune : Deuxième partie",
@@ -58,7 +54,7 @@ test("an IMDb id of a TV show is completed with the show's details", async () =>
     }),
   });
 
-  expect(await (await tmdb()).findByImdbId("tt11280740")).toMatchObject({
+  expect(await tmdb().findByImdbId("tt11280740")).toMatchObject({
     tmdbId: 95396,
     type: "TV",
     title: "Severance",
@@ -71,18 +67,27 @@ test("an id TMDB does not know gives nothing", async () => {
     "/3/find/tt0000001": getFindByIdResponseMock({ movie_results: [], tv_results: [] }),
     "/3/movie/1": 404,
   });
-  const client = await tmdb();
+  const client = tmdb();
   expect(await client.findByImdbId("tt0000001")).toBeUndefined();
   expect(await client.movie(1)).toBeUndefined();
 });
 
-test("a refused token names TMDB", async () => {
+test("a refused token is unavailable, naming TMDB", async () => {
   fakeFetch({ "/3/find/tt15239678": 401 });
-  await expect((await tmdb()).findByImdbId("tt15239678")).rejects.toThrow("TMDB answered 401");
+  await expect(tmdb().findByImdbId("tt15239678")).rejects.toMatchObject({
+    code: "unavailable",
+    message: "TMDB answered 401",
+  });
+});
+
+test("a network failure is unavailable too", async () => {
+  fakeFetch({});
+  await expect(tmdb().findByImdbId("tt15239678")).rejects.toMatchObject({ code: "unavailable" });
 });
 
 test("no token configured says where to set it", async () => {
-  await expect((await tmdb("")).findByImdbId("tt15239678")).rejects.toThrow(
-    "Settings → Identification",
-  );
+  await expect(tmdb("").findByImdbId("tt15239678")).rejects.toMatchObject({
+    code: "not_configured",
+    message: "TMDB token not configured (Settings → Identification)",
+  });
 });
