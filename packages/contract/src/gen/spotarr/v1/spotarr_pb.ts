@@ -136,7 +136,8 @@ export type IdentificationSettings = Message<"spotarr.v1.IdentificationSettings"
   language?: string | undefined;
 
   /**
-   * The LLM model; it must read images, since it gets the video's frames.
+   * The LLM model; it must read images and hear audio, since it gets the
+   * video's frames and sound (Gemini does).
    *
    * @generated from field: optional string model = 8;
    */

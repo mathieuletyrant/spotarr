@@ -57,7 +57,8 @@ message IdentificationSettings {
   optional string tmdb_token = 6;
   // Language of TMDB titles and overviews, e.g. "fr-FR".
   optional string language = 7;
-  // The LLM model; it must read images, since it gets the video's frames.
+  // The LLM model; it must read images and hear audio, since it gets the
+  // video's frames and sound (Gemini does).
   optional string model = 8;
 }
 
