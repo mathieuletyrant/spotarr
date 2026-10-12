@@ -1,0 +1,102 @@
+import { afterEach, describe, expect, mock, test } from "bun:test";
+import { openDatabase } from "../../../db";
+import { Seerr } from "../../../integrations/seerr/client";
+import {
+  getGetMovieMovieIdResponseMock,
+  getPostRequestResponseMock,
+} from "../../../integrations/seerr/gen/seerr.faker";
+import { fakeFetch } from "../../../testing/fake-fetch";
+import { ShareRepository } from "../repository";
+import type { Candidate } from "../types";
+import { autoAdd, candidatesToAutoAdd } from "./auto-add";
+
+afterEach(() => mock.restore());
+
+const rule = { enabled: true, minConfidence: 95, onlyOne: true };
+
+function candidate(title: string, confidence: number | undefined, absent = true): Candidate {
+  return {
+    tmdbId: title.length,
+    type: "MOVIE",
+    title,
+    confidence,
+    libraryState: absent ? "ABSENT" : "AVAILABLE",
+  };
+}
+
+const titles = (candidates: Candidate[]) => candidates.map((c) => c.title);
+
+describe("which Candidates auto add requests", () => {
+  test("nothing while it is off", () => {
+    expect(candidatesToAutoAdd([candidate("Kraken", 1)], { ...rule, enabled: false })).toEqual([]);
+  });
+
+  test("only one: the single Candidate at the threshold or above", () => {
+    expect(
+      titles(candidatesToAutoAdd([candidate("Kraken", 0.95), candidate("Kraken Mare", 0.6)], rule)),
+    ).toEqual(["Kraken"]);
+    expect(candidatesToAutoAdd([candidate("Kraken", 0.94)], rule)).toEqual([]);
+  });
+
+  test("only one: two confident Candidates is a doubt, even if one is in the library", () => {
+    const awake = candidate("Awake", 1);
+    const marriage = candidate("Marriage Story", 1, false);
+    expect(candidatesToAutoAdd([awake, marriage], rule)).toEqual([]);
+  });
+
+  test("every one: all confident Candidates not in the library yet", () => {
+    const reel = [
+      candidate("Awake", 1),
+      candidate("Due Date", 0.97),
+      candidate("Marriage Story", 1, false),
+    ];
+    expect(titles(candidatesToAutoAdd(reel, { ...rule, onlyOne: false }))).toEqual([
+      "Awake",
+      "Due Date",
+    ]);
+  });
+
+  test("a direct IMDb or TMDB link has no confidence: it counts as 100 %", () => {
+    expect(titles(candidatesToAutoAdd([candidate("Dune", undefined)], rule))).toEqual(["Dune"]);
+  });
+
+  test("a single confident Candidate already in the library is not requested again", () => {
+    expect(candidatesToAutoAdd([candidate("Dune", 1, false)], rule)).toEqual([]);
+  });
+});
+
+test("auto add requests through Seerr, marks the Addition automatic and tells the Webhooks", async () => {
+  const shares = new ShareRepository(await openDatabase(":memory:"));
+  const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
+  await shares.finish(
+    id,
+    {
+      status: "READY",
+      method: "LLM",
+      extractors: ["video"],
+      clues: {},
+      candidates: [candidate("Kraken", 0.98)],
+    },
+    10,
+  );
+  fakeFetch({
+    "/api/v1/movie/6": getGetMovieMovieIdResponseMock({ mediaInfo: undefined }),
+    "/api/v1/request": getPostRequestResponseMock(),
+  });
+  const added: string[] = [];
+
+  const share = await shares.get(id);
+  if (!share) throw new Error("no share");
+  await autoAdd(share, rule, {
+    shares,
+    seerr: new Seerr({ url: "http://seerr.test", apiKey: "key" }),
+    mediaAdded: async (_share, candidate) => {
+      added.push(candidate.title);
+    },
+  });
+
+  expect((await shares.get(id))?.additions).toMatchObject([
+    { status: "REQUESTED", automatic: true },
+  ]);
+  expect(added).toEqual(["Kraken"]);
+});

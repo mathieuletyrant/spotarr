@@ -6,6 +6,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { type SubmitEvent, useState } from "react";
 import { ApiTokenField } from "../../components/settings/api-token-field";
+import { AutoAddFields } from "../../components/settings/auto-add-fields";
 import { DependenciesCard } from "../../components/settings/dependencies-card";
 import { Field, type Form, inputClass, Section, TextField } from "../../components/settings/fields";
 import { WebhooksList } from "../../components/settings/webhooks-list";
@@ -24,6 +25,7 @@ const MENU = [
   ["status", "Status"],
   ["identification", "Identification"],
   ["seerr", "Seerr"],
+  ["auto-add", "Auto add"],
   ["extraction", "Extraction"],
   ["webhooks", "Webhooks"],
   ["access", "Access"],
@@ -137,6 +139,14 @@ function SettingsForm({ saved }: { saved: Values }) {
       </Section>
 
       <Section
+        id="auto-add"
+        title="Auto add"
+        description="Request a candidate without a click, when Spotarr is sure of it."
+      >
+        <AutoAddFields form={form} />
+      </Section>
+
+      <Section
         id="extraction"
         title="Extraction"
         description="What Spotarr reads from shared videos."
@@ -182,7 +192,7 @@ function SettingsForm({ saved }: { saved: Values }) {
       <Section
         id="webhooks"
         title="Webhooks"
-        description="Spotarr calls these URLs when something happens to a share: Home Assistant, n8n…"
+        description="Spotarr calls these URLs when something happens to a share."
       >
         <TextField
           form={form}

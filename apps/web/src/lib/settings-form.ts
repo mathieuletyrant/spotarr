@@ -4,8 +4,22 @@ import type { Settings } from "@spotarr/contract";
 // settings: "seerr.apiKey". The server's validation errors name the same paths.
 export type Values = Record<string, string>;
 
-const SECTIONS = ["identification", "seerr", "extraction", "webhooks", "access"] as const;
-const NUMBERS = ["extraction.framesPerVideo", "extraction.maxVideoMb", "extraction.concurrency"];
+const SECTIONS = [
+  "identification",
+  "seerr",
+  "autoAdd",
+  "extraction",
+  "webhooks",
+  "access",
+] as const;
+const NUMBERS = [
+  "extraction.framesPerVideo",
+  "extraction.maxVideoMb",
+  "extraction.concurrency",
+  "autoAdd.minConfidence",
+];
+// Kept as "true" or "false" in the form.
+const BOOLEANS = ["autoAdd.enabled", "autoAdd.onlyOne"];
 
 export function toValues(settings: Settings): Values {
   const values: Values = {};
@@ -24,11 +38,14 @@ export function changedFields(values: Values, saved: Values): string[] {
 
 // Only the changed fields: UpdateSettings leaves the others as they are.
 export function changes(values: Values, saved: Values) {
-  const patch: Record<string, Record<string, string | number>> = {};
+  const patch: Record<string, Record<string, string | number | boolean>> = {};
   for (const name of changedFields(values, saved)) {
     const [section = "", key = ""] = name.split(".");
     patch[section] ??= {};
-    patch[section][key] = NUMBERS.includes(name) ? Number(values[name]) : (values[name] ?? "");
+    const value = values[name] ?? "";
+    if (NUMBERS.includes(name)) patch[section][key] = Number(value);
+    else if (BOOLEANS.includes(name)) patch[section][key] = value === "true";
+    else patch[section][key] = value;
   }
   return patch;
 }
@@ -39,7 +56,7 @@ export function errorsByField(message: string): Values {
   const errors: Values = {};
   for (const part of message.split("; ")) {
     const [path, ...rest] = part.split(": ");
-    if (path && rest.length > 0 && /^[a-z]+\.[a-zA-Z]+$/.test(path)) {
+    if (path && rest.length > 0 && /^[a-zA-Z]+\.[a-zA-Z]+$/.test(path)) {
       errors[path] = rest.join(": ");
     } else {
       errors[""] = part;

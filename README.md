@@ -1,21 +1,23 @@
 # 🎬 Spotarr
 
-Share a reel, a link, a screenshot or a text from your iPhone; Spotarr identifies the movie or TV show in the background and lets you add it to your library through Seerr. Personal project, one user, self-hosted with Docker. Also listed in [Mathieu's Umbrel community store](https://github.com/mathieuletyrant/umbrel-community-app-store).
-
-🚧 Status: milestone 2 (web UI). Instagram reels are identified (frames and sound to the LLM, TMDB to confirm) and added through Seerr. Webhooks, then the iOS Shortcut, come next.
+Share an Instagram reel from your iPhone: Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
 
 ![The History page, in dark mode](docs/screenshots/history-dark.png)
 
-## ✅ Run the checks
+## ✨ What it does
 
-```
-pnpm install --frozen-lockfile
-pnpm check
-```
+- 🎞️ **Watches and listens.** It downloads the reel, then an LLM looks at a few frames and hears the sound. The title is often only said out loud.
+- 🎯 **Confirms on TMDB.** It keeps the titles that exist on TMDB, with a poster and a confidence. A reel naming three films gives three candidates.
+- 📚 **Knows your library.** Seerr tells what is already there.
+- ➕ **Adds in one click**, or on its own: auto add requests a candidate when Spotarr is sure of it, by a rule you set. A TV show gets season 1 only.
+- 🔔 **Tells other services** through webhooks.
+- 🖥️ **A web UI** for the history, the candidates and the settings, in light and dark.
 
-`pnpm check` is the single gate: lint, contract lint, code generation, breaking-change detection, type check, tests. Needs [pnpm](https://pnpm.io) (the version in `package.json` is picked up automatically) and [Bun](https://bun.sh) (`.bun-version`).
+## 🏠 Install
 
-## 🐳 Run it with Docker Compose
+**On Umbrel**: add [Mathieu's community app store](https://github.com/mathieuletyrant/umbrel-community-app-store) and install Spotarr. Sign in with the default password umbrelOS shows: it is the API token.
+
+**With Docker Compose**:
 
 ```yaml
 services:
@@ -28,30 +30,14 @@ services:
     restart: unless-stopped
 ```
 
-`docker compose up -d`, then open http://localhost:3000. The API token is printed in the container logs at every start (`docker compose logs spotarr`); the UI asks for it once. Everything else (LLM, TMDB, Seerr, webhooks) is configured in Settings. Only three environment variables exist: `PORT` (default `3000`), `DATA_DIR` (default `/data`), and `API_TOKEN`, which fixes the API token instead of generating one.
+Run `docker compose up -d`, then open http://localhost:3000. The API token is printed in the logs at every start (`docker compose logs spotarr`), and the UI asks for it once. Optional environment variables: `PORT` (default `3000`), `DATA_DIR` (default `/data`), and `API_TOKEN`, which sets the token instead of generating one.
 
-⏳ The image is published from milestone 5 on. Until then, run from source: `pnpm dev`, then open http://localhost:5173.
+**Then, in Settings**:
+1. Paste an [OpenRouter](https://openrouter.ai) API key (or any OpenAI-compatible API) and a [TMDB](https://www.themoviedb.org/settings/api) read access token.
+2. Set Seerr's URL and API key.
+3. Check that the Status at the top shows everything as Working.
 
-## 🗂️ Repository
-
-| Path | Role |
-| --- | --- |
-| 📜 `packages/contract` | Protobuf contract of the API, generated TypeScript |
-| 🎨 `packages/design-tokens` | Design tokens, generated CSS variables |
-| ⚙️ `apps/server` | The service: Hono on Bun, Connect-RPC, SQLite |
-| 🖥️ `apps/web` | The web UI: React, TanStack Router and Query, Tailwind |
-| 🧭 `docs/adr` | Architecture decisions |
-| 📖 `GLOSSARY.md` | The project's vocabulary |
-| 🤖 `AGENTS.md` | Commands, conventions, known traps |
-
-## 🩹 Documented workarounds
-
-- Connect-RPC is mounted inside Hono through a ~20-line adapter: [ADR 0001](docs/adr/0001-connect-rpc-mounted-in-hono.md).
-- Kysely talks to `bun:sqlite` through a ~20-line in-house dialect: [ADR 0002](docs/adr/0002-kysely-over-bun-sqlite-with-custom-dialect.md).
-
-## 🗺️ Roadmap
-
-Milestones and issues: https://github.com/mathieuletyrant/spotarr/milestones · board: https://github.com/users/mathieuletyrant/projects/1
+An identification costs about $0.01 with the default model. Settings shows the cost of the last 30 days.
 
 ## 📱 Share from the iPhone
 
@@ -76,13 +62,15 @@ The file holds no secret, so it can be shared; once imported, it keeps your toke
 
 New Shortcut, ⓘ → Show in Share Sheet, receiving URLs. Then these actions:
 
-1. **Get Contents of URL**: `http://umbrel.local:3838/api/spotarr.v1.SpotarrService/CreateShare`, method POST, header `Authorization` = `Bearer <your API token>`, request body JSON with one text field `url` = Shortcut Input.
-2. **Get Dictionary Value** for key `message` in Contents of URL.
-3. **If** Dictionary Value has any value: **Show Notification** "Not sent to Spotarr: Dictionary Value". **Otherwise**: **Show Notification** "Sent to Spotarr".
+1. **Get Contents of URL**: `http://umbrel.local:3838/api/spotarr.v1.SpotarrService/CreateShare`, method POST.
+   - Headers: `Authorization` = `Bearer <your API token>`. Through Cloudflare, also `CF-Access-Client-Id` and `CF-Access-Client-Secret`.
+   - Request body: JSON, with one text field `url` = Shortcut Input.
+2. **If** Contents of URL contains `"share"`: **Show Notification** "Sent to Spotarr".
+3. **Otherwise**: **Show Notification** "Not sent to Spotarr", with Contents of URL as its body.
 
 </details>
 
-## 🔔 Webhooks and Home Assistant
+## 🔔 Webhooks
 
 In Settings → Webhooks, add a URL and pick its events: `identification.ready`, `identification.no_match`, `identification.failed`, `media.added`. Spotarr POSTs one JSON body per event, described by `WebhookEvent` in [the contract](packages/contract/proto/spotarr/v1/spotarr.proto). One try, 10 s; the last call's result shows in Settings. With a secret, the `X-Spotarr-Signature` header is the body's HMAC-SHA256 in hex. Set the web UI address so events link to the share's page.
 
@@ -100,26 +88,26 @@ In Settings → Webhooks, add a URL and pick its events: `identification.ready`,
 }
 ```
 
-A Home Assistant automation that sends a phone notification, opening the share's page when tapped. Use `http://homeassistant.local:8123/api/webhook/spotarr` as the webhook URL:
+## 🛠️ Develop
 
-```yaml
-alias: Spotarr
-triggers:
-  - trigger: webhook
-    webhook_id: spotarr
-    allowed_methods: [POST]
-    local_only: true
-actions:
-  - action: notify.mobile_app_your_iphone
-    data:
-      title: >-
-        {{ {'identification.ready': 'To choose', 'identification.no_match': 'No match',
-            'identification.failed': 'Failed', 'media.added': 'Added'}[trigger.json.event] }}
-      message: >-
-        {{ trigger.json.added.title if trigger.json.added is defined
-           else trigger.json.candidates | map(attribute='title') | join(', ')
-           or trigger.json.error | default(trigger.json.sharedUrl) }}
-      data:
-        url: "{{ trigger.json.shareUrl }}"
+```
+pnpm install --frozen-lockfile
+pnpm dev:setup   # once: fills ./data from .env and prints the API token
+pnpm dev         # the service on :3000, the web UI on http://localhost:5173
+pnpm check       # the whole gate: lint, contract, generated code, types, tests
 ```
 
+Needs [pnpm](https://pnpm.io) (its version comes from `package.json`), [Bun](https://bun.sh) (`.bun-version`), and `brew install ffmpeg yt-dlp`. Commands, conventions and known traps are in [AGENTS.md](AGENTS.md), and the vocabulary is in [GLOSSARY.md](GLOSSARY.md).
+
+| Path | Role |
+| --- | --- |
+| 📜 `packages/contract` | Protobuf contract of the API, generated TypeScript |
+| 🎨 `packages/design-tokens` | Design tokens, generated CSS variables |
+| ⚙️ `apps/server` | The service: Hono on Bun, Connect-RPC, SQLite |
+| 🖥️ `apps/web` | The web UI: React, TanStack Router and Query, Tailwind |
+| 📱 `shortcuts` | The iOS Shortcut and the script that builds it |
+| 🧭 `docs/adr` | Architecture decisions |
+
+Two documented workarounds: Connect-RPC is mounted inside Hono through a small adapter ([ADR 0001](docs/adr/0001-connect-rpc-mounted-in-hono.md)), and Kysely talks to `bun:sqlite` through an in-house dialect ([ADR 0002](docs/adr/0002-kysely-over-bun-sqlite-with-custom-dialect.md)).
+
+Roadmap: [milestones](https://github.com/mathieuletyrant/spotarr/milestones) and the [project board](https://github.com/users/mathieuletyrant/projects/1).

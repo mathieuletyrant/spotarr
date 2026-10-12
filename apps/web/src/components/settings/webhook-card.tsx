@@ -56,7 +56,7 @@ export function WebhookCard({ webhook, onDone }: { webhook?: Webhook; onDone?: (
             id={`${id}-url`}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="http://homeassistant.local:8123/api/webhook/spotarr"
+            placeholder="https://example.com/webhook"
             spellCheck={false}
             className={inputClass}
           />

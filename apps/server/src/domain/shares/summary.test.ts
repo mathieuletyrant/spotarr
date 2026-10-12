@@ -10,6 +10,7 @@ const candidate = (libraryState: Candidate["libraryState"]): Candidate => ({
 });
 const addition = (status: Addition["status"]): Addition => ({
   id: "add_1",
+  automatic: false,
   createdAt: "2026-10-12T10:00:00.000Z",
   tmdbId: 1,
   type: "MOVIE",

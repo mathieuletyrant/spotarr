@@ -11,6 +11,7 @@ import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
 import type { ShareInput } from "./domain/shares/types";
+import { autoAdd } from "./domain/shares/use-cases/auto-add";
 import { WebhookRepository } from "./domain/webhooks/repository";
 import { WebhookSender } from "./domain/webhooks/sender";
 import { chat, type LlmConfig } from "./integrations/llm/client";
@@ -61,10 +62,17 @@ function llmConfig(identification: Settings["identification"]): LlmConfig {
 const webhooks = new WebhookRepository(db);
 const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
 
-// When an Identification ends, the Webhooks hear about it.
+// When an Identification ends, the Webhooks hear about it, then auto add
+// requests the Candidates its rule allows (each one sends media.added).
 async function identificationEnded(shareId: string) {
   const share = await shares.get(shareId);
-  if (share) await sender.identificationEnded(share);
+  if (!share) return;
+  await sender.identificationEnded(share);
+  await autoAdd(share, (await settings.get()).autoAdd, {
+    shares,
+    seerr: await seerrFromSettings(),
+    mediaAdded: (share, added) => sender.mediaAdded(share, added),
+  });
 }
 
 const queue = new ShareQueue(
