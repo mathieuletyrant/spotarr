@@ -1,7 +1,7 @@
 import { Summary, type SummaryCount } from "@spotarr/contract";
 import { Search } from "lucide-react";
 import type { ReactNode } from "react";
-import { SummaryLabel } from "../status-badge";
+import { SUMMARY_LABELS, SummaryLabel } from "../status-badge";
 
 // The filters, in the mockup's order.
 const FILTERS = [
@@ -42,9 +42,29 @@ export function HistoryFilters(props: Props) {
   const countOf = (summary: Summary) => props.counts.find((c) => c.summary === summary)?.count ?? 0;
 
   return (
-    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      {/* On a phone the filters scroll sideways instead of taking three lines. */}
-      <div className="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
+    <div className="flex items-center gap-2 lg:justify-between">
+      {/* On a phone or a tablet: a native menu, next to the search. */}
+      <select
+        aria-label="Filter by status"
+        value={props.summary ?? ""}
+        onChange={(e) =>
+          props.onSummaryChange(
+            e.target.value === "" ? undefined : (Number(e.target.value) as Summary),
+          )
+        }
+        className="h-9 rounded-md border border-border bg-surface px-2 text-sm lg:hidden"
+      >
+        <option value="">All ({props.total})</option>
+        {FILTERS.filter((summary) => countOf(summary) > 0 || props.summary === summary).map(
+          (summary) => (
+            <option key={summary} value={summary}>
+              {SUMMARY_LABELS[summary]} ({countOf(summary)})
+            </option>
+          ),
+        )}
+      </select>
+
+      <div className="hidden lg:block">
         <div className="flex w-max gap-1 rounded-lg bg-surface p-1">
           <FilterButton
             label="All"
@@ -67,7 +87,7 @@ export function HistoryFilters(props: Props) {
         </div>
       </div>
 
-      <label className="flex h-9 shrink-0 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm md:w-64">
+      <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm lg:w-64 lg:flex-none">
         <Search aria-hidden className="size-4 text-text-muted" />
         <span className="sr-only">Search by title or source</span>
         <input

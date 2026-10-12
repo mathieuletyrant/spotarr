@@ -1,7 +1,7 @@
 import { Summary } from "@spotarr/contract";
 import { LoaderCircle } from "lucide-react";
 
-const LABELS: Record<Summary, string> = {
+export const SUMMARY_LABELS: Record<Summary, string> = {
   [Summary.UNSPECIFIED]: "",
   [Summary.IN_PROGRESS]: "In progress",
   [Summary.TO_CHOOSE]: "To choose",
@@ -29,7 +29,7 @@ const COLORS: Record<Summary, string> = {
 
 // The name of a Summary, e.g. "Already present".
 export function SummaryLabel({ summary }: { summary: Summary }) {
-  return LABELS[summary];
+  return SUMMARY_LABELS[summary];
 }
 
 // A colored pill with the Summary's name, e.g. "Requested 1/3".

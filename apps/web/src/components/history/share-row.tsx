@@ -18,28 +18,80 @@ import { HISTORY_COLUMNS } from "./columns";
 // Additions that put the work in the library, or found it there already.
 const SUCCESSES = [AdditionStatus.ADDED, AdditionStatus.REQUESTED, AdditionStatus.ALREADY_PRESENT];
 
-// One Share of the history: a row of six columns on a wide screen, a card on
-// a phone. The whole row links to the Share's page.
+// One Share of the history: a compact card on a phone or a tablet, a row of
+// six columns from lg on. Either way, it links to the Share's page.
 export function ShareRow({ share }: { share: Share }) {
   return (
     <li>
+      <ShareCard share={share} />
       <Link
         to="/shares/$shareId"
         params={{ shareId: share.id }}
-        className={`grid gap-3 px-4 py-4 hover:bg-text/4 focus-visible:outline-2 focus-visible:outline-accent md:items-center ${HISTORY_COLUMNS}`}
+        className={`hidden px-4 py-4 hover:bg-text/4 focus-visible:outline-2 focus-visible:outline-accent lg:items-center ${HISTORY_COLUMNS}`}
       >
         <ShareDate share={share} />
         <SharedContent share={share} />
         <Result share={share} />
-        <span className="hidden text-sm md:block">{targetOf(share)}</span>
-        {/* On a phone, status and method share one line; from md on, `contents`
-          makes them two cells of the row's grid again. */}
-        <div className="flex items-center justify-between gap-3 md:contents">
-          <Status share={share} />
-          <span className="text-sm text-text-muted">{methodOf(share)}</span>
-        </div>
+        <span className="text-sm">{targetOf(share)}</span>
+        <Status share={share} />
+        <span className="text-sm text-text-muted">{methodOf(share)}</span>
       </Link>
     </li>
+  );
+}
+
+// On a phone or a tablet: the poster, then what was found, where and when it came from,
+// and the status.
+function ShareCard({ share }: { share: Share }) {
+  const { day, time } = shareDate(share.createdAt ? timestampDate(share.createdAt) : new Date());
+  const [first] = share.candidates;
+  return (
+    <Link
+      to="/shares/$shareId"
+      params={{ shareId: share.id }}
+      className="flex gap-3 p-3 hover:bg-text/4 focus-visible:outline-2 focus-visible:outline-accent lg:hidden"
+    >
+      {first ? (
+        <Poster title={first.title} url={first.posterUrl} />
+      ) : (
+        <div
+          aria-hidden
+          className="h-21 w-14 shrink-0 rounded-md border border-dashed border-border"
+        />
+      )}
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
+        <p className="truncate">
+          <CardTitle share={share} />
+        </p>
+        <p className="truncate text-sm text-text-muted">
+          {share.source} · {day} {time}
+        </p>
+        <div className="mt-1">
+          <Status share={share} />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function CardTitle({ share }: { share: Share }) {
+  const [first, ...others] = share.candidates;
+  if (share.summary === Summary.IN_PROGRESS) {
+    return <span className="text-text-muted">Identifying…</span>;
+  }
+  if (!first) return <span className="text-text-muted">No candidates</span>;
+  if (others.length > 0) {
+    return (
+      <span className="font-semibold">
+        {first.title} <span className="font-normal text-text-muted">+{others.length} more</span>
+      </span>
+    );
+  }
+  return (
+    <>
+      <span className="font-semibold">{first.title}</span>{" "}
+      <span className="text-text-muted">{first.year}</span>
+    </>
   );
 }
 
@@ -47,7 +99,7 @@ function ShareDate({ share }: { share: Share }) {
   const { day, time } = shareDate(share.createdAt ? timestampDate(share.createdAt) : new Date());
   return (
     <span className="text-sm">
-      {day} <span className="text-text-muted md:block">{time}</span>
+      {day} <span className="text-text-muted lg:block">{time}</span>
     </span>
   );
 }

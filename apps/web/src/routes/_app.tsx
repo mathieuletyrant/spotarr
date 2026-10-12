@@ -39,8 +39,8 @@ function AppLayout() {
           to="/"
           className="flex items-center gap-2 font-semibold focus-visible:outline-2 focus-visible:outline-accent"
         >
-          <img src="/favicon.svg" alt="" className="size-6" />
-          Spotarr
+          <img src="/favicon.svg" alt="Spotarr" className="size-6" />
+          <span className="hidden sm:inline">Spotarr</span>
         </Link>
         <nav className="flex gap-1 text-sm">
           <Link
@@ -62,10 +62,11 @@ function AppLayout() {
           <Link
             to="."
             search={(previous) => ({ ...previous, share: true })}
+            aria-label="Share a link"
             className="flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
           >
             <Plus aria-hidden className="size-4" />
-            Share
+            <span className="hidden sm:inline">Share</span>
           </Link>
         </div>
       </header>
