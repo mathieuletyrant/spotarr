@@ -27,7 +27,10 @@ function AppLayout() {
   return (
     <div className="min-h-screen">
       <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
-        <span className="font-semibold">Spotarr</span>
+        <span className="flex items-center gap-2 font-semibold">
+          {" "}
+          <img src="/favicon.svg" alt="" className="size-6" /> Spotarr{" "}
+        </span>
         <nav className="flex gap-1 text-sm">
           <Link
             to="/"

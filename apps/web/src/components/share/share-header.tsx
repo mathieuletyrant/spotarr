@@ -2,11 +2,10 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { useMutation } from "@connectrpc/connect-query";
 import { type Share, SpotarrService, Summary } from "@spotarr/contract";
 import { useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { ChevronLeft, ExternalLink, RotateCw } from "lucide-react";
+import { ExternalLink, RotateCw } from "lucide-react";
 import { shareDate } from "../../lib/format";
 
-// Back link, title, shared URL, and the two actions: retry, open the source.
+// Title, shared URL, and the two actions: retry, open the source.
 export function ShareHeader({ share }: { share: Share }) {
   const queryClient = useQueryClient();
   const retry = useMutation(SpotarrService.method.retryIdentification, {
@@ -16,10 +15,6 @@ export function ShareHeader({ share }: { share: Share }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Link to="/" className="flex w-fit items-center gap-1 text-text-muted hover:text-text">
-        <ChevronLeft aria-hidden className="size-4" />
-        History
-      </Link>
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
           <h1 className="text-3xl font-semibold">
