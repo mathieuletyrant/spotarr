@@ -13,7 +13,7 @@ export function MonthsChart({ months }: { months: MonthStats[] }) {
 
   return (
     <Card icon={<ChartColumn aria-hidden className="size-4" />} title="Shares per month">
-      <div className="relative h-56">
+      <div className="relative h-44">
         {/* Three faint lines: the top, the middle and the bottom of the scale. */}
         <div
           aria-hidden

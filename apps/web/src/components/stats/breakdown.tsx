@@ -17,7 +17,7 @@ export function Breakdown({
   const highest = Math.max(...sources.map((source) => source.shares), 1);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <Card icon={<PieChart aria-hidden className="size-4" />} title="Movies and shows">
         <div className="flex items-center gap-6">
           <div

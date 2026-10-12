@@ -27,12 +27,10 @@ function StatsPage() {
             recentlyAdded={data.recentlyAdded}
           />
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-            <div className="flex flex-col gap-6">
-              <MonthsChart months={data.months} />
-              <TopAuthors authors={data.authors} />
-            </div>
-            <Breakdown movies={data.moviesAdded} shows={data.showsAdded} sources={data.sources} />
+            <MonthsChart months={data.months} />
+            <TopAuthors authors={data.authors} />
           </div>
+          <Breakdown movies={data.moviesAdded} shows={data.showsAdded} sources={data.sources} />
         </>
       )}
     </div>
