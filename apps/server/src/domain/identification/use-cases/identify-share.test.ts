@@ -1,4 +1,4 @@
-import { afterEach, expect, mock, test } from "bun:test";
+import { afterEach, expect, mock, spyOn, test } from "bun:test";
 import { Seerr } from "../../../integrations/seerr/client";
 import { getGetMovieMovieIdResponseMock } from "../../../integrations/seerr/gen/seerr.faker";
 import { Tmdb } from "../../../integrations/tmdb/client";
@@ -38,6 +38,7 @@ test("an IMDb link gives a certain Candidate, without video nor LLM", async () =
   });
 
   const result = await identifyShare(
+    "shr_test",
     { url: "https://www.imdb.com/title/tt15239678/" },
     { tmdb, seerr, readVideo: notCalled, llm: notCalled },
   );
@@ -52,6 +53,7 @@ test("an IMDb link gives a certain Candidate, without video nor LLM", async () =
 test("a TMDB link works the same way", async () => {
   fakeFetch({ "/3/movie/693134": dune, "/api/v1/movie/693134": inLibrary });
   const result = await identifyShare(
+    "shr_test",
     { url: "https://www.themoviedb.org/movie/693134" },
     { tmdb, seerr, readVideo: notCalled, llm: notCalled },
   );
@@ -62,6 +64,7 @@ test("a reel is read, then the LLM explains what it sees (Candidates come with #
   const llm = llmAnswering({ reasoning: "On reconnaît Zach Galifianakis.", guesses: [] });
 
   const result = await identifyShare(
+    "shr_test",
     { url: "https://www.instagram.com/reel/DeHYOAbo14f/" },
     { tmdb, seerr, readVideo: async () => reel, llm },
   );
@@ -84,6 +87,7 @@ test("a video that cannot be read fails the Identification with the reason", asy
   };
   await expect(
     identifyShare(
+      "shr_test",
       { url: "https://www.instagram.com/reel/x/" },
       { tmdb, seerr, readVideo, llm: notCalled },
     ),
@@ -93,8 +97,31 @@ test("a video that cannot be read fails the Identification with the reason", asy
 test("Seerr being down leaves the Candidates ABSENT, without failing", async () => {
   fakeFetch({ "/3/movie/693134": dune, "/api/v1/movie/693134": 503 });
   const result = await identifyShare(
+    "shr_test",
     { url: "https://www.themoviedb.org/movie/693134" },
     { tmdb, seerr, readVideo: notCalled, llm: notCalled },
   );
   expect(result).toMatchObject({ status: "READY", candidates: [{ libraryState: "ABSENT" }] });
+});
+
+test("every step of an Identification logs one line with the Share's id", async () => {
+  const printed = spyOn(console, "log").mockImplementation(() => {});
+  process.env.NODE_ENV = "development"; // log() is silent under bun test
+  try {
+    fakeFetch({ "/3/movie/693134": dune, "/api/v1/movie/693134": inLibrary });
+    const llm = llmAnswering({ reasoning: "", guesses: [] });
+    await identifyShare(
+      "shr_42",
+      { url: "https://www.instagram.com/reel/x/" },
+      { tmdb, seerr, readVideo: async () => reel, llm },
+    );
+  } finally {
+    process.env.NODE_ENV = "test";
+  }
+
+  const lines = printed.mock.calls.map(([line]) => JSON.parse(String(line)));
+  expect(lines.map((line) => line.step)).toEqual(["video", "llm", "tmdb", "library-check"]);
+  expect(lines.every((line) => line.shareId === "shr_42")).toBe(true);
+  expect(lines[0]).toMatchObject({ frames: 1, audio: false });
+  expect(lines[1]).toMatchObject({ guesses: 0, costUsd: 0.0012 });
 });

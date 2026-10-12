@@ -1,5 +1,6 @@
 import type { Seerr } from "../../../integrations/seerr/client";
 import type { Tmdb } from "../../../integrations/tmdb/client";
+import { step } from "../../../log";
 import type { Candidate, Clues, IdentificationResult, ShareInput } from "../../shares/types";
 import { confirmOnTmdb } from "../confirm-on-tmdb";
 import { type DirectId, findDirectIds } from "../extractors/direct-ids";
@@ -14,15 +15,23 @@ export type IdentifyDeps = {
 };
 
 // An IMDb/TMDB link is enough. Otherwise the shared video is read, the LLM
-// names the works it shows, and TMDB confirms them.
+// names the works it shows, and TMDB confirms them. Each step logs one line
+// with the Share's id.
 export async function identifyShare(
+  shareId: string,
   input: ShareInput,
   { tmdb, seerr, readVideo, llm }: IdentifyDeps,
 ): Promise<IdentificationResult> {
   // 1. The shared link may itself be an IMDb or TMDB page: certain, no LLM.
   const ids = findDirectIds(input.url ?? "");
   if (ids.length > 0) {
-    const candidates = await checkLibrary(await lookUpAll(ids, tmdb), seerr);
+    const found = await step(
+      shareId,
+      "direct-id",
+      () => lookUpAll(ids, tmdb),
+      (titles) => ({ candidates: titles.length }),
+    );
+    const candidates = await checkLibrary(shareId, found, seerr);
     if (candidates.length > 0) {
       return {
         status: "READY",
@@ -38,16 +47,34 @@ export async function identifyShare(
   if (!input.url) {
     return { status: "NO_MATCH", extractors: [], clues: {}, candidates: [] };
   }
-  const video = await readVideo(input.url);
+  const url = input.url;
+  const video = await step(
+    shareId,
+    "video",
+    () => readVideo(url),
+    (read) => ({ frames: read.frames.length, audio: read.audio !== undefined }),
+  );
   const clues: Clues = { caption: video.caption, author: video.author };
 
   // 3. The LLM reads the caption, looks at the frames and listens to the sound;
   // TMDB confirms its guesses.
-  const { answer, costUsd } = await guessTitles(
-    { clues, frames: video.frames.map((frame) => frame.jpeg), audio: video.audio },
-    llm,
+  const { answer, costUsd } = await step(
+    shareId,
+    "llm",
+    () =>
+      guessTitles(
+        { clues, frames: video.frames.map((frame) => frame.jpeg), audio: video.audio },
+        llm,
+      ),
+    (reply) => ({ guesses: reply.answer.guesses.length, costUsd: reply.costUsd }),
   );
-  const candidates = await checkLibrary(await confirmOnTmdb(answer.guesses, tmdb), seerr);
+  const confirmed = await step(
+    shareId,
+    "tmdb",
+    () => confirmOnTmdb(answer.guesses, tmdb),
+    (titles) => ({ candidates: titles.length }),
+  );
+  const candidates = await checkLibrary(shareId, confirmed, seerr);
   return {
     status: candidates.length > 0 ? "READY" : "NO_MATCH",
     method: "LLM",
@@ -63,13 +90,19 @@ export async function identifyShare(
 
 // Asks Seerr whether each Candidate is already in the library. Seerr being down
 // or not configured does not fail the Identification: Candidates stay ABSENT.
-async function checkLibrary(candidates: Candidate[], seerr: Seerr): Promise<Candidate[]> {
+async function checkLibrary(
+  shareId: string,
+  candidates: Candidate[],
+  seerr: Seerr,
+): Promise<Candidate[]> {
   try {
-    for (const candidate of candidates) {
-      candidate.libraryState = await seerr.libraryState(candidate.type, candidate.tmdbId);
-    }
-  } catch (error) {
-    console.error(JSON.stringify({ step: "library-check", error: String(error) }));
+    await step(shareId, "library-check", async () => {
+      for (const candidate of candidates) {
+        candidate.libraryState = await seerr.libraryState(candidate.type, candidate.tmdbId);
+      }
+    });
+  } catch {
+    // Already logged by step().
   }
   return candidates;
 }

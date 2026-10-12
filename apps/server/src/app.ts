@@ -13,6 +13,7 @@ import type { SettingsRepository } from "./domain/settings/repository";
 import type { ShareQueue } from "./domain/shares/queue";
 import type { ShareRepository } from "./domain/shares/repository";
 import type { Seerr } from "./integrations/seerr/client";
+import { log } from "./log";
 
 export type AppDeps = {
   apiToken: () => string;
@@ -43,11 +44,18 @@ export function createApp({ apiToken, settings, shares, queue, seerr, webDir }: 
 
   // Errors outside the RPCs get the same JSON shape as Connect's.
   app.onError((error, c) => {
-    console.error(JSON.stringify({ step: "http", error: String(error) }));
+    log({ step: "http", error: String(error) });
     return c.json({ code: "internal", message: String(error) }, 500);
   });
 
   app.get("/health", (c) => c.json({ ok: true }));
+  // One line per API call, refused ones included: which RPC, its status, how long.
+  app.use("/api/*", async (c, next) => {
+    const started = performance.now();
+    await next();
+    const durationMs = Math.round(performance.now() - started);
+    log({ step: "request", path: c.req.path, status: c.res.status, durationMs });
+  });
   app.use("/api/*", requireToken(apiToken));
   app.post("/api/*", (c) => rpc(c, "/api"));
   app.use("/frames/*", requireToken(apiToken));
