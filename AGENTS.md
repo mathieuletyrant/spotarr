@@ -35,6 +35,17 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 
 Mathieu learns by reading every PR. Write the most obvious code: small functions with plain names, concrete types rather than generics, a little repetition rather than an abstraction, `if` rather than nested ternaries, one-line comments that say why. If a reader needs to stop and decode a line, rewrite it.
 
+## Web UI
+
+Tailwind v4 syntax: the `tailwind-best-practices` skill (`.agents/skills/`, linked in `.claude/skills/`). On top of it, Spotarr's rules:
+
+- **Colors, fonts, radii and spacing come from the design tokens only**: `bg-surface`, `text-text-muted`, `border-border`, `text-status-added`, `rounded-md`. Never Tailwind's palette (`gray-900`, `blue-500`) and never arbitrary colors (`bg-[#…]`). A missing color is added to `packages/design-tokens/tokens.json`, then `pnpm generate`.
+- **No `dark:` variants**: the tokens switch every color in dark mode on their own (`.dark` block).
+- **Repeated class lists become a React component** (`<StatusBadge>`, `<Poster>`), not an `@apply` class. `@apply` is for `styles.css` base rules only.
+- **Mobile first**: base classes for a phone, `md:` and up for wider screens. The History table becomes cards on a phone.
+- **Accessible by default**: real `<button>` and `<a>`, a label on every field, visible focus (`focus-visible:`), no `autoFocus`.
+- **Text in French, code in English.**
+
 ## How work happens
 
 - One GitHub issue per task, one branch and one PR per issue, `Closes #N` in the PR body. `main` is protected: PR and green CI required, admins included.
