@@ -4,11 +4,13 @@ import { log } from "../../../log";
 import type { ShareRepository } from "../repository";
 import type { Candidate, Share } from "../types";
 
-type Deps = {
+export type AddCandidateDeps = {
   shares: ShareRepository;
   seerr: Seerr;
   // Told once Seerr accepted the request (the media.added Event).
   mediaAdded?: (share: Share, added: Candidate) => Promise<void>;
+  // True when auto add asks, not a click.
+  automatic?: boolean;
 };
 
 // Adds one Candidate of a Share to the library through Seerr, and records an
@@ -17,7 +19,7 @@ type Deps = {
 export async function addCandidate(
   shareId: string,
   candidate: Pick<Candidate, "tmdbId" | "type">,
-  { shares, seerr, mediaAdded }: Deps,
+  { shares, seerr, mediaAdded, automatic = false }: AddCandidateDeps,
 ): Promise<void> {
   const share = await shares.get(shareId);
   if (!share) throw new SpotarrError("not_found", `no share ${shareId}`);
@@ -27,7 +29,12 @@ export async function addCandidate(
   if (!known)
     throw new SpotarrError("not_found", `no candidate ${candidate.tmdbId} in share ${shareId}`);
 
-  const addition = { tmdbId: candidate.tmdbId, type: candidate.type, target: "SEERR" as const };
+  const addition = {
+    tmdbId: candidate.tmdbId,
+    type: candidate.type,
+    target: "SEERR" as const,
+    automatic,
+  };
   try {
     // Checked again now: the library may have changed since the Identification.
     const state = await seerr.libraryState(candidate.type, candidate.tmdbId);

@@ -71,8 +71,14 @@ function CandidateAction({ share, candidate }: { share: Share; candidate: Candid
   });
 
   const addition = latestAdditionOf(share, candidate);
-  if (addition?.status === AdditionStatus.REQUESTED)
-    return <StatusBadge summary={Summary.REQUESTED} />;
+  if (addition?.status === AdditionStatus.REQUESTED) {
+    return (
+      <div className="flex flex-col items-end gap-1">
+        <StatusBadge summary={Summary.REQUESTED} />
+        {addition.automatic && <span className="text-xs text-text-muted">automatically</span>}
+      </div>
+    );
+  }
   if (addition?.status === AdditionStatus.ADDED) return <StatusBadge summary={Summary.ADDED} />;
   if (addition?.status === AdditionStatus.ALREADY_PRESENT || inLibrary(candidate)) {
     return <StatusBadge summary={Summary.ALREADY_PRESENT} />;

@@ -41,6 +41,13 @@ export const SettingsSchema = z.object({
       webUiUrl: optionalUrl.default(""),
     })
     .prefault({}),
+  autoAdd: z
+    .object({
+      enabled: z.boolean().default(false),
+      minConfidence: z.int().min(50).max(100).default(95),
+      onlyOne: z.boolean().default(true),
+    })
+    .prefault({}),
   access: z
     .object({
       // Generated at first start, read-only for clients (see SettingsRepository.update).

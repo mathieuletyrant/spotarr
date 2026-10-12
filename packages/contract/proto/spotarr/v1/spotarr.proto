@@ -83,6 +83,18 @@ message Settings {
   ExtractionSettings extraction = 3;
   AccessSettings access = 4;
   WebhookSettings webhooks = 5;
+  AutoAddSettings auto_add = 6;
+}
+
+// Requesting a Candidate without a click, when the Identification is confident.
+// A direct IMDb/TMDB link counts as 100 %.
+message AutoAddSettings {
+  optional bool enabled = 1;
+  // Percent, 50 to 100.
+  optional int32 min_confidence = 2;
+  // True: only when exactly one Candidate reaches min_confidence.
+  // False: every Candidate that reaches it.
+  optional bool only_one = 3;
 }
 
 message WebhookSettings {
@@ -219,6 +231,8 @@ message Addition {
   Target target = 5;
   AdditionStatus status = 6;
   optional string error = 7;
+  // Made by auto add, without a click.
+  bool automatic = 8;
 }
 
 enum IdentificationStatus {

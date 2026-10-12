@@ -44,6 +44,8 @@ export type Addition = {
   target: "ARR" | "SEERR";
   status: AdditionStatus;
   error?: string;
+  // Made by auto add, without a click.
+  automatic: boolean;
 };
 
 export type Share = {

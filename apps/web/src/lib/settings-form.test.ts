@@ -26,3 +26,16 @@ test("the server's validation message is split by field", () => {
   });
   expect(errorsByField("Seerr answered 500")).toEqual({ "": "Seerr answered 500" });
 });
+
+test("auto add's switches are sent as booleans, its threshold as a number", () => {
+  const saved = {
+    "autoAdd.enabled": "false",
+    "autoAdd.onlyOne": "true",
+    "autoAdd.minConfidence": "95",
+  };
+  const values = { ...saved, "autoAdd.enabled": "true", "autoAdd.minConfidence": "90" };
+  expect(changes(values, saved)).toEqual({ autoAdd: { enabled: true, minConfidence: 90 } });
+  expect(errorsByField("autoAdd.minConfidence: Too small")).toEqual({
+    "autoAdd.minConfidence": "Too small",
+  });
+});
