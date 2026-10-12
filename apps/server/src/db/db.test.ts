@@ -65,6 +65,7 @@ test("a file database runs in WAL mode and migrates only once", async () => {
       "2026-10-12-settings-document",
       "2026-10-12T1400-frames",
       "2026-10-12T1800-llm-cost",
+      "2026-10-12T1900-webhooks",
     ]);
     await db.destroy();
   } finally {

@@ -8,10 +8,13 @@ import { errorsToConnect } from "./api/rpc/errors";
 import { settingsRpcs } from "./api/rpc/settings";
 import { shareRpcs } from "./api/rpc/shares";
 import { statusRpcs } from "./api/rpc/status";
+import { webhookRpcs } from "./api/rpc/webhooks";
 import { serveWebApp } from "./api/web";
 import type { SettingsRepository } from "./domain/settings/repository";
 import type { ShareQueue } from "./domain/shares/queue";
 import type { ShareRepository } from "./domain/shares/repository";
+import type { WebhookRepository } from "./domain/webhooks/repository";
+import type { WebhookSender } from "./domain/webhooks/sender";
 import type { Seerr } from "./integrations/seerr/client";
 import { log } from "./log";
 
@@ -20,6 +23,8 @@ export type AppDeps = {
   settings: SettingsRepository;
   shares: ShareRepository;
   queue: ShareQueue;
+  webhooks: WebhookRepository;
+  sender: WebhookSender;
   // Built from the settings at each call, so a change applies at once.
   seerr: () => Promise<Seerr>;
   // The built web UI; absent in tests and when running the API alone.
@@ -30,13 +35,23 @@ export type AppDeps = {
 // for Login), GET /frames/* (video thumbnails, token required), and the web UI
 // on every other GET.
 // Each file in api/rpc/ implements the RPCs of one domain.
-export function createApp({ apiToken, settings, shares, queue, seerr, webDir }: AppDeps): Hono {
+export function createApp({
+  apiToken,
+  settings,
+  shares,
+  queue,
+  webhooks,
+  sender,
+  seerr,
+  webDir,
+}: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
     router.service(SpotarrService, {
       ...authRpcs(apiToken),
       ...statusRpcs(settings, shares),
       ...settingsRpcs(settings),
-      ...shareRpcs(shares, queue, seerr),
+      ...shareRpcs(shares, queue, seerr, sender),
+      ...webhookRpcs(webhooks, sender),
     }),
   );
 

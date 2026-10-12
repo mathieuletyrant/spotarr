@@ -47,10 +47,15 @@ test("an absent Candidate is requested from Seerr", async () => {
     "/api/v1/request": getPostRequestResponseMock(),
   });
 
-  await addCandidate(id, dueDate, { shares, seerr });
+  const added: string[] = [];
+  const mediaAdded = async (_share: unknown, candidate: { title: string }) => {
+    added.push(candidate.title);
+  };
+  await addCandidate(id, dueDate, { shares, seerr, mediaAdded });
 
   const share = await shares.get(id);
   expect(share?.additions).toMatchObject([{ tmdbId: 41733, target: "SEERR", status: "REQUESTED" }]);
+  expect(added).toEqual(["Date limite"]); // the media.added Event
   expect(share?.summary).toBe("REQUESTED");
   expect(fetch.mock.calls.map(([url]) => new URL(String(url)).pathname)).toEqual([
     "/api/v1/movie/41733",
@@ -64,9 +69,17 @@ test("a Candidate already in the library is not requested again", async () => {
     "/api/v1/movie/41733": getGetMovieMovieIdResponseMock({ mediaInfo: { status: 5 } }),
   });
 
-  await addCandidate(id, dueDate, { shares, seerr });
+  let added = false;
+  await addCandidate(id, dueDate, {
+    shares,
+    seerr,
+    mediaAdded: async () => {
+      added = true;
+    },
+  });
 
   expect((await shares.get(id))?.additions.map((a) => a.status)).toEqual(["ALREADY_PRESENT"]);
+  expect(added).toBe(false);
 });
 
 test("Seerr failing is recorded as a failed Addition, with the reason", async () => {

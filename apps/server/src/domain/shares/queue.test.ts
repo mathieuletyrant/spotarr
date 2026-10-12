@@ -74,3 +74,24 @@ test("start() resumes an Identification interrupted by a restart", async () => {
 
   await until(async () => (await shares.get(id))?.identification.status === "NO_MATCH");
 });
+
+test("the queue says when an Identification ended, failed ones included", async () => {
+  const shares = new ShareRepository(await openDatabase(":memory:"));
+  const ended: string[] = [];
+  const queue = new ShareQueue(
+    shares,
+    async () => {
+      throw new Error("yt-dlp failed");
+    },
+    async () => 2,
+    async (shareId) => {
+      ended.push(shareId);
+    },
+  );
+  const id = await shares.create({ text: "x" }, "text");
+  queue.wake();
+
+  await until(async () => ended.length === 1);
+  expect(ended).toEqual([id]);
+  expect((await shares.get(id))?.identification.status).toBe("FAILED");
+});

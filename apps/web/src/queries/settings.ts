@@ -15,3 +15,7 @@ export function dependenciesQuery() {
     refetchOnWindowFocus: false,
   });
 }
+
+export function webhooksQuery() {
+  return queryOptions(createQueryOptions(SpotarrService.method.listWebhooks, {}, { transport }));
+}

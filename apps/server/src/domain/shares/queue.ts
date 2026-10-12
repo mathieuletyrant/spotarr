@@ -14,6 +14,8 @@ export class ShareQueue {
     private readonly shares: ShareRepository,
     private readonly identify: Identify,
     private readonly concurrency: () => Promise<number>,
+    // Told when an Identification ended, whatever the outcome (sends the Events).
+    private readonly ended: (shareId: string) => Promise<void> = async () => {},
   ) {}
 
   async start(): Promise<void> {
@@ -56,5 +58,9 @@ export class ShareQueue {
       log({ shareId: id, step: "identification", durationMs: elapsed(), error: message });
       await this.shares.fail(id, message, elapsed());
     }
+    // Outside the try: what follows never changes the Share's outcome.
+    await this.ended(id).catch((error) =>
+      log({ shareId: id, step: "ended", error: String(error) }),
+    );
   }
 }
