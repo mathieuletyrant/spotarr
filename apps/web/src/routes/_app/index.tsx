@@ -2,11 +2,11 @@ import type { Summary } from "@spotarr/contract";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useDeferredValue, useState } from "react";
-import { HistoryFilters } from "../components/history/history-filters";
-import { HistoryTable } from "../components/history/history-table";
-import { historyQuery } from "../queries/shares";
+import { HistoryFilters } from "../../components/history/history-filters";
+import { HistoryTable } from "../../components/history/history-table";
+import { historyQuery } from "../../queries/shares";
 
-export const Route = createFileRoute("/")({ component: HistoryPage });
+export const Route = createFileRoute("/_app/")({ component: HistoryPage });
 
 function HistoryPage() {
   const [summary, setSummary] = useState<Summary>();

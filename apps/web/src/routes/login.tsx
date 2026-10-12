@@ -2,6 +2,7 @@ import { useMutation } from "@connectrpc/connect-query";
 import { SpotarrService } from "@spotarr/contract";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { type SubmitEvent, useState } from "react";
+import { queryClient } from "../lib/api";
 
 export const Route = createFileRoute("/login")({ component: Login });
 
@@ -11,7 +12,11 @@ function Login() {
   const navigate = useNavigate();
   const [token, setToken] = useState("");
   const login = useMutation(SpotarrService.method.login, {
-    onSuccess: () => navigate({ to: "/" }),
+    // Forget the "not signed in" answers cached before, then go in.
+    onSuccess: async () => {
+      queryClient.removeQueries();
+      await navigate({ to: "/" });
+    },
   });
 
   function submit(event: SubmitEvent) {
@@ -21,6 +26,7 @@ function Login() {
 
   return (
     <form onSubmit={submit} className="mx-auto mt-24 flex max-w-sm flex-col gap-3">
+      <p className="font-semibold">Spotarr</p>
       <h1 className="text-xl font-semibold">Sign in</h1>
       <label className="flex flex-col gap-1 text-sm">
         API token
@@ -33,7 +39,7 @@ function Login() {
       </label>
       {login.isError && (
         <p className="text-sm text-status-error">
-          Wrong token. Spotarr prints it in its logs at first start.
+          Wrong token. Spotarr prints it in its logs at every start.
         </p>
       )}
       <button

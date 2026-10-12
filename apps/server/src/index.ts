@@ -24,7 +24,9 @@ const db = await openDatabase(join(dataDir, "spotarr.db"));
 
 const settings = new SettingsRepository(db);
 const { token, created } = await ensureApiToken(settings);
-if (created) console.log(`API token (also in Settings → Access): ${token}`);
+// Printed at every start: the logs are where the token is found again if
+// lost, since the Settings page that shows it needs it to sign in.
+console.log(`API token${created ? " (new)" : ""}: ${token}`);
 
 const shares = new ShareRepository(db);
 
