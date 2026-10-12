@@ -1,10 +1,10 @@
-# Spotarr
+# 🎬 Spotarr
 
 Share a reel, a link, a screenshot or a text from your iPhone; Spotarr identifies the movie or TV show in the background and lets you add it to your library through Seerr. Personal project, one user, runs on an Umbrel.
 
-Status: milestone 0 (repo foundation). Nothing to run yet beyond the toolchain.
+🚧 Status: milestone 0 (repo foundation). Nothing to run yet beyond the toolchain.
 
-## Run the checks
+## ✅ Run the checks
 
 ```
 pnpm install --frozen-lockfile
@@ -13,22 +13,22 @@ pnpm check
 
 `pnpm check` is the single gate: lint, contract lint, code generation, breaking-change detection, type check, tests. Needs [pnpm](https://pnpm.io) (the version in `package.json` is picked up automatically) and [Bun](https://bun.sh) (`.bun-version`).
 
-## Repository
+## 🗂️ Repository
 
 | Path | Role |
 | --- | --- |
-| `packages/contract` | Protobuf contract of the API, generated TypeScript |
-| `packages/design-tokens` | Design tokens, generated CSS variables |
-| `apps/server` | The service: Hono on Bun, Connect-RPC, SQLite |
-| `docs/adr` | Architecture decisions |
-| `GLOSSARY.md` | The project's vocabulary |
-| `AGENTS.md` | Commands, conventions, known traps |
+| 📜 `packages/contract` | Protobuf contract of the API, generated TypeScript |
+| 🎨 `packages/design-tokens` | Design tokens, generated CSS variables |
+| ⚙️ `apps/server` | The service: Hono on Bun, Connect-RPC, SQLite |
+| 🧭 `docs/adr` | Architecture decisions |
+| 📖 `GLOSSARY.md` | The project's vocabulary |
+| 🤖 `AGENTS.md` | Commands, conventions, known traps |
 
-## Documented workarounds
+## 🩹 Documented workarounds
 
 - Connect-RPC is mounted inside Hono through a ~20-line adapter: [ADR 0001](docs/adr/0001-connect-rpc-mounted-in-hono.md).
 - Kysely talks to `bun:sqlite` through a ~20-line in-house dialect: [ADR 0002](docs/adr/0002-kysely-over-bun-sqlite-with-custom-dialect.md).
 
-## Roadmap
+## 🗺️ Roadmap
 
 Milestones and issues: https://github.com/mathieuletyrant/spotarr/milestones · board: https://github.com/users/mathieuletyrant/projects/1
