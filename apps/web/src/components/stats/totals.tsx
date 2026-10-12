@@ -1,9 +1,19 @@
-import type { MonthStats } from "@spotarr/contract";
+import type { AddedTitle, MonthStats } from "@spotarr/contract";
+import { Link } from "@tanstack/react-router";
 import { Coins, LibraryBig, ScanSearch, Share } from "lucide-react";
 import type { ReactNode } from "react";
+import { Poster } from "../poster";
 
 // The four numbers of the whole history, summed from its months.
-export function Totals({ months, added }: { months: MonthStats[]; added: number }) {
+export function Totals({
+  months,
+  added,
+  recentlyAdded,
+}: {
+  months: MonthStats[];
+  added: number;
+  recentlyAdded: AddedTitle[];
+}) {
   let shares = 0;
   let identified = 0;
   let finished = 0;
@@ -33,7 +43,12 @@ export function Totals({ months, added }: { months: MonthStats[]; added: number 
           <span className="block h-full rounded-full bg-accent" style={{ width: `${rate}%` }} />
         </span>
       </Tile>
-      <Tile icon={<LibraryBig aria-hidden className="size-4" />} label="Added" value={added}>
+      <Tile
+        icon={<LibraryBig aria-hidden className="size-4" />}
+        label="Added"
+        value={added}
+        aside={<PosterStack titles={recentlyAdded} />}
+      >
         {automatic} by auto add
       </Tile>
       <Tile
@@ -52,15 +67,39 @@ function thisMonth(months: MonthStats[]): number {
   return months.find((month) => month.month === current)?.shares ?? 0;
 }
 
+// The last titles added, overlapping like the History's candidates; each
+// opens the Share it came from.
+function PosterStack({ titles }: { titles: AddedTitle[] }) {
+  if (titles.length === 0) return null;
+  return (
+    <div className="flex -space-x-3">
+      {titles.map((title) => (
+        <Link
+          key={`${title.shareId}-${title.title}`}
+          to="/shares/$shareId"
+          params={{ shareId: title.shareId }}
+          title={title.title}
+          className="rounded-md ring-2 ring-surface-raised transition-transform hover:z-10 hover:-translate-y-1"
+        >
+          <Poster title={title.title} url={title.posterUrl} small />
+        </Link>
+      ))}
+    </div>
+  );
+}
+
 function Tile({
   icon,
   label,
   value,
+  aside,
   children,
 }: {
   icon: ReactNode;
   label: string;
   value: ReactNode;
+  // Shown on the right of the number.
+  aside?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -71,7 +110,10 @@ function Tile({
         </span>
         {label}
       </span>
-      <span className="text-3xl font-semibold tabular-nums md:text-4xl">{value}</span>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-3xl font-semibold tabular-nums md:text-4xl">{value}</span>
+        {aside}
+      </div>
       <span className="text-xs text-text-muted">{children}</span>
     </div>
   );

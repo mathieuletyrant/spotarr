@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Breakdown } from "../../components/stats/breakdown";
 import { MonthsChart } from "../../components/stats/months-chart";
-import { RecentlyAdded } from "../../components/stats/recently-added";
 import { Totals } from "../../components/stats/totals";
 import { statsQuery } from "../../queries/status";
 
@@ -21,8 +20,11 @@ function StatsPage() {
       {error && <p className="text-status-error">{error.message}</p>}
       {data && (
         <>
-          <Totals months={data.months} added={data.moviesAdded + data.showsAdded} />
-          <RecentlyAdded titles={data.recentlyAdded} />
+          <Totals
+            months={data.months}
+            added={data.moviesAdded + data.showsAdded}
+            recentlyAdded={data.recentlyAdded}
+          />
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <MonthsChart months={data.months} />
             <Breakdown movies={data.moviesAdded} shows={data.showsAdded} sources={data.sources} />

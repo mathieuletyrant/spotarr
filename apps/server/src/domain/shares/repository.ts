@@ -36,8 +36,8 @@ export type Stats = {
   recentlyAdded: AddedTitle[];
 };
 
-// How many titles the stats page shows as posters.
-const RECENTLY_ADDED = 12;
+// How many posters the stats page stacks in its Added tile.
+const RECENTLY_ADDED = 5;
 
 const NOW = sql<string>`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`;
 
