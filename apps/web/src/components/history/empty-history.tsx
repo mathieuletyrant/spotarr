@@ -34,7 +34,7 @@ export function EmptyHistory({ filtered, onClear }: { filtered: boolean; onClear
         <Step
           icon={<Share aria-hidden className="size-4" />}
           number={1}
-          text="Share a reel from Instagram, or paste a link"
+          text="Share a reel, a TikTok or a Short, or paste a link"
         />
         <Step
           icon={<ScanSearch aria-hidden className="size-4" />}

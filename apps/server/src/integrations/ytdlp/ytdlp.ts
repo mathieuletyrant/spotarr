@@ -12,9 +12,13 @@ const YtDlpJson = z.object({
   channel: z.string().nullish(),
 });
 
+// YouTube needs a JavaScript runtime to read its player; yt-dlp only looks for
+// Deno by default, and the image has Bun.
+const JS_RUNTIME = ["--js-runtimes", "bun"];
+
 export async function readVideoInfo(url: string): Promise<VideoInfo> {
   const json = await run(
-    ["yt-dlp", "--dump-single-json", "--skip-download", "--no-warnings", url],
+    ["yt-dlp", ...JS_RUNTIME, "--dump-single-json", "--skip-download", "--no-warnings", url],
     45_000,
   );
   return parseVideoInfo(json);
@@ -28,13 +32,19 @@ export function parseVideoInfo(json: string): VideoInfo {
   };
 }
 
-// Downloads the lowest quality, which is enough for a few frames, into `dir`.
+// Downloads a low quality, which is enough for a few frames, into `dir`.
 // Returns the file's path.
+// `worst` is the smallest file with sound and picture (Instagram, TikTok).
+// YouTube only offers them apart: the smallest picture of at least 360 px, so
+// on-screen text stays readable, plus the smallest sound, merged by ffmpeg.
+const FORMAT = "worst/wv[height>=360][width>=360]+wa/wv+wa";
+
 export async function downloadVideo(url: string, dir: string, maxMb: number): Promise<string> {
   const printed = await run(
     [
       "yt-dlp",
-      ...["--format", "worst"],
+      ...JS_RUNTIME,
+      ...["--format", FORMAT],
       ...["--max-filesize", `${maxMb}M`],
       ...["--output", join(dir, "video.%(ext)s")],
       // Print the downloaded file's path, and nothing else.
@@ -49,7 +59,7 @@ export async function downloadVideo(url: string, dir: string, maxMb: number): Pr
   return path;
 }
 
-// "2026.08.19". Instagram changes often: an old yt-dlp is the first suspect.
+// "2026.08.19". Instagram, TikTok and YouTube change often: an old yt-dlp is the first suspect.
 export async function ytDlpVersion(): Promise<string> {
   return (await run(["yt-dlp", "--version"], 10_000)).trim();
 }

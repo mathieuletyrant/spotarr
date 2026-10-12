@@ -98,7 +98,7 @@ struct SettingsView: View {
       }
 
       Section("How to share") {
-        Label("In Instagram, tap Share on a reel.", systemImage: "square.and.arrow.up")
+        Label("In Instagram, TikTok or YouTube, tap Share on a video.", systemImage: "square.and.arrow.up")
         Label("Choose Spotarr in the list (More… the first time).", systemImage: "scope")
         Label("Follow and pick the film in Spotarr's web page.", systemImage: "film")
       }

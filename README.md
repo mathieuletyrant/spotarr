@@ -1,6 +1,6 @@
 # 🎬 Spotarr
 
-Share an Instagram reel from your iPhone: Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
+Share an Instagram reel, a TikTok or a YouTube Short from your iPhone: Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
 
 ![The History page, in dark mode](docs/screenshots/history-dark.png)
 
@@ -46,7 +46,7 @@ An identification costs about $0.01 with the default model. Settings shows the c
 1. Open `apps/ios/Spotarr.xcodeproj` in Xcode. In both targets' Signing & Capabilities, pick your team (a free Apple account works; its apps must be reinstalled every 7 days).
 2. Run it on your iPhone, over Wi-Fi once paired. In the app, set Spotarr's address (`http://umbrel.local:3838` on Umbrel), the API token, and "Test the connection".
 3. Through a proxy such as Cloudflare Access, add its headers in **Custom headers**: `CF-Access-Client-Id` and `CF-Access-Client-Secret`, from a service token.
-4. In Instagram, Share → More → Spotarr, once; it then stays in the list.
+4. In Instagram, TikTok or YouTube, Share → More → Spotarr, once; it then stays in the list.
 
 ### The Shortcut, without the app
 
