@@ -15,8 +15,8 @@
   --color-status-present: #6B7380;
   --color-status-no-match: #6B7380;
   --color-status-error: #D9403B;
-  --font-sans: Inter, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
   --spacing: 0.25rem;
   --radius-sm: 6px;
   --radius-md: 10px;

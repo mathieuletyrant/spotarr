@@ -51,7 +51,12 @@ export function shareRpcs(
         },
         { shares },
       );
-      return { shares: page.shares.map(toMessage), nextCursor: page.nextCursor };
+      return {
+        shares: page.shares.map(toMessage),
+        nextCursor: page.nextCursor,
+        total: page.total,
+        counts: [...page.counts].map(([summary, count]) => ({ summary: Summary[summary], count })),
+      };
     },
 
     async retryIdentification(req) {

@@ -16,7 +16,7 @@ function Layout() {
           </Link>
         </nav>
       </header>
-      <main className="mx-auto max-w-6xl p-6">
+      <main className="mx-auto max-w-7xl p-4 md:p-6">
         <Outlet />
       </main>
     </div>

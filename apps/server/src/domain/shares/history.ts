@@ -24,7 +24,14 @@ export function historyPage(shares: Share[], request: HistoryRequest) {
 
   const page = matching.slice(0, limit);
   const nextCursor = matching.length > limit ? page.at(-1)?.id : undefined;
-  return { shares: page, nextCursor };
+  return { shares: page, nextCursor, total: shares.length, counts: countBySummary(shares) };
+}
+
+// How many Shares per Summary, over the whole history.
+function countBySummary(shares: Share[]): Map<Summary, number> {
+  const counts = new Map<Summary, number>();
+  for (const share of shares) counts.set(share.summary, (counts.get(share.summary) ?? 0) + 1);
+  return counts;
 }
 
 function matches(share: Share, query: string): boolean {
