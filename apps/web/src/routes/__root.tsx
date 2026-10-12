@@ -10,7 +10,7 @@ function Layout() {
         <nav className="flex gap-1 text-sm">
           <Link
             to="/"
-            className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-surface [&.active]:text-text"
+            className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
           >
             History
           </Link>
