@@ -18,14 +18,14 @@ function Login() {
       body: JSON.stringify({ token: token.trim() }),
     });
     if (res.ok) await navigate({ to: "/" });
-    else setError("Jeton refusé. Il est affiché dans les logs de Spotarr au premier démarrage.");
+    else setError("Wrong token. Spotarr prints it in its logs at first start.");
   }
 
   return (
     <form onSubmit={submit} className="mx-auto mt-24 flex max-w-sm flex-col gap-3">
-      <h1 className="text-xl font-semibold">Connexion</h1>
+      <h1 className="text-xl font-semibold">Sign in</h1>
       <label className="flex flex-col gap-1 text-sm">
-        Jeton API
+        API token
         <input
           type="password"
           value={token}
@@ -35,7 +35,7 @@ function Login() {
       </label>
       {error && <p className="text-sm text-status-error">{error}</p>}
       <button type="submit" className="rounded-md bg-accent px-3 py-2 font-medium text-accent-text">
-        Se connecter
+        Sign in
       </button>
     </form>
   );

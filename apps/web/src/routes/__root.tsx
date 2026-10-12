@@ -12,7 +12,7 @@ function Layout() {
             to="/"
             className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-surface [&.active]:text-text"
           >
-            Historique
+            History
           </Link>
         </nav>
       </header>

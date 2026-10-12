@@ -44,7 +44,7 @@ Tailwind v4 syntax: the `tailwind-best-practices` skill (`.agents/skills/`, link
 - **Repeated class lists become a React component** (`<StatusBadge>`, `<Poster>`), not an `@apply` class. `@apply` is for `styles.css` base rules only.
 - **Mobile first**: base classes for a phone, `md:` and up for wider screens. The History table becomes cards on a phone.
 - **Accessible by default**: real `<button>` and `<a>`, a label on every field, visible focus (`focus-visible:`), no `autoFocus`.
-- **Text in French, code in English.**
+- **Everything in English**, UI text included. The mockups are in French: translate their labels.
 
 ## How work happens
 

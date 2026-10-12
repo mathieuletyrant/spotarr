@@ -8,10 +8,9 @@ export const Route = createFileRoute("/")({ component: History });
 function History() {
   const { data, isPending, error } = useQuery(SpotarrService.method.listShares, {});
 
-  if (isPending) return <p className="text-text-muted">Chargement…</p>;
+  if (isPending) return <p className="text-text-muted">Loading…</p>;
   if (error) return <p className="text-status-error">{error.message}</p>;
-  if (data.shares.length === 0)
-    return <p className="text-text-muted">Aucun partage pour l'instant.</p>;
+  if (data.shares.length === 0) return <p className="text-text-muted">No shares yet.</p>;
 
   return (
     <ul className="divide-y divide-border rounded-lg border border-border">
