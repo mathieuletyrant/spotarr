@@ -15,7 +15,7 @@ export function HistoryTable({ shares }: { shares: Share[] }) {
         <span>Status</span>
         <span>Identification</span>
       </div>
-      <ul className="divide-y divide-border">
+      <ul className="divide-y divide-divider">
         {shares.map((share) => (
           <ShareRow key={share.id} share={share} />
         ))}

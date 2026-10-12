@@ -1,6 +1,18 @@
-import type { Summary, SummaryCount } from "@spotarr/contract";
+import { Summary, type SummaryCount } from "@spotarr/contract";
 import { Search } from "lucide-react";
-import { SUMMARIES } from "../../lib/summary";
+import type { ReactNode } from "react";
+import { SummaryLabel } from "../status-badge";
+
+// The filters, in the mockup's order.
+const FILTERS = [
+  Summary.IN_PROGRESS,
+  Summary.ADDED,
+  Summary.REQUESTED,
+  Summary.ALREADY_PRESENT,
+  Summary.TO_CHOOSE,
+  Summary.NO_MATCH,
+  Summary.FAILED,
+];
 
 type Props = {
   total: number;
@@ -25,10 +37,10 @@ export function HistoryFilters(props: Props) {
           active={props.summary === undefined}
           onClick={() => props.onSummaryChange(undefined)}
         />
-        {SUMMARIES.map(({ summary, label }) => (
+        {FILTERS.map((summary) => (
           <FilterButton
             key={summary}
-            label={label}
+            label={<SummaryLabel summary={summary} />}
             count={countOf(summary)}
             active={props.summary === summary}
             onClick={() => props.onSummaryChange(summary)}
@@ -52,7 +64,7 @@ export function HistoryFilters(props: Props) {
 }
 
 function FilterButton(props: {
-  label: string;
+  label: ReactNode;
   count: number;
   active: boolean;
   onClick: () => void;
