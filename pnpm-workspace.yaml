@@ -2,6 +2,6 @@ packages:
   - apps/*
   - packages/*
 
-# pnpm refuses postinstall scripts unless listed here. buf's script links the platform binary.
-onlyBuiltDependencies:
-  - "@bufbuild/buf"
+# pnpm refuses dependencies' postinstall scripts unless approved here. buf's script links the platform binary.
+allowBuilds:
+  "@bufbuild/buf": true
