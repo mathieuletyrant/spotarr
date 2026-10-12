@@ -1,5 +1,6 @@
 import type { Tmdb } from "../../integrations/tmdb/client";
 import type { Candidate, Clues, IdentificationResult, ShareInput } from "../shares/types";
+import { confirmOnTmdb } from "./confirm-on-tmdb";
 import { type DirectId, findDirectIds } from "./extractors/direct-ids";
 import type { Video } from "./extractors/video";
 import { guessTitles, type Llm } from "./guess-titles";
@@ -10,8 +11,8 @@ export type IdentifyDeps = {
   llm: Llm;
 };
 
-// An IMDb/TMDB link is enough. Otherwise the shared video is read and the LLM
-// names the works it shows. The TMDB search (#17) comes next, in this function.
+// An IMDb/TMDB link is enough. Otherwise the shared video is read, the LLM
+// names the works it shows, and TMDB confirms them.
 export async function identify(
   input: ShareInput,
   { tmdb, readVideo, llm }: IdentifyDeps,
@@ -38,16 +39,16 @@ export async function identify(
   const video = await readVideo(input.url);
   const clues: Clues = { caption: video.caption, author: video.author };
 
-  // 3. The LLM looks at the caption and the frames. Its guesses become
-  // Candidates once TMDB confirms them (#17).
+  // 3. The LLM looks at the caption and the frames; TMDB confirms its guesses.
   const guesses = await guessTitles(clues, video.frames, llm);
+  const candidates = await confirmOnTmdb(guesses.candidates, tmdb);
   return {
-    status: "NO_MATCH",
+    status: candidates.length > 0 ? "READY" : "NO_MATCH",
     method: "LLM",
     extractors: ["video"],
     clues,
     reasoning: guesses.reasoning,
-    candidates: [],
+    candidates,
   };
 }
 

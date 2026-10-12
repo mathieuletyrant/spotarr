@@ -4,6 +4,10 @@ import {
   findById,
   type MovieDetails200,
   movieDetails,
+  type SearchMovie200ResultsItem,
+  type SearchTv200ResultsItem,
+  searchMovie,
+  searchTv,
   type TvSeriesDetails200,
   tvSeriesDetails,
 } from "./gen/tmdb";
@@ -59,6 +63,29 @@ export class Tmdb {
     return showTitle(res.data);
   }
 
+  // TMDB's best match for a movie title, the year narrowing the search when known.
+  async searchMovie(query: string, year?: number): Promise<TmdbTitle | undefined> {
+    const { language, options } = this.request();
+    const res = await searchMovie(
+      { query, language, primary_release_year: year?.toString() },
+      options,
+    ).catch(unreachable);
+    checkStatus(res.status);
+    const best = res.data.results?.[0];
+    return best ? movieTitle(best) : undefined;
+  }
+
+  // TMDB's best match for a TV show title, the year of its first episode narrowing the search.
+  async searchShow(query: string, year?: number): Promise<TmdbTitle | undefined> {
+    const { language, options } = this.request();
+    const res = await searchTv({ query, language, first_air_date_year: year }, options).catch(
+      unreachable,
+    );
+    checkStatus(res.status);
+    const best = res.data.results?.[0];
+    return best ? showTitle(best) : undefined;
+  }
+
   private request() {
     const { token, language } = this.config;
     if (!token) {
@@ -92,7 +119,9 @@ function unreachable(error: unknown): never {
   throw new SpotarrError("unavailable", `TMDB could not be reached: ${String(error)}`);
 }
 
-function movieTitle(movie: FindById200MovieResultsItem | MovieDetails200): TmdbTitle | undefined {
+function movieTitle(
+  movie: FindById200MovieResultsItem | MovieDetails200 | SearchMovie200ResultsItem,
+): TmdbTitle | undefined {
   if (!movie.id || !movie.title) return undefined;
   return {
     tmdbId: movie.id,
@@ -104,7 +133,7 @@ function movieTitle(movie: FindById200MovieResultsItem | MovieDetails200): TmdbT
   };
 }
 
-function showTitle(show: TvSeriesDetails200): TmdbTitle | undefined {
+function showTitle(show: TvSeriesDetails200 | SearchTv200ResultsItem): TmdbTitle | undefined {
   if (!show.id || !show.name) return undefined;
   return {
     tmdbId: show.id,
