@@ -6,17 +6,19 @@
     "bun": ">=1.4.3"
   },
   "scripts": {
-    "dev": "DATA_DIR=${DATA_DIR:-$PWD/data} pnpm --filter @spotarr/server dev",
-    "check": "pnpm lint && pnpm generate && pnpm generated:fresh && pnpm --filter @spotarr/contract breaking && pnpm typecheck && pnpm test",
+    "dev": "pnpm --filter @spotarr/server dev",
+    "check": "pnpm lint && pnpm generate && pnpm generated && pnpm breaking && pnpm typecheck && pnpm test",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "generate": "pnpm -r run generate",
-    "generated:fresh": "test -z \"$(git status --porcelain -- ':(glob)**/gen/**')\" || { echo 'Generated code is stale: run pnpm generate and commit the result.'; exit 1; }",
-    "typecheck": "pnpm -r typecheck",
+    "generate": "pnpm -r generate",
+    "generated": "bun scripts/check-generated.ts",
+    "breaking": "pnpm --filter @spotarr/contract breaking",
+    "typecheck": "tsc && pnpm -r typecheck",
     "test": "pnpm -r test"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
+    "@types/bun": "1.4.2",
     "typescript": "7.0.2"
   }
 }
