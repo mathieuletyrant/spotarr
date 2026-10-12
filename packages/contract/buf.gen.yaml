@@ -5,3 +5,14 @@ plugins:
   - local: protoc-gen-es
     out: src/gen
     opt: target=ts
+  # The iOS app's messages and Connect client, into its Swift package. Versions
+  # match the swift-protobuf and connect-swift it depends on (apps/ios/SpotarrKit/Package.swift).
+  - remote: buf.build/apple/swift:v1.38.1
+    out: ../../apps/ios/SpotarrKit/Sources/SpotarrKit/gen
+    opt: Visibility=Public
+  - remote: buf.build/connectrpc/swift:v1.2.3
+    out: ../../apps/ios/SpotarrKit/Sources/SpotarrKit/gen
+    opt:
+      - Visibility=Public
+      - GenerateAsyncMethods=true
+      - GenerateCallbackMethods=false

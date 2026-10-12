@@ -1,0 +1,6 @@
+xcuserdata/
+*.xcuserstate
+build/
+DerivedData/
+SpotarrKit/.build/
+SpotarrKit/.swiftpm/

@@ -21,7 +21,7 @@
     }
   },
   "files": {
-    "includes": ["**", "!**/gen"]
+    "includes": ["**", "!**/gen", "!apps/ios"]
   },
   "css": {
     "parser": {
