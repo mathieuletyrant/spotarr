@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './../routes/__root'
 import { Route as AppRouteImport } from './../routes/_app'
 import { Route as LoginRouteImport } from './../routes/login'
+import { Route as LogoutRouteImport } from './../routes/logout'
 import { Route as AppIndexRouteImport } from './../routes/_app/index'
 import { Route as AppSettingsRouteImport } from './../routes/_app/settings'
 import { Route as AppSharesShareIdRouteImport } from './../routes/_app/shares.$shareId'
@@ -22,6 +23,11 @@ const AppRoute = AppRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogoutRoute = LogoutRouteImport.update({
+  id: '/logout',
+  path: '/logout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -43,11 +49,13 @@ const AppSharesShareIdRoute = AppSharesShareIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/settings': typeof AppSettingsRoute
   '/shares/$shareId': typeof AppSharesShareIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
   '/shares/$shareId': typeof AppSharesShareIdRoute
@@ -56,19 +64,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/': typeof AppIndexRoute
   '/_app/shares/$shareId': typeof AppSharesShareIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/settings' | '/shares/$shareId'
+  fullPaths: '/' | '/login' | '/logout' | '/settings' | '/shares/$shareId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/settings' | '/' | '/shares/$shareId'
+  to: '/login' | '/logout' | '/settings' | '/' | '/shares/$shareId'
   id:
     | '__root__'
     | '/_app'
     | '/login'
+    | '/logout'
     | '/_app/settings'
     | '/_app/'
     | '/_app/shares/$shareId'
@@ -77,6 +87,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  LogoutRoute: typeof LogoutRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -93,6 +104,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logout': {
+      id: '/logout'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof LogoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/': {
@@ -136,6 +154,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  LogoutRoute: LogoutRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

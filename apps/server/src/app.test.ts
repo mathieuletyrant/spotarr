@@ -106,6 +106,14 @@ test("Login checks the token without needing it, then sets an HttpOnly cookie", 
   expect(cookie).not.toContain("Secure");
 });
 
+test("Logout expires the cookie", async () => {
+  const res = await authed("Logout");
+  expect(res.status).toBe(200);
+  const cookie = res.headers.get("Set-Cookie") ?? "";
+  expect(cookie).toContain("spotarr_token=;");
+  expect(cookie).toContain("Max-Age=0");
+});
+
 test("behind https the cookie is Secure", async () => {
   const accepted = await call("Login", { token: "secret-token" }, { "X-Forwarded-Proto": "https" });
   expect(accepted.headers.get("Set-Cookie")).toContain("Secure");

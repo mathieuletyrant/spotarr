@@ -8,6 +8,8 @@ service SpotarrService {
   // The web UI's sign-in: checks the API token and keeps it in an HttpOnly cookie.
   // The only RPC callable without the token.
   rpc Login(LoginRequest) returns (LoginResponse);
+  // Signs the web UI out: clears the cookie Login set.
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
   // Spotarr's version. Cheap: the web UI also calls it to check the sign-in.
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
   // Calls each Dependency (LLM, TMDB, Seerr, yt-dlp, ffmpeg) and says whether it
@@ -362,6 +364,10 @@ message LoginRequest {
 }
 
 message LoginResponse {}
+
+message LogoutRequest {}
+
+message LogoutResponse {}
 
 // Spotarr POSTs this, as JSON, to every Webhook that chose the event.
 message WebhookEvent {
