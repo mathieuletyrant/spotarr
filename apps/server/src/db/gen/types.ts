@@ -21,7 +21,6 @@ export interface Additions {
 }
 
 export interface Settings {
-  api_token: string | null;
   data: Generated<string>;
   id: Generated<number>;
 }

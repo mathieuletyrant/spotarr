@@ -15,7 +15,7 @@ export function createApp({ apiToken, settings }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [validationErrors] }, (router) =>
     router.service(SpotarrService, {
       ...statusRpcs(),
-      ...settingsRpcs(settings, apiToken),
+      ...settingsRpcs(settings),
     }),
   );
 

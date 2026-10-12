@@ -3,11 +3,9 @@ import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { SettingsRepository } from "./settings/repository";
 
-const db = await openDatabase(":memory:");
-const app = createApp({
-  apiToken: () => "secret-token",
-  settings: new SettingsRepository(db),
-});
+const settings = new SettingsRepository(await openDatabase(":memory:"));
+await settings.setApiToken("secret-token");
+const app = createApp({ apiToken: () => "secret-token", settings });
 const call = (method: string, body: unknown = {}, headers: Record<string, string> = {}) =>
   app.request(`/api/spotarr.v1.SpotarrService/${method}`, {
     method: "POST",

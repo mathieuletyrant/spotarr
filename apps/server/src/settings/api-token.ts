@@ -5,8 +5,8 @@ import type { SettingsRepository } from "./repository";
 export async function ensureApiToken(
   settings: SettingsRepository,
 ): Promise<{ token: string; created: boolean }> {
-  const existing = await settings.apiToken();
-  if (existing) return { token: existing, created: false };
+  const { apiToken } = (await settings.get()).access;
+  if (apiToken) return { token: apiToken, created: false };
   const token = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url");
   await settings.setApiToken(token);
   return { token, created: true };

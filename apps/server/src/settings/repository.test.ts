@@ -39,11 +39,12 @@ test("an invalid value is refused and nothing is saved", async () => {
   expect((await settings.get()).extraction.concurrency).toBe(2);
 });
 
-test("settings and the API token share the row without overwriting each other", async () => {
+test("the API token is read-only for update, set only by setApiToken", async () => {
   const settings = await repository();
   await settings.setApiToken("tok");
-  await settings.update({ seerr: { apiKey: "k" } });
+  await settings.update({ seerr: { apiKey: "k" }, access: { apiToken: "hijack" } });
 
-  expect(await settings.apiToken()).toBe("tok");
-  expect((await settings.get()).seerr.apiKey).toBe("k");
+  const s = await settings.get();
+  expect(s.access.apiToken).toBe("tok");
+  expect(s.seerr.apiKey).toBe("k");
 });
