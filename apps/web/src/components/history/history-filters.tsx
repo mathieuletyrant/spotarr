@@ -28,7 +28,7 @@ export function HistoryFilters(props: Props) {
   const countOf = (summary: Summary) => props.counts.find((c) => c.summary === summary)?.count ?? 0;
 
   return (
-    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       {/* On a phone the filters scroll sideways instead of taking three lines. */}
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:px-0">
         <FilterButton
@@ -48,7 +48,7 @@ export function HistoryFilters(props: Props) {
         ))}
       </div>
 
-      <label className="flex shrink-0 items-center gap-2 rounded-md border border-border bg-surface px-3 py-2 md:w-64">
+      <label className="flex h-9 shrink-0 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm md:w-64">
         <Search aria-hidden className="size-4 text-text-muted" />
         <span className="sr-only">Search by title or source</span>
         <input
@@ -74,7 +74,7 @@ function FilterButton(props: {
       type="button"
       aria-pressed={props.active}
       onClick={props.onClick}
-      className="shrink-0 rounded-full border border-border px-3 py-1.5 text-sm whitespace-nowrap hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent aria-pressed:border-text aria-pressed:bg-text aria-pressed:text-bg"
+      className="flex h-9 shrink-0 items-center gap-1 rounded-full border border-border px-3 text-sm whitespace-nowrap hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent aria-pressed:border-text aria-pressed:bg-text aria-pressed:text-bg"
     >
       {props.label} <span className="opacity-60">{props.count}</span>
     </button>
