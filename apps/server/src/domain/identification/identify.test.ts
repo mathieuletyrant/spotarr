@@ -6,7 +6,7 @@ import {
 } from "../../integrations/tmdb/gen/tmdb.faker";
 import { fakeFetch } from "../../testing/fake-fetch";
 import type { Video } from "./extractors/video";
-import type { Llm } from "./guess-titles";
+import type { Guesses, Llm } from "./guess-titles";
 import { identify } from "./identify";
 
 afterEach(() => mock.restore());
@@ -27,9 +27,9 @@ const notCalled = async (): Promise<never> => {
   throw new Error("should not be called");
 };
 const llmAnswering =
-  (answer: object): Llm =>
+  (answer: Guesses): Llm =>
   async () =>
-    JSON.stringify(answer);
+    answer;
 
 test("an IMDb link gives a certain Candidate, without video nor LLM", async () => {
   fakeFetch({ "/3/find/tt15239678": getFindByIdResponseMock({ movie_results: [dune] }) });

@@ -44,8 +44,8 @@ message IdentificationSettings {
   optional string text_model = 3;
   // Must handle images. Empty means: same as text_model.
   optional string image_model = 4;
-  // Sends response_format json_object; turn off for models that refuse it.
-  optional bool force_json = 5;
+  // No longer used: the LLM always gets a strict JSON schema (structured outputs).
+  optional bool force_json = 5 [deprecated = true];
   // TMDB read access token.
   optional string tmdb_token = 6;
   // Language of TMDB titles and overviews, e.g. "fr-FR".

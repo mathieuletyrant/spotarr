@@ -13,7 +13,6 @@ export const SettingsSchema = z.object({
       // Chosen on 2026-10-12: the only one of 4 vision models to find all 3 films of a test reel.
       textModel: z.string().default("google/gemini-3.8-flash"),
       imageModel: z.string().default(""),
-      forceJson: z.boolean().default(true),
       tmdbToken: z.string().default(""),
       language: z
         .string()

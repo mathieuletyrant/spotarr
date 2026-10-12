@@ -1,11 +1,18 @@
 import OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+import type { z } from "zod";
 
-export type LlmConfig = { apiUrl: string; apiKey: string; model: string; forceJson: boolean };
+export type LlmConfig = { apiUrl: string; apiKey: string; model: string };
 export type ChatMessage = OpenAI.Chat.ChatCompletionMessageParam;
 
-// Sends a conversation to any OpenAI-compatible API (OpenRouter by default)
-// and returns the model's answer as text.
-export async function chat(config: LlmConfig, messages: ChatMessage[]): Promise<string> {
+// Sends a conversation to any OpenAI-compatible API (OpenRouter by default) and
+// returns the answer parsed with `schema`. The schema goes to the provider as a
+// strict JSON schema ("structured outputs"): the model cannot answer anything else.
+export async function chat<Schema extends z.ZodType>(
+  config: LlmConfig,
+  messages: ChatMessage[],
+  schema: Schema,
+) {
   if (!config.apiKey) throw new Error("LLM API key not configured (Settings → Identification)");
   if (!config.model) throw new Error("LLM model not configured (Settings → Identification)");
 
@@ -16,16 +23,19 @@ export async function chat(config: LlmConfig, messages: ChatMessage[]): Promise<
     timeout: 60_000,
     maxRetries: 1,
   });
-  const completion = await client.chat.completions.create({
+  const completion = await client.chat.completions.parse({
     model: config.model,
     messages,
+    response_format: zodResponseFormat(schema, "answer"),
     // Thinking models (Gemini 3.8 Flash) answered in 15 to 45 s without this,
     // in 3 to 6 s with it, naming the same films on the test reel.
     reasoning_effort: "low",
-    // Asks for JSON only; some models refuse the option, hence the setting.
-    ...(config.forceJson ? { response_format: { type: "json_object" } } : {}),
   });
-  return completion.choices[0]?.message.content ?? "";
+
+  const answer = completion.choices[0]?.message;
+  if (answer?.refusal) throw new Error(`the LLM refused: ${answer.refusal}`);
+  if (!answer?.parsed) throw new Error("the LLM gave no answer");
+  return answer.parsed;
 }
 
 // A JPEG, the way the OpenAI format carries images inside a message.

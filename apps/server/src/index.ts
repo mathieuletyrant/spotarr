@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { readVideo } from "./domain/identification/extractors/video";
+import { GuessesSchema } from "./domain/identification/guess-titles";
 import { identify } from "./domain/identification/identify";
 import { ensureApiToken } from "./domain/settings/api-token";
 import { SettingsRepository } from "./domain/settings/repository";
@@ -32,7 +33,7 @@ async function identifyShare(input: ShareInput) {
   return identify(input, {
     tmdb: new Tmdb({ token: identification.tmdbToken, language: identification.language }),
     readVideo: (url) => readVideo(url, extraction),
-    llm: (messages) => chat(llmConfig(identification), messages),
+    llm: (messages) => chat(llmConfig(identification), messages, GuessesSchema),
   });
 }
 
@@ -42,7 +43,6 @@ function llmConfig(identification: Settings["identification"]): LlmConfig {
     apiUrl: identification.llmApiUrl,
     apiKey: identification.llmApiKey,
     model: identification.imageModel || identification.textModel,
-    forceJson: identification.forceJson,
   };
 }
 
