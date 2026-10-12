@@ -20,7 +20,7 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 
 - `packages/contract`: `proto/spotarr/v1/spotarr.proto` is the single source of the API. Generated TypeScript lives in `src/gen`, committed, re-exported by `@spotarr/contract`.
 - `packages/design-tokens`: `tokens.json` is the single source of style. `build.ts` emits `gen/tokens.css` (`:root` light, `.dark` dark).
-- `apps/server`: Hono on Bun, Connect-RPC under `/api`, SQLite in `DATA_DIR`. `src/db`: dialect, dated migrations, `openDatabase()`; `src/db/gen/types.ts` is generated from the migrated schema.
+- `apps/server`: Hono on Bun, Connect-RPC under `/api`, SQLite in `DATA_DIR`. `src/app.ts` only assembles the routes; RPC handlers live in `src/rpc/<domain>.ts`, one file per domain, typed with `Rpcs<"methodName">` from `src/rpc/types.ts`. A new RPC goes in its domain file, then is spread into `router.service` in `app.ts`. Errors shared by all RPCs (zod → `invalid_argument`) are interceptors in `src/rpc/errors.ts`. `src/db`: dialect, dated migrations, `openDatabase()`; `src/db/gen/types.ts` is generated from the migrated schema.
 - `apps/web`, `apps/ios`, `umbrel/`: arrive with their milestones.
 
 ## How work happens
