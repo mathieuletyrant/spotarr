@@ -20,7 +20,7 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 
 - `packages/contract`: `proto/spotarr/v1/spotarr.proto` is the single source of the API. Generated TypeScript lives in `src/gen`, committed, re-exported by `@spotarr/contract`.
 - `packages/design-tokens`: `tokens.json` is the single source of style. `build.ts` emits `gen/tokens.css` (`:root` light, `.dark` dark).
-- `apps/server`: Hono on Bun, Connect-RPC under `/api`, SQLite in `DATA_DIR`.
+- `apps/server`: Hono on Bun, Connect-RPC under `/api`, SQLite in `DATA_DIR`. `src/db`: dialect, dated migrations, `openDatabase()`; `src/db/gen/types.ts` is generated from the migrated schema.
 - `apps/web`, `apps/ios`, `umbrel/`: arrive with their milestones.
 
 ## How work happens
@@ -53,8 +53,11 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - **Stale generated output**: `pnpm check` regenerates and fails if `**/gen/**` differs from what is committed. Run `pnpm generate` and commit. On a brand-new generated file the guard also fails until the file is committed once.
 - **`buf breaking`** compares against `main` on GitHub over the network; it needs the repo to stay public (or a token later).
 - **Style Dictionary collision warning**: light and dark tokens share one CSS name on purpose; `log.warnings` is disabled in `build.ts` for that reason.
+- **Kysely 0.29 moved migrations**: `Migrator` and `Migration` come from `kysely/migration`, not `kysely`. The root import fails at runtime with "Export named 'Migrator' not found".
+- **kysely-codegen CLI**: its bun:sqlite path needs `kysely-bun-sqlite`, the broken dialect. `apps/server/scripts/codegen.ts` calls `generate()` with our own Kysely instance instead.
+- **SQLite TEXT primary keys accept NULL** unless declared `notNull()`; the generated type then reads `string | null`.
 - **`pnpm exec biome`** may print an odd "ESLint output" line from a shell hook; use `pnpm lint` / `pnpm format`.
 
 ## Versions
 
-Pinned at the latest stable on 2026-10-12 and bumped weekly by Renovate: pnpm 12.11.2, Bun 1.4.3, TypeScript 7.0.2, Biome 2.5.15, buf 1.73.0, protobuf-es 2.16.0, style-dictionary 5.6.1. If a newer version breaks another tool, keep the newest that works and note it here.
+Pinned at the latest stable on 2026-10-12 and bumped weekly by Renovate: pnpm 12.11.2, Bun 1.4.3, TypeScript 7.0.2, Biome 2.5.15, buf 1.73.0, protobuf-es 2.16.0, style-dictionary 5.6.1, kysely 0.29.6, kysely-codegen 0.20.0. If a newer version breaks another tool, keep the newest that works and note it here.

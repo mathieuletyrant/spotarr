@@ -7,3 +7,4 @@ Persistence is a single SQLite file in `/data`, read through Kysely (typed query
 - Migrations are dated files run by Kysely's `Migrator` at startup and frozen once applied.
 - WAL mode is on so the background queue writes while the UI reads.
 - Repositories are tested against a real in-memory SQLite rebuilt by the migrations for each test.
+- kysely-codegen is called through its API from `apps/server/scripts/codegen.ts` with our dialect, because its CLI only reaches bun:sqlite through `kysely-bun-sqlite`.

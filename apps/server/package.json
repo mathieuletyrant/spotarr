@@ -4,11 +4,16 @@
   "type": "module",
   "scripts": {
     "dev": "bun run src/index.ts",
+    "generate": "bun run scripts/codegen.ts",
     "typecheck": "tsc",
     "test": "bun test"
   },
   "devDependencies": {
     "@types/bun": "1.4.2",
+    "kysely-codegen": "0.20.0",
     "typescript": "7.0.2"
+  },
+  "dependencies": {
+    "kysely": "0.29.6"
   }
 }
