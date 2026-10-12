@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
 import type { ChatMessage } from "../../integrations/llm/client";
-import { type Guesses, guessTitles } from "./guess-titles";
+import { type Answer, guessTitles } from "./guess-titles";
 
-const guesses: Guesses = {
+const answer: Answer = {
   reasoning: "Zach Galifianakis et Robert Downey Jr. dans le désert : Date limite.",
-  candidates: [
+  guesses: [
     {
       title: "Due Date",
       originalTitle: null,
@@ -21,10 +21,10 @@ test("sends the caption, the author and every frame, and returns the LLM's answe
   let sent: ChatMessage[] = [];
   const llm = async (messages: ChatMessage[]) => {
     sent = messages;
-    return guesses;
+    return answer;
   };
 
-  const answer = await guessTitles(
+  const result = await guessTitles(
     {
       clues: { caption: "mood ?", author: "CameraCam" },
       frames: [new Uint8Array([1]), new Uint8Array([2])],
@@ -32,7 +32,7 @@ test("sends the caption, the author and every frame, and returns the LLM's answe
     llm,
   );
 
-  expect(answer).toEqual(guesses);
+  expect(result).toEqual(answer);
   const user = sent[1]?.content as { type: string; text?: string }[];
   expect(user[0]?.text).toBe("Caption: mood ?\nAuthor: CameraCam");
   expect(user.filter((part) => part.type === "image_url")).toHaveLength(2);
@@ -42,7 +42,7 @@ test("the video's sound goes with the frames, as MP3", async () => {
   let sent: ChatMessage[] = [];
   const llm = async (messages: ChatMessage[]) => {
     sent = messages;
-    return guesses;
+    return answer;
   };
 
   await guessTitles(
@@ -65,7 +65,7 @@ test("the LLM is told today's date, so this year's films are not dated to past y
   let sent: ChatMessage[] = [];
   const llm = async (messages: ChatMessage[]) => {
     sent = messages;
-    return guesses;
+    return answer;
   };
   await guessTitles({ clues: {}, frames: [] }, llm, new Date("2026-10-12T10:00:00Z"));
   expect(String(sent[0]?.content)).toContain("Today is 2026-10-12.");

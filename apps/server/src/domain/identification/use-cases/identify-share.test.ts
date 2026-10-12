@@ -8,7 +8,7 @@ import {
 } from "../../../integrations/tmdb/gen/tmdb.faker";
 import { fakeFetch } from "../../../testing/fake-fetch";
 import type { Video } from "../extractors/video";
-import type { Guesses, Llm } from "../guess-titles";
+import type { Answer, Llm } from "../guess-titles";
 import { identifyShare } from "./identify-share";
 
 afterEach(() => mock.restore());
@@ -28,7 +28,7 @@ const notCalled = async (): Promise<never> => {
   throw new Error("should not be called");
 };
 const llmAnswering =
-  (answer: Guesses): Llm =>
+  (answer: Answer): Llm =>
   async () =>
     answer;
 
@@ -60,7 +60,7 @@ test("a TMDB link works the same way", async () => {
 });
 
 test("a reel is read, then the LLM explains what it sees (Candidates come with #17)", async () => {
-  const llm = llmAnswering({ reasoning: "On reconnaît Zach Galifianakis.", candidates: [] });
+  const llm = llmAnswering({ reasoning: "On reconnaît Zach Galifianakis.", guesses: [] });
 
   const result = await identifyShare(
     { url: "https://www.instagram.com/reel/DeHYOAbo14f/" },

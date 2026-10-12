@@ -3,7 +3,7 @@ import { Tmdb } from "../../integrations/tmdb/client";
 import { getSearchTvResponseMock } from "../../integrations/tmdb/gen/tmdb.faker";
 import { fakeFetch } from "../../testing/fake-fetch";
 import { confirmOnTmdb } from "./confirm-on-tmdb";
-import type { Guesses } from "./guess-titles";
+import type { Guess } from "./guess-titles";
 
 afterEach(() => mock.restore());
 
@@ -23,7 +23,7 @@ function fakeTmdbSearch() {
   });
 }
 
-function guess(fields: Partial<Guesses["candidates"][number]>): Guesses["candidates"][number] {
+function guess(fields: Partial<Guess>): Guess {
   return {
     title: "",
     originalTitle: null,
