@@ -1,0 +1,17 @@
+{
+  "adult": false,
+  "backdrop_path": "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg",
+  "budget": 190000000,
+  "genres": [{ "id": 878, "name": "Science-Fiction" }],
+  "id": 693134,
+  "imdb_id": "tt15239678",
+  "original_language": "en",
+  "original_title": "Dune: Part Two",
+  "overview": "Paul Atréides s'unit à Chani et aux Fremen pour mener la révolte contre ceux qui ont anéanti sa famille.",
+  "poster_path": "/qpyaW4xUPeIiYA5ckg5zAZFHvsb.jpg",
+  "release_date": "2024-02-27",
+  "runtime": 167,
+  "status": "Released",
+  "title": "Dune : Deuxième partie",
+  "vote_average": 8.1
+}

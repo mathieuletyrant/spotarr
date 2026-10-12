@@ -2,11 +2,12 @@ import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
-import { identifyNothing } from "./identification/placeholder";
+import { createIdentify } from "./identification/identify";
 import { ensureApiToken } from "./settings/api-token";
 import { SettingsRepository } from "./settings/repository";
 import { ShareQueue } from "./shares/queue";
 import { ShareRepository } from "./shares/repository";
+import { tmdbFromSettings } from "./tmdb/from-settings";
 
 // The only two environment variables; everything else is set in the UI.
 const port = Number(process.env.PORT ?? 3000);
@@ -22,7 +23,7 @@ if (created) console.log(`API token (also in Settings → Access): ${token}`);
 const shares = new ShareRepository(db);
 const queue = new ShareQueue(
   shares,
-  identifyNothing,
+  createIdentify(tmdbFromSettings(settings)),
   async () => (await settings.get()).extraction.concurrency,
 );
 await queue.start();
