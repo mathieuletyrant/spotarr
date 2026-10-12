@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { type ChatMessage, imagePart } from "../../integrations/llm/client";
+import { audioPart, type ChatMessage, imagePart } from "../../integrations/llm/client";
 import type { Clues } from "../shares/types";
 
 // The answer the LLM must give, sent to it as a strict JSON schema.
@@ -26,7 +26,7 @@ export type Guesses = z.infer<typeof GuessesSchema>;
 export type Llm = (messages: ChatMessage[]) => Promise<Guesses>;
 
 const INSTRUCTIONS = `You identify films and TV shows from a short social media video.
-You get the caption, the author, and frames taken across the video. On-screen text, posters and actors' faces are often the best clues.
+You get the caption, the author, frames taken across the video, and usually its sound. The person speaking often says the title out loud: listen for it. On-screen text, posters and actors' faces are good clues too.
 
 Rules:
 - One candidate per work when the video presents several (a "5 films to watch" video gives 5 candidates).
@@ -34,8 +34,13 @@ Rules:
 - Prefer the original title and the release year: they are used to search TMDB.
 - Never invent a work: an empty list is a valid answer.`;
 
-// Asks the LLM which works the video shows.
-export async function guessTitles(clues: Clues, frames: Uint8Array[], llm: Llm): Promise<Guesses> {
+export type VideoClues = { clues: Clues; frames: Uint8Array[]; audio?: Uint8Array };
+
+// Asks the LLM which works the video shows, from what it reads, sees and hears.
+export async function guessTitles(
+  { clues, frames, audio }: VideoClues,
+  llm: Llm,
+): Promise<Guesses> {
   return llm([
     { role: "system", content: INSTRUCTIONS },
     {
@@ -46,6 +51,7 @@ export async function guessTitles(clues: Clues, frames: Uint8Array[], llm: Llm):
           text: `Caption: ${clues.caption ?? "(none)"}\nAuthor: ${clues.author ?? "(unknown)"}`,
         },
         ...frames.map(imagePart),
+        ...(audio ? [audioPart(audio)] : []),
       ],
     },
   ]);

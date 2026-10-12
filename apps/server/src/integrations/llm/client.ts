@@ -70,3 +70,12 @@ export function imagePart(jpeg: Uint8Array): OpenAI.Chat.ChatCompletionContentPa
     image_url: { url: `data:image/jpeg;base64,${Buffer.from(jpeg).toString("base64")}` },
   };
 }
+
+// An MP3, the way the OpenAI format carries sound inside a message. Models
+// that listen (Gemini) hear it; the setting's model must accept audio.
+export function audioPart(mp3: Uint8Array): OpenAI.Chat.ChatCompletionContentPartInputAudio {
+  return {
+    type: "input_audio",
+    input_audio: { data: Buffer.from(mp3).toString("base64"), format: "mp3" },
+  };
+}

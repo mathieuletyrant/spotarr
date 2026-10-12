@@ -41,10 +41,10 @@ export async function identifyShare(
   const video = await readVideo(input.url);
   const clues: Clues = { caption: video.caption, author: video.author };
 
-  // 3. The LLM looks at the caption and the frames; TMDB confirms its guesses.
+  // 3. The LLM reads the caption, looks at the frames and listens to the sound;
+  // TMDB confirms its guesses.
   const guesses = await guessTitles(
-    clues,
-    video.frames.map((frame) => frame.jpeg),
+    { clues, frames: video.frames.map((frame) => frame.jpeg), audio: video.audio },
     llm,
   );
   const candidates = await checkLibrary(await confirmOnTmdb(guesses.candidates, tmdb), seerr);
