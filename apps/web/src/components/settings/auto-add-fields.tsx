@@ -44,7 +44,7 @@ export function AutoAddFields({ form }: { form: Form }) {
         </Field>
 
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">When several candidates reach it</span>
+          <span className="text-sm font-medium">When there are several candidates</span>
           <label className="flex items-center gap-2 text-sm">
             <input
               type="radio"
@@ -61,7 +61,7 @@ export function AutoAddFields({ form }: { form: Form }) {
               onChange={() => form.change("autoAdd.onlyOne", "false")}
               className="accent-accent"
             />
-            Add them all
+            Add every one that reaches it
           </label>
         </div>
       </fieldset>
@@ -78,7 +78,7 @@ function rule(enabled: boolean, minConfidence: string, onlyOne: boolean): string
   const common =
     "A candidate already in your library is never requested again, a TV show gets season 1 only, and a link to IMDb or TMDB counts as 100 %.";
   if (onlyOne) {
-    return `When exactly one candidate is at ${minConfidence} % or more, Spotarr requests it through Seerr on its own. With two or more at ${minConfidence} %, it is a doubt: you choose. ${common}`;
+    return `When the identification finds a single candidate, at ${minConfidence} % or more, Spotarr requests it through Seerr on its own. With two candidates or more, you choose. ${common}`;
   }
   return `Every candidate at ${minConfidence} % or more is requested through Seerr on its own: a reel naming three films can add all three. ${common}`;
 }

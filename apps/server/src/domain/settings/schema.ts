@@ -45,6 +45,7 @@ export const SettingsSchema = z.object({
     .object({
       enabled: z.boolean().default(false),
       minConfidence: z.int().min(50).max(100).default(95),
+      // True: only when the Identification found a single Candidate.
       onlyOne: z.boolean().default(true),
     })
     .prefault({}),

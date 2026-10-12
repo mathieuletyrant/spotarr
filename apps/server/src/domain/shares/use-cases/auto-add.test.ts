@@ -31,17 +31,15 @@ describe("which Candidates auto add requests", () => {
     expect(candidatesToAutoAdd([candidate("Kraken", 1)], { ...rule, enabled: false })).toEqual([]);
   });
 
-  test("only one: the single Candidate at the threshold or above", () => {
-    expect(
-      titles(candidatesToAutoAdd([candidate("Kraken", 0.95), candidate("Kraken Mare", 0.6)], rule)),
-    ).toEqual(["Kraken"]);
+  test("only one: a single Candidate, at the threshold or above", () => {
+    expect(titles(candidatesToAutoAdd([candidate("Kraken", 0.95)], rule))).toEqual(["Kraken"]);
     expect(candidatesToAutoAdd([candidate("Kraken", 0.94)], rule)).toEqual([]);
   });
 
-  test("only one: two confident Candidates is a doubt, even if one is in the library", () => {
-    const awake = candidate("Awake", 1);
-    const marriage = candidate("Marriage Story", 1, false);
-    expect(candidatesToAutoAdd([awake, marriage], rule)).toEqual([]);
+  test("only one: two Candidates is a doubt, however sure the first one is", () => {
+    const kraken = candidate("Kraken", 0.98);
+    const krakenMare = candidate("Kraken Mare", 0.4);
+    expect(candidatesToAutoAdd([kraken, krakenMare], rule)).toEqual([]);
   });
 
   test("every one: all confident Candidates not in the library yet", () => {
