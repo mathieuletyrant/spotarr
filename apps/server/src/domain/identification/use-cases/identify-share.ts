@@ -1,10 +1,10 @@
-import type { Seerr } from "../../integrations/seerr/client";
-import type { Tmdb } from "../../integrations/tmdb/client";
-import type { Candidate, Clues, IdentificationResult, ShareInput } from "../shares/types";
-import { confirmOnTmdb } from "./confirm-on-tmdb";
-import { type DirectId, findDirectIds } from "./extractors/direct-ids";
-import type { Video } from "./extractors/video";
-import { guessTitles, type Llm } from "./guess-titles";
+import type { Seerr } from "../../../integrations/seerr/client";
+import type { Tmdb } from "../../../integrations/tmdb/client";
+import type { Candidate, Clues, IdentificationResult, ShareInput } from "../../shares/types";
+import { confirmOnTmdb } from "../confirm-on-tmdb";
+import { type DirectId, findDirectIds } from "../extractors/direct-ids";
+import type { Video } from "../extractors/video";
+import { guessTitles, type Llm } from "../guess-titles";
 
 export type IdentifyDeps = {
   tmdb: Tmdb;
@@ -15,7 +15,7 @@ export type IdentifyDeps = {
 
 // An IMDb/TMDB link is enough. Otherwise the shared video is read, the LLM
 // names the works it shows, and TMDB confirms them.
-export async function identify(
+export async function identifyShare(
   input: ShareInput,
   { tmdb, seerr, readVideo, llm }: IdentifyDeps,
 ): Promise<IdentificationResult> {

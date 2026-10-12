@@ -1,4 +1,4 @@
-import type { SettingsRepository } from "./repository";
+import type { SettingsRepository } from "../repository";
 
 // Returns the API token, creating it on first start. `created` tells the caller
 // to print it: the logs are where the user finds it the first time.

@@ -1,13 +1,13 @@
 import { afterEach, expect, mock, test } from "bun:test";
-import { openDatabase } from "../../db";
-import { Seerr } from "../../integrations/seerr/client";
+import { openDatabase } from "../../../db";
+import { Seerr } from "../../../integrations/seerr/client";
 import {
   getGetMovieMovieIdResponseMock,
   getPostRequestResponseMock,
-} from "../../integrations/seerr/gen/seerr.faker";
-import { fakeFetch } from "../../testing/fake-fetch";
-import { addCandidate } from "./add";
-import { ShareRepository } from "./repository";
+} from "../../../integrations/seerr/gen/seerr.faker";
+import { fakeFetch } from "../../../testing/fake-fetch";
+import { ShareRepository } from "../repository";
+import { addCandidate } from "./add-candidate";
 
 afterEach(() => mock.restore());
 

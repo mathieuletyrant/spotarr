@@ -36,14 +36,14 @@ export class ShareQueue {
         this.running--;
         return;
       }
-      void this.identifyShare(id).finally(() => {
+      void this.process(id).finally(() => {
         this.running--;
         this.wake(); // a slot just freed up: start the next queued Share
       });
     }
   }
 
-  private async identifyShare(id: string): Promise<void> {
+  private async process(id: string): Promise<void> {
     const started = performance.now();
     const elapsed = () => Math.round(performance.now() - started);
     try {
