@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file spotarr/v1/spotarr.proto.
  */
 export const file_spotarr_v1_spotarr: GenFile = /*@__PURE__*/
-  fileDesc("ChhzcG90YXJyL3YxL3Nwb3RhcnIucHJvdG8SCnNwb3RhcnIudjEiEgoQR2V0U3RhdHVzUmVxdWVzdCIkChFHZXRTdGF0dXNSZXNwb25zZRIPCgd2ZXJzaW9uGAEgASgJMloKDlNwb3RhcnJTZXJ2aWNlEkgKCUdldFN0YXR1cxIcLnNwb3RhcnIudjEuR2V0U3RhdHVzUmVxdWVzdBodLnNwb3RhcnIudjEuR2V0U3RhdHVzUmVzcG9uc2ViBnByb3RvMw");
+  fileDesc("ChhzcG90YXJyL3YxL3Nwb3RhcnIucHJvdG8SCnNwb3RhcnIudjEiEgoQR2V0U3RhdHVzUmVxdWVzdCIkChFHZXRTdGF0dXNSZXNwb25zZRIPCgd2ZXJzaW9uGAEgASgJItABCghTZXR0aW5ncxI6Cg5pZGVudGlmaWNhdGlvbhgBIAEoCzIiLnNwb3RhcnIudjEuSWRlbnRpZmljYXRpb25TZXR0aW5ncxIoCgVzZWVychgCIAEoCzIZLnNwb3RhcnIudjEuU2VlcnJTZXR0aW5ncxIyCgpleHRyYWN0aW9uGAMgASgLMh4uc3BvdGFyci52MS5FeHRyYWN0aW9uU2V0dGluZ3MSKgoGYWNjZXNzGAQgASgLMhouc3BvdGFyci52MS5BY2Nlc3NTZXR0aW5ncyKyAgoWSWRlbnRpZmljYXRpb25TZXR0aW5ncxIYCgtsbG1fYXBpX3VybBgBIAEoCUgAiAEBEhgKC2xsbV9hcGlfa2V5GAIgASgJSAGIAQESFwoKdGV4dF9tb2RlbBgDIAEoCUgCiAEBEhgKC2ltYWdlX21vZGVsGAQgASgJSAOIAQESFwoKZm9yY2VfanNvbhgFIAEoCEgEiAEBEhcKCnRtZGJfdG9rZW4YBiABKAlIBYgBARIVCghsYW5ndWFnZRgHIAEoCUgGiAEBQg4KDF9sbG1fYXBpX3VybEIOCgxfbGxtX2FwaV9rZXlCDQoLX3RleHRfbW9kZWxCDgoMX2ltYWdlX21vZGVsQg0KC19mb3JjZV9qc29uQg0KC190bWRiX3Rva2VuQgsKCV9sYW5ndWFnZSJLCg1TZWVyclNldHRpbmdzEhAKA3VybBgBIAEoCUgAiAEBEhQKB2FwaV9rZXkYAiABKAlIAYgBAUIGCgRfdXJsQgoKCF9hcGlfa2V5IsgBChJFeHRyYWN0aW9uU2V0dGluZ3MSGAoLY29va2llc190eHQYASABKAlIAIgBARIdChBmcmFtZXNfcGVyX3ZpZGVvGAIgASgFSAGIAQESGQoMbWF4X3ZpZGVvX21iGAMgASgFSAKIAQESGAoLY29uY3VycmVuY3kYBCABKAVIA4gBAUIOCgxfY29va2llc190eHRCEwoRX2ZyYW1lc19wZXJfdmlkZW9CDwoNX21heF92aWRlb19tYkIOCgxfY29uY3VycmVuY3kirAEKDkFjY2Vzc1NldHRpbmdzEhYKCWFwaV90b2tlbhgBIAEoCUgAiAEBEhwKD3B1YmxpY19ob3N0bmFtZRgCIAEoCUgBiAEBEhgKC3RlYW1fZG9tYWluGAMgASgJSAKIAQESEAoDYXVkGAQgASgJSAOIAQFCDAoKX2FwaV90b2tlbkISChBfcHVibGljX2hvc3RuYW1lQg4KDF90ZWFtX2RvbWFpbkIGCgRfYXVkIhQKEkdldFNldHRpbmdzUmVxdWVzdCI9ChNHZXRTZXR0aW5nc1Jlc3BvbnNlEiYKCHNldHRpbmdzGAEgASgLMhQuc3BvdGFyci52MS5TZXR0aW5ncyI/ChVVcGRhdGVTZXR0aW5nc1JlcXVlc3QSJgoIc2V0dGluZ3MYASABKAsyFC5zcG90YXJyLnYxLlNldHRpbmdzIkAKFlVwZGF0ZVNldHRpbmdzUmVzcG9uc2USJgoIc2V0dGluZ3MYASABKAsyFC5zcG90YXJyLnYxLlNldHRpbmdzMoMCCg5TcG90YXJyU2VydmljZRJICglHZXRTdGF0dXMSHC5zcG90YXJyLnYxLkdldFN0YXR1c1JlcXVlc3QaHS5zcG90YXJyLnYxLkdldFN0YXR1c1Jlc3BvbnNlEk4KC0dldFNldHRpbmdzEh4uc3BvdGFyci52MS5HZXRTZXR0aW5nc1JlcXVlc3QaHy5zcG90YXJyLnYxLkdldFNldHRpbmdzUmVzcG9uc2USVwoOVXBkYXRlU2V0dGluZ3MSIS5zcG90YXJyLnYxLlVwZGF0ZVNldHRpbmdzUmVxdWVzdBoiLnNwb3RhcnIudjEuVXBkYXRlU2V0dGluZ3NSZXNwb25zZWIGcHJvdG8z");
 
 /**
  * @generated from message spotarr.v1.GetStatusRequest
@@ -45,8 +45,260 @@ export const GetStatusResponseSchema: GenMessage<GetStatusResponse> = /*@__PURE_
   messageDesc(file_spotarr_v1_spotarr, 1);
 
 /**
- * Placeholder service: the real RPCs arrive with milestone 1 issues (#8–#19).
+ * Every field is optional: in UpdateSettings an absent field means "leave unchanged".
+ * GetSettings always fills them all.
  *
+ * @generated from message spotarr.v1.Settings
+ */
+export type Settings = Message<"spotarr.v1.Settings"> & {
+  /**
+   * @generated from field: spotarr.v1.IdentificationSettings identification = 1;
+   */
+  identification?: IdentificationSettings | undefined;
+
+  /**
+   * @generated from field: spotarr.v1.SeerrSettings seerr = 2;
+   */
+  seerr?: SeerrSettings | undefined;
+
+  /**
+   * @generated from field: spotarr.v1.ExtractionSettings extraction = 3;
+   */
+  extraction?: ExtractionSettings | undefined;
+
+  /**
+   * @generated from field: spotarr.v1.AccessSettings access = 4;
+   */
+  access?: AccessSettings | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.Settings.
+ * Use `create(SettingsSchema)` to create a new message.
+ */
+export const SettingsSchema: GenMessage<Settings> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 2);
+
+/**
+ * @generated from message spotarr.v1.IdentificationSettings
+ */
+export type IdentificationSettings = Message<"spotarr.v1.IdentificationSettings"> & {
+  /**
+   * Any OpenAI-compatible API; OpenRouter by default.
+   *
+   * @generated from field: optional string llm_api_url = 1;
+   */
+  llmApiUrl?: string | undefined;
+
+  /**
+   * @generated from field: optional string llm_api_key = 2;
+   */
+  llmApiKey?: string | undefined;
+
+  /**
+   * @generated from field: optional string text_model = 3;
+   */
+  textModel?: string | undefined;
+
+  /**
+   * Must handle images. Empty means: same as text_model.
+   *
+   * @generated from field: optional string image_model = 4;
+   */
+  imageModel?: string | undefined;
+
+  /**
+   * Sends response_format json_object; turn off for models that refuse it.
+   *
+   * @generated from field: optional bool force_json = 5;
+   */
+  forceJson?: boolean | undefined;
+
+  /**
+   * TMDB read access token.
+   *
+   * @generated from field: optional string tmdb_token = 6;
+   */
+  tmdbToken?: string | undefined;
+
+  /**
+   * Language of TMDB titles and overviews, e.g. "fr-FR".
+   *
+   * @generated from field: optional string language = 7;
+   */
+  language?: string | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.IdentificationSettings.
+ * Use `create(IdentificationSettingsSchema)` to create a new message.
+ */
+export const IdentificationSettingsSchema: GenMessage<IdentificationSettings> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 3);
+
+/**
+ * @generated from message spotarr.v1.SeerrSettings
+ */
+export type SeerrSettings = Message<"spotarr.v1.SeerrSettings"> & {
+  /**
+   * @generated from field: optional string url = 1;
+   */
+  url?: string | undefined;
+
+  /**
+   * @generated from field: optional string api_key = 2;
+   */
+  apiKey?: string | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.SeerrSettings.
+ * Use `create(SeerrSettingsSchema)` to create a new message.
+ */
+export const SeerrSettingsSchema: GenMessage<SeerrSettings> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 4);
+
+/**
+ * @generated from message spotarr.v1.ExtractionSettings
+ */
+export type ExtractionSettings = Message<"spotarr.v1.ExtractionSettings"> & {
+  /**
+   * Netscape cookies.txt of a logged-in account; Instagram needs it.
+   *
+   * @generated from field: optional string cookies_txt = 1;
+   */
+  cookiesTxt?: string | undefined;
+
+  /**
+   * @generated from field: optional int32 frames_per_video = 2;
+   */
+  framesPerVideo?: number | undefined;
+
+  /**
+   * @generated from field: optional int32 max_video_mb = 3;
+   */
+  maxVideoMb?: number | undefined;
+
+  /**
+   * How many Identifications run at the same time.
+   *
+   * @generated from field: optional int32 concurrency = 4;
+   */
+  concurrency?: number | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.ExtractionSettings.
+ * Use `create(ExtractionSettingsSchema)` to create a new message.
+ */
+export const ExtractionSettingsSchema: GenMessage<ExtractionSettings> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 5);
+
+/**
+ * @generated from message spotarr.v1.AccessSettings
+ */
+export type AccessSettings = Message<"spotarr.v1.AccessSettings"> & {
+  /**
+   * Generated at first start. Read-only: ignored by UpdateSettings.
+   *
+   * @generated from field: optional string api_token = 1;
+   */
+  apiToken?: string | undefined;
+
+  /**
+   * Requests addressed to this host must carry a valid Cloudflare Access JWT.
+   *
+   * @generated from field: optional string public_hostname = 2;
+   */
+  publicHostname?: string | undefined;
+
+  /**
+   * e.g. "myteam.cloudflareaccess.com"
+   *
+   * @generated from field: optional string team_domain = 3;
+   */
+  teamDomain?: string | undefined;
+
+  /**
+   * Application audience (AUD) tag from Cloudflare Zero Trust.
+   *
+   * @generated from field: optional string aud = 4;
+   */
+  aud?: string | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.AccessSettings.
+ * Use `create(AccessSettingsSchema)` to create a new message.
+ */
+export const AccessSettingsSchema: GenMessage<AccessSettings> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 6);
+
+/**
+ * @generated from message spotarr.v1.GetSettingsRequest
+ */
+export type GetSettingsRequest = Message<"spotarr.v1.GetSettingsRequest"> & {
+};
+
+/**
+ * Describes the message spotarr.v1.GetSettingsRequest.
+ * Use `create(GetSettingsRequestSchema)` to create a new message.
+ */
+export const GetSettingsRequestSchema: GenMessage<GetSettingsRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 7);
+
+/**
+ * @generated from message spotarr.v1.GetSettingsResponse
+ */
+export type GetSettingsResponse = Message<"spotarr.v1.GetSettingsResponse"> & {
+  /**
+   * @generated from field: spotarr.v1.Settings settings = 1;
+   */
+  settings?: Settings | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.GetSettingsResponse.
+ * Use `create(GetSettingsResponseSchema)` to create a new message.
+ */
+export const GetSettingsResponseSchema: GenMessage<GetSettingsResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 8);
+
+/**
+ * @generated from message spotarr.v1.UpdateSettingsRequest
+ */
+export type UpdateSettingsRequest = Message<"spotarr.v1.UpdateSettingsRequest"> & {
+  /**
+   * @generated from field: spotarr.v1.Settings settings = 1;
+   */
+  settings?: Settings | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.UpdateSettingsRequest.
+ * Use `create(UpdateSettingsRequestSchema)` to create a new message.
+ */
+export const UpdateSettingsRequestSchema: GenMessage<UpdateSettingsRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 9);
+
+/**
+ * @generated from message spotarr.v1.UpdateSettingsResponse
+ */
+export type UpdateSettingsResponse = Message<"spotarr.v1.UpdateSettingsResponse"> & {
+  /**
+   * @generated from field: spotarr.v1.Settings settings = 1;
+   */
+  settings?: Settings | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.UpdateSettingsResponse.
+ * Use `create(UpdateSettingsResponseSchema)` to create a new message.
+ */
+export const UpdateSettingsResponseSchema: GenMessage<UpdateSettingsResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 10);
+
+/**
  * @generated from service spotarr.v1.SpotarrService
  */
 export const SpotarrService: GenService<{
@@ -59,6 +311,26 @@ export const SpotarrService: GenService<{
     methodKind: "unary";
     input: typeof GetStatusRequestSchema;
     output: typeof GetStatusResponseSchema;
+  },
+  /**
+   * Every setting, secrets included: this is a single-user app and the UI shows them.
+   *
+   * @generated from rpc spotarr.v1.SpotarrService.GetSettings
+   */
+  getSettings: {
+    methodKind: "unary";
+    input: typeof GetSettingsRequestSchema;
+    output: typeof GetSettingsResponseSchema;
+  },
+  /**
+   * Changes only the fields that are present; returns the settings as saved.
+   *
+   * @generated from rpc spotarr.v1.SpotarrService.UpdateSettings
+   */
+  updateSettings: {
+    methodKind: "unary";
+    input: typeof UpdateSettingsRequestSchema;
+    output: typeof UpdateSettingsResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_spotarr_v1_spotarr, 0);

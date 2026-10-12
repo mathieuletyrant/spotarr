@@ -1,13 +1,23 @@
 import { expect, test } from "bun:test";
 import { createApp } from "./app";
+import { openDatabase } from "./db";
+import { SettingsRepository } from "./settings/repository";
+import { SettingsService } from "./settings/service";
 
-const app = createApp({ apiToken: () => "secret-token" });
-const getStatus = (headers: Record<string, string> = {}) =>
-  app.request("/api/spotarr.v1.SpotarrService/GetStatus", {
+const db = await openDatabase(":memory:");
+const app = createApp({
+  apiToken: () => "secret-token",
+  settings: new SettingsService(new SettingsRepository(db)),
+});
+const call = (method: string, body: unknown = {}, headers: Record<string, string> = {}) =>
+  app.request(`/api/spotarr.v1.SpotarrService/${method}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...headers },
-    body: "{}",
+    body: JSON.stringify(body),
   });
+const authed = (method: string, body: unknown = {}) =>
+  call(method, body, { Authorization: "Bearer secret-token" });
+const getStatus = (headers: Record<string, string> = {}) => call("GetStatus", {}, headers);
 
 test("/health answers without a token", async () => {
   const res = await app.request("/health");
@@ -44,4 +54,24 @@ test("an unknown RPC is a 404", async () => {
     body: "{}",
   });
   expect(res.status).toBe(404);
+});
+
+test("UpdateSettings then GetSettings round-trips, with the API token shown read-only", async () => {
+  const update = await authed("UpdateSettings", {
+    settings: { seerr: { url: "http://seerr:5055", apiKey: "k" }, access: { apiToken: "hijack" } },
+  });
+  expect(update.status).toBe(200);
+
+  const { settings } = await (await authed("GetSettings")).json();
+  expect(settings.seerr).toEqual({ url: "http://seerr:5055", apiKey: "k" });
+  expect(settings.access.apiToken).toBe("secret-token");
+  expect(settings.extraction.framesPerVideo).toBe(6);
+});
+
+test("an invalid setting is a Connect invalid_argument naming the field", async () => {
+  const res = await authed("UpdateSettings", { settings: { extraction: { concurrency: 9 } } });
+  expect(res.status).toBe(400);
+  const body = await res.json();
+  expect(body.code).toBe("invalid_argument");
+  expect(body.message).toContain("extraction.concurrency");
 });
