@@ -1,28 +1,27 @@
-// Finds IMDb and TMDB title links in any text: a shared URL, a pasted text,
-// later the links of a web page. Pure regex: no network, no LLM.
+// Finds IMDb and TMDB title links in a text: a shared URL, a pasted text, and
+// later the links of a web page. Plain regular expressions: no network, no LLM.
 
 export type DirectId =
   | { source: "imdb"; id: string }
   | { source: "tmdb"; type: "MOVIE" | "TV"; id: number };
 
 // imdb.com/title/tt0816692, m.imdb.com/fr/title/tt0816692/?ref_=…
-const IMDB = /imdb\.com\/(?:[a-z-]+\/)?title\/(tt\d{7,})/gi;
+const IMDB_LINK = /imdb\.com\/(?:[a-z-]+\/)?title\/(tt\d+)/g;
 // themoviedb.org/movie/693134-dune-part-two, themoviedb.org/tv/95396
-const TMDB = /themoviedb\.org\/(movie|tv)\/(\d+)/gi;
+const TMDB_LINK = /themoviedb\.org\/(movie|tv)\/(\d+)/g;
 
 // A page linking to many titles is a list, not a title: keep the first few.
 const MAX_IDS = 4;
 
 export function findDirectIds(text: string): DirectId[] {
-  const found = new Map<string, DirectId>();
-  for (const m of text.matchAll(IMDB)) {
-    const id = (m[1] as string).toLowerCase();
-    found.set(id, { source: "imdb", id });
+  const ids: DirectId[] = [];
+
+  for (const [, imdbId = ""] of text.matchAll(IMDB_LINK)) {
+    ids.push({ source: "imdb", id: imdbId });
   }
-  for (const m of text.matchAll(TMDB)) {
-    const type = m[1]?.toLowerCase() === "tv" ? "TV" : "MOVIE";
-    const id = Number(m[2]);
-    found.set(`${type}:${id}`, { source: "tmdb", type, id });
+  for (const [, kind, tmdbId] of text.matchAll(TMDB_LINK)) {
+    ids.push({ source: "tmdb", type: kind === "tv" ? "TV" : "MOVIE", id: Number(tmdbId) });
   }
-  return [...found.values()].slice(0, MAX_IDS);
+
+  return ids.slice(0, MAX_IDS);
 }

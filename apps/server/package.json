@@ -7,7 +7,8 @@
     "dev": "DATA_DIR=../../data bun --watch src/index.ts",
     "generate": "bun run scripts/codegen.ts",
     "typecheck": "tsc",
-    "test": "bun test"
+    "test": "bun test",
+    "tmdb:client": "orval"
   },
   "dependencies": {
     "@bufbuild/protobuf": "2.16.0",
@@ -15,11 +16,14 @@
     "@spotarr/contract": "workspace:*",
     "hono": "4.13.13",
     "kysely": "0.29.6",
+    "openapi-fetch": "0.17.0",
     "zod": "4.6.6"
   },
   "devDependencies": {
+    "@faker-js/faker": "10.6.0",
     "@types/bun": "1.4.2",
     "kysely-codegen": "0.20.0",
+    "orval": "8.41.0",
     "typescript": "7.0.2"
   }
 }
