@@ -1,0 +1,54 @@
+/* Generated from tokens.json by build.ts. Do not edit. */
+:root {
+  --color-bg: #FFFFFF;
+  --color-surface: #F6F7F9;
+  --color-surface-raised: #FFFFFF;
+  --color-border: #E3E6EB;
+  --color-text: #14171D;
+  --color-text-muted: #5C6470;
+  --color-accent: #E9A020;
+  --color-accent-text: #1A1300;
+  --color-status-progress: #C98A10;
+  --color-status-ready: #C98A10;
+  --color-status-added: #2E7FD9;
+  --color-status-requested: #7A4FD6;
+  --color-status-present: #6B7380;
+  --color-status-no-match: #6B7380;
+  --color-status-error: #D9403B;
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --spacing-unit: 0.25rem;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+  --icon-status-progress: loader-circle;
+  --icon-status-ready: list-checks;
+  --icon-status-added: check;
+  --icon-status-requested: send;
+  --icon-status-present: library;
+  --icon-status-no-match: circle-dashed;
+  --icon-status-error: circle-alert;
+  --icon-source-video: clapperboard;
+  --icon-source-web: globe;
+  --icon-source-image: image;
+  --icon-source-text: type;
+}
+
+.dark {
+  --color-bg: #0F1115;
+  --color-surface: #161920;
+  --color-surface-raised: #1C2029;
+  --color-border: #262B35;
+  --color-text: #E8EAF0;
+  --color-text-muted: #9AA1AD;
+  --color-accent: #F2B443;
+  --color-accent-text: #1A1300;
+  --color-status-progress: #F2B443;
+  --color-status-ready: #F2B443;
+  --color-status-added: #7DB4F0;
+  --color-status-requested: #B99CF2;
+  --color-status-present: #9AA1AD;
+  --color-status-no-match: #9AA1AD;
+  --color-status-error: #F07171;
+}
