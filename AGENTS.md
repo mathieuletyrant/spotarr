@@ -20,7 +20,7 @@ Self-hosted personal service (Docker; also in Mathieu's Umbrel community store):
 
 - `packages/contract`: `proto/spotarr/v1/spotarr.proto` is the single source of the API. Generated TypeScript lives in `src/gen`, committed, re-exported by `@spotarr/contract`.
 - `packages/design-tokens`: `tokens.json` is the single source of style. `build.ts` emits `gen/tokens.css` (`:root` light, `.dark` dark).
-- `apps/server`: Hono on Bun, Connect-RPC under `/api`, SQLite in `DATA_DIR`. `src/app.ts` only assembles the routes; RPC handlers live in `src/rpc/<domain>.ts`, one file per domain, typed with `Rpcs<"methodName">` from `src/rpc/types.ts`. A new RPC goes in its domain file, then is spread into `router.service` in `app.ts`. Errors shared by all RPCs (zod → `invalid_argument`) are interceptors in `src/rpc/errors.ts`. `src/db`: dialect, dated migrations, `openDatabase()`; `src/db/gen/types.ts` is generated from the migrated schema.
+- `apps/server`: Hono on Bun, Connect-RPC under `/api`, SQLite in `DATA_DIR`. `src/app.ts` only assembles the routes; RPC handlers live in `src/rpc/<domain>.ts`, one file per domain, typed with `Rpcs<"methodName">` from `src/rpc/types.ts`. A new RPC goes in its domain file, then is spread into `router.service` in `app.ts`. Errors shared by all RPCs (zod → `invalid_argument`) are interceptors in `src/rpc/errors.ts`. Domain code lives by domain: `src/settings/`, `src/shares/` (types, input validation, repository, queue), `src/identification/`. Repositories are the only code that sees Kysely; they take and return domain types. `src/db`: dialect, dated migrations, `openDatabase()`; `src/db/gen/types.ts` is generated from the migrated schema.
 - `apps/web`, `apps/ios`, `umbrel/`: arrive with their milestones.
 
 ## How work happens
@@ -58,6 +58,8 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - **SQLite TEXT primary keys accept NULL** unless declared `notNull()`; the generated type then reads `string | null`.
 - **zod 4 object defaults**: `.default({})` on an object returns `{}` as is, without the inner defaults. Use `.prefault({})`, which parses `{}` and so fills them.
 - **Connect messages carry `$typeName`**: a request object has an extra `$typeName` key on every message. Code iterating over its keys must skip it; zod strips it when parsing.
+- **Summary is SQL**: the Summary of a Share is one `CASE` expression in `src/shares/repository.ts`, used both to show it and to filter on it. Change the rules there only.
+- **Testing background work**: `src/shares/test-helpers.ts` has `until()` (poll a condition) and `deferred()` (end an Identification when the test decides). Never `sleep` a fixed time.
 - **`pnpm exec biome`** may print an odd "ESLint output" line from a shell hook; use `pnpm lint` / `pnpm format`.
 
 ## Versions
