@@ -22,5 +22,10 @@
   },
   "files": {
     "includes": ["**", "!**/gen"]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   }
 }

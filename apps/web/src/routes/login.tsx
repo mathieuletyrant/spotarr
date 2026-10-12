@@ -31,7 +31,6 @@ function Login() {
           value={token}
           onChange={(e) => setToken(e.target.value)}
           className="rounded-md border border-border bg-surface px-3 py-2"
-          autoFocus
         />
       </label>
       {error && <p className="text-sm text-status-error">{error}</p>}
