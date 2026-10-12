@@ -1,6 +1,7 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
+import { ThemeButton } from "../components/theme-button";
 import { queryClient } from "../lib/api";
 import { statusQuery } from "../queries/status";
 
@@ -49,13 +50,16 @@ function AppLayout() {
           </Link>
         </nav>
         {/* The page's main action, on every page: share a link from the computer. */}
-        <Link
-          to="/share"
-          className="ml-auto flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          <Plus aria-hidden className="size-4" />
-          Share
-        </Link>
+        <div className="ml-auto flex items-center gap-1">
+          <ThemeButton />
+          <Link
+            to="/share"
+            className="flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            <Plus aria-hidden className="size-4" />
+            Share
+          </Link>
+        </div>
       </header>
       <main className="mx-auto max-w-7xl p-4 md:p-6">
         <Outlet />
