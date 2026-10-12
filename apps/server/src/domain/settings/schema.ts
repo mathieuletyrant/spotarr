@@ -40,9 +40,6 @@ export const SettingsSchema = z.object({
     .object({
       // Generated at first start, read-only for clients (see SettingsRepository.update).
       apiToken: z.string().default(""),
-      publicHostname: z.string().default(""),
-      teamDomain: z.string().default(""),
-      aud: z.string().default(""),
     })
     .prefault({}),
 });

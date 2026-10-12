@@ -113,12 +113,12 @@ message ExtractionSettings {
 message AccessSettings {
   // Generated at first start. Read-only: ignored by UpdateSettings.
   optional string api_token = 1;
-  // Requests addressed to this host must carry a valid Cloudflare Access JWT.
-  optional string public_hostname = 2;
-  // e.g. "myteam.cloudflareaccess.com"
-  optional string team_domain = 3;
-  // Application audience (AUD) tag from Cloudflare Zero Trust.
-  optional string aud = 4;
+  // Removed: checking the Cloudflare Access JWT is decided at deployment.
+  optional string public_hostname = 2 [deprecated = true];
+  // Removed, see public_hostname.
+  optional string team_domain = 3 [deprecated = true];
+  // Removed, see public_hostname.
+  optional string aud = 4 [deprecated = true];
 }
 
 message GetSettingsRequest {}

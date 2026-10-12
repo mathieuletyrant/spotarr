@@ -178,28 +178,9 @@ function SettingsForm({ saved }: { saved: Values }) {
       <Section
         id="access"
         title="Access"
-        description="Who can call Spotarr, at home and from outside."
+        description="The token that lets the iPhone and scripts call Spotarr."
       >
         <ApiTokenField token={values["access.apiToken"] ?? ""} />
-        <TextField
-          form={form}
-          name="access.publicHostname"
-          label="Public hostname"
-          placeholder="spotarr.example.com"
-          wide
-        />
-        <TextField
-          form={form}
-          name="access.teamDomain"
-          label="Cloudflare Access team domain"
-          placeholder="team.cloudflareaccess.com"
-        />
-        <TextField
-          form={form}
-          name="access.aud"
-          label="Application audience (AUD)"
-          placeholder="From Cloudflare Zero Trust"
-        />
       </Section>
 
       {(changed > 0 || errors[""]) && (

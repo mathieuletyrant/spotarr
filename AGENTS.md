@@ -68,6 +68,7 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - Secrets are stored plain in SQLite under `/data`, visible and copyable in the UI, never logged. No encryption layer.
 - Webhooks carry the full payload (poster, confidence, library state); Spotarr has no Home Assistant code.
 - The shared video is never kept, but a 240 px thumbnail of each frame is (≈10 KB each, table `frames`), shown on the Share's page and served by `GET /frames/<share id>/<n>.jpg` behind the token. Decided 2026-10-12, against the spec's "no images kept".
+- No Cloudflare Access JWT check in Spotarr for now (the spec's third layer): Access in front plus the API token are enough. Its settings (public hostname, team domain, AUD) were removed on 2026-10-12; to be decided again at the real deployment.
 - SQLite from milestone 1. No history purge, no `VACUUM INTO`. Design tokens from milestone 0; macOS CI job only with the SwiftUI app.
 
 ## Known traps
