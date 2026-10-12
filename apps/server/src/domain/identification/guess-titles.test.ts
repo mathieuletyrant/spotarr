@@ -9,6 +9,7 @@ const guesses: Guesses = {
       title: "Due Date",
       originalTitle: null,
       year: 2010,
+      originalLanguage: "en",
       type: "movie",
       confidence: 0.9,
       reason: "acteurs",
@@ -58,4 +59,14 @@ test("the video's sound goes with the frames, as MP3", async () => {
     data: Buffer.from([7, 7]).toString("base64"),
     format: "mp3",
   });
+});
+
+test("the LLM is told today's date, so this year's films are not dated to past years", async () => {
+  let sent: ChatMessage[] = [];
+  const llm = async (messages: ChatMessage[]) => {
+    sent = messages;
+    return guesses;
+  };
+  await guessTitles({ clues: {}, frames: [] }, llm, new Date("2026-10-12T10:00:00Z"));
+  expect(String(sent[0]?.content)).toContain("Today is 2026-10-12.");
 });

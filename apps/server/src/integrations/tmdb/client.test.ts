@@ -27,7 +27,7 @@ test("an IMDb id finds a movie, sending the token and the language", async () =>
     "/3/find/tt15239678": getFindByIdResponseMock({ movie_results: [dune], tv_results: [] }),
   });
 
-  expect(await tmdb().findByImdbId("tt15239678")).toEqual({
+  expect(await tmdb().findByImdbId("tt15239678")).toMatchObject({
     tmdbId: 693134,
     type: "MOVIE",
     title: "Dune : Deuxième partie",

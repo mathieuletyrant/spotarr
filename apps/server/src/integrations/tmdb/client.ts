@@ -20,6 +20,9 @@ export type TmdbTitle = {
   originalTitle?: string;
   year?: number;
   posterUrl?: string;
+  // Help choosing between namesakes: "fr", "en"…, and TMDB's popularity score.
+  originalLanguage?: string;
+  popularity?: number;
 };
 
 const POSTERS = "https://image.tmdb.org/t/p/w500";
@@ -63,27 +66,26 @@ export class Tmdb {
     return showTitle(res.data);
   }
 
-  // TMDB's best match for a movie title, the year narrowing the search when known.
-  async searchMovie(query: string, year?: number): Promise<TmdbTitle | undefined> {
+  // The movies TMDB finds for a title, the year narrowing the search when given.
+  // TMDB orders them by relevance; domain/identification picks the right one.
+  async searchMovies(query: string, year?: number): Promise<TmdbTitle[]> {
     const { language, options } = this.request();
     const res = await searchMovie(
       { query, language, primary_release_year: year?.toString() },
       options,
     ).catch(unreachable);
     checkStatus(res.status);
-    const best = res.data.results?.[0];
-    return best ? movieTitle(best) : undefined;
+    return (res.data.results ?? []).map(movieTitle).filter((t) => t !== undefined);
   }
 
-  // TMDB's best match for a TV show title, the year of its first episode narrowing the search.
-  async searchShow(query: string, year?: number): Promise<TmdbTitle | undefined> {
+  // The TV shows TMDB finds for a title, the year of the first episode narrowing the search.
+  async searchShows(query: string, year?: number): Promise<TmdbTitle[]> {
     const { language, options } = this.request();
     const res = await searchTv({ query, language, first_air_date_year: year }, options).catch(
       unreachable,
     );
     checkStatus(res.status);
-    const best = res.data.results?.[0];
-    return best ? showTitle(best) : undefined;
+    return (res.data.results ?? []).map(showTitle).filter((t) => t !== undefined);
   }
 
   private request() {
@@ -130,6 +132,8 @@ function movieTitle(
     originalTitle: movie.original_title,
     year: yearOf(movie.release_date),
     posterUrl: movie.poster_path ? POSTERS + movie.poster_path : undefined,
+    originalLanguage: movie.original_language,
+    popularity: movie.popularity,
   };
 }
 
@@ -142,6 +146,8 @@ function showTitle(show: TvSeriesDetails200 | SearchTv200ResultsItem): TmdbTitle
     originalTitle: show.original_name,
     year: yearOf(show.first_air_date),
     posterUrl: show.poster_path ? POSTERS + show.poster_path : undefined,
+    originalLanguage: show.original_language,
+    popularity: show.popularity,
   };
 }
 

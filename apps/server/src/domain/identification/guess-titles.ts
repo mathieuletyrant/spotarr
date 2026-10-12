@@ -14,6 +14,10 @@ export const GuessesSchema = z.object({
         title: z.string(),
         originalTitle: z.string().nullable(),
         year: z.int().nullable().describe("Release year"),
+        originalLanguage: z
+          .string()
+          .nullable()
+          .describe("ISO 639-1 code of the work's original language, e.g. fr, en, ko"),
         type: z.enum(["movie", "tv"]),
         confidence: z.number().min(0).max(1),
         reason: z.string(),
@@ -37,12 +41,18 @@ Rules:
 export type VideoClues = { clues: Clues; frames: Uint8Array[]; audio?: Uint8Array };
 
 // Asks the LLM which works the video shows, from what it reads, sees and hears.
+// `today` matters: without it the LLM dates a film released this year to the
+// years it knows, and TMDB then finds a namesake ("Kraken" 2024 → "Kraken Mare").
 export async function guessTitles(
   { clues, frames, audio }: VideoClues,
   llm: Llm,
+  today = new Date(),
 ): Promise<Guesses> {
   return llm([
-    { role: "system", content: INSTRUCTIONS },
+    {
+      role: "system",
+      content: `${INSTRUCTIONS}\n\nToday is ${today.toISOString().slice(0, 10)}. Recent releases exist that you may know little about: trust what the video says and shows.`,
+    },
     {
       role: "user",
       content: [
