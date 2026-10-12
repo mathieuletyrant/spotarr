@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
-import { parseVideoInfo } from "./ytdlp";
+import { SpotarrError } from "../../errors";
+import { isNoVideoError, parseVideoInfo } from "./ytdlp";
 
 // Recorded on 2026-10-12 with `yt-dlp --dump-single-json` on a real reel, trimmed to a few fields.
 const fixture = () => Bun.file(new URL("fixtures/instagram-reel.json", import.meta.url)).text();
@@ -16,4 +17,11 @@ test("an empty caption is no caption", () => {
     caption: undefined,
     author: "someone",
   });
+});
+
+test("a photo post is told apart from other yt-dlp failures", () => {
+  const photo = "yt-dlp failed: ERROR: [Instagram] DeZTyvuF9aF: There is no video in this post";
+  expect(isNoVideoError(new SpotarrError("unavailable", photo))).toBe(true);
+  const other = "yt-dlp failed: ERROR: [Instagram] x: Requested content is not available";
+  expect(isNoVideoError(new SpotarrError("unavailable", other))).toBe(false);
 });

@@ -62,7 +62,7 @@ for (const { reel, expected } of CASES) {
   const { answer } = await guessTitles(
     {
       clues: { caption: video.caption, author: video.author },
-      frames: video.frames.map((f) => f.jpeg),
+      images: video.frames.map((f) => f.jpeg),
       audio: video.audio,
     },
     (messages) => chat(llmConfig, messages, AnswerSchema),

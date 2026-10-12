@@ -27,7 +27,7 @@ test("sends the caption, the author and every frame, and returns the LLM's answe
   const result = await guessTitles(
     {
       clues: { caption: "mood ?", author: "CameraCam" },
-      frames: [new Uint8Array([1]), new Uint8Array([2])],
+      images: [new Uint8Array([1]), new Uint8Array([2])],
     },
     llm,
   );
@@ -46,7 +46,7 @@ test("the video's sound goes with the frames, as MP3", async () => {
   };
 
   await guessTitles(
-    { clues: {}, frames: [new Uint8Array([1])], audio: new Uint8Array([7, 7]) },
+    { clues: {}, images: [new Uint8Array([1])], audio: new Uint8Array([7, 7]) },
     llm,
   );
 
@@ -67,6 +67,6 @@ test("the LLM is told today's date, so this year's films are not dated to past y
     sent = messages;
     return { answer };
   };
-  await guessTitles({ clues: {}, frames: [] }, llm, new Date("2026-10-12T10:00:00Z"));
+  await guessTitles({ clues: {}, images: [] }, llm, new Date("2026-10-12T10:00:00Z"));
   expect(String(sent[0]?.content)).toContain("Today is 2026-10-12.");
 });

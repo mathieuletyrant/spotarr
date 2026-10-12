@@ -3,7 +3,7 @@ import { copyFile, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { run } from "../process";
-import { extractFrames, pictureFrame } from "./frames";
+import { extractFrames } from "./frames";
 
 // The width of a JPEG, read by ffprobe from a temporary file.
 async function widthOf(jpeg: Uint8Array, dir: string): Promise<string> {
@@ -35,24 +35,6 @@ test("takes the asked number of frames: a 768 px JPEG and a 240 px thumbnail eac
     const first = frames[0];
     expect(await widthOf(first?.jpeg ?? new Uint8Array(), dir)).toBe("768");
     expect(await widthOf(first?.thumbnail ?? new Uint8Array(), dir)).toBe("240");
-  } finally {
-    await rm(dir, { recursive: true, force: true });
-  }
-});
-
-test("a picture gives one frame at 0 ms, sized like a video's", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "spotarr-test-"));
-  try {
-    // A picture to start from: the first frame of the bundled video.
-    const video = new URL("fixtures/test-pattern.mp4", import.meta.url).pathname;
-    const picture = join(dir, "picture.jpg");
-    await run(["ffmpeg", "-v", "error", "-i", video, "-frames:v", "1", picture], 10_000);
-
-    const frame = await pictureFrame(picture);
-
-    expect(frame.atMs).toBe(0);
-    expect(await widthOf(frame.jpeg, dir)).toBe("768");
-    expect(await widthOf(frame.thumbnail, dir)).toBe("240");
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

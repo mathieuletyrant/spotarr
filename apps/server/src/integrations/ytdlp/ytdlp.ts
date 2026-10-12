@@ -32,6 +32,12 @@ export function parseVideoInfo(json: string): VideoInfo {
   };
 }
 
+// yt-dlp only reads videos: this is its answer for an Instagram post made of
+// pictures only.
+export function isNoVideoError(error: unknown): boolean {
+  return error instanceof SpotarrError && error.message.includes("There is no video in this post");
+}
+
 // Downloads a low quality, which is enough for a few frames, into `dir`.
 // Returns the file's path.
 // `worst` is the smallest file with sound and picture (Instagram, TikTok).

@@ -39,13 +39,14 @@ Rules:
 - Prefer the original title and the release year: they are used to search TMDB.
 - Never invent a work: an empty list is a valid answer.`;
 
-export type VideoClues = { clues: Clues; frames: Uint8Array[]; audio?: Uint8Array };
+// What the LLM gets: a video's frames and sound, or a photo post's picture alone.
+type LlmInput = { clues: Clues; images: Uint8Array[]; audio?: Uint8Array };
 
 // Asks the LLM which works the video shows, from what it reads, sees and hears.
 // `today` matters: without it the LLM dates a film released this year to the
 // years it knows, and TMDB then finds a namesake ("Kraken" 2024 → "Kraken Mare").
 export async function guessTitles(
-  { clues, frames, audio }: VideoClues,
+  { clues, images, audio }: LlmInput,
   llm: Llm,
   today = new Date(),
 ): Promise<LlmReply> {
@@ -61,7 +62,7 @@ export async function guessTitles(
           type: "text",
           text: `Caption: ${clues.caption ?? "(none)"}\nAuthor: ${clues.author ?? "(unknown)"}`,
         },
-        ...frames.map(imagePart),
+        ...images.map(imagePart),
         ...(audio ? [audioPart(audio)] : []),
       ],
     },
