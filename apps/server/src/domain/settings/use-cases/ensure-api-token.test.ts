@@ -15,3 +15,16 @@ test("the API token is created once, then reused", async () => {
   expect(second).toEqual({ token: first.token, created: false });
   await db.destroy();
 });
+
+test("API_TOKEN, when set, is the token", async () => {
+  const db = await openDatabase(":memory:");
+  const settings = new SettingsRepository(db);
+  await ensureApiToken(settings);
+
+  expect(await ensureApiToken(settings, "umbrel-password")).toEqual({
+    token: "umbrel-password",
+    created: false,
+  });
+  expect((await settings.get()).access.apiToken).toBe("umbrel-password");
+  await db.destroy();
+});

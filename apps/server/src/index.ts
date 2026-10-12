@@ -18,7 +18,8 @@ import { Seerr } from "./integrations/seerr/client";
 import { Tmdb } from "./integrations/tmdb/client";
 import { log } from "./log";
 
-// The only two environment variables; everything else is set in the UI.
+// The only environment variables; everything else is set in the UI.
+// API_TOKEN (optional) fixes the API token, e.g. to the Umbrel app password.
 const port = Number(process.env.PORT ?? 3000);
 const dataDir = process.env.DATA_DIR ?? "/data";
 
@@ -26,7 +27,7 @@ mkdirSync(dataDir, { recursive: true });
 const db = await openDatabase(join(dataDir, "spotarr.db"));
 
 const settings = new SettingsRepository(db);
-const { token, created } = await ensureApiToken(settings);
+const { token, created } = await ensureApiToken(settings, process.env.API_TOKEN);
 // Printed at every start: the logs are where the token is found again if
 // lost, since the Settings page that shows it needs it to sign in.
 console.log(`API token${created ? " (new)" : ""}: ${token}`);
