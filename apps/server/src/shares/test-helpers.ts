@@ -16,3 +16,11 @@ export function deferred<T>() {
   });
   return { promise, resolve };
 }
+
+// An Identify that always ends without a match, for tests of the queue and the RPCs.
+export const identifyNothing = async () => ({
+  status: "NO_MATCH" as const,
+  extractors: [],
+  clues: {},
+  candidates: [],
+});

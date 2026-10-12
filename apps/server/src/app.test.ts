@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
-import { identifyNothing } from "./identification/placeholder";
 import { SettingsRepository } from "./settings/repository";
 import { ShareQueue } from "./shares/queue";
 import { ShareRepository } from "./shares/repository";
+import { identifyNothing } from "./shares/test-helpers";
 
 const db = await openDatabase(":memory:");
 const settings = new SettingsRepository(db);
