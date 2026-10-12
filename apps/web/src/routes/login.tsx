@@ -26,7 +26,10 @@ function Login() {
 
   return (
     <form onSubmit={submit} className="mx-auto mt-24 flex max-w-sm flex-col gap-3">
-      <p className="font-semibold">Spotarr</p>
+      <p className="flex items-center gap-2 font-semibold">
+        <img src="/favicon.svg" alt="" className="size-6" />
+        Spotarr
+      </p>
       <h1 className="text-xl font-semibold">Sign in</h1>
       <label className="flex flex-col gap-1 text-sm">
         API token

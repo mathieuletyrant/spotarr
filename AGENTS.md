@@ -68,6 +68,7 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - Secrets are stored plain in SQLite under `/data`, visible and copyable in the UI, never logged. No encryption layer.
 - Webhooks carry the full payload (poster, confidence, library state); Spotarr has no Home Assistant code.
 - The shared video is never kept, but a 240 px thumbnail of each frame is (≈10 KB each, table `frames`), shown on the Share's page and served by `GET /frames/<share id>/<n>.jpg` behind the token. Decided 2026-10-12, against the spec's "no images kept".
+- No Cloudflare Access JWT check in Spotarr for now (the spec's third layer): Access in front plus the API token are enough. Its settings (public hostname, team domain, AUD) were removed on 2026-10-12; to be decided again at the real deployment.
 - SQLite from milestone 1. No history purge, no `VACUUM INTO`. Design tokens from milestone 0; macOS CI job only with the SwiftUI app.
 
 ## Known traps
@@ -90,7 +91,7 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - **Seerr's spec does not match its answers** (same on v3.5.0, main, develop: `watchProviders` nesting, nullable `modifiedBy`…). Orval generates its client and fakes from the spec pinned to v3.5.0, without zod validation of answers. Its address being a setting, every generated call goes through `integrations/seerr/seerr-fetch.ts` (an Orval "mutator") with `{ seerr: { url, apiKey } }` in its options.
 - **openapi-typescript does not run with TypeScript 7** (it drives the compiler API, gone in 7). Orval does not need it.
 - **MSW 3 does not intercept fetch under Bun 1.4** ("Failed to replace a global value"). Tests fake `fetch` with `spyOn` instead: `src/integrations/tmdb/fake-fetch.ts`, undone by `mock.restore()`.
-- **yt-dlp on Instagram**: format selectors with conditions (`worst[ext=mp4]`) fail, because Instagram announces neither size nor resolution. Plain `--format worst` works. Public reels need no cookies so far.
+- **yt-dlp on Instagram**: format selectors with conditions (`worst[ext=mp4]`) fail, because Instagram announces neither size nor resolution. Plain `--format worst` works. Public reels need no cookies: the cookies.txt setting was removed on 2026-10-12, to come back only if private reels or a login wall show up.
 - **Programs are run through `integrations/process.ts`**: one place for timeouts and error messages. Tests use the real ffmpeg on `integrations/ffmpeg/fixtures/test-pattern.mp4`; yt-dlp is never run in tests (no network), only its recorded JSON is parsed.
 - **Integrations take plain config, never a repository**: `new Tmdb({ token, language })`, `chat(config, messages)`. `src/index.ts` reads the settings once per Identification and hands each integration its part.
 - **Errors are `SpotarrError`s** (`src/errors.ts`): one class, six codes (`invalid_input`, `not_found`, `busy`, `not_configured`, `unavailable`, `timeout`). Never `throw new Error(...)` in production code; integrations turn their failures (status, network, timeout) into a code and a message naming the service. `api/rpc/errors.ts` maps codes to Connect codes for the UI; zod errors become `invalid_argument`; anything else is `internal` and logged.

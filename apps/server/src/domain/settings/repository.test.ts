@@ -12,7 +12,6 @@ test("an empty database gives the defaults", async () => {
   expect(s.identification.language).toBe("fr-FR");
   expect(s.seerr).toEqual({ url: "", apiKey: "" });
   expect(s.extraction).toEqual({
-    cookiesTxt: "",
     framesPerVideo: 6,
     maxVideoMb: 200,
     concurrency: 2,

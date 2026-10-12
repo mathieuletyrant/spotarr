@@ -14,14 +14,8 @@ export type Video = { caption?: string; author?: string; frames: Frame[]; audio?
 export async function readVideo(url: string, extraction: Settings["extraction"]): Promise<Video> {
   const dir = await mkdtemp(join(tmpdir(), "spotarr-"));
   try {
-    let cookiesFile: string | undefined;
-    if (extraction.cookiesTxt) {
-      cookiesFile = join(dir, "cookies.txt");
-      await Bun.write(cookiesFile, extraction.cookiesTxt);
-    }
-
-    const info = await readVideoInfo(url, cookiesFile);
-    const video = await downloadVideo(url, dir, extraction.maxVideoMb, cookiesFile);
+    const info = await readVideoInfo(url);
+    const video = await downloadVideo(url, dir, extraction.maxVideoMb);
     const [frames, audio] = await Promise.all([
       extractFrames(video, extraction.framesPerVideo),
       extractAudio(video),

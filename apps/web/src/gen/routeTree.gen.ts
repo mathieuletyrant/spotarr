@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './../routes/__root'
 import { Route as AppRouteImport } from './../routes/_app'
 import { Route as LoginRouteImport } from './../routes/login'
 import { Route as AppIndexRouteImport } from './../routes/_app/index'
+import { Route as AppSettingsRouteImport } from './../routes/_app/settings'
 import { Route as AppShareRouteImport } from './../routes/_app/share'
 import { Route as AppSharesShareIdRouteImport } from './../routes/_app/shares.$shareId'
 
@@ -29,6 +30,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppShareRoute = AppShareRouteImport.update({
   id: '/share',
   path: '/share',
@@ -43,11 +49,13 @@ const AppSharesShareIdRoute = AppSharesShareIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
+  '/settings': typeof AppSettingsRoute
   '/share': typeof AppShareRoute
   '/shares/$shareId': typeof AppSharesShareIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/settings': typeof AppSettingsRoute
   '/share': typeof AppShareRoute
   '/': typeof AppIndexRoute
   '/shares/$shareId': typeof AppSharesShareIdRoute
@@ -56,19 +64,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/_app/settings': typeof AppSettingsRoute
   '/_app/share': typeof AppShareRoute
   '/_app/': typeof AppIndexRoute
   '/_app/shares/$shareId': typeof AppSharesShareIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/share' | '/shares/$shareId'
+  fullPaths: '/' | '/login' | '/settings' | '/share' | '/shares/$shareId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/share' | '/' | '/shares/$shareId'
+  to: '/login' | '/settings' | '/share' | '/' | '/shares/$shareId'
   id:
     | '__root__'
     | '/_app'
     | '/login'
+    | '/_app/settings'
     | '/_app/share'
     | '/_app/'
     | '/_app/shares/$shareId'
@@ -102,6 +112,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/share': {
       id: '/_app/share'
       path: '/share'
@@ -120,12 +137,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AppRouteChildren {
+  AppSettingsRoute: typeof AppSettingsRoute
   AppShareRoute: typeof AppShareRoute
   AppIndexRoute: typeof AppIndexRoute
   AppSharesShareIdRoute: typeof AppSharesShareIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppSettingsRoute: AppSettingsRoute,
   AppShareRoute: AppShareRoute,
   AppIndexRoute: AppIndexRoute,
   AppSharesShareIdRoute: AppSharesShareIdRoute,
