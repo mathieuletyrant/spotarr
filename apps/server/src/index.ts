@@ -11,6 +11,8 @@ import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
 import type { ShareInput } from "./domain/shares/types";
+import { WebhookRepository } from "./domain/webhooks/repository";
+import { WebhookSender } from "./domain/webhooks/sender";
 import { chat, type LlmConfig } from "./integrations/llm/client";
 import { Seerr } from "./integrations/seerr/client";
 import { Tmdb } from "./integrations/tmdb/client";
@@ -55,10 +57,20 @@ function llmConfig(identification: Settings["identification"]): LlmConfig {
   };
 }
 
+const webhooks = new WebhookRepository(db);
+const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
+
+// When an Identification ends, the Webhooks hear about it.
+async function identificationEnded(shareId: string) {
+  const share = await shares.get(shareId);
+  if (share) await sender.identificationEnded(share);
+}
+
 const queue = new ShareQueue(
   shares,
   runIdentification,
   async () => (await settings.get()).extraction.concurrency,
+  identificationEnded,
 );
 await queue.start();
 
@@ -70,6 +82,8 @@ const app = createApp({
   settings,
   shares,
   queue,
+  webhooks,
+  sender,
   seerr: seerrFromSettings,
   webDir: existsSync(webDir) ? webDir : undefined,
 });

@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file spotarr/v1/spotarr.proto.
  */
 export const file_spotarr_v1_spotarr: GenFile = /*@__PURE__*/
-  fileDesc("ChhzcG90YXJyL3YxL3Nwb3RhcnIucHJvdG8SCnNwb3RhcnIudjEiGgoYQ2hlY2tEZXBlbmRlbmNpZXNSZXF1ZXN0IoIBChlDaGVja0RlcGVuZGVuY2llc1Jlc3BvbnNlEiwKDGRlcGVuZGVuY2llcxgBIAMoCzIWLnNwb3RhcnIudjEuRGVwZW5kZW5jeRIqCghsbG1fY29zdBgCIAEoCzITLnNwb3RhcnIudjEuTGxtQ29zdEgAiAEBQgsKCV9sbG1fY29zdCJWCgpEZXBlbmRlbmN5EgwKBG5hbWUYASABKAkSKgoFc3RhdGUYAiABKA4yGy5zcG90YXJyLnYxLkRlcGVuZGVuY3lTdGF0ZRIOCgZkZXRhaWwYAyABKAkiNQoHTGxtQ29zdBIXCg9pZGVudGlmaWNhdGlvbnMYASABKAUSEQoJdG90YWxfdXNkGAIgASgBIhIKEEdldFN0YXR1c1JlcXVlc3QiJAoRR2V0U3RhdHVzUmVzcG9uc2USDwoHdmVyc2lvbhgBIAEoCSLQAQoIU2V0dGluZ3MSOgoOaWRlbnRpZmljYXRpb24YASABKAsyIi5zcG90YXJyLnYxLklkZW50aWZpY2F0aW9uU2V0dGluZ3MSKAoFc2VlcnIYAiABKAsyGS5zcG90YXJyLnYxLlNlZXJyU2V0dGluZ3MSMgoKZXh0cmFjdGlvbhgDIAEoCzIeLnNwb3RhcnIudjEuRXh0cmFjdGlvblNldHRpbmdzEioKBmFjY2VzcxgEIAEoCzIaLnNwb3RhcnIudjEuQWNjZXNzU2V0dGluZ3Mi3AIKFklkZW50aWZpY2F0aW9uU2V0dGluZ3MSGAoLbGxtX2FwaV91cmwYASABKAlIAIgBARIYCgtsbG1fYXBpX2tleRgCIAEoCUgBiAEBEhsKCnRleHRfbW9kZWwYAyABKAlCAhgBSAKIAQESHAoLaW1hZ2VfbW9kZWwYBCABKAlCAhgBSAOIAQESGwoKZm9yY2VfanNvbhgFIAEoCEICGAFIBIgBARIXCgp0bWRiX3Rva2VuGAYgASgJSAWIAQESFQoIbGFuZ3VhZ2UYByABKAlIBogBARISCgVtb2RlbBgIIAEoCUgHiAEBQg4KDF9sbG1fYXBpX3VybEIOCgxfbGxtX2FwaV9rZXlCDQoLX3RleHRfbW9kZWxCDgoMX2ltYWdlX21vZGVsQg0KC19mb3JjZV9qc29uQg0KC190bWRiX3Rva2VuQgsKCV9sYW5ndWFnZUIICgZfbW9kZWwiSwoNU2VlcnJTZXR0aW5ncxIQCgN1cmwYASABKAlIAIgBARIUCgdhcGlfa2V5GAIgASgJSAGIAQFCBgoEX3VybEIKCghfYXBpX2tleSLMAQoSRXh0cmFjdGlvblNldHRpbmdzEhwKC2Nvb2tpZXNfdHh0GAEgASgJQgIYAUgAiAEBEh0KEGZyYW1lc19wZXJfdmlkZW8YAiABKAVIAYgBARIZCgxtYXhfdmlkZW9fbWIYAyABKAVIAogBARIYCgtjb25jdXJyZW5jeRgEIAEoBUgDiAEBQg4KDF9jb29raWVzX3R4dEITChFfZnJhbWVzX3Blcl92aWRlb0IPCg1fbWF4X3ZpZGVvX21iQg4KDF9jb25jdXJyZW5jeSK4AQoOQWNjZXNzU2V0dGluZ3MSFgoJYXBpX3Rva2VuGAEgASgJSACIAQESIAoPcHVibGljX2hvc3RuYW1lGAIgASgJQgIYAUgBiAEBEhwKC3RlYW1fZG9tYWluGAMgASgJQgIYAUgCiAEBEhQKA2F1ZBgEIAEoCUICGAFIA4gBAUIMCgpfYXBpX3Rva2VuQhIKEF9wdWJsaWNfaG9zdG5hbWVCDgoMX3RlYW1fZG9tYWluQgYKBF9hdWQiFAoSR2V0U2V0dGluZ3NSZXF1ZXN0Ij0KE0dldFNldHRpbmdzUmVzcG9uc2USJgoIc2V0dGluZ3MYASABKAsyFC5zcG90YXJyLnYxLlNldHRpbmdzIj8KFVVwZGF0ZVNldHRpbmdzUmVxdWVzdBImCghzZXR0aW5ncxgBIAEoCzIULnNwb3RhcnIudjEuU2V0dGluZ3MiQAoWVXBkYXRlU2V0dGluZ3NSZXNwb25zZRImCghzZXR0aW5ncxgBIAEoCzIULnNwb3RhcnIudjEuU2V0dGluZ3MiywIKBVNoYXJlEgoKAmlkGAEgASgJEi4KCmNyZWF0ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEiUKBWlucHV0GAMgASgLMhYuc3BvdGFyci52MS5TaGFyZUlucHV0Eg4KBnNvdXJjZRgEIAEoCRIyCg5pZGVudGlmaWNhdGlvbhgFIAEoCzIaLnNwb3RhcnIudjEuSWRlbnRpZmljYXRpb24SKQoKY2FuZGlkYXRlcxgGIAMoCzIVLnNwb3RhcnIudjEuQ2FuZGlkYXRlEicKCWFkZGl0aW9ucxgHIAMoCzIULnNwb3RhcnIudjEuQWRkaXRpb24SJAoHc3VtbWFyeRgIIAEoDjITLnNwb3RhcnIudjEuU3VtbWFyeRIhCgZmcmFtZXMYCSADKAsyES5zcG90YXJyLnYxLkZyYW1lIigKBUZyYW1lEhIKCmF0X3NlY29uZHMYASABKAISCwoDdXJsGAIgASgJIlUKClNoYXJlSW5wdXQSEAoDdXJsGAEgASgJSACIAQESEQoEdGV4dBgCIAEoCUgBiAEBEhEKCWhhc19pbWFnZRgDIAEoCEIGCgRfdXJsQgcKBV90ZXh0IooCCg5JZGVudGlmaWNhdGlvbhIwCgZzdGF0dXMYASABKA4yIC5zcG90YXJyLnYxLklkZW50aWZpY2F0aW9uU3RhdHVzEiIKBm1ldGhvZBgCIAEoDjISLnNwb3RhcnIudjEuTWV0aG9kEhgKC2R1cmF0aW9uX21zGAMgASgFSACIAQESEgoKZXh0cmFjdG9ycxgEIAMoCRIgCgVjbHVlcxgFIAEoCzIRLnNwb3RhcnIudjEuQ2x1ZXMSFgoJcmVhc29uaW5nGAYgASgJSAGIAQESEgoFZXJyb3IYByABKAlIAogBAUIOCgxfZHVyYXRpb25fbXNCDAoKX3JlYXNvbmluZ0IICgZfZXJyb3IibwoFQ2x1ZXMSFAoHY2FwdGlvbhgBIAEoCUgAiAEBEhMKBmF1dGhvchgCIAEoCUgBiAEBEhYKCXN1YnRpdGxlcxgDIAEoCUgCiAEBQgoKCF9jYXB0aW9uQgkKB19hdXRob3JCDAoKX3N1YnRpdGxlcyKdAgoJQ2FuZGlkYXRlEg8KB3RtZGJfaWQYASABKAUSIwoEdHlwZRgCIAEoDjIVLnNwb3RhcnIudjEuTWVkaWFUeXBlEg0KBXRpdGxlGAMgASgJEhsKDm9yaWdpbmFsX3RpdGxlGAQgASgJSACIAQESEQoEeWVhchgFIAEoBUgBiAEBEhcKCnBvc3Rlcl91cmwYBiABKAlIAogBARIXCgpjb25maWRlbmNlGAcgASgCSAOIAQESLwoNbGlicmFyeV9zdGF0ZRgIIAEoDjIYLnNwb3RhcnIudjEuTGlicmFyeVN0YXRlQhEKD19vcmlnaW5hbF90aXRsZUIHCgVfeWVhckINCgtfcG9zdGVyX3VybEINCgtfY29uZmlkZW5jZSLqAQoIQWRkaXRpb24SCgoCaWQYASABKAkSLgoKY3JlYXRlZF9hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDwoHdG1kYl9pZBgDIAEoBRIjCgR0eXBlGAQgASgOMhUuc3BvdGFyci52MS5NZWRpYVR5cGUSIgoGdGFyZ2V0GAUgASgOMhIuc3BvdGFyci52MS5UYXJnZXQSKgoGc3RhdHVzGAYgASgOMhouc3BvdGFyci52MS5BZGRpdGlvblN0YXR1cxISCgVlcnJvchgHIAEoCUgAiAEBQggKBl9lcnJvciJoChJDcmVhdGVTaGFyZVJlcXVlc3QSEAoDdXJsGAEgASgJSACIAQESEQoEdGV4dBgCIAEoCUgBiAEBEhIKBWltYWdlGAMgASgMSAKIAQFCBgoEX3VybEIHCgVfdGV4dEIICgZfaW1hZ2UiNwoTQ3JlYXRlU2hhcmVSZXNwb25zZRIgCgVzaGFyZRgBIAEoCzIRLnNwb3RhcnIudjEuU2hhcmUiHQoPR2V0U2hhcmVSZXF1ZXN0EgoKAmlkGAEgASgJIjQKEEdldFNoYXJlUmVzcG9uc2USIAoFc2hhcmUYASABKAsyES5zcG90YXJyLnYxLlNoYXJlIp8BChFMaXN0U2hhcmVzUmVxdWVzdBIWCglwYWdlX3NpemUYASABKAVIAIgBARITCgZjdXJzb3IYAiABKAlIAYgBARImCglzdW1tYXJpZXMYAyADKA4yEy5zcG90YXJyLnYxLlN1bW1hcnkSEgoFcXVlcnkYBCABKAlIAogBAUIMCgpfcGFnZV9zaXplQgkKB19jdXJzb3JCCAoGX3F1ZXJ5IpoBChJMaXN0U2hhcmVzUmVzcG9uc2USIQoGc2hhcmVzGAEgAygLMhEuc3BvdGFyci52MS5TaGFyZRIYCgtuZXh0X2N1cnNvchgCIAEoCUgAiAEBEg0KBXRvdGFsGAMgASgFEigKBmNvdW50cxgEIAMoCzIYLnNwb3RhcnIudjEuU3VtbWFyeUNvdW50Qg4KDF9uZXh0X2N1cnNvciJDCgxTdW1tYXJ5Q291bnQSJAoHc3VtbWFyeRgBIAEoDjITLnNwb3RhcnIudjEuU3VtbWFyeRINCgVjb3VudBgCIAEoBSIoChpSZXRyeUlkZW50aWZpY2F0aW9uUmVxdWVzdBIKCgJpZBgBIAEoCSI/ChtSZXRyeUlkZW50aWZpY2F0aW9uUmVzcG9uc2USIAoFc2hhcmUYASABKAsyES5zcG90YXJyLnYxLlNoYXJlIngKCkFkZFJlcXVlc3QSEAoIc2hhcmVfaWQYASABKAkSDwoHdG1kYl9pZBgCIAEoBRIjCgR0eXBlGAMgASgOMhUuc3BvdGFyci52MS5NZWRpYVR5cGUSIgoGdGFyZ2V0GAQgASgOMhIuc3BvdGFyci52MS5UYXJnZXQiLwoLQWRkUmVzcG9uc2USIAoFc2hhcmUYASABKAsyES5zcG90YXJyLnYxLlNoYXJlIh0KDExvZ2luUmVxdWVzdBINCgV0b2tlbhgBIAEoCSIPCg1Mb2dpblJlc3BvbnNlKo0BCg9EZXBlbmRlbmN5U3RhdGUSIAocREVQRU5ERU5DWV9TVEFURV9VTlNQRUNJRklFRBAAEhcKE0RFUEVOREVOQ1lfU1RBVEVfT0sQARIjCh9ERVBFTkRFTkNZX1NUQVRFX05PVF9DT05GSUdVUkVEEAISGgoWREVQRU5ERU5DWV9TVEFURV9FUlJPUhADKuwBChRJZGVudGlmaWNhdGlvblN0YXR1cxIlCiFJREVOVElGSUNBVElPTl9TVEFUVVNfVU5TUEVDSUZJRUQQABIgChxJREVOVElGSUNBVElPTl9TVEFUVVNfUVVFVUVEEAESJAogSURFTlRJRklDQVRJT05fU1RBVFVTX1BST0NFU1NJTkcQAhIfChtJREVOVElGSUNBVElPTl9TVEFUVVNfUkVBRFkQAxIiCh5JREVOVElGSUNBVElPTl9TVEFUVVNfTk9fTUFUQ0gQBBIgChxJREVOVElGSUNBVElPTl9TVEFUVVNfRkFJTEVEEAUqRgoGTWV0aG9kEhYKEk1FVEhPRF9VTlNQRUNJRklFRBAAEhQKEE1FVEhPRF9ESVJFQ1RfSUQQARIOCgpNRVRIT0RfTExNEAIqUAoJTWVkaWFUeXBlEhoKFk1FRElBX1RZUEVfVU5TUEVDSUZJRUQQABIUChBNRURJQV9UWVBFX01PVklFEAESEQoNTUVESUFfVFlQRV9UVhACKpwBCgxMaWJyYXJ5U3RhdGUSHQoZTElCUkFSWV9TVEFURV9VTlNQRUNJRklFRBAAEhgKFExJQlJBUllfU1RBVEVfQUJTRU5UEAESGwoXTElCUkFSWV9TVEFURV9SRVFVRVNURUQQAhIZChVMSUJSQVJZX1NUQVRFX1BBUlRJQUwQAxIbChdMSUJSQVJZX1NUQVRFX0FWQUlMQUJMRRAEKkIKBlRhcmdldBIWChJUQVJHRVRfVU5TUEVDSUZJRUQQABIOCgpUQVJHRVRfQVJSEAESEAoMVEFSR0VUX1NFRVJSEAIqrAEKDkFkZGl0aW9uU3RhdHVzEh8KG0FERElUSU9OX1NUQVRVU19VTlNQRUNJRklFRBAAEhkKFUFERElUSU9OX1NUQVRVU19BRERFRBABEh0KGUFERElUSU9OX1NUQVRVU19SRVFVRVNURUQQAhIjCh9BRERJVElPTl9TVEFUVVNfQUxSRUFEWV9QUkVTRU5UEAMSGgoWQURESVRJT05fU1RBVFVTX0ZBSUxFRBAEKsMBCgdTdW1tYXJ5EhcKE1NVTU1BUllfVU5TUEVDSUZJRUQQABIXChNTVU1NQVJZX0lOX1BST0dSRVNTEAESFQoRU1VNTUFSWV9UT19DSE9PU0UQAhIRCg1TVU1NQVJZX0FEREVEEAMSFQoRU1VNTUFSWV9SRVFVRVNURUQQBBIbChdTVU1NQVJZX0FMUkVBRFlfUFJFU0VOVBAFEhQKEFNVTU1BUllfTk9fTUFUQ0gQBhISCg5TVU1NQVJZX0ZBSUxFRBAHMqcGCg5TcG90YXJyU2VydmljZRI8CgVMb2dpbhIYLnNwb3RhcnIudjEuTG9naW5SZXF1ZXN0Ghkuc3BvdGFyci52MS5Mb2dpblJlc3BvbnNlEkgKCUdldFN0YXR1cxIcLnNwb3RhcnIudjEuR2V0U3RhdHVzUmVxdWVzdBodLnNwb3RhcnIudjEuR2V0U3RhdHVzUmVzcG9uc2USYAoRQ2hlY2tEZXBlbmRlbmNpZXMSJC5zcG90YXJyLnYxLkNoZWNrRGVwZW5kZW5jaWVzUmVxdWVzdBolLnNwb3RhcnIudjEuQ2hlY2tEZXBlbmRlbmNpZXNSZXNwb25zZRJOCgtHZXRTZXR0aW5ncxIeLnNwb3RhcnIudjEuR2V0U2V0dGluZ3NSZXF1ZXN0Gh8uc3BvdGFyci52MS5HZXRTZXR0aW5nc1Jlc3BvbnNlElcKDlVwZGF0ZVNldHRpbmdzEiEuc3BvdGFyci52MS5VcGRhdGVTZXR0aW5nc1JlcXVlc3QaIi5zcG90YXJyLnYxLlVwZGF0ZVNldHRpbmdzUmVzcG9uc2USTgoLQ3JlYXRlU2hhcmUSHi5zcG90YXJyLnYxLkNyZWF0ZVNoYXJlUmVxdWVzdBofLnNwb3RhcnIudjEuQ3JlYXRlU2hhcmVSZXNwb25zZRJFCghHZXRTaGFyZRIbLnNwb3RhcnIudjEuR2V0U2hhcmVSZXF1ZXN0Ghwuc3BvdGFyci52MS5HZXRTaGFyZVJlc3BvbnNlEksKCkxpc3RTaGFyZXMSHS5zcG90YXJyLnYxLkxpc3RTaGFyZXNSZXF1ZXN0Gh4uc3BvdGFyci52MS5MaXN0U2hhcmVzUmVzcG9uc2USZgoTUmV0cnlJZGVudGlmaWNhdGlvbhImLnNwb3RhcnIudjEuUmV0cnlJZGVudGlmaWNhdGlvblJlcXVlc3QaJy5zcG90YXJyLnYxLlJldHJ5SWRlbnRpZmljYXRpb25SZXNwb25zZRI2CgNBZGQSFi5zcG90YXJyLnYxLkFkZFJlcXVlc3QaFy5zcG90YXJyLnYxLkFkZFJlc3BvbnNlYgZwcm90bzM", [file_google_protobuf_timestamp]);
+  fileDesc("ChhzcG90YXJyL3YxL3Nwb3RhcnIucHJvdG8SCnNwb3RhcnIudjEiGgoYQ2hlY2tEZXBlbmRlbmNpZXNSZXF1ZXN0IoIBChlDaGVja0RlcGVuZGVuY2llc1Jlc3BvbnNlEiwKDGRlcGVuZGVuY2llcxgBIAMoCzIWLnNwb3RhcnIudjEuRGVwZW5kZW5jeRIqCghsbG1fY29zdBgCIAEoCzITLnNwb3RhcnIudjEuTGxtQ29zdEgAiAEBQgsKCV9sbG1fY29zdCJWCgpEZXBlbmRlbmN5EgwKBG5hbWUYASABKAkSKgoFc3RhdGUYAiABKA4yGy5zcG90YXJyLnYxLkRlcGVuZGVuY3lTdGF0ZRIOCgZkZXRhaWwYAyABKAkiNQoHTGxtQ29zdBIXCg9pZGVudGlmaWNhdGlvbnMYASABKAUSEQoJdG90YWxfdXNkGAIgASgBIhIKEEdldFN0YXR1c1JlcXVlc3QiJAoRR2V0U3RhdHVzUmVzcG9uc2USDwoHdmVyc2lvbhgBIAEoCSL/AQoIU2V0dGluZ3MSOgoOaWRlbnRpZmljYXRpb24YASABKAsyIi5zcG90YXJyLnYxLklkZW50aWZpY2F0aW9uU2V0dGluZ3MSKAoFc2VlcnIYAiABKAsyGS5zcG90YXJyLnYxLlNlZXJyU2V0dGluZ3MSMgoKZXh0cmFjdGlvbhgDIAEoCzIeLnNwb3RhcnIudjEuRXh0cmFjdGlvblNldHRpbmdzEioKBmFjY2VzcxgEIAEoCzIaLnNwb3RhcnIudjEuQWNjZXNzU2V0dGluZ3MSLQoId2ViaG9va3MYBSABKAsyGy5zcG90YXJyLnYxLldlYmhvb2tTZXR0aW5ncyI5Cg9XZWJob29rU2V0dGluZ3MSFwoKd2ViX3VpX3VybBgBIAEoCUgAiAEBQg0KC193ZWJfdWlfdXJsItwCChZJZGVudGlmaWNhdGlvblNldHRpbmdzEhgKC2xsbV9hcGlfdXJsGAEgASgJSACIAQESGAoLbGxtX2FwaV9rZXkYAiABKAlIAYgBARIbCgp0ZXh0X21vZGVsGAMgASgJQgIYAUgCiAEBEhwKC2ltYWdlX21vZGVsGAQgASgJQgIYAUgDiAEBEhsKCmZvcmNlX2pzb24YBSABKAhCAhgBSASIAQESFwoKdG1kYl90b2tlbhgGIAEoCUgFiAEBEhUKCGxhbmd1YWdlGAcgASgJSAaIAQESEgoFbW9kZWwYCCABKAlIB4gBAUIOCgxfbGxtX2FwaV91cmxCDgoMX2xsbV9hcGlfa2V5Qg0KC190ZXh0X21vZGVsQg4KDF9pbWFnZV9tb2RlbEINCgtfZm9yY2VfanNvbkINCgtfdG1kYl90b2tlbkILCglfbGFuZ3VhZ2VCCAoGX21vZGVsIksKDVNlZXJyU2V0dGluZ3MSEAoDdXJsGAEgASgJSACIAQESFAoHYXBpX2tleRgCIAEoCUgBiAEBQgYKBF91cmxCCgoIX2FwaV9rZXkizAEKEkV4dHJhY3Rpb25TZXR0aW5ncxIcCgtjb29raWVzX3R4dBgBIAEoCUICGAFIAIgBARIdChBmcmFtZXNfcGVyX3ZpZGVvGAIgASgFSAGIAQESGQoMbWF4X3ZpZGVvX21iGAMgASgFSAKIAQESGAoLY29uY3VycmVuY3kYBCABKAVIA4gBAUIOCgxfY29va2llc190eHRCEwoRX2ZyYW1lc19wZXJfdmlkZW9CDwoNX21heF92aWRlb19tYkIOCgxfY29uY3VycmVuY3kiuAEKDkFjY2Vzc1NldHRpbmdzEhYKCWFwaV90b2tlbhgBIAEoCUgAiAEBEiAKD3B1YmxpY19ob3N0bmFtZRgCIAEoCUICGAFIAYgBARIcCgt0ZWFtX2RvbWFpbhgDIAEoCUICGAFIAogBARIUCgNhdWQYBCABKAlCAhgBSAOIAQFCDAoKX2FwaV90b2tlbkISChBfcHVibGljX2hvc3RuYW1lQg4KDF90ZWFtX2RvbWFpbkIGCgRfYXVkIhQKEkdldFNldHRpbmdzUmVxdWVzdCI9ChNHZXRTZXR0aW5nc1Jlc3BvbnNlEiYKCHNldHRpbmdzGAEgASgLMhQuc3BvdGFyci52MS5TZXR0aW5ncyI/ChVVcGRhdGVTZXR0aW5nc1JlcXVlc3QSJgoIc2V0dGluZ3MYASABKAsyFC5zcG90YXJyLnYxLlNldHRpbmdzIkAKFlVwZGF0ZVNldHRpbmdzUmVzcG9uc2USJgoIc2V0dGluZ3MYASABKAsyFC5zcG90YXJyLnYxLlNldHRpbmdzIssCCgVTaGFyZRIKCgJpZBgBIAEoCRIuCgpjcmVhdGVkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIlCgVpbnB1dBgDIAEoCzIWLnNwb3RhcnIudjEuU2hhcmVJbnB1dBIOCgZzb3VyY2UYBCABKAkSMgoOaWRlbnRpZmljYXRpb24YBSABKAsyGi5zcG90YXJyLnYxLklkZW50aWZpY2F0aW9uEikKCmNhbmRpZGF0ZXMYBiADKAsyFS5zcG90YXJyLnYxLkNhbmRpZGF0ZRInCglhZGRpdGlvbnMYByADKAsyFC5zcG90YXJyLnYxLkFkZGl0aW9uEiQKB3N1bW1hcnkYCCABKA4yEy5zcG90YXJyLnYxLlN1bW1hcnkSIQoGZnJhbWVzGAkgAygLMhEuc3BvdGFyci52MS5GcmFtZSIoCgVGcmFtZRISCgphdF9zZWNvbmRzGAEgASgCEgsKA3VybBgCIAEoCSJVCgpTaGFyZUlucHV0EhAKA3VybBgBIAEoCUgAiAEBEhEKBHRleHQYAiABKAlIAYgBARIRCgloYXNfaW1hZ2UYAyABKAhCBgoEX3VybEIHCgVfdGV4dCKKAgoOSWRlbnRpZmljYXRpb24SMAoGc3RhdHVzGAEgASgOMiAuc3BvdGFyci52MS5JZGVudGlmaWNhdGlvblN0YXR1cxIiCgZtZXRob2QYAiABKA4yEi5zcG90YXJyLnYxLk1ldGhvZBIYCgtkdXJhdGlvbl9tcxgDIAEoBUgAiAEBEhIKCmV4dHJhY3RvcnMYBCADKAkSIAoFY2x1ZXMYBSABKAsyES5zcG90YXJyLnYxLkNsdWVzEhYKCXJlYXNvbmluZxgGIAEoCUgBiAEBEhIKBWVycm9yGAcgASgJSAKIAQFCDgoMX2R1cmF0aW9uX21zQgwKCl9yZWFzb25pbmdCCAoGX2Vycm9yIm8KBUNsdWVzEhQKB2NhcHRpb24YASABKAlIAIgBARITCgZhdXRob3IYAiABKAlIAYgBARIWCglzdWJ0aXRsZXMYAyABKAlIAogBAUIKCghfY2FwdGlvbkIJCgdfYXV0aG9yQgwKCl9zdWJ0aXRsZXMinQIKCUNhbmRpZGF0ZRIPCgd0bWRiX2lkGAEgASgFEiMKBHR5cGUYAiABKA4yFS5zcG90YXJyLnYxLk1lZGlhVHlwZRINCgV0aXRsZRgDIAEoCRIbCg5vcmlnaW5hbF90aXRsZRgEIAEoCUgAiAEBEhEKBHllYXIYBSABKAVIAYgBARIXCgpwb3N0ZXJfdXJsGAYgASgJSAKIAQESFwoKY29uZmlkZW5jZRgHIAEoAkgDiAEBEi8KDWxpYnJhcnlfc3RhdGUYCCABKA4yGC5zcG90YXJyLnYxLkxpYnJhcnlTdGF0ZUIRCg9fb3JpZ2luYWxfdGl0bGVCBwoFX3llYXJCDQoLX3Bvc3Rlcl91cmxCDQoLX2NvbmZpZGVuY2Ui6gEKCEFkZGl0aW9uEgoKAmlkGAEgASgJEi4KCmNyZWF0ZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg8KB3RtZGJfaWQYAyABKAUSIwoEdHlwZRgEIAEoDjIVLnNwb3RhcnIudjEuTWVkaWFUeXBlEiIKBnRhcmdldBgFIAEoDjISLnNwb3RhcnIudjEuVGFyZ2V0EioKBnN0YXR1cxgGIAEoDjIaLnNwb3RhcnIudjEuQWRkaXRpb25TdGF0dXMSEgoFZXJyb3IYByABKAlIAIgBAUIICgZfZXJyb3IiaAoSQ3JlYXRlU2hhcmVSZXF1ZXN0EhAKA3VybBgBIAEoCUgAiAEBEhEKBHRleHQYAiABKAlIAYgBARISCgVpbWFnZRgDIAEoDEgCiAEBQgYKBF91cmxCBwoFX3RleHRCCAoGX2ltYWdlIjcKE0NyZWF0ZVNoYXJlUmVzcG9uc2USIAoFc2hhcmUYASABKAsyES5zcG90YXJyLnYxLlNoYXJlIh0KD0dldFNoYXJlUmVxdWVzdBIKCgJpZBgBIAEoCSI0ChBHZXRTaGFyZVJlc3BvbnNlEiAKBXNoYXJlGAEgASgLMhEuc3BvdGFyci52MS5TaGFyZSKfAQoRTGlzdFNoYXJlc1JlcXVlc3QSFgoJcGFnZV9zaXplGAEgASgFSACIAQESEwoGY3Vyc29yGAIgASgJSAGIAQESJgoJc3VtbWFyaWVzGAMgAygOMhMuc3BvdGFyci52MS5TdW1tYXJ5EhIKBXF1ZXJ5GAQgASgJSAKIAQFCDAoKX3BhZ2Vfc2l6ZUIJCgdfY3Vyc29yQggKBl9xdWVyeSKaAQoSTGlzdFNoYXJlc1Jlc3BvbnNlEiEKBnNoYXJlcxgBIAMoCzIRLnNwb3RhcnIudjEuU2hhcmUSGAoLbmV4dF9jdXJzb3IYAiABKAlIAIgBARINCgV0b3RhbBgDIAEoBRIoCgZjb3VudHMYBCADKAsyGC5zcG90YXJyLnYxLlN1bW1hcnlDb3VudEIOCgxfbmV4dF9jdXJzb3IiQwoMU3VtbWFyeUNvdW50EiQKB3N1bW1hcnkYASABKA4yEy5zcG90YXJyLnYxLlN1bW1hcnkSDQoFY291bnQYAiABKAUiKAoaUmV0cnlJZGVudGlmaWNhdGlvblJlcXVlc3QSCgoCaWQYASABKAkiPwobUmV0cnlJZGVudGlmaWNhdGlvblJlc3BvbnNlEiAKBXNoYXJlGAEgASgLMhEuc3BvdGFyci52MS5TaGFyZSJ4CgpBZGRSZXF1ZXN0EhAKCHNoYXJlX2lkGAEgASgJEg8KB3RtZGJfaWQYAiABKAUSIwoEdHlwZRgDIAEoDjIVLnNwb3RhcnIudjEuTWVkaWFUeXBlEiIKBnRhcmdldBgEIAEoDjISLnNwb3RhcnIudjEuVGFyZ2V0Ii8KC0FkZFJlc3BvbnNlEiAKBXNoYXJlGAEgASgLMhEuc3BvdGFyci52MS5TaGFyZSIdCgxMb2dpblJlcXVlc3QSDQoFdG9rZW4YASABKAkiDwoNTG9naW5SZXNwb25zZSK7AgoMV2ViaG9va0V2ZW50Eg0KBWV2ZW50GAEgASgJEhAKCHNoYXJlX2lkGAIgASgJEi4KCmNyZWF0ZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhYKCXNoYXJlX3VybBgEIAEoCUgAiAEBEg4KBnNvdXJjZRgFIAEoCRIXCgpzaGFyZWRfdXJsGAYgASgJSAGIAQESKQoKY2FuZGlkYXRlcxgHIAMoCzIVLnNwb3RhcnIudjEuQ2FuZGlkYXRlEhIKBWVycm9yGAggASgJSAKIAQESKQoFYWRkZWQYCSABKAsyFS5zcG90YXJyLnYxLkNhbmRpZGF0ZUgDiAEBQgwKCl9zaGFyZV91cmxCDQoLX3NoYXJlZF91cmxCCAoGX2Vycm9yQggKBl9hZGRlZCKNAQoHV2ViaG9vaxIKCgJpZBgBIAEoCRILCgN1cmwYAiABKAkSDgoGZXZlbnRzGAMgAygJEg4KBnNlY3JldBgEIAEoCRI3Cg1sYXN0X2RlbGl2ZXJ5GAUgASgLMhsuc3BvdGFyci52MS5XZWJob29rRGVsaXZlcnlIAIgBAUIQCg5fbGFzdF9kZWxpdmVyeSJkCg9XZWJob29rRGVsaXZlcnkSJgoCYXQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg0KBWV2ZW50GAIgASgJEgoKAm9rGAMgASgIEg4KBmRldGFpbBgEIAEoCSIVChNMaXN0V2ViaG9va3NSZXF1ZXN0Ij0KFExpc3RXZWJob29rc1Jlc3BvbnNlEiUKCHdlYmhvb2tzGAEgAygLMhMuc3BvdGFyci52MS5XZWJob29rIjoKElNhdmVXZWJob29rUmVxdWVzdBIkCgd3ZWJob29rGAEgASgLMhMuc3BvdGFyci52MS5XZWJob29rIjsKE1NhdmVXZWJob29rUmVzcG9uc2USJAoHd2ViaG9vaxgBIAEoCzITLnNwb3RhcnIudjEuV2ViaG9vayIiChREZWxldGVXZWJob29rUmVxdWVzdBIKCgJpZBgBIAEoCSIXChVEZWxldGVXZWJob29rUmVzcG9uc2UiIAoSVGVzdFdlYmhvb2tSZXF1ZXN0EgoKAmlkGAEgASgJIjsKE1Rlc3RXZWJob29rUmVzcG9uc2USJAoHd2ViaG9vaxgBIAEoCzITLnNwb3RhcnIudjEuV2ViaG9vayqNAQoPRGVwZW5kZW5jeVN0YXRlEiAKHERFUEVOREVOQ1lfU1RBVEVfVU5TUEVDSUZJRUQQABIXChNERVBFTkRFTkNZX1NUQVRFX09LEAESIwofREVQRU5ERU5DWV9TVEFURV9OT1RfQ09ORklHVVJFRBACEhoKFkRFUEVOREVOQ1lfU1RBVEVfRVJST1IQAyrsAQoUSWRlbnRpZmljYXRpb25TdGF0dXMSJQohSURFTlRJRklDQVRJT05fU1RBVFVTX1VOU1BFQ0lGSUVEEAASIAocSURFTlRJRklDQVRJT05fU1RBVFVTX1FVRVVFRBABEiQKIElERU5USUZJQ0FUSU9OX1NUQVRVU19QUk9DRVNTSU5HEAISHwobSURFTlRJRklDQVRJT05fU1RBVFVTX1JFQURZEAMSIgoeSURFTlRJRklDQVRJT05fU1RBVFVTX05PX01BVENIEAQSIAocSURFTlRJRklDQVRJT05fU1RBVFVTX0ZBSUxFRBAFKkYKBk1ldGhvZBIWChJNRVRIT0RfVU5TUEVDSUZJRUQQABIUChBNRVRIT0RfRElSRUNUX0lEEAESDgoKTUVUSE9EX0xMTRACKlAKCU1lZGlhVHlwZRIaChZNRURJQV9UWVBFX1VOU1BFQ0lGSUVEEAASFAoQTUVESUFfVFlQRV9NT1ZJRRABEhEKDU1FRElBX1RZUEVfVFYQAiqcAQoMTGlicmFyeVN0YXRlEh0KGUxJQlJBUllfU1RBVEVfVU5TUEVDSUZJRUQQABIYChRMSUJSQVJZX1NUQVRFX0FCU0VOVBABEhsKF0xJQlJBUllfU1RBVEVfUkVRVUVTVEVEEAISGQoVTElCUkFSWV9TVEFURV9QQVJUSUFMEAMSGwoXTElCUkFSWV9TVEFURV9BVkFJTEFCTEUQBCpCCgZUYXJnZXQSFgoSVEFSR0VUX1VOU1BFQ0lGSUVEEAASDgoKVEFSR0VUX0FSUhABEhAKDFRBUkdFVF9TRUVSUhACKqwBCg5BZGRpdGlvblN0YXR1cxIfChtBRERJVElPTl9TVEFUVVNfVU5TUEVDSUZJRUQQABIZChVBRERJVElPTl9TVEFUVVNfQURERUQQARIdChlBRERJVElPTl9TVEFUVVNfUkVRVUVTVEVEEAISIwofQURESVRJT05fU1RBVFVTX0FMUkVBRFlfUFJFU0VOVBADEhoKFkFERElUSU9OX1NUQVRVU19GQUlMRUQQBCrDAQoHU3VtbWFyeRIXChNTVU1NQVJZX1VOU1BFQ0lGSUVEEAASFwoTU1VNTUFSWV9JTl9QUk9HUkVTUxABEhUKEVNVTU1BUllfVE9fQ0hPT1NFEAISEQoNU1VNTUFSWV9BRERFRBADEhUKEVNVTU1BUllfUkVRVUVTVEVEEAQSGwoXU1VNTUFSWV9BTFJFQURZX1BSRVNFTlQQBRIUChBTVU1NQVJZX05PX01BVENIEAYSEgoOU1VNTUFSWV9GQUlMRUQQBzLwCAoOU3BvdGFyclNlcnZpY2USPAoFTG9naW4SGC5zcG90YXJyLnYxLkxvZ2luUmVxdWVzdBoZLnNwb3RhcnIudjEuTG9naW5SZXNwb25zZRJICglHZXRTdGF0dXMSHC5zcG90YXJyLnYxLkdldFN0YXR1c1JlcXVlc3QaHS5zcG90YXJyLnYxLkdldFN0YXR1c1Jlc3BvbnNlEmAKEUNoZWNrRGVwZW5kZW5jaWVzEiQuc3BvdGFyci52MS5DaGVja0RlcGVuZGVuY2llc1JlcXVlc3QaJS5zcG90YXJyLnYxLkNoZWNrRGVwZW5kZW5jaWVzUmVzcG9uc2USTgoLR2V0U2V0dGluZ3MSHi5zcG90YXJyLnYxLkdldFNldHRpbmdzUmVxdWVzdBofLnNwb3RhcnIudjEuR2V0U2V0dGluZ3NSZXNwb25zZRJXCg5VcGRhdGVTZXR0aW5ncxIhLnNwb3RhcnIudjEuVXBkYXRlU2V0dGluZ3NSZXF1ZXN0GiIuc3BvdGFyci52MS5VcGRhdGVTZXR0aW5nc1Jlc3BvbnNlEk4KC0NyZWF0ZVNoYXJlEh4uc3BvdGFyci52MS5DcmVhdGVTaGFyZVJlcXVlc3QaHy5zcG90YXJyLnYxLkNyZWF0ZVNoYXJlUmVzcG9uc2USRQoIR2V0U2hhcmUSGy5zcG90YXJyLnYxLkdldFNoYXJlUmVxdWVzdBocLnNwb3RhcnIudjEuR2V0U2hhcmVSZXNwb25zZRJLCgpMaXN0U2hhcmVzEh0uc3BvdGFyci52MS5MaXN0U2hhcmVzUmVxdWVzdBoeLnNwb3RhcnIudjEuTGlzdFNoYXJlc1Jlc3BvbnNlEmYKE1JldHJ5SWRlbnRpZmljYXRpb24SJi5zcG90YXJyLnYxLlJldHJ5SWRlbnRpZmljYXRpb25SZXF1ZXN0Gicuc3BvdGFyci52MS5SZXRyeUlkZW50aWZpY2F0aW9uUmVzcG9uc2USNgoDQWRkEhYuc3BvdGFyci52MS5BZGRSZXF1ZXN0Ghcuc3BvdGFyci52MS5BZGRSZXNwb25zZRJRCgxMaXN0V2ViaG9va3MSHy5zcG90YXJyLnYxLkxpc3RXZWJob29rc1JlcXVlc3QaIC5zcG90YXJyLnYxLkxpc3RXZWJob29rc1Jlc3BvbnNlEk4KC1NhdmVXZWJob29rEh4uc3BvdGFyci52MS5TYXZlV2ViaG9va1JlcXVlc3QaHy5zcG90YXJyLnYxLlNhdmVXZWJob29rUmVzcG9uc2USVAoNRGVsZXRlV2ViaG9vaxIgLnNwb3RhcnIudjEuRGVsZXRlV2ViaG9va1JlcXVlc3QaIS5zcG90YXJyLnYxLkRlbGV0ZVdlYmhvb2tSZXNwb25zZRJOCgtUZXN0V2ViaG9vaxIeLnNwb3RhcnIudjEuVGVzdFdlYmhvb2tSZXF1ZXN0Gh8uc3BvdGFyci52MS5UZXN0V2ViaG9va1Jlc3BvbnNlYgZwcm90bzM", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message spotarr.v1.CheckDependenciesRequest
@@ -165,6 +165,11 @@ export type Settings = Message<"spotarr.v1.Settings"> & {
    * @generated from field: spotarr.v1.AccessSettings access = 4;
    */
   access?: AccessSettings | undefined;
+
+  /**
+   * @generated from field: spotarr.v1.WebhookSettings webhooks = 5;
+   */
+  webhooks?: WebhookSettings | undefined;
 };
 
 /**
@@ -173,6 +178,26 @@ export type Settings = Message<"spotarr.v1.Settings"> & {
  */
 export const SettingsSchema: GenMessage<Settings> = /*@__PURE__*/
   messageDesc(file_spotarr_v1_spotarr, 6);
+
+/**
+ * @generated from message spotarr.v1.WebhookSettings
+ */
+export type WebhookSettings = Message<"spotarr.v1.WebhookSettings"> & {
+  /**
+   * Where the web UI answers, e.g. "https://spotarr.example.com": events then
+   * link to the Share's page. Empty: no link.
+   *
+   * @generated from field: optional string web_ui_url = 1;
+   */
+  webUiUrl?: string | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.WebhookSettings.
+ * Use `create(WebhookSettingsSchema)` to create a new message.
+ */
+export const WebhookSettingsSchema: GenMessage<WebhookSettings> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 7);
 
 /**
  * @generated from message spotarr.v1.IdentificationSettings
@@ -242,7 +267,7 @@ export type IdentificationSettings = Message<"spotarr.v1.IdentificationSettings"
  * Use `create(IdentificationSettingsSchema)` to create a new message.
  */
 export const IdentificationSettingsSchema: GenMessage<IdentificationSettings> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 7);
+  messageDesc(file_spotarr_v1_spotarr, 8);
 
 /**
  * @generated from message spotarr.v1.SeerrSettings
@@ -264,7 +289,7 @@ export type SeerrSettings = Message<"spotarr.v1.SeerrSettings"> & {
  * Use `create(SeerrSettingsSchema)` to create a new message.
  */
 export const SeerrSettingsSchema: GenMessage<SeerrSettings> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 8);
+  messageDesc(file_spotarr_v1_spotarr, 9);
 
 /**
  * @generated from message spotarr.v1.ExtractionSettings
@@ -301,7 +326,7 @@ export type ExtractionSettings = Message<"spotarr.v1.ExtractionSettings"> & {
  * Use `create(ExtractionSettingsSchema)` to create a new message.
  */
 export const ExtractionSettingsSchema: GenMessage<ExtractionSettings> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 9);
+  messageDesc(file_spotarr_v1_spotarr, 10);
 
 /**
  * @generated from message spotarr.v1.AccessSettings
@@ -344,7 +369,7 @@ export type AccessSettings = Message<"spotarr.v1.AccessSettings"> & {
  * Use `create(AccessSettingsSchema)` to create a new message.
  */
 export const AccessSettingsSchema: GenMessage<AccessSettings> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 10);
+  messageDesc(file_spotarr_v1_spotarr, 11);
 
 /**
  * @generated from message spotarr.v1.GetSettingsRequest
@@ -357,7 +382,7 @@ export type GetSettingsRequest = Message<"spotarr.v1.GetSettingsRequest"> & {
  * Use `create(GetSettingsRequestSchema)` to create a new message.
  */
 export const GetSettingsRequestSchema: GenMessage<GetSettingsRequest> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 11);
+  messageDesc(file_spotarr_v1_spotarr, 12);
 
 /**
  * @generated from message spotarr.v1.GetSettingsResponse
@@ -374,7 +399,7 @@ export type GetSettingsResponse = Message<"spotarr.v1.GetSettingsResponse"> & {
  * Use `create(GetSettingsResponseSchema)` to create a new message.
  */
 export const GetSettingsResponseSchema: GenMessage<GetSettingsResponse> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 12);
+  messageDesc(file_spotarr_v1_spotarr, 13);
 
 /**
  * @generated from message spotarr.v1.UpdateSettingsRequest
@@ -391,7 +416,7 @@ export type UpdateSettingsRequest = Message<"spotarr.v1.UpdateSettingsRequest"> 
  * Use `create(UpdateSettingsRequestSchema)` to create a new message.
  */
 export const UpdateSettingsRequestSchema: GenMessage<UpdateSettingsRequest> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 13);
+  messageDesc(file_spotarr_v1_spotarr, 14);
 
 /**
  * @generated from message spotarr.v1.UpdateSettingsResponse
@@ -408,7 +433,7 @@ export type UpdateSettingsResponse = Message<"spotarr.v1.UpdateSettingsResponse"
  * Use `create(UpdateSettingsResponseSchema)` to create a new message.
  */
 export const UpdateSettingsResponseSchema: GenMessage<UpdateSettingsResponse> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 14);
+  messageDesc(file_spotarr_v1_spotarr, 15);
 
 /**
  * A piece of content sent to Spotarr and everything that follows from it.
@@ -473,7 +498,7 @@ export type Share = Message<"spotarr.v1.Share"> & {
  * Use `create(ShareSchema)` to create a new message.
  */
 export const ShareSchema: GenMessage<Share> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 15);
+  messageDesc(file_spotarr_v1_spotarr, 16);
 
 /**
  * A thumbnail taken from the shared video, 240 px wide.
@@ -502,7 +527,7 @@ export type Frame = Message<"spotarr.v1.Frame"> & {
  * Use `create(FrameSchema)` to create a new message.
  */
 export const FrameSchema: GenMessage<Frame> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 16);
+  messageDesc(file_spotarr_v1_spotarr, 17);
 
 /**
  * @generated from message spotarr.v1.ShareInput
@@ -531,7 +556,7 @@ export type ShareInput = Message<"spotarr.v1.ShareInput"> & {
  * Use `create(ShareInputSchema)` to create a new message.
  */
 export const ShareInputSchema: GenMessage<ShareInput> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 17);
+  messageDesc(file_spotarr_v1_spotarr, 18);
 
 /**
  * @generated from message spotarr.v1.Identification
@@ -582,7 +607,7 @@ export type Identification = Message<"spotarr.v1.Identification"> & {
  * Use `create(IdentificationSchema)` to create a new message.
  */
 export const IdentificationSchema: GenMessage<Identification> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 18);
+  messageDesc(file_spotarr_v1_spotarr, 19);
 
 /**
  * @generated from message spotarr.v1.Clues
@@ -609,7 +634,7 @@ export type Clues = Message<"spotarr.v1.Clues"> & {
  * Use `create(CluesSchema)` to create a new message.
  */
 export const CluesSchema: GenMessage<Clues> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 19);
+  messageDesc(file_spotarr_v1_spotarr, 20);
 
 /**
  * @generated from message spotarr.v1.Candidate
@@ -663,7 +688,7 @@ export type Candidate = Message<"spotarr.v1.Candidate"> & {
  * Use `create(CandidateSchema)` to create a new message.
  */
 export const CandidateSchema: GenMessage<Candidate> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 20);
+  messageDesc(file_spotarr_v1_spotarr, 21);
 
 /**
  * @generated from message spotarr.v1.Addition
@@ -710,7 +735,7 @@ export type Addition = Message<"spotarr.v1.Addition"> & {
  * Use `create(AdditionSchema)` to create a new message.
  */
 export const AdditionSchema: GenMessage<Addition> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 21);
+  messageDesc(file_spotarr_v1_spotarr, 22);
 
 /**
  * @generated from message spotarr.v1.CreateShareRequest
@@ -739,7 +764,7 @@ export type CreateShareRequest = Message<"spotarr.v1.CreateShareRequest"> & {
  * Use `create(CreateShareRequestSchema)` to create a new message.
  */
 export const CreateShareRequestSchema: GenMessage<CreateShareRequest> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 22);
+  messageDesc(file_spotarr_v1_spotarr, 23);
 
 /**
  * @generated from message spotarr.v1.CreateShareResponse
@@ -756,7 +781,7 @@ export type CreateShareResponse = Message<"spotarr.v1.CreateShareResponse"> & {
  * Use `create(CreateShareResponseSchema)` to create a new message.
  */
 export const CreateShareResponseSchema: GenMessage<CreateShareResponse> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 23);
+  messageDesc(file_spotarr_v1_spotarr, 24);
 
 /**
  * @generated from message spotarr.v1.GetShareRequest
@@ -773,7 +798,7 @@ export type GetShareRequest = Message<"spotarr.v1.GetShareRequest"> & {
  * Use `create(GetShareRequestSchema)` to create a new message.
  */
 export const GetShareRequestSchema: GenMessage<GetShareRequest> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 24);
+  messageDesc(file_spotarr_v1_spotarr, 25);
 
 /**
  * @generated from message spotarr.v1.GetShareResponse
@@ -790,7 +815,7 @@ export type GetShareResponse = Message<"spotarr.v1.GetShareResponse"> & {
  * Use `create(GetShareResponseSchema)` to create a new message.
  */
 export const GetShareResponseSchema: GenMessage<GetShareResponse> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 25);
+  messageDesc(file_spotarr_v1_spotarr, 26);
 
 /**
  * @generated from message spotarr.v1.ListSharesRequest
@@ -830,7 +855,7 @@ export type ListSharesRequest = Message<"spotarr.v1.ListSharesRequest"> & {
  * Use `create(ListSharesRequestSchema)` to create a new message.
  */
 export const ListSharesRequestSchema: GenMessage<ListSharesRequest> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 26);
+  messageDesc(file_spotarr_v1_spotarr, 27);
 
 /**
  * @generated from message spotarr.v1.ListSharesResponse
@@ -867,7 +892,7 @@ export type ListSharesResponse = Message<"spotarr.v1.ListSharesResponse"> & {
  * Use `create(ListSharesResponseSchema)` to create a new message.
  */
 export const ListSharesResponseSchema: GenMessage<ListSharesResponse> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 27);
+  messageDesc(file_spotarr_v1_spotarr, 28);
 
 /**
  * @generated from message spotarr.v1.SummaryCount
@@ -889,7 +914,7 @@ export type SummaryCount = Message<"spotarr.v1.SummaryCount"> & {
  * Use `create(SummaryCountSchema)` to create a new message.
  */
 export const SummaryCountSchema: GenMessage<SummaryCount> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 28);
+  messageDesc(file_spotarr_v1_spotarr, 29);
 
 /**
  * @generated from message spotarr.v1.RetryIdentificationRequest
@@ -906,7 +931,7 @@ export type RetryIdentificationRequest = Message<"spotarr.v1.RetryIdentification
  * Use `create(RetryIdentificationRequestSchema)` to create a new message.
  */
 export const RetryIdentificationRequestSchema: GenMessage<RetryIdentificationRequest> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 29);
+  messageDesc(file_spotarr_v1_spotarr, 30);
 
 /**
  * @generated from message spotarr.v1.RetryIdentificationResponse
@@ -923,7 +948,7 @@ export type RetryIdentificationResponse = Message<"spotarr.v1.RetryIdentificatio
  * Use `create(RetryIdentificationResponseSchema)` to create a new message.
  */
 export const RetryIdentificationResponseSchema: GenMessage<RetryIdentificationResponse> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 30);
+  messageDesc(file_spotarr_v1_spotarr, 31);
 
 /**
  * @generated from message spotarr.v1.AddRequest
@@ -957,7 +982,7 @@ export type AddRequest = Message<"spotarr.v1.AddRequest"> & {
  * Use `create(AddRequestSchema)` to create a new message.
  */
 export const AddRequestSchema: GenMessage<AddRequest> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 31);
+  messageDesc(file_spotarr_v1_spotarr, 32);
 
 /**
  * @generated from message spotarr.v1.AddResponse
@@ -974,7 +999,7 @@ export type AddResponse = Message<"spotarr.v1.AddResponse"> & {
  * Use `create(AddResponseSchema)` to create a new message.
  */
 export const AddResponseSchema: GenMessage<AddResponse> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 32);
+  messageDesc(file_spotarr_v1_spotarr, 33);
 
 /**
  * @generated from message spotarr.v1.LoginRequest
@@ -991,7 +1016,7 @@ export type LoginRequest = Message<"spotarr.v1.LoginRequest"> & {
  * Use `create(LoginRequestSchema)` to create a new message.
  */
 export const LoginRequestSchema: GenMessage<LoginRequest> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 33);
+  messageDesc(file_spotarr_v1_spotarr, 34);
 
 /**
  * @generated from message spotarr.v1.LoginResponse
@@ -1004,7 +1029,291 @@ export type LoginResponse = Message<"spotarr.v1.LoginResponse"> & {
  * Use `create(LoginResponseSchema)` to create a new message.
  */
 export const LoginResponseSchema: GenMessage<LoginResponse> = /*@__PURE__*/
-  messageDesc(file_spotarr_v1_spotarr, 34);
+  messageDesc(file_spotarr_v1_spotarr, 35);
+
+/**
+ * Spotarr POSTs this, as JSON, to every Webhook that chose the event.
+ *
+ * @generated from message spotarr.v1.WebhookEvent
+ */
+export type WebhookEvent = Message<"spotarr.v1.WebhookEvent"> & {
+  /**
+   * "identification.ready", "identification.no_match", "identification.failed",
+   * "media.added", or "test" for TestWebhook.
+   *
+   * @generated from field: string event = 1;
+   */
+  event: string;
+
+  /**
+   * @generated from field: string share_id = 2;
+   */
+  shareId: string;
+
+  /**
+   * When the Share was received.
+   *
+   * @generated from field: google.protobuf.Timestamp created_at = 3;
+   */
+  createdAt?: Timestamp | undefined;
+
+  /**
+   * The Share's page in the web UI. Absent without a web UI address in the settings.
+   *
+   * @generated from field: optional string share_url = 4;
+   */
+  shareUrl?: string | undefined;
+
+  /**
+   * e.g. "instagram.com"
+   *
+   * @generated from field: string source = 5;
+   */
+  source: string;
+
+  /**
+   * What was shared, when it was a link.
+   *
+   * @generated from field: optional string shared_url = 6;
+   */
+  sharedUrl?: string | undefined;
+
+  /**
+   * Best first.
+   *
+   * @generated from field: repeated spotarr.v1.Candidate candidates = 7;
+   */
+  candidates: Candidate[];
+
+  /**
+   * identification.failed: why.
+   *
+   * @generated from field: optional string error = 8;
+   */
+  error?: string | undefined;
+
+  /**
+   * media.added: the Candidate that was added.
+   *
+   * @generated from field: optional spotarr.v1.Candidate added = 9;
+   */
+  added?: Candidate | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.WebhookEvent.
+ * Use `create(WebhookEventSchema)` to create a new message.
+ */
+export const WebhookEventSchema: GenMessage<WebhookEvent> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 36);
+
+/**
+ * @generated from message spotarr.v1.Webhook
+ */
+export type Webhook = Message<"spotarr.v1.Webhook"> & {
+  /**
+   * Empty in SaveWebhook to create one.
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string url = 2;
+   */
+  url: string;
+
+  /**
+   * The events it receives, as in WebhookEvent.event (never "test").
+   *
+   * @generated from field: repeated string events = 3;
+   */
+  events: string[];
+
+  /**
+   * Optional. When set, the X-Spotarr-Signature header carries the body's
+   * HMAC-SHA256 with this secret, in hex.
+   *
+   * @generated from field: string secret = 4;
+   */
+  secret: string;
+
+  /**
+   * Read-only: the last time Spotarr called it.
+   *
+   * @generated from field: optional spotarr.v1.WebhookDelivery last_delivery = 5;
+   */
+  lastDelivery?: WebhookDelivery | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.Webhook.
+ * Use `create(WebhookSchema)` to create a new message.
+ */
+export const WebhookSchema: GenMessage<Webhook> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 37);
+
+/**
+ * @generated from message spotarr.v1.WebhookDelivery
+ */
+export type WebhookDelivery = Message<"spotarr.v1.WebhookDelivery"> & {
+  /**
+   * @generated from field: google.protobuf.Timestamp at = 1;
+   */
+  at?: Timestamp | undefined;
+
+  /**
+   * @generated from field: string event = 2;
+   */
+  event: string;
+
+  /**
+   * @generated from field: bool ok = 3;
+   */
+  ok: boolean;
+
+  /**
+   * "HTTP 200", or why it failed.
+   *
+   * @generated from field: string detail = 4;
+   */
+  detail: string;
+};
+
+/**
+ * Describes the message spotarr.v1.WebhookDelivery.
+ * Use `create(WebhookDeliverySchema)` to create a new message.
+ */
+export const WebhookDeliverySchema: GenMessage<WebhookDelivery> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 38);
+
+/**
+ * @generated from message spotarr.v1.ListWebhooksRequest
+ */
+export type ListWebhooksRequest = Message<"spotarr.v1.ListWebhooksRequest"> & {
+};
+
+/**
+ * Describes the message spotarr.v1.ListWebhooksRequest.
+ * Use `create(ListWebhooksRequestSchema)` to create a new message.
+ */
+export const ListWebhooksRequestSchema: GenMessage<ListWebhooksRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 39);
+
+/**
+ * @generated from message spotarr.v1.ListWebhooksResponse
+ */
+export type ListWebhooksResponse = Message<"spotarr.v1.ListWebhooksResponse"> & {
+  /**
+   * @generated from field: repeated spotarr.v1.Webhook webhooks = 1;
+   */
+  webhooks: Webhook[];
+};
+
+/**
+ * Describes the message spotarr.v1.ListWebhooksResponse.
+ * Use `create(ListWebhooksResponseSchema)` to create a new message.
+ */
+export const ListWebhooksResponseSchema: GenMessage<ListWebhooksResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 40);
+
+/**
+ * @generated from message spotarr.v1.SaveWebhookRequest
+ */
+export type SaveWebhookRequest = Message<"spotarr.v1.SaveWebhookRequest"> & {
+  /**
+   * @generated from field: spotarr.v1.Webhook webhook = 1;
+   */
+  webhook?: Webhook | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.SaveWebhookRequest.
+ * Use `create(SaveWebhookRequestSchema)` to create a new message.
+ */
+export const SaveWebhookRequestSchema: GenMessage<SaveWebhookRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 41);
+
+/**
+ * @generated from message spotarr.v1.SaveWebhookResponse
+ */
+export type SaveWebhookResponse = Message<"spotarr.v1.SaveWebhookResponse"> & {
+  /**
+   * @generated from field: spotarr.v1.Webhook webhook = 1;
+   */
+  webhook?: Webhook | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.SaveWebhookResponse.
+ * Use `create(SaveWebhookResponseSchema)` to create a new message.
+ */
+export const SaveWebhookResponseSchema: GenMessage<SaveWebhookResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 42);
+
+/**
+ * @generated from message spotarr.v1.DeleteWebhookRequest
+ */
+export type DeleteWebhookRequest = Message<"spotarr.v1.DeleteWebhookRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message spotarr.v1.DeleteWebhookRequest.
+ * Use `create(DeleteWebhookRequestSchema)` to create a new message.
+ */
+export const DeleteWebhookRequestSchema: GenMessage<DeleteWebhookRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 43);
+
+/**
+ * @generated from message spotarr.v1.DeleteWebhookResponse
+ */
+export type DeleteWebhookResponse = Message<"spotarr.v1.DeleteWebhookResponse"> & {
+};
+
+/**
+ * Describes the message spotarr.v1.DeleteWebhookResponse.
+ * Use `create(DeleteWebhookResponseSchema)` to create a new message.
+ */
+export const DeleteWebhookResponseSchema: GenMessage<DeleteWebhookResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 44);
+
+/**
+ * @generated from message spotarr.v1.TestWebhookRequest
+ */
+export type TestWebhookRequest = Message<"spotarr.v1.TestWebhookRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message spotarr.v1.TestWebhookRequest.
+ * Use `create(TestWebhookRequestSchema)` to create a new message.
+ */
+export const TestWebhookRequestSchema: GenMessage<TestWebhookRequest> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 45);
+
+/**
+ * @generated from message spotarr.v1.TestWebhookResponse
+ */
+export type TestWebhookResponse = Message<"spotarr.v1.TestWebhookResponse"> & {
+  /**
+   * @generated from field: spotarr.v1.Webhook webhook = 1;
+   */
+  webhook?: Webhook | undefined;
+};
+
+/**
+ * Describes the message spotarr.v1.TestWebhookResponse.
+ * Use `create(TestWebhookResponseSchema)` to create a new message.
+ */
+export const TestWebhookResponseSchema: GenMessage<TestWebhookResponse> = /*@__PURE__*/
+  messageDesc(file_spotarr_v1_spotarr, 46);
 
 /**
  * @generated from enum spotarr.v1.DependencyState
@@ -1391,6 +1700,42 @@ export const SpotarrService: GenService<{
     methodKind: "unary";
     input: typeof AddRequestSchema;
     output: typeof AddResponseSchema;
+  },
+  /**
+   * @generated from rpc spotarr.v1.SpotarrService.ListWebhooks
+   */
+  listWebhooks: {
+    methodKind: "unary";
+    input: typeof ListWebhooksRequestSchema;
+    output: typeof ListWebhooksResponseSchema;
+  },
+  /**
+   * Creates the Webhook when its id is empty, else replaces it.
+   *
+   * @generated from rpc spotarr.v1.SpotarrService.SaveWebhook
+   */
+  saveWebhook: {
+    methodKind: "unary";
+    input: typeof SaveWebhookRequestSchema;
+    output: typeof SaveWebhookResponseSchema;
+  },
+  /**
+   * @generated from rpc spotarr.v1.SpotarrService.DeleteWebhook
+   */
+  deleteWebhook: {
+    methodKind: "unary";
+    input: typeof DeleteWebhookRequestSchema;
+    output: typeof DeleteWebhookResponseSchema;
+  },
+  /**
+   * Sends a sample "test" event to one Webhook; returns it with that delivery.
+   *
+   * @generated from rpc spotarr.v1.SpotarrService.TestWebhook
+   */
+  testWebhook: {
+    methodKind: "unary";
+    input: typeof TestWebhookRequestSchema;
+    output: typeof TestWebhookResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_spotarr_v1_spotarr, 0);

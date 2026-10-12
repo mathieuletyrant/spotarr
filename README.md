@@ -52,3 +52,45 @@ services:
 ## 🗺️ Roadmap
 
 Milestones and issues: https://github.com/mathieuletyrant/spotarr/milestones · board: https://github.com/users/mathieuletyrant/projects/1
+
+## 🔔 Webhooks and Home Assistant
+
+In Settings → Webhooks, add a URL and pick its events: `identification.ready`, `identification.no_match`, `identification.failed`, `media.added`. Spotarr POSTs one JSON body per event, described by `WebhookEvent` in [the contract](packages/contract/proto/spotarr/v1/spotarr.proto). One try, 10 s; the last call's result shows in Settings. With a secret, the `X-Spotarr-Signature` header is the body's HMAC-SHA256 in hex. Set the web UI address so events link to the share's page.
+
+```json
+{
+  "event": "identification.ready",
+  "shareId": "shr_01a1…",
+  "createdAt": "2026-10-12T12:53:20Z",
+  "shareUrl": "https://spotarr.example.com/shares/shr_01a1…",
+  "source": "instagram.com",
+  "sharedUrl": "https://www.instagram.com/reel/…/",
+  "candidates": [
+    { "tmdbId": 977942, "type": "MEDIA_TYPE_MOVIE", "title": "The Uprising", "year": 2026, "confidence": 0.95, "libraryState": "LIBRARY_STATE_ABSENT" }
+  ]
+}
+```
+
+A Home Assistant automation that sends a phone notification, opening the share's page when tapped. Use `http://homeassistant.local:8123/api/webhook/spotarr` as the webhook URL:
+
+```yaml
+alias: Spotarr
+triggers:
+  - trigger: webhook
+    webhook_id: spotarr
+    allowed_methods: [POST]
+    local_only: true
+actions:
+  - action: notify.mobile_app_your_iphone
+    data:
+      title: >-
+        {{ {'identification.ready': 'To choose', 'identification.no_match': 'No match',
+            'identification.failed': 'Failed', 'media.added': 'Added'}[trigger.json.event] }}
+      message: >-
+        {{ trigger.json.added.title if trigger.json.added is defined
+           else trigger.json.candidates | map(attribute='title') | join(', ')
+           or trigger.json.error | default(trigger.json.sharedUrl) }}
+      data:
+        url: "{{ trigger.json.shareUrl }}"
+```
+

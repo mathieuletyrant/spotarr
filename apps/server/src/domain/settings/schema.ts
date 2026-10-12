@@ -35,6 +35,12 @@ export const SettingsSchema = z.object({
       concurrency: z.int().min(1).max(4).default(2),
     })
     .prefault({}),
+  webhooks: z
+    .object({
+      // Where the web UI answers: events link to the Share's page. Empty: no link.
+      webUiUrl: optionalUrl.default(""),
+    })
+    .prefault({}),
   access: z
     .object({
       // Generated at first start, read-only for clients (see SettingsRepository.update).

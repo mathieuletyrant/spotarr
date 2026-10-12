@@ -15,6 +15,7 @@ import { addCandidate } from "../../domain/shares/use-cases/add-candidate";
 import { createShare } from "../../domain/shares/use-cases/create-share";
 import { listHistory } from "../../domain/shares/use-cases/list-history";
 import { retryIdentification } from "../../domain/shares/use-cases/retry-identification";
+import type { WebhookSender } from "../../domain/webhooks/sender";
 import { SpotarrError } from "../../errors";
 import type { Seerr } from "../../integrations/seerr/client";
 import type { Rpcs } from "./types";
@@ -24,6 +25,7 @@ export function shareRpcs(
   shares: ShareRepository,
   queue: ShareQueue,
   seerr: () => Promise<Seerr>,
+  sender: WebhookSender,
 ): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification" | "add"> {
   async function shareMessage(id: string) {
     const share = await shares.get(id);
@@ -77,7 +79,11 @@ export function shareRpcs(
       await addCandidate(
         req.shareId,
         { tmdbId: req.tmdbId, type },
-        { shares, seerr: await seerr() },
+        {
+          shares,
+          seerr: await seerr(),
+          mediaAdded: (share, added) => sender.mediaAdded(share, added),
+        },
       );
       return shareMessage(req.shareId);
     },

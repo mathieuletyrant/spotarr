@@ -51,9 +51,19 @@ export interface Shares {
   updated_at: Generated<string>;
 }
 
+export interface Webhooks {
+  created_at: Generated<string>;
+  events: Generated<string>;
+  id: string;
+  last_delivery: string | null;
+  secret: Generated<string>;
+  url: string;
+}
+
 export interface DB {
   additions: Additions;
   frames: Frames;
   settings: Settings;
   shares: Shares;
+  webhooks: Webhooks;
 }

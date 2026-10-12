@@ -8,6 +8,7 @@ import { type SubmitEvent, useState } from "react";
 import { ApiTokenField } from "../../components/settings/api-token-field";
 import { DependenciesCard } from "../../components/settings/dependencies-card";
 import { Field, type Form, inputClass, Section, TextField } from "../../components/settings/fields";
+import { WebhooksList } from "../../components/settings/webhooks-list";
 import {
   changedFields,
   changes,
@@ -24,6 +25,7 @@ const MENU = [
   ["identification", "Identification"],
   ["seerr", "Seerr"],
   ["extraction", "Extraction"],
+  ["webhooks", "Webhooks"],
   ["access", "Access"],
 ];
 
@@ -175,6 +177,22 @@ function SettingsForm({ saved }: { saved: Values }) {
             ))}
           </select>
         </Field>
+      </Section>
+
+      <Section
+        id="webhooks"
+        title="Webhooks"
+        description="Spotarr calls these URLs when something happens to a share: Home Assistant, n8n…"
+      >
+        <TextField
+          form={form}
+          name="webhooks.webUiUrl"
+          label="Web UI address"
+          placeholder="https://spotarr.example.com"
+          hint="Events then link to the share's page at this address."
+          wide
+        />
+        <WebhooksList />
       </Section>
 
       <Section
