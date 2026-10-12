@@ -457,6 +457,151 @@ public nonisolated struct Spotarr_V1_LlmCost: Sendable {
   public init() {}
 }
 
+public nonisolated struct Spotarr_V1_GetStatsRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_GetStatsResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Every month with at least one Share or Addition, oldest first. Months are
+  /// in UTC, like the dates Spotarr stores.
+  public var months: [Spotarr_V1_MonthStats] = []
+
+  /// Where the Shares come from, most Shares first.
+  public var sources: [Spotarr_V1_SourceStats] = []
+
+  /// Additions that did not fail, by type.
+  public var moviesAdded: Int32 = 0
+
+  public var showsAdded: Int32 = 0
+
+  /// The last titles added, newest first.
+  public var recentlyAdded: [Spotarr_V1_AddedTitle] = []
+
+  /// The accounts whose videos are shared the most, most Shares first.
+  public var authors: [Spotarr_V1_AuthorStats] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_AuthorStats: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// As the video's site shows it: "Marion ciné 🎬".
+  public var author: String = String()
+
+  /// Where the account posts: "instagram.com".
+  public var source: String = String()
+
+  public var shares: Int32 = 0
+
+  /// Of those Shares, how many found at least one Candidate.
+  public var identified: Int32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_AddedTitle: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// The Share it was added from.
+  public var shareID: String = String()
+
+  public var type: Spotarr_V1_MediaType = .unspecified
+
+  public var title: String = String()
+
+  public var year: Int32 {
+    get {_year ?? 0}
+    set {_year = newValue}
+  }
+  /// Returns true if `year` has been explicitly set.
+  public var hasYear: Bool {self._year != nil}
+  /// Clears the value of `year`. Subsequent reads from it will return its default value.
+  public mutating func clearYear() {self._year = nil}
+
+  public var posterURL: String {
+    get {_posterURL ?? String()}
+    set {_posterURL = newValue}
+  }
+  /// Returns true if `posterURL` has been explicitly set.
+  public var hasPosterURL: Bool {self._posterURL != nil}
+  /// Clears the value of `posterURL`. Subsequent reads from it will return its default value.
+  public mutating func clearPosterURL() {self._posterURL = nil}
+
+  /// Made by auto add, without a click.
+  public var automatic: Bool = false
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _year: Int32? = nil
+  fileprivate var _posterURL: String? = nil
+}
+
+public nonisolated struct Spotarr_V1_MonthStats: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// "2026-10".
+  public var month: String = String()
+
+  public var shares: Int32 = 0
+
+  /// Shares whose Identification found at least one Candidate.
+  public var identified: Int32 = 0
+
+  public var noMatch: Int32 = 0
+
+  public var failed: Int32 = 0
+
+  /// Additions that did not fail, made that month, and how many of them auto add made.
+  public var additions: Int32 = 0
+
+  public var automaticAdditions: Int32 = 0
+
+  /// What the LLM cost for that month's Shares, when its provider reports it.
+  public var llmCostUsd: Double = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_SourceStats: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// "instagram.com", "tiktok.com", "text"…
+  public var source: String = String()
+
+  public var shares: Int32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 public nonisolated struct Spotarr_V1_GetStatusRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2006,6 +2151,284 @@ nonisolated extension Spotarr_V1_LlmCost: SwiftProtobuf.Message, SwiftProtobuf._
   public static func ==(lhs: Spotarr_V1_LlmCost, rhs: Spotarr_V1_LlmCost) -> Bool {
     if lhs.identifications != rhs.identifications {return false}
     if lhs.totalUsd != rhs.totalUsd {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_GetStatsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetStatsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_GetStatsRequest, rhs: Spotarr_V1_GetStatsRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_GetStatsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GetStatsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}months\0\u{1}sources\0\u{3}movies_added\0\u{3}shows_added\0\u{3}recently_added\0\u{1}authors\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.months) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.sources) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.moviesAdded) }()
+      case 4: try { try decoder.decodeSingularInt32Field(value: &self.showsAdded) }()
+      case 5: try { try decoder.decodeRepeatedMessageField(value: &self.recentlyAdded) }()
+      case 6: try { try decoder.decodeRepeatedMessageField(value: &self.authors) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.months.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.months, fieldNumber: 1)
+    }
+    if !self.sources.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.sources, fieldNumber: 2)
+    }
+    if self.moviesAdded != 0 {
+      try visitor.visitSingularInt32Field(value: self.moviesAdded, fieldNumber: 3)
+    }
+    if self.showsAdded != 0 {
+      try visitor.visitSingularInt32Field(value: self.showsAdded, fieldNumber: 4)
+    }
+    if !self.recentlyAdded.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.recentlyAdded, fieldNumber: 5)
+    }
+    if !self.authors.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.authors, fieldNumber: 6)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_GetStatsResponse, rhs: Spotarr_V1_GetStatsResponse) -> Bool {
+    if lhs.months != rhs.months {return false}
+    if lhs.sources != rhs.sources {return false}
+    if lhs.moviesAdded != rhs.moviesAdded {return false}
+    if lhs.showsAdded != rhs.showsAdded {return false}
+    if lhs.recentlyAdded != rhs.recentlyAdded {return false}
+    if lhs.authors != rhs.authors {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_AuthorStats: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AuthorStats"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}author\0\u{1}source\0\u{1}shares\0\u{1}identified\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.author) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.source) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.shares) }()
+      case 4: try { try decoder.decodeSingularInt32Field(value: &self.identified) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.author.isEmpty {
+      try visitor.visitSingularStringField(value: self.author, fieldNumber: 1)
+    }
+    if !self.source.isEmpty {
+      try visitor.visitSingularStringField(value: self.source, fieldNumber: 2)
+    }
+    if self.shares != 0 {
+      try visitor.visitSingularInt32Field(value: self.shares, fieldNumber: 3)
+    }
+    if self.identified != 0 {
+      try visitor.visitSingularInt32Field(value: self.identified, fieldNumber: 4)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_AuthorStats, rhs: Spotarr_V1_AuthorStats) -> Bool {
+    if lhs.author != rhs.author {return false}
+    if lhs.source != rhs.source {return false}
+    if lhs.shares != rhs.shares {return false}
+    if lhs.identified != rhs.identified {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_AddedTitle: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AddedTitle"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}share_id\0\u{1}type\0\u{1}title\0\u{1}year\0\u{3}poster_url\0\u{1}automatic\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.shareID) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.type) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self.title) }()
+      case 4: try { try decoder.decodeSingularInt32Field(value: &self._year) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._posterURL) }()
+      case 6: try { try decoder.decodeSingularBoolField(value: &self.automatic) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.shareID.isEmpty {
+      try visitor.visitSingularStringField(value: self.shareID, fieldNumber: 1)
+    }
+    if self.type != .unspecified {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 2)
+    }
+    if !self.title.isEmpty {
+      try visitor.visitSingularStringField(value: self.title, fieldNumber: 3)
+    }
+    try { if let v = self._year {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._posterURL {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
+    if self.automatic != false {
+      try visitor.visitSingularBoolField(value: self.automatic, fieldNumber: 6)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_AddedTitle, rhs: Spotarr_V1_AddedTitle) -> Bool {
+    if lhs.shareID != rhs.shareID {return false}
+    if lhs.type != rhs.type {return false}
+    if lhs.title != rhs.title {return false}
+    if lhs._year != rhs._year {return false}
+    if lhs._posterURL != rhs._posterURL {return false}
+    if lhs.automatic != rhs.automatic {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_MonthStats: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".MonthStats"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}month\0\u{1}shares\0\u{1}identified\0\u{3}no_match\0\u{1}failed\0\u{1}additions\0\u{3}automatic_additions\0\u{3}llm_cost_usd\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.month) }()
+      case 2: try { try decoder.decodeSingularInt32Field(value: &self.shares) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.identified) }()
+      case 4: try { try decoder.decodeSingularInt32Field(value: &self.noMatch) }()
+      case 5: try { try decoder.decodeSingularInt32Field(value: &self.failed) }()
+      case 6: try { try decoder.decodeSingularInt32Field(value: &self.additions) }()
+      case 7: try { try decoder.decodeSingularInt32Field(value: &self.automaticAdditions) }()
+      case 8: try { try decoder.decodeSingularDoubleField(value: &self.llmCostUsd) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.month.isEmpty {
+      try visitor.visitSingularStringField(value: self.month, fieldNumber: 1)
+    }
+    if self.shares != 0 {
+      try visitor.visitSingularInt32Field(value: self.shares, fieldNumber: 2)
+    }
+    if self.identified != 0 {
+      try visitor.visitSingularInt32Field(value: self.identified, fieldNumber: 3)
+    }
+    if self.noMatch != 0 {
+      try visitor.visitSingularInt32Field(value: self.noMatch, fieldNumber: 4)
+    }
+    if self.failed != 0 {
+      try visitor.visitSingularInt32Field(value: self.failed, fieldNumber: 5)
+    }
+    if self.additions != 0 {
+      try visitor.visitSingularInt32Field(value: self.additions, fieldNumber: 6)
+    }
+    if self.automaticAdditions != 0 {
+      try visitor.visitSingularInt32Field(value: self.automaticAdditions, fieldNumber: 7)
+    }
+    if self.llmCostUsd.bitPattern != 0 {
+      try visitor.visitSingularDoubleField(value: self.llmCostUsd, fieldNumber: 8)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_MonthStats, rhs: Spotarr_V1_MonthStats) -> Bool {
+    if lhs.month != rhs.month {return false}
+    if lhs.shares != rhs.shares {return false}
+    if lhs.identified != rhs.identified {return false}
+    if lhs.noMatch != rhs.noMatch {return false}
+    if lhs.failed != rhs.failed {return false}
+    if lhs.additions != rhs.additions {return false}
+    if lhs.automaticAdditions != rhs.automaticAdditions {return false}
+    if lhs.llmCostUsd != rhs.llmCostUsd {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_SourceStats: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SourceStats"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}source\0\u{1}shares\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.source) }()
+      case 2: try { try decoder.decodeSingularInt32Field(value: &self.shares) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.source.isEmpty {
+      try visitor.visitSingularStringField(value: self.source, fieldNumber: 1)
+    }
+    if self.shares != 0 {
+      try visitor.visitSingularInt32Field(value: self.shares, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_SourceStats, rhs: Spotarr_V1_SourceStats) -> Bool {
+    if lhs.source != rhs.source {return false}
+    if lhs.shares != rhs.shares {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

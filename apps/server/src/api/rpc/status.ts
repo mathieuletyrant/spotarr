@@ -1,4 +1,4 @@
-import { DependencyState } from "@spotarr/contract";
+import { DependencyState, MediaType } from "@spotarr/contract";
 import pkg from "../../../package.json";
 import type { SettingsRepository } from "../../domain/settings/repository";
 import { checkDependencies } from "../../domain/settings/use-cases/check-dependencies";
@@ -8,7 +8,7 @@ import type { Rpcs } from "./types";
 export function statusRpcs(
   settings: SettingsRepository,
   shares: ShareRepository,
-): Rpcs<"getStatus" | "checkDependencies"> {
+): Rpcs<"getStatus" | "checkDependencies" | "getStats"> {
   return {
     getStatus: () => ({ version: pkg.version }),
 
@@ -18,6 +18,17 @@ export function statusRpcs(
       return {
         dependencies: dependencies.map((d) => ({ ...d, state: DependencyState[d.state] })),
         llmCost: llmCost.identifications > 0 ? llmCost : undefined,
+      };
+    },
+
+    getStats: async () => {
+      const stats = await shares.stats();
+      return {
+        ...stats,
+        recentlyAdded: stats.recentlyAdded.map((title) => ({
+          ...title,
+          type: MediaType[title.type],
+        })),
       };
     },
   };

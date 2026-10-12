@@ -47,6 +47,12 @@ function AppLayout() {
             History
           </Link>
           <Link
+            to="/stats"
+            className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
+          >
+            Stats
+          </Link>
+          <Link
             to="/settings"
             className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
           >

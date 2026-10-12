@@ -29,6 +29,10 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `checkDependencies`(request: Spotarr_V1_CheckDependenciesRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_CheckDependenciesResponse>
 
+    /// What Spotarr did, month by month, since the first Share.
+    @available(iOS 13, *)
+    func `getStats`(request: Spotarr_V1_GetStatsRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_GetStatsResponse>
+
     /// Every setting, secrets included: this is a single-user app and the UI shows them.
     @available(iOS 13, *)
     func `getSettings`(request: Spotarr_V1_GetSettingsRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_GetSettingsResponse>
@@ -101,6 +105,11 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
     }
 
     @available(iOS 13, *)
+    public func `getStats`(request: Spotarr_V1_GetStatsRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_GetStatsResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/GetStats", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `getSettings`(request: Spotarr_V1_GetSettingsRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_GetSettingsResponse> {
         return await self.client.unary(path: "/spotarr.v1.SpotarrService/GetSettings", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -161,6 +170,7 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
             public static let logout = Connect.MethodSpec(name: "Logout", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let getStatus = Connect.MethodSpec(name: "GetStatus", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let checkDependencies = Connect.MethodSpec(name: "CheckDependencies", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let getStats = Connect.MethodSpec(name: "GetStats", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let getSettings = Connect.MethodSpec(name: "GetSettings", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let updateSettings = Connect.MethodSpec(name: "UpdateSettings", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let createShare = Connect.MethodSpec(name: "CreateShare", service: "spotarr.v1.SpotarrService", type: .unary)

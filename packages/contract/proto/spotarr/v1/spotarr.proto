@@ -15,6 +15,8 @@ service SpotarrService {
   // Calls each Dependency (LLM, TMDB, Seerr, yt-dlp, ffmpeg) and says whether it
   // works, with the reason when it does not. Takes a few seconds.
   rpc CheckDependencies(CheckDependenciesRequest) returns (CheckDependenciesResponse);
+  // What Spotarr did, month by month, since the first Share.
+  rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
   // Every setting, secrets included: this is a single-user app and the UI shows them.
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   // Changes only the fields that are present; returns the settings as saved.
@@ -68,6 +70,65 @@ message LlmCost {
   // How many Identifications the total covers.
   int32 identifications = 1;
   double total_usd = 2;
+}
+
+message GetStatsRequest {}
+
+message GetStatsResponse {
+  // Every month with at least one Share or Addition, oldest first. Months are
+  // in UTC, like the dates Spotarr stores.
+  repeated MonthStats months = 1;
+  // Where the Shares come from, most Shares first.
+  repeated SourceStats sources = 2;
+  // Additions that did not fail, by type.
+  int32 movies_added = 3;
+  int32 shows_added = 4;
+  // The last titles added, newest first.
+  repeated AddedTitle recently_added = 5;
+  // The accounts whose videos are shared the most, most Shares first.
+  repeated AuthorStats authors = 6;
+}
+
+message AuthorStats {
+  // As the video's site shows it: "Marion ciné 🎬".
+  string author = 1;
+  // Where the account posts: "instagram.com".
+  string source = 2;
+  int32 shares = 3;
+  // Of those Shares, how many found at least one Candidate.
+  int32 identified = 4;
+}
+
+message AddedTitle {
+  // The Share it was added from.
+  string share_id = 1;
+  MediaType type = 2;
+  string title = 3;
+  optional int32 year = 4;
+  optional string poster_url = 5;
+  // Made by auto add, without a click.
+  bool automatic = 6;
+}
+
+message MonthStats {
+  // "2026-10".
+  string month = 1;
+  int32 shares = 2;
+  // Shares whose Identification found at least one Candidate.
+  int32 identified = 3;
+  int32 no_match = 4;
+  int32 failed = 5;
+  // Additions that did not fail, made that month, and how many of them auto add made.
+  int32 additions = 6;
+  int32 automatic_additions = 7;
+  // What the LLM cost for that month's Shares, when its provider reports it.
+  double llm_cost_usd = 8;
+}
+
+message SourceStats {
+  // "instagram.com", "tiktok.com", "text"…
+  string source = 1;
+  int32 shares = 2;
 }
 
 message GetStatusRequest {}
