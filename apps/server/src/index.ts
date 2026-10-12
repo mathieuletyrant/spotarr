@@ -2,6 +2,7 @@ import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
+import { readVideo } from "./domain/identification/extractors/video";
 import { identify } from "./domain/identification/identify";
 import { ensureApiToken } from "./domain/settings/api-token";
 import { SettingsRepository } from "./domain/settings/repository";
@@ -24,7 +25,10 @@ const shares = new ShareRepository(db);
 const tmdb = new Tmdb(settings);
 const queue = new ShareQueue(
   shares,
-  (input) => identify(input, tmdb),
+  async (input) => {
+    const { extraction } = await settings.get();
+    return identify(input, { tmdb, readVideo: (url) => readVideo(url, extraction) });
+  },
   async () => (await settings.get()).extraction.concurrency,
 );
 await queue.start();
