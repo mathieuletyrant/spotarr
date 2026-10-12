@@ -5,4 +5,4 @@ The API is a Connect-RPC service generated from a Protobuf contract, but the HTT
 ## Consequences
 
 - Every RPC answers on `POST /api/spotarr.v1.SpotarrService/<Method>`, JSON by default, so the iOS Shortcut calls it like a plain HTTP API.
-- Handlers are typed with `ServiceImpl<typeof SpotarrService>` (see `apps/server/src/rpc/types.ts`), so a renamed contract field breaks the build rather than production.
+- Handlers are typed with `ServiceImpl<typeof SpotarrService>` (see `apps/server/src/api/rpc/types.ts`), so a renamed contract field breaks the build rather than production.

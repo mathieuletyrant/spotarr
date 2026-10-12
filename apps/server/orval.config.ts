@@ -18,7 +18,7 @@ export default defineConfig({
       },
     },
     output: {
-      target: "src/tmdb/gen/tmdb.ts",
+      target: "src/integrations/tmdb/gen/tmdb.ts",
       client: "fetch",
       baseUrl: "https://api.themoviedb.org",
       mock: { generators: [{ type: "faker" }] },

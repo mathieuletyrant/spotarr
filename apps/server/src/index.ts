@@ -2,12 +2,12 @@ import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
-import { identify } from "./identification/identify";
-import { ensureApiToken } from "./settings/api-token";
-import { SettingsRepository } from "./settings/repository";
-import { ShareQueue } from "./shares/queue";
-import { ShareRepository } from "./shares/repository";
-import { Tmdb } from "./tmdb/client";
+import { identify } from "./domain/identification/identify";
+import { ensureApiToken } from "./domain/settings/api-token";
+import { SettingsRepository } from "./domain/settings/repository";
+import { ShareQueue } from "./domain/shares/queue";
+import { ShareRepository } from "./domain/shares/repository";
+import { Tmdb } from "./integrations/tmdb/client";
 
 // The only two environment variables; everything else is set in the UI.
 const port = Number(process.env.PORT ?? 3000);

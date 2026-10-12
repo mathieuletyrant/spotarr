@@ -1,10 +1,10 @@
 import { expect, test } from "bun:test";
-import { createApp } from "../app";
-import { openDatabase } from "../db";
-import { SettingsRepository } from "../settings/repository";
-import { ShareQueue } from "../shares/queue";
-import { ShareRepository } from "../shares/repository";
-import { identifyNothing, until } from "../shares/test-helpers";
+import { createApp } from "../../app";
+import { openDatabase } from "../../db";
+import { SettingsRepository } from "../../domain/settings/repository";
+import { ShareQueue } from "../../domain/shares/queue";
+import { ShareRepository } from "../../domain/shares/repository";
+import { identifyNothing, until } from "../../domain/shares/test-helpers";
 
 const db = await openDatabase(":memory:");
 const shares = new ShareRepository(db);
@@ -51,9 +51,7 @@ test("GetShare on an unknown id is not_found", async () => {
 
 test("ListShares paginates with next_cursor and filters by summary", async () => {
   for (let i = 0; i < 3; i++) await call("CreateShare", { text: `share ${i}` });
-  await until(
-    async () => (await shares.list({ limit: 50, summaries: ["IN_PROGRESS"] })).length === 0,
-  );
+  await until(async () => (await shares.all()).every((s) => s.summary !== "IN_PROGRESS"));
 
   const first = await call("ListShares", { pageSize: 2 });
   expect(first.body.shares).toHaveLength(2);

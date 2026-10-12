@@ -1,0 +1,49 @@
+import { expect, test } from "bun:test";
+import { historyPage } from "./history";
+import type { Share } from "./types";
+
+function share(id: string, summary: Share["summary"], text = ""): Share {
+  return {
+    id,
+    createdAt: "2026-10-12T10:00:00.000Z",
+    input: { text, hasImage: false },
+    source: "text",
+    identification: { status: "READY", extractors: [], clues: {} },
+    candidates: [{ tmdbId: 1, type: "MOVIE", title: `Title of ${id}`, libraryState: "ABSENT" }],
+    additions: [],
+    summary,
+  };
+}
+
+// Newest first, like ShareRepository.all().
+const history = [
+  share("shr_3", "TO_CHOOSE", "the film with Cillian Murphy"),
+  share("shr_2", "NO_MATCH"),
+  share("shr_1", "TO_CHOOSE"),
+];
+
+test("pages follow each other with the cursor", () => {
+  const first = historyPage(history, { limit: 2, summaries: [] });
+  expect(first.shares.map((s) => s.id)).toEqual(["shr_3", "shr_2"]);
+  expect(first.nextCursor).toBe("shr_2");
+
+  const second = historyPage(history, { limit: 2, cursor: first.nextCursor, summaries: [] });
+  expect(second.shares.map((s) => s.id)).toEqual(["shr_1"]);
+  expect(second.nextCursor).toBeUndefined();
+});
+
+test("filters by Summary", () => {
+  const page = historyPage(history, { limit: 10, summaries: ["TO_CHOOSE"] });
+  expect(page.shares.map((s) => s.id)).toEqual(["shr_3", "shr_1"]);
+});
+
+test("searches the text and the candidates' titles, ignoring case", () => {
+  expect(
+    historyPage(history, { limit: 10, summaries: [], query: "cillian" }).shares.map((s) => s.id),
+  ).toEqual(["shr_3"]);
+  expect(
+    historyPage(history, { limit: 10, summaries: [], query: "TITLE OF SHR_2" }).shares.map(
+      (s) => s.id,
+    ),
+  ).toEqual(["shr_2"]);
+});

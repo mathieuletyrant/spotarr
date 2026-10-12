@@ -1,5 +1,5 @@
 import type { Kysely } from "kysely";
-import type { DB } from "../db";
+import type { DB } from "../../db";
 import { type Settings, type SettingsPatch, SettingsSchema } from "./schema";
 
 // Settings live in a single row (id = 1) as one JSON document. Everything going

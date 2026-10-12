@@ -1,14 +1,14 @@
 import { SpotarrService } from "@spotarr/contract";
 import { Hono } from "hono";
-import { requireToken } from "./http/auth";
-import { connectHandler } from "./http/connect";
-import { validationErrors } from "./rpc/errors";
-import { settingsRpcs } from "./rpc/settings";
-import { shareRpcs } from "./rpc/shares";
-import { statusRpcs } from "./rpc/status";
-import type { SettingsRepository } from "./settings/repository";
-import type { ShareQueue } from "./shares/queue";
-import type { ShareRepository } from "./shares/repository";
+import { requireToken } from "./api/auth";
+import { connectHandler } from "./api/connect";
+import { validationErrors } from "./api/rpc/errors";
+import { settingsRpcs } from "./api/rpc/settings";
+import { shareRpcs } from "./api/rpc/shares";
+import { statusRpcs } from "./api/rpc/status";
+import type { SettingsRepository } from "./domain/settings/repository";
+import type { ShareQueue } from "./domain/shares/queue";
+import type { ShareRepository } from "./domain/shares/repository";
 
 export type AppDeps = {
   apiToken: () => string;

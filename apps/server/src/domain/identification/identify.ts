@@ -1,6 +1,6 @@
-import { type DirectId, findDirectIds } from "../extractors/direct-ids";
+import type { Tmdb } from "../../integrations/tmdb/client";
 import type { Candidate, IdentificationResult, ShareInput } from "../shares/types";
-import type { Tmdb } from "../tmdb/client";
+import { type DirectId, findDirectIds } from "./extractors/direct-ids";
 
 // Today: IMDb and TMDB links only. The web page and video extractors (#13, #14),
 // the LLM (#16) and the TMDB search (#17) come next, in this function.
