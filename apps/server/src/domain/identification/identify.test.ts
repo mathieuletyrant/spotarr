@@ -1,4 +1,6 @@
 import { afterEach, expect, mock, test } from "bun:test";
+import { Seerr } from "../../integrations/seerr/client";
+import { getGetMovieMovieIdResponseMock } from "../../integrations/seerr/gen/seerr.faker";
 import { Tmdb } from "../../integrations/tmdb/client";
 import {
   getFindByIdResponseMock,
@@ -12,6 +14,8 @@ import { identify } from "./identify";
 afterEach(() => mock.restore());
 
 const tmdb = new Tmdb({ token: "tok", language: "fr-FR" });
+const seerr = new Seerr({ url: "http://seerr.test", apiKey: "key" });
+const inLibrary = getGetMovieMovieIdResponseMock({ mediaInfo: { status: 5 } });
 const dune = getMovieDetailsResponseMock({
   id: 693134,
   title: "Dune : Deuxième partie",
@@ -32,11 +36,14 @@ const llmAnswering =
     answer;
 
 test("an IMDb link gives a certain Candidate, without video nor LLM", async () => {
-  fakeFetch({ "/3/find/tt15239678": getFindByIdResponseMock({ movie_results: [dune] }) });
+  fakeFetch({
+    "/3/find/tt15239678": getFindByIdResponseMock({ movie_results: [dune] }),
+    "/api/v1/movie/693134": inLibrary,
+  });
 
   const result = await identify(
     { url: "https://www.imdb.com/title/tt15239678/" },
-    { tmdb, readVideo: notCalled, llm: notCalled },
+    { tmdb, seerr, readVideo: notCalled, llm: notCalled },
   );
 
   expect(result).toMatchObject({ status: "READY", method: "DIRECT_ID", extractors: ["id-link"] });
@@ -47,10 +54,10 @@ test("an IMDb link gives a certain Candidate, without video nor LLM", async () =
 });
 
 test("a TMDB link works the same way", async () => {
-  fakeFetch({ "/3/movie/693134": dune });
+  fakeFetch({ "/3/movie/693134": dune, "/api/v1/movie/693134": inLibrary });
   const result = await identify(
     { url: "https://www.themoviedb.org/movie/693134" },
-    { tmdb, readVideo: notCalled, llm: notCalled },
+    { tmdb, seerr, readVideo: notCalled, llm: notCalled },
   );
   expect(result.candidates.map((c) => c.title)).toEqual(["Dune : Deuxième partie"]);
 });
@@ -60,7 +67,7 @@ test("a reel is read, then the LLM explains what it sees (Candidates come with #
 
   const result = await identify(
     { url: "https://www.instagram.com/reel/DeHYOAbo14f/" },
-    { tmdb, readVideo: async () => reel, llm },
+    { tmdb, seerr, readVideo: async () => reel, llm },
   );
 
   expect(result).toEqual({
@@ -78,6 +85,18 @@ test("a video that cannot be read fails the Identification with the reason", asy
     throw new Error("yt-dlp failed: ERROR: Requested content is not available");
   };
   await expect(
-    identify({ url: "https://www.instagram.com/reel/x/" }, { tmdb, readVideo, llm: notCalled }),
+    identify(
+      { url: "https://www.instagram.com/reel/x/" },
+      { tmdb, seerr, readVideo, llm: notCalled },
+    ),
   ).rejects.toThrow("Requested content is not available");
+});
+
+test("Seerr being down leaves the Candidates ABSENT, without failing", async () => {
+  fakeFetch({ "/3/movie/693134": dune, "/api/v1/movie/693134": 503 });
+  const result = await identify(
+    { url: "https://www.themoviedb.org/movie/693134" },
+    { tmdb, seerr, readVideo: notCalled, llm: notCalled },
+  );
+  expect(result).toMatchObject({ status: "READY", candidates: [{ libraryState: "ABSENT" }] });
 });

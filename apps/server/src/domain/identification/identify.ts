@@ -1,3 +1,4 @@
+import type { Seerr } from "../../integrations/seerr/client";
 import type { Tmdb } from "../../integrations/tmdb/client";
 import type { Candidate, Clues, IdentificationResult, ShareInput } from "../shares/types";
 import { confirmOnTmdb } from "./confirm-on-tmdb";
@@ -7,6 +8,7 @@ import { guessTitles, type Llm } from "./guess-titles";
 
 export type IdentifyDeps = {
   tmdb: Tmdb;
+  seerr: Seerr;
   readVideo: (url: string) => Promise<Video>;
   llm: Llm;
 };
@@ -15,12 +17,12 @@ export type IdentifyDeps = {
 // names the works it shows, and TMDB confirms them.
 export async function identify(
   input: ShareInput,
-  { tmdb, readVideo, llm }: IdentifyDeps,
+  { tmdb, seerr, readVideo, llm }: IdentifyDeps,
 ): Promise<IdentificationResult> {
   // 1. The shared link may itself be an IMDb or TMDB page: certain, no LLM.
   const ids = findDirectIds(input.url ?? "");
   if (ids.length > 0) {
-    const candidates = await lookUpAll(ids, tmdb);
+    const candidates = await checkLibrary(await lookUpAll(ids, tmdb), seerr);
     if (candidates.length > 0) {
       return {
         status: "READY",
@@ -41,7 +43,7 @@ export async function identify(
 
   // 3. The LLM looks at the caption and the frames; TMDB confirms its guesses.
   const guesses = await guessTitles(clues, video.frames, llm);
-  const candidates = await confirmOnTmdb(guesses.candidates, tmdb);
+  const candidates = await checkLibrary(await confirmOnTmdb(guesses.candidates, tmdb), seerr);
   return {
     status: candidates.length > 0 ? "READY" : "NO_MATCH",
     method: "LLM",
@@ -52,11 +54,24 @@ export async function identify(
   };
 }
 
+// Asks Seerr whether each Candidate is already in the library. Seerr being down
+// or not configured does not fail the Identification: Candidates stay ABSENT.
+async function checkLibrary(candidates: Candidate[], seerr: Seerr): Promise<Candidate[]> {
+  try {
+    for (const candidate of candidates) {
+      candidate.libraryState = await seerr.libraryState(candidate.type, candidate.tmdbId);
+    }
+  } catch (error) {
+    console.error(JSON.stringify({ step: "library-check", error: String(error) }));
+  }
+  return candidates;
+}
+
 async function lookUpAll(ids: DirectId[], tmdb: Tmdb): Promise<Candidate[]> {
   const candidates: Candidate[] = [];
   for (const id of ids) {
     const title = await lookUp(id, tmdb);
-    // A direct ID is certain: no confidence. The library state comes from Seerr (#18).
+    // A direct ID is certain: no confidence.
     if (title) candidates.push({ ...title, libraryState: "ABSENT" });
   }
   return candidates;

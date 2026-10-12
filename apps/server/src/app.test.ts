@@ -5,13 +5,20 @@ import { SettingsRepository } from "./domain/settings/repository";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
 import { identifyNothing } from "./domain/shares/test-helpers";
+import { Seerr } from "./integrations/seerr/client";
 
 const db = await openDatabase(":memory:");
 const settings = new SettingsRepository(db);
 await settings.setApiToken("secret-token");
 const shares = new ShareRepository(db);
 const queue = new ShareQueue(shares, identifyNothing, async () => 2);
-const app = createApp({ apiToken: () => "secret-token", settings, shares, queue });
+const app = createApp({
+  apiToken: () => "secret-token",
+  settings,
+  shares,
+  queue,
+  seerr: async () => new Seerr({ url: "http://seerr.test", apiKey: "key" }),
+});
 const call = (method: string, body: unknown = {}, headers: Record<string, string> = {}) =>
   app.request(`/api/spotarr.v1.SpotarrService/${method}`, {
     method: "POST",
