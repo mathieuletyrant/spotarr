@@ -5,6 +5,7 @@ import { Card } from "./card";
 
 const EXTRACTORS: Record<string, string> = {
   video: "Video",
+  "instagram-photo": "Instagram photo",
   "id-link": "IMDb or TMDB link",
   web: "Web page",
 };
