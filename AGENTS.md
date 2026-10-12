@@ -71,6 +71,16 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - No Cloudflare Access JWT check in Spotarr for now (the spec's third layer): Access in front plus the API token are enough. Its settings (public hostname, team domain, AUD) were removed on 2026-10-12; to be decided again at the real deployment.
 - SQLite from milestone 1. No history purge, no `VACUUM INTO`. Design tokens from milestone 0; macOS CI job only with the SwiftUI app.
 
+## Releasing
+
+The Docker image (`Dockerfile`, Alpine + Bun + ffmpeg + yt-dlp, about 440 MB) is published by `.github/workflows/release.yml` when a tag is pushed:
+
+1. Bump `version` in `apps/server/package.json` in a PR (GetStatus reports it), and merge it.
+2. On main: `git tag vX.Y.Z && git push origin vX.Y.Z`. The workflow refuses a tag that differs from that version.
+3. It pushes `ghcr.io/mathieuletyrant/spotarr:X.Y.Z` and `:latest` for amd64 and arm64. The Umbrel store app (`mathieu-spotarr`) pins the new digest.
+
+Bump `YT_DLP_VERSION` in the `Dockerfile` when Instagram reels stop downloading: yt-dlp follows Instagram's changes.
+
 ## Evaluation
 
 `pnpm --filter @spotarr/server eval` runs the real Identification on the reels listed in `apps/server/scripts/eval.ts` (keys from `.env`, about $0.01 a reel, `MODEL=… ` to try another model). A reel passes when its works are in the first 3 Candidates. Re-run it after any change to the prompt, the model or the TMDB matching, and add a case for every misidentified reel.

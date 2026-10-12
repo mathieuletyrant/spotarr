@@ -1,4 +1,5 @@
 import { expect, test } from "bun:test";
+import pkg from "../package.json";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { SettingsRepository } from "./domain/settings/repository";
@@ -55,7 +56,7 @@ test("a wrong token is refused", async () => {
 test("GetStatus answers JSON with a bearer token", async () => {
   const res = await getStatus({ Authorization: "Bearer secret-token" });
   expect(res.status).toBe(200);
-  expect(await res.json()).toEqual({ version: "0.0.0" });
+  expect(await res.json()).toEqual({ version: pkg.version });
 });
 
 test("the web UI cookie is accepted too", async () => {
