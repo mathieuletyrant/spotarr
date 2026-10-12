@@ -1,4 +1,5 @@
 import { Method, type Share, Summary } from "@spotarr/contract";
+import { ScanSearch } from "lucide-react";
 import { seconds, videoTime } from "../../lib/format";
 import { Card } from "./card";
 
@@ -22,14 +23,14 @@ export function CluesCard({ share }: { share: Share }) {
   // Nothing to show yet: say so rather than listing "None" everywhere.
   if (share.summary === Summary.IN_PROGRESS) {
     return (
-      <Card title="Clues">
+      <Card icon={<ScanSearch aria-hidden className="size-4" />} title="Clues">
         <p className="text-text-muted">Reading the video…</p>
       </Card>
     );
   }
 
   return (
-    <Card title="Clues">
+    <Card icon={<ScanSearch aria-hidden className="size-4" />} title="Clues">
       <dl className="grid grid-cols-[7rem_minmax(0,1fr)] gap-x-4 gap-y-3">
         {rows.map(([label, value]) => (
           <div key={label} className="contents">
@@ -43,9 +44,13 @@ export function CluesCard({ share }: { share: Share }) {
           <p className="mb-2 text-sm text-text-muted">
             {share.frames.length} frames taken from the video
           </p>
-          <ul className="grid grid-cols-6 gap-2">
+          {/* One line: six frames in view, the others a horizontal scroll away. */}
+          <ul className="grid snap-x auto-cols-[calc((100%-2.5rem)/6)] grid-flow-col gap-2 overflow-x-auto pb-1">
             {share.frames.map((frame) => (
-              <li key={frame.url} className="relative overflow-hidden rounded-md bg-surface">
+              <li
+                key={frame.url}
+                className="relative snap-start overflow-hidden rounded-lg bg-surface"
+              >
                 <img
                   src={frame.url}
                   alt={`Frame at ${videoTime(frame.atSeconds)}`}

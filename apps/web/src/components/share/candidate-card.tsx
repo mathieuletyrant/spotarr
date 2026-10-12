@@ -10,7 +10,7 @@ import {
   Summary,
 } from "@spotarr/contract";
 import { useQueryClient } from "@tanstack/react-query";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Plus } from "lucide-react";
 import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
 
@@ -56,7 +56,7 @@ function Confidence({ value }: { value?: number }) {
   return (
     <div className="mt-2 flex items-center gap-3 text-sm">
       <div className="h-1.5 w-20 overflow-hidden rounded-full bg-border sm:w-32">
-        <div className="h-full rounded-full bg-text" style={{ width: `${percent}%` }} />
+        <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
       </div>
       <span className="whitespace-nowrap">Confidence {percent} %</span>
     </div>
@@ -95,8 +95,9 @@ function CandidateAction({ share, candidate }: { share: Share; candidate: Candid
           add.mutate({ shareId: share.id, tmdbId: candidate.tmdbId, type: candidate.type })
         }
         disabled={add.isPending}
-        className="h-10 rounded-md border border-border px-4 font-medium hover:bg-surface focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
+        className="flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent disabled:opacity-50"
       >
+        <Plus aria-hidden className="size-4" />
         {add.isPending ? "Adding…" : failure ? "Try again" : "Add"}
       </button>
       {failure && <p className="max-w-48 text-right text-xs text-status-error">{failure}</p>}

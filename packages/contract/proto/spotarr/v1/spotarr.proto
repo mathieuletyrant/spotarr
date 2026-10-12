@@ -132,6 +132,7 @@ message SeerrSettings {
 message ExtractionSettings {
   // Removed: public reels need no account. Back if private reels ever matter.
   optional string cookies_txt = 1 [deprecated = true];
+  // 1 to 15.
   optional int32 frames_per_video = 2;
   optional int32 max_video_mb = 3;
   // How many Identifications run at the same time.

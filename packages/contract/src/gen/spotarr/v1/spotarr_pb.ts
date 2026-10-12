@@ -344,6 +344,8 @@ export type ExtractionSettings = Message<"spotarr.v1.ExtractionSettings"> & {
   cookiesTxt?: string | undefined;
 
   /**
+   * 1 to 15.
+   *
    * @generated from field: optional int32 frames_per_video = 2;
    */
   framesPerVideo?: number | undefined;

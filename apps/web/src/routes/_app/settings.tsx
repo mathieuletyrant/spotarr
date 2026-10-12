@@ -205,7 +205,7 @@ function SettingsForm({ saved }: { saved: Values }) {
           <input
             type="range"
             min={1}
-            max={8}
+            max={15}
             value={values["extraction.framesPerVideo"]}
             onChange={(e) => form.change("extraction.framesPerVideo", e.target.value)}
             className="h-10 accent-accent"
