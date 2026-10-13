@@ -2,21 +2,15 @@ import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
-import { readLink } from "./domain/identification/extractors/link";
-import { AnswerSchema } from "./domain/identification/guess-titles";
-import { identifyShare } from "./domain/identification/use-cases/identify-share";
+import { runIdentification } from "./domain/identification/use-cases/run-identification";
+import { seerrFrom } from "./domain/settings/adapters";
 import { SettingsRepository } from "./domain/settings/repository";
-import type { Settings } from "./domain/settings/schema";
 import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
-import type { ShareInput } from "./domain/shares/types";
-import { autoAdd } from "./domain/shares/use-cases/auto-add";
+import { endIdentification } from "./domain/shares/use-cases/end-identification";
 import { WebhookRepository } from "./domain/webhooks/repository";
 import { WebhookSender } from "./domain/webhooks/sender";
-import { chat, type LlmConfig } from "./integrations/llm/client";
-import { Seerr } from "./integrations/seerr/client";
-import { Tmdb } from "./integrations/tmdb/client";
 import { log } from "./log";
 
 // The only environment variables; everything else is set in the UI.
@@ -35,52 +29,14 @@ console.log(`API token${created ? " (new)" : ""}: ${token}`);
 
 const shares = new ShareRepository(db);
 
-// Settings are read once per Identification, so a change applies to the next share.
-async function runIdentification(shareId: string, input: ShareInput) {
-  const { identification, extraction } = await settings.get();
-  const seerr = await seerrFromSettings();
-  return identifyShare(shareId, input, {
-    tmdb: new Tmdb({ token: identification.tmdbToken, language: identification.language }),
-    readLink: (url) => readLink(url, extraction),
-    llm: (messages) => chat(llmConfig(identification), messages, AnswerSchema),
-    libraryState: (type, tmdbId) => seerr.libraryState(type, tmdbId),
-  });
-}
-
-async function seerrFromSettings() {
-  const { seerr } = await settings.get();
-  return new Seerr({ url: seerr.url, apiKey: seerr.apiKey });
-}
-
-function llmConfig(identification: Settings["identification"]): LlmConfig {
-  return {
-    apiUrl: identification.llmApiUrl,
-    apiKey: identification.llmApiKey,
-    model: identification.model,
-  };
-}
-
 const webhooks = new WebhookRepository(db);
 const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
 
-// When an Identification ends, the Webhooks hear about it, then auto add
-// requests the Candidates its rule allows (each one sends media.added).
-async function identificationEnded(shareId: string) {
-  const share = await shares.get(shareId);
-  if (!share) return;
-  await sender.identificationEnded(share);
-  await autoAdd(share, (await settings.get()).autoAdd, {
-    shares,
-    seerr: await seerrFromSettings(),
-    mediaAdded: (share, added) => sender.mediaAdded(share, added),
-  });
-}
-
 const queue = new ShareQueue(
   shares,
-  runIdentification,
+  (shareId, input) => runIdentification(shareId, input, settings),
   async () => (await settings.get()).extraction.concurrency,
-  identificationEnded,
+  (shareId) => endIdentification(shareId, { shares, settings, sender }),
 );
 await queue.start();
 
@@ -94,7 +50,7 @@ const app = createApp({
   queue,
   webhooks,
   sender,
-  seerr: seerrFromSettings,
+  seerr: async () => seerrFrom(await settings.get()),
   webDir: existsSync(webDir) ? webDir : undefined,
 });
 Bun.serve({ port, fetch: app.fetch });

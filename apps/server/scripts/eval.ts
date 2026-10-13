@@ -5,12 +5,10 @@
 //
 //   pnpm --filter @spotarr/server eval        (reads the keys from ../../.env)
 
-import { confirmOnTmdb } from "../src/domain/identification/confirm-on-tmdb";
-import { readLink } from "../src/domain/identification/extractors/link";
-import { AnswerSchema, guessTitles } from "../src/domain/identification/guess-titles";
+import type { Answer } from "../src/domain/identification/guess-titles";
+import { identifyShare } from "../src/domain/identification/use-cases/identify-share";
+import { identificationDeps } from "../src/domain/identification/use-cases/run-identification";
 import { SettingsSchema } from "../src/domain/settings/schema";
-import { chat } from "../src/integrations/llm/client";
-import { Tmdb } from "../src/integrations/tmdb/client";
 
 type Case = { reel: string; expected: { title: string; tmdbId: number }[] };
 
@@ -47,27 +45,34 @@ const CASES: Case[] = [
   },
 ];
 
-const settings = SettingsSchema.parse({});
-const model = process.env.MODEL ?? settings.identification.model;
-const llmConfig = {
-  apiUrl: settings.identification.llmApiUrl,
-  apiKey: process.env.OPENROUTER_API_KEY ?? "",
-  model,
-};
-const tmdb = new Tmdb({ token: process.env.TMDB_TOKEN ?? "", language: "fr-FR" });
+const settings = SettingsSchema.parse({
+  identification: {
+    llmApiKey: process.env.OPENROUTER_API_KEY ?? "",
+    tmdbToken: process.env.TMDB_TOKEN ?? "",
+    ...(process.env.MODEL ? { model: process.env.MODEL } : {}),
+  },
+});
+const model = settings.identification.model;
+const deps = identificationDeps(settings);
 
 let passed = 0;
 for (const { reel, expected } of CASES) {
-  const link = await readLink(`https://www.instagram.com/reel/${reel}/`, settings.extraction);
-  const { answer } = await guessTitles(
+  // Kept to print what the LLM said when a case fails.
+  let answer: Answer = { reasoning: "", guesses: [] };
+  const { candidates } = await identifyShare(
+    `eval_${reel}`,
+    { url: `https://www.instagram.com/reel/${reel}/` },
     {
-      clues: { caption: link.caption, author: link.author },
-      images: link.images,
-      audio: link.audio,
+      ...deps,
+      llm: async (messages) => {
+        const reply = await deps.llm(messages);
+        answer = reply.answer;
+        return reply;
+      },
+      // No Seerr during the evaluation: every Candidate stays ABSENT.
+      libraryState: async () => "ABSENT",
     },
-    (messages) => chat(llmConfig, messages, AnswerSchema),
   );
-  const candidates = await confirmOnTmdb(answer.guesses, tmdb);
 
   // A single work must be in the first 3; a reel of several works must list them all.
   const allowed = Math.max(3, expected.length);
