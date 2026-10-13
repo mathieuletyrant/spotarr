@@ -1212,7 +1212,8 @@ public nonisolated struct Spotarr_V1_Share: @unchecked Sendable {
   /// Clears the value of `failureReason`. Subsequent reads from it will return its default value.
   public mutating func clearFailureReason() {_uniqueStorage()._failureReason = nil}
 
-  /// Additions that put a Candidate in the library or found it there already.
+  /// Candidates whose latest Addition put them in the library or found them
+  /// there already. Never more than the Candidates.
   public var addedCount: Int32 {
     get {_storage._addedCount}
     set {_uniqueStorage()._addedCount = newValue}

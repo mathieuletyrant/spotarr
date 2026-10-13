@@ -78,7 +78,20 @@ describe("a Candidate's status", () => {
   });
 });
 
-test("the added count leaves failed Additions out", () => {
-  const additions = [addition("FAILED"), addition("REQUESTED"), addition("ALREADY_PRESENT")];
-  expect(addedCountOf(additions)).toBe(2);
+describe("the added count", () => {
+  const dune = candidate("ABSENT");
+  const arrival = { ...candidate("ABSENT"), tmdbId: 2 };
+
+  test("counts Candidates whose latest Addition did not fail", () => {
+    const retried = [addition("FAILED"), addition("REQUESTED")];
+    expect(addedCountOf([dune, arrival], retried)).toBe(1);
+    expect(addedCountOf([dune, arrival], [addition("FAILED")])).toBe(0);
+  });
+
+  test("never counts more than the Candidates, even with Additions of an earlier Identification", () => {
+    // A retry keeps the Additions; the new Identification found only Arrival.
+    const additions = [addition("REQUESTED"), { ...addition("ADDED"), tmdbId: 3 }];
+    expect(addedCountOf([arrival], additions)).toBe(0);
+    expect(addedCountOf([dune], additions)).toBe(1);
+  });
 });

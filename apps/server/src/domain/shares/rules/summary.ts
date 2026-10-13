@@ -32,9 +32,7 @@ export type CandidateStatus = {
 // Where a Candidate stands, for the Share's page. Its latest Addition decides
 // first, then its Library state.
 export function candidateStatusOf(candidate: Candidate, additions: Addition[]): CandidateStatus {
-  const addition = additions.findLast(
-    (a) => a.tmdbId === candidate.tmdbId && a.type === candidate.type,
-  );
+  const addition = latestAdditionOf(candidate, additions);
   if (addition?.status === "REQUESTED" || addition?.status === "ADDED") {
     return { status: addition.status, automatic: addition.automatic };
   }
@@ -50,10 +48,19 @@ export function candidateStatusOf(candidate: Candidate, additions: Addition[]): 
   return { status: "CAN_ADD", automatic: false };
 }
 
-// Additions that put a Candidate in the library or found it there already:
-// the "2/3" of the history.
-export function addedCountOf(additions: Addition[]): number {
-  return additions.filter((a) => a.status !== "FAILED").length;
+// Candidates whose latest Addition put them in the library or found them
+// there already: the "2/3" of the history. Counted per Candidate, so a retry
+// that kept old Additions never makes it "3/2".
+export function addedCountOf(candidates: Candidate[], additions: Addition[]): number {
+  return candidates.filter((candidate) => {
+    const addition = latestAdditionOf(candidate, additions);
+    return addition !== undefined && addition.status !== "FAILED";
+  }).length;
+}
+
+// A TMDB id names a movie and a TV show alike: the type tells them apart.
+function latestAdditionOf(candidate: Candidate, additions: Addition[]): Addition | undefined {
+  return additions.findLast((a) => a.tmdbId === candidate.tmdbId && a.type === candidate.type);
 }
 
 // Why a FAILED Share failed: its latest Addition's error, else the Identification's.

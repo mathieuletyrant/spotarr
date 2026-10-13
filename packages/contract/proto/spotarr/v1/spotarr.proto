@@ -242,7 +242,8 @@ message Share {
   // Why the Share failed, when its summary is FAILED: the latest Addition's
   // error, else the Identification's.
   optional string failure_reason = 10;
-  // Additions that put a Candidate in the library or found it there already.
+  // Candidates whose latest Addition put them in the library or found them
+  // there already. Never more than the Candidates.
   int32 added_count = 11;
 }
 
