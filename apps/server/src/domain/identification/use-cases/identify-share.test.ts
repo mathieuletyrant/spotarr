@@ -52,6 +52,17 @@ test("an IMDb link gives a certain Candidate, without video nor LLM", async () =
   expect(result.candidates[0]?.libraryState).toBe("AVAILABLE");
 });
 
+test("a pasted text with an IMDb link is identified the same way", async () => {
+  fakeFetch({ "/3/find/tt15239678": getFindByIdResponseMock({ movie_results: [dune] }) });
+  const result = await identifyShare(
+    "shr_test",
+    { text: "à voir : https://www.imdb.com/title/tt15239678/" },
+    { tmdb, readLink: notCalled, llm: notCalled, libraryState: available },
+  );
+  expect(result).toMatchObject({ status: "READY", method: "DIRECT_ID" });
+  expect(result.candidates.map((c) => c.title)).toEqual(["Dune : Deuxième partie"]);
+});
+
 test("a TMDB link works the same way", async () => {
   fakeFetch({ "/3/movie/693134": dune });
   const result = await identifyShare(

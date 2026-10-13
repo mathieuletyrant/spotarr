@@ -23,8 +23,9 @@ export async function identifyShare(
   input: ShareInput,
   { tmdb, readLink, llm, libraryState }: IdentifyDeps,
 ): Promise<IdentificationResult> {
-  // 1. The shared link may itself be an IMDb or TMDB page: certain, no LLM.
-  const ids = findDirectIds(input.url ?? "");
+  // 1. The shared link, or a link in the shared text, may be an IMDb or TMDB
+  // page: certain, no LLM.
+  const ids = findDirectIds(`${input.url ?? ""}\n${input.text ?? ""}`);
   if (ids.length > 0) {
     const found = await step(
       shareId,
