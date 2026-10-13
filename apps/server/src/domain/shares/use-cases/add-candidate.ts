@@ -2,14 +2,14 @@ import { SpotarrError } from "../../../errors";
 import { log } from "../../../log";
 import { seerrFrom } from "../../settings/adapters";
 import type { SettingsRepository } from "../../settings/repository";
-import type { WebhookSender } from "../../webhooks/sender";
+import type { Emit } from "../events";
 import type { ShareRepository } from "../repository";
 import type { Candidate } from "../types";
 
 type AddCandidateDeps = {
   shares: ShareRepository;
   settings: SettingsRepository;
-  sender: WebhookSender;
+  emit: Emit;
 };
 
 // What a click on Add, or auto add, asks for.
@@ -24,12 +24,12 @@ export type AdditionRequest = {
 };
 
 // Adds one Candidate of a Share to the library through Seerr, records an
-// Addition saying what happened, and sends media.added once Seerr accepted.
+// Addition saying what happened, and emits media.added once Seerr accepted.
 // Seerr failing is recorded too (FAILED, with the reason), so the history shows it.
 export async function addCandidate(
   shareId: string,
   request: AdditionRequest,
-  { shares, settings, sender }: AddCandidateDeps,
+  { shares, settings, emit }: AddCandidateDeps,
 ): Promise<void> {
   if (request.target === "ARR") {
     throw new SpotarrError(
@@ -68,8 +68,8 @@ export async function addCandidate(
     await shares.addAddition(shareId, { ...addition, status: "FAILED", error: reason });
     return;
   }
-  // The Addition is recorded: a Webhook failing must not fail it.
-  await sender
-    .mediaAdded(share, known)
-    .catch((error) => log({ shareId, step: "media-added", error: String(error) }));
+  // The Addition is recorded: a listener failing must not fail it.
+  await emit({ name: "media.added", share, added: known }).catch((error) =>
+    log({ shareId, step: "media-added", error: String(error) }),
+  );
 }

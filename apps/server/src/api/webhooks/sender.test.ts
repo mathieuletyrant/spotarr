@@ -1,8 +1,8 @@
 import { afterEach, expect, mock, spyOn, test } from "bun:test";
 import { createHmac } from "node:crypto";
 import { openDatabase } from "../../db";
-import { ShareRepository } from "../shares/repository";
-import { WebhookRepository } from "./repository";
+import { ShareRepository } from "../../domain/shares/repository";
+import { WebhookRepository } from "../../domain/webhooks/repository";
 import { WebhookSender } from "./sender";
 
 afterEach(() => mock.restore());
@@ -49,7 +49,7 @@ test("an Identification ready goes to the Webhooks that chose it, signed", async
   await webhooks.save("", { url: "http://other.local", events: ["media.added"], secret: "" });
   const fetch = fakeReceiver();
 
-  await sender.identificationEnded(share);
+  await sender.emit({ name: "identification.ready", share });
 
   expect(fetch.mock.calls).toHaveLength(1);
   const [url, init] = fetch.mock.calls[0] ?? [];
@@ -61,7 +61,15 @@ test("an Identification ready goes to the Webhooks that chose it, signed", async
     shareUrl: `https://spotarr.example.com/shares/${share.id}`,
     source: "instagram.com",
     sharedUrl: "https://www.instagram.com/reel/x/",
-    candidates: [{ tmdbId: 1571766, title: "Kraken", type: "MEDIA_TYPE_MOVIE" }],
+    // The API's Candidate, Candidate status included.
+    candidates: [
+      {
+        tmdbId: 1571766,
+        title: "Kraken",
+        type: "MEDIA_TYPE_MOVIE",
+        status: "CANDIDATE_STATUS_CAN_ADD",
+      },
+    ],
   });
   const headers = init?.headers as Record<string, string>;
   expect(headers["X-Spotarr-Signature"]).toBe(
@@ -85,7 +93,7 @@ test("a Webhook that fails is recorded, without throwing", async () => {
     throw new TypeError("connection refused");
   }) as unknown as typeof fetch);
 
-  await sender.identificationEnded(share);
+  await sender.emit({ name: "identification.ready", share });
 
   expect((await webhooks.get(id))?.lastDelivery).toMatchObject({
     ok: false,

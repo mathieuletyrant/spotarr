@@ -1,13 +1,14 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { WebhookSender } from "./api/webhooks/sender";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
+import type { Event } from "./domain/shares/events";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
 import { WebhookRepository } from "./domain/webhooks/repository";
-import { WebhookSender } from "./domain/webhooks/sender";
 import { log } from "./log";
 
 // The only environment variables; everything else is set in the UI.
@@ -30,7 +31,9 @@ const webhooks = new WebhookRepository(db);
 const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
 
 // Identifies the QUEUED Shares in the background.
-await new ShareQueue({ shares, settings, sender }).start();
+// The domain emits its Events; the Webhooks listen.
+const emit = (event: Event) => sender.emit(event);
+await new ShareQueue({ shares, settings, emit }).start();
 
 // The web UI, once built (pnpm build). In dev, Vite serves it instead.
 const webDir = new URL("../../web/dist", import.meta.url).pathname;

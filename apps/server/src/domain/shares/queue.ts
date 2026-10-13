@@ -1,7 +1,7 @@
 import { log } from "../../log";
 import { runIdentification } from "../identification/use-cases/run-identification";
 import type { SettingsRepository } from "../settings/repository";
-import type { WebhookSender } from "../webhooks/sender";
+import type { Emit } from "./events";
 import type { ShareRepository } from "./repository";
 import type { IdentificationResult, ShareInput } from "./types";
 import { endIdentification } from "./use-cases/end-identification";
@@ -14,18 +14,18 @@ export type Identify = (shareId: string, input: ShareInput) => Promise<Identific
 // identify it, start over; with nothing waiting, look again a second later.
 //
 // A Share's whole lifecycle happens here: claimed, identified, finished or
-// failed, then ended (Webhooks, then auto add).
+// failed, then ended (its Event emitted, then auto add).
 export class ShareQueue {
   private readonly shares: ShareRepository;
   private readonly settings: SettingsRepository;
-  private readonly sender: WebhookSender;
+  private readonly emit: Emit;
   private readonly identify: Identify;
   private readonly idleMs: number;
 
   constructor(deps: {
     shares: ShareRepository;
     settings: SettingsRepository;
-    sender: WebhookSender;
+    emit: Emit;
     // The Identification itself. Tests replace it, so no LLM is called.
     identify?: Identify;
     // How long a worker waits when nothing is queued. Tests shorten it.
@@ -33,7 +33,7 @@ export class ShareQueue {
   }) {
     this.shares = deps.shares;
     this.settings = deps.settings;
-    this.sender = deps.sender;
+    this.emit = deps.emit;
     this.identify =
       deps.identify ?? ((shareId, input) => runIdentification(shareId, input, deps.settings));
     this.idleMs = deps.idleMs ?? 1000;
@@ -72,7 +72,7 @@ export class ShareQueue {
       await this.shares.fail(id, message, elapsed());
     }
     // Outside the try: what follows never changes the Share's outcome.
-    const deps = { shares: this.shares, settings: this.settings, sender: this.sender };
+    const deps = { shares: this.shares, settings: this.settings, emit: this.emit };
     await endIdentification(id, deps).catch((error) =>
       log({ shareId: id, step: "ended", error: String(error) }),
     );

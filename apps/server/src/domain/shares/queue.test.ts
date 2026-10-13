@@ -1,9 +1,7 @@
 import { afterEach, expect, mock, spyOn, test } from "bun:test";
 import { openDatabase } from "../../db";
-import { fakeFetch } from "../../testing/fake-fetch";
 import { SettingsRepository } from "../settings/repository";
-import { WebhookRepository } from "../webhooks/repository";
-import { WebhookSender } from "../webhooks/sender";
+import type { Event } from "./events";
 import { type Identify, ShareQueue } from "./queue";
 import { ShareRepository } from "./repository";
 import { deferred, until } from "./test-helpers";
@@ -24,10 +22,12 @@ async function setUp(identify: Identify) {
   const db = await openDatabase(":memory:");
   const shares = new ShareRepository(db);
   const settings = new SettingsRepository(db);
-  const webhooks = new WebhookRepository(db);
-  const sender = new WebhookSender(webhooks, async () => "");
-  const queue = new ShareQueue({ shares, settings, sender, identify, idleMs: 5 });
-  return { shares, settings, webhooks, queue };
+  const emitted: Event[] = [];
+  const emit = async (event: Event) => {
+    emitted.push(event);
+  };
+  const queue = new ShareQueue({ shares, settings, emit, identify, idleMs: 5 });
+  return { shares, settings, emitted, queue };
 }
 
 test("at most `concurrency` Identifications run at once, and all of them finish", async () => {
@@ -77,22 +77,16 @@ test("start() resumes an Identification interrupted by a restart", async () => {
   await until(async () => (await shares.get(id))?.identification.status === "NO_MATCH");
 });
 
-test("an ended Identification reaches the Webhooks, failed ones included", async () => {
-  const { shares, webhooks, queue } = await setUp(async () => {
+test("an ended Identification emits its Event, failed ones included", async () => {
+  const { shares, emitted, queue } = await setUp(async () => {
     throw new Error("yt-dlp failed");
   });
-  await webhooks.save("", {
-    url: "http://ha.local/hook",
-    events: ["identification.failed"],
-    secret: "",
-  });
-  const fetch = fakeFetch({ "/hook": {} });
   const id = await shares.create({ text: "x" }, "text");
   await queue.start();
 
-  await until(async () => fetch.mock.calls.length === 1);
-  const body = JSON.parse(String(fetch.mock.calls[0]?.[1]?.body));
-  expect(body).toMatchObject({ event: "identification.failed", shareId: id });
+  await until(async () => emitted.length === 1);
+  expect(emitted[0]?.name).toBe("identification.failed");
+  expect(emitted[0]?.share.id).toBe(id);
 });
 
 test("a worker survives a database error and takes the next Share", async () => {
