@@ -94,7 +94,7 @@ struct ShareDetailView: View {
       Section("Candidates") {
         if share.isInProgress {
           Label(
-            "Identifying… This takes 10 to 30 seconds; the page follows on its own.",
+            "Identifying… \(Effort.waiting(share.identification.effort)); the page follows on its own.",
             systemImage: "hourglass")
           .foregroundStyle(.secondary)
         } else if share.candidates.isEmpty {

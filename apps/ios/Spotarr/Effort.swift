@@ -7,3 +7,14 @@ enum Effort {
     ("high", "High · up to 5 min"),
   ]
 }
+
+extension Effort {
+  /// What a Share's page says while it waits, by the effort its Identification gets.
+  static func waiting(_ effort: String) -> String {
+    switch effort {
+    case "medium": "This can take up to 3 minutes at medium effort"
+    case "high": "This can take up to 5 minutes at high effort"
+    default: "This takes 10 to 30 seconds"
+    }
+  }
+}

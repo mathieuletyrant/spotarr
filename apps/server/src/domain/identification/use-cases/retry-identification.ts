@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { SpotarrError } from "../../../errors";
 import { EFFORTS } from "../../../integrations/llm/client";
+import type { SettingsRepository } from "../../settings/repository";
 import type { ShareRepository } from "../../shares/repository";
 
 // What a Retry may ask: an effort, and a hint of one sentence or so. An empty
@@ -16,12 +17,14 @@ const RetrySchema = z.object({
 });
 
 // Runs the Identification of a finished Share again, with an effort (else the
-// setting's) and a hint if given. Its Additions are kept. An unknown effort or a
-// hint too long throws a ZodError.
+// setting's, kept with it so the pages can say how long it may take) and a hint
+// if given. Its Additions are kept. An unknown effort or a hint too long throws
+// a ZodError.
 export async function retryIdentification(
   id: string,
   retry: { effort?: string; hint?: string },
   shares: ShareRepository,
+  settings: SettingsRepository,
 ): Promise<void> {
   const asked = RetrySchema.parse(retry);
   const share = await shares.get(id);
@@ -29,6 +32,7 @@ export async function retryIdentification(
   if (share.summary === "IN_PROGRESS") {
     throw new SpotarrError("busy", "identification still in progress");
   }
+  const effort = asked.effort ?? (await settings.get()).identification.effort;
   // Back to QUEUED: the queue's workers pick it up again.
-  await shares.requeue(id, asked);
+  await shares.requeue(id, { effort, hint: asked.hint });
 }

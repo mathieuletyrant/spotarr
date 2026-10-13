@@ -5,3 +5,10 @@ export const EFFORTS = [
   { value: "medium", label: "Medium · up to 3 min" },
   { value: "high", label: "High · up to 5 min" },
 ];
+
+// What a Share's page says while it waits, by the effort its Identification gets.
+export function waitingText(effort: string | undefined): string {
+  if (effort === "medium") return "This can take up to 3 minutes at medium effort";
+  if (effort === "high") return "This can take up to 5 minutes at high effort";
+  return "This takes 10 to 30 seconds";
+}

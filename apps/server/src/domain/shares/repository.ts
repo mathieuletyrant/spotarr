@@ -70,7 +70,8 @@ export class ShareRepository {
   constructor(private readonly db: Kysely<DB>) {}
 
   // Returns the new Share's id. UUIDv7 starts with a timestamp, so ids sort by creation time.
-  async create(input: ShareInput, source: string): Promise<string> {
+  // `effort` is the one its Identification will get; the setting's then when undefined.
+  async create(input: ShareInput, source: string, effort?: Effort): Promise<string> {
     const id = `shr_${Bun.randomUUIDv7()}`;
     await this.db
       .insertInto("shares")
@@ -80,6 +81,7 @@ export class ShareRepository {
         input_url: input.url ?? null,
         input_text: input.text ?? null,
         input_image: input.image ?? null,
+        effort: effort ?? null,
       })
       .execute();
     return id;

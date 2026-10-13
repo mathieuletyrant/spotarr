@@ -26,7 +26,7 @@ export function shareRpcs(
 
   return {
     async createShare(req) {
-      const id = await createShare(req, shares);
+      const id = await createShare(req, shares, settings);
       return shareAnswer(id);
     },
 
@@ -53,7 +53,7 @@ export function shareRpcs(
     },
 
     async retryIdentification(req) {
-      await retryIdentification(req.id, { effort: req.effort, hint: req.hint }, shares);
+      await retryIdentification(req.id, { effort: req.effort, hint: req.hint }, shares, settings);
       return shareAnswer(req.id);
     },
 
