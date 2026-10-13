@@ -44,6 +44,10 @@ _Avoid_: comment, note, prompt
 A TMDB title proposed by the Identification, with a confidence and a Library state.
 _Avoid_: result, match, suggestion
 
+**Genre**:
+A Candidate's TMDB genre, in the settings' language ("Horreur", "Science-Fiction"). The History filters by it: a Share matches when one of its Candidates has it.
+_Avoid_: theme, category, tag
+
 **Library state**:
 What the library already knows of a Candidate: `ABSENT`, `REQUESTED`, `PARTIAL` (some seasons) or `AVAILABLE`. Only an `ABSENT` Candidate can be added.
 _Avoid_: in_library, present, exists

@@ -49,6 +49,32 @@ export type FindById200 = {
   tv_season_results?: unknown[];
 };
 
+export type GenreMovieListParams = {
+language?: string;
+};
+
+export type GenreMovieList200GenresItem = {
+  id?: number;
+  name?: string;
+};
+
+export type GenreMovieList200 = {
+  genres?: GenreMovieList200GenresItem[];
+};
+
+export type GenreTvListParams = {
+language?: string;
+};
+
+export type GenreTvList200GenresItem = {
+  id?: number;
+  name?: string;
+};
+
+export type GenreTvList200 = {
+  genres?: GenreTvList200GenresItem[];
+};
+
 export type MovieDetailsParams = {
 /**
  * comma separated list of endpoints within this namespace, 20 items max
@@ -345,6 +371,108 @@ export const findById = async (externalId: string,
 
   const data: findByIdResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as findByIdResponse
+}
+
+
+
+export type genreMovieListResponse200 = {
+  data: GenreMovieList200
+  status: 200
+}
+
+export type genreMovieListResponseSuccess = (genreMovieListResponse200) & {
+  headers: Headers;
+};
+;
+
+export type genreMovieListResponse = (genreMovieListResponseSuccess)
+
+export const getGenreMovieListUrl = (params?: GenreMovieListParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `https://api.themoviedb.org/3/genre/movie/list?${stringifiedParams}` : `https://api.themoviedb.org/3/genre/movie/list`
+}
+
+/**
+ * Get the list of official genres for movies.
+ * @summary Movie List
+ */
+export const genreMovieList = async (params?: GenreMovieListParams, options?: RequestInit): Promise<genreMovieListResponse> => {
+
+  const res = await fetch(getGenreMovieListUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: genreMovieListResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as genreMovieListResponse
+}
+
+
+
+export type genreTvListResponse200 = {
+  data: GenreTvList200
+  status: 200
+}
+
+export type genreTvListResponseSuccess = (genreTvListResponse200) & {
+  headers: Headers;
+};
+;
+
+export type genreTvListResponse = (genreTvListResponseSuccess)
+
+export const getGenreTvListUrl = (params?: GenreTvListParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `https://api.themoviedb.org/3/genre/tv/list?${stringifiedParams}` : `https://api.themoviedb.org/3/genre/tv/list`
+}
+
+/**
+ * Get the list of official genres for TV shows.
+ * @summary TV List
+ */
+export const genreTvList = async (params?: GenreTvListParams, options?: RequestInit): Promise<genreTvListResponse> => {
+
+  const res = await fetch(getGenreTvListUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: genreTvListResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as genreTvListResponse
 }
 
 

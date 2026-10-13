@@ -2,6 +2,8 @@ import { SpotarrError } from "../../errors";
 import {
   type FindById200MovieResultsItem,
   findById,
+  genreMovieList,
+  genreTvList,
   type MovieDetails200,
   movieDetails,
   type SearchMovie200ResultsItem,
@@ -26,7 +28,15 @@ export type TmdbTitle = {
   // Help choosing between namesakes: "fr", "en"…, and TMDB's popularity score.
   originalLanguage?: string;
   popularity?: number;
+  // "Science-Fiction", "Drame", in the language asked. Absent when TMDB's list
+  // of genre names could not be read: unknown, not "no genre".
+  genres?: string[];
 };
+
+// A search result carries genre ids; the details carry the names.
+type GenreIds = { genre_ids?: number[] };
+type GenreNames = { genres?: { id?: number; name?: string }[] };
+type Genres = Map<number, string>;
 
 const POSTERS = "https://image.tmdb.org/t/p/w500";
 
@@ -34,6 +44,9 @@ export type TmdbConfig = { token: string; language: string };
 
 // Calls TMDB through the client generated from its OpenAPI spec (gen/).
 export class Tmdb {
+  // TMDB's genre names by id, read once per Tmdb (one per Identification).
+  private readonly genreLists = new Map<TmdbTitle["type"], Genres>();
+
   constructor(private readonly config: TmdbConfig) {}
 
   async findByImdbId(imdbId: string): Promise<TmdbTitle | undefined> {
@@ -44,7 +57,7 @@ export class Tmdb {
     checkStatus(res.status);
 
     const movie = res.data.movie_results?.[0];
-    if (movie) return movieTitle(movie);
+    if (movie) return movieTitle(movie, await this.genres("MOVIE"));
 
     // TMDB's spec leaves tv_results untyped: take the id, then fetch the typed details.
     const show = res.data.tv_results?.[0] as { id?: number } | undefined;
@@ -58,7 +71,7 @@ export class Tmdb {
     const res = await movieDetails(id, { language }, options).catch(unreachable);
     if (isMissing(res.status)) return undefined;
     checkStatus(res.status);
-    return movieTitle(res.data);
+    return movieTitle(res.data, undefined);
   }
 
   async show(id: number): Promise<TmdbTitle | undefined> {
@@ -66,7 +79,7 @@ export class Tmdb {
     const res = await tvSeriesDetails(id, { language }, options).catch(unreachable);
     if (isMissing(res.status)) return undefined;
     checkStatus(res.status);
-    return showTitle(res.data);
+    return showTitle(res.data, undefined);
   }
 
   // The movies TMDB finds for a title, the year narrowing the search when given.
@@ -78,7 +91,10 @@ export class Tmdb {
       options,
     ).catch(unreachable);
     checkStatus(res.status);
-    return (res.data.results ?? []).map(movieTitle).filter((t) => t !== undefined);
+    const genres = await this.genres("MOVIE");
+    return (res.data.results ?? [])
+      .map((m) => movieTitle(m, genres))
+      .filter((t) => t !== undefined);
   }
 
   // The TV shows TMDB finds for a title, the year of the first episode narrowing the search.
@@ -88,7 +104,31 @@ export class Tmdb {
       unreachable,
     );
     checkStatus(res.status);
-    return (res.data.results ?? []).map(showTitle).filter((t) => t !== undefined);
+    const genres = await this.genres("TV");
+    return (res.data.results ?? []).map((s) => showTitle(s, genres)).filter((t) => t !== undefined);
+  }
+
+  // TMDB's names of the movie or TV genres, by id, in the language asked. A
+  // failure only costs the genres: undefined, and asked again next time.
+  private async genres(type: TmdbTitle["type"]): Promise<Genres | undefined> {
+    const known = this.genreLists.get(type);
+    if (known) return known;
+    const { language, options } = this.request();
+    try {
+      const res =
+        type === "MOVIE"
+          ? await genreMovieList({ language }, options)
+          : await genreTvList({ language }, options);
+      if (res.status !== 200) return undefined;
+      const genres: Genres = new Map();
+      for (const genre of res.data.genres ?? []) {
+        if (genre.id && genre.name) genres.set(genre.id, genre.name);
+      }
+      this.genreLists.set(type, genres);
+      return genres;
+    } catch {
+      return undefined;
+    }
   }
 
   private request() {
@@ -125,8 +165,10 @@ function unreachable(error: unknown): never {
   throw new SpotarrError("unavailable", `TMDB could not be reached: ${String(error)}`);
 }
 
+// `genres` names the ids of a search result; details name their genres themselves.
 function movieTitle(
   movie: FindById200MovieResultsItem | MovieDetails200 | SearchMovie200ResultsItem,
+  genres: Genres | undefined,
 ): TmdbTitle | undefined {
   if (!movie.id || !movie.title) return undefined;
   return {
@@ -139,10 +181,14 @@ function movieTitle(
     ...ratingOf(movie.vote_average, movie.vote_count),
     originalLanguage: movie.original_language,
     popularity: movie.popularity,
+    genres: genresOf(movie, genres),
   };
 }
 
-function showTitle(show: TvSeriesDetails200 | SearchTv200ResultsItem): TmdbTitle | undefined {
+function showTitle(
+  show: TvSeriesDetails200 | SearchTv200ResultsItem,
+  genres: Genres | undefined,
+): TmdbTitle | undefined {
   if (!show.id || !show.name) return undefined;
   return {
     tmdbId: show.id,
@@ -154,7 +200,16 @@ function showTitle(show: TvSeriesDetails200 | SearchTv200ResultsItem): TmdbTitle
     ...ratingOf(show.vote_average, show.vote_count),
     originalLanguage: show.original_language,
     popularity: show.popularity,
+    genres: genresOf(show, genres),
   };
+}
+
+function genresOf(title: GenreIds | GenreNames, genres: Genres | undefined): string[] | undefined {
+  if ("genres" in title && title.genres) {
+    return title.genres.map((g) => g.name).filter((name) => name !== undefined);
+  }
+  if (!("genre_ids" in title) || !title.genre_ids || !genres) return undefined;
+  return title.genre_ids.map((id) => genres.get(id)).filter((name) => name !== undefined);
 }
 
 // TMDB sends 0 for a title nobody rated: that is no rating, not a bad one.

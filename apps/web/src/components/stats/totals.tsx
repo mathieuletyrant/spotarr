@@ -81,7 +81,7 @@ function PosterStack({ titles }: { titles: AddedTitle[] }) {
           title={title.title}
           className="rounded-md ring-2 ring-surface-raised transition-transform hover:z-10 hover:-translate-y-1"
         >
-          <Poster title={title.title} url={title.posterUrl} small />
+          <Poster title={title.title} url={title.posterUrl} size="small" />
         </Link>
       ))}
     </div>

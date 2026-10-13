@@ -9,6 +9,7 @@ import {
 } from "@spotarr/contract";
 import { useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Plus } from "lucide-react";
+import { Genres } from "../genres";
 import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
 import { TmdbRating } from "../tmdb-rating";
@@ -39,6 +40,7 @@ export function CandidateCard({ share, candidate }: { share: Share; candidate: C
           <p className="text-sm text-text-muted">{candidate.originalTitle}</p>
         )}
         <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} />
+        <Genres genres={candidate.genres} />
         <Confidence value={candidate.confidence} />
       </div>
       <div className="shrink-0">
@@ -55,7 +57,7 @@ function Confidence({ value }: { value?: number }) {
   const percent = Math.round(value * 100);
   return (
     <div className="mt-2 flex items-center gap-3 text-sm">
-      <div className="h-1.5 w-20 overflow-hidden rounded-full bg-border sm:w-32">
+      <div className="h-1.5 w-20 shrink-0 overflow-hidden rounded-full bg-border sm:w-32">
         <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
       </div>
       <span className="whitespace-nowrap">Confidence {percent} %</span>

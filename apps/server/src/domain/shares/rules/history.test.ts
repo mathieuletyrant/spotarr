@@ -64,3 +64,36 @@ test("a page holds 50 Shares when no size is asked, 100 at most, and at least 1"
   expect(() => historyPage(many, { limit: 0, summaries: [] })).toThrow("page_size");
   expect(() => historyPage(many, { limit: -5, summaries: [] })).toThrow("page_size");
 });
+
+// Two Shares with genres, the oldest one without.
+function withGenres(id: string, genres: string[] | undefined): Share {
+  const base = share(id, "TO_CHOOSE");
+  return { ...base, candidates: [{ ...base.candidates[0], genres } as Share["candidates"][0]] };
+}
+const genred = [
+  withGenres("shr_3", ["Horreur", "Thriller"]),
+  withGenres("shr_2", ["Comédie"]),
+  withGenres("shr_1", undefined),
+];
+
+test("filters by any of the genres chosen", () => {
+  const one = historyPage(genred, { limit: 10, summaries: [], genres: ["Horreur"] });
+  expect(one.shares.map((s) => s.id)).toEqual(["shr_3"]);
+  const two = historyPage(genred, { limit: 10, summaries: [], genres: ["Horreur", "Comédie"] });
+  expect(two.shares.map((s) => s.id)).toEqual(["shr_3", "shr_2"]);
+});
+
+test("counts Shares per genre over the whole history, most first, then alphabetical", () => {
+  const history = [...genred, withGenres("shr_0", ["Thriller"])];
+  const page = historyPage(history, { limit: 10, summaries: [], genres: ["Comédie"] });
+  expect(page.genres).toEqual([
+    { genre: "Thriller", count: 2 },
+    { genre: "Comédie", count: 1 },
+    { genre: "Horreur", count: 1 },
+  ]);
+});
+
+test("the text search finds a genre", () => {
+  const page = historyPage(genred, { limit: 10, summaries: [], query: "comédie" });
+  expect(page.shares.map((s) => s.id)).toEqual(["shr_2"]);
+});

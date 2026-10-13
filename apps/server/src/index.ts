@@ -4,11 +4,13 @@ import { serveWebApp } from "./api/web";
 import { WebhookSender } from "./api/webhooks/sender";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
+import { tmdbFrom } from "./domain/settings/adapters";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import type { Event } from "./domain/shares/events";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
+import { fillMissingGenres } from "./domain/shares/use-cases/fill-missing-genres";
 import { WebhookRepository } from "./domain/webhooks/repository";
 import { log } from "./log";
 
@@ -34,6 +36,10 @@ console.log(`API token${created ? " (new)" : ""}: ${token}`);
 const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
 const emit = (event: Event) => sender.emit(event);
 await new ShareQueue({ shares, settings, emit }).start();
+// Not awaited: Spotarr answers while older Shares get their genres.
+fillMissingGenres(shares, tmdbFrom(await settings.get()))
+  .then((filled) => log({ step: "genres", filled }))
+  .catch((error) => log({ step: "genres", error: String(error) }));
 
 // ── 4. API: /health, the RPCs under /api, the frames ────────────────
 const app = createApp({ apiToken: () => token, settings, shares, webhooks, sender });

@@ -6,6 +6,7 @@ public typealias Candidate = Spotarr_V1_Candidate
 public typealias Frame = Spotarr_V1_Frame
 public typealias Summary = Spotarr_V1_Summary
 public typealias HistoryPage = Spotarr_V1_ListSharesResponse
+public typealias GenreCount = Spotarr_V1_GenreCount
 
 extension Spotarr_V1_Share: Identifiable {}
 

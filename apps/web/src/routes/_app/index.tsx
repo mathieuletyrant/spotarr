@@ -11,11 +11,12 @@ export const Route = createFileRoute("/_app/")({ component: HistoryPage });
 
 function HistoryPage() {
   const [summary, setSummary] = useState<Summary>();
+  const [genre, setGenre] = useState<string>();
   const [search, setSearch] = useState("");
   // Typing stays smooth: the list follows a moment after the keystrokes.
   const query = useDeferredValue(search.trim());
 
-  const history = useInfiniteQuery(historyQuery({ summary, query }));
+  const history = useInfiniteQuery(historyQuery({ summary, genres: genre ? [genre] : [], query }));
   const firstPage = history.data?.pages[0];
   const shares = history.data?.pages.flatMap((page) => page.shares) ?? [];
 
@@ -31,6 +32,9 @@ function HistoryPage() {
         counts={firstPage?.counts ?? []}
         summary={summary}
         onSummaryChange={setSummary}
+        genres={firstPage?.genres ?? []}
+        genre={genre}
+        onGenreChange={setGenre}
         search={search}
         onSearchChange={setSearch}
       />
@@ -39,9 +43,10 @@ function HistoryPage() {
       {history.error && <p className="text-status-error">{history.error.message}</p>}
       {history.isSuccess && shares.length === 0 && (
         <EmptyHistory
-          filtered={summary !== undefined || query !== ""}
+          filtered={summary !== undefined || genre !== undefined || query !== ""}
           onClear={() => {
             setSummary(undefined);
+            setGenre(undefined);
             setSearch("");
           }}
         />

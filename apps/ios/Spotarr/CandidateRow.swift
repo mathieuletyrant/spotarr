@@ -1,7 +1,7 @@
 import SpotarrKit
 import SwiftUI
 
-// One Candidate: poster, titles, TMDB rating, confidence, and Add, or where
+// One Candidate: poster, titles, TMDB rating, genres, confidence, and Add, or where
 // the title stands. Touch and hold to open it on TMDB.
 struct CandidateRow: View {
   let candidate: Candidate
@@ -31,6 +31,9 @@ struct CandidateRow: View {
           Text(candidate.originalTitle).font(.subheadline).foregroundStyle(.secondary)
         }
         TmdbRating(candidate: candidate)
+        if !candidate.genres.isEmpty {
+          Text(candidate.genres.joined(separator: " · ")).font(.caption).foregroundStyle(.secondary)
+        }
         confidence
         action.padding(.top, 4)
       }

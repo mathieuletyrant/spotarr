@@ -17,6 +17,9 @@ export const CandidateSchema = z.object({
   // Absent for a direct ID, which is certain.
   confidence: z.number().min(0).max(1).optional(),
   libraryState: z.enum(["ABSENT", "REQUESTED", "PARTIAL", "AVAILABLE"]),
+  // TMDB's genres, in the settings' language. Absent when unknown: Shares
+  // identified before genres were kept, until fillMissingGenres() runs.
+  genres: z.array(z.string()).optional(),
 });
 export type Candidate = z.infer<typeof CandidateSchema>;
 
