@@ -11,15 +11,17 @@ import { Seerr } from "../../integrations/seerr/client";
 
 const db = await openDatabase(":memory:");
 const shares = new ShareRepository(db);
-const queue = new ShareQueue(shares, identifyNothing, async () => 2);
+const settings = new SettingsRepository(db);
 const webhooks = new WebhookRepository(db);
+const sender = new WebhookSender(webhooks, async () => "");
+const queue = new ShareQueue({ shares, settings, sender, identify: identifyNothing });
 const app = createApp({
   apiToken: () => "t",
-  settings: new SettingsRepository(db),
+  settings,
   shares,
   queue,
   webhooks,
-  sender: new WebhookSender(webhooks, async () => ""),
+  sender,
   seerr: async () => new Seerr({ url: "http://seerr.test", apiKey: "key" }),
 });
 const call = async (method: string, body: unknown) => {

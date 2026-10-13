@@ -14,15 +14,16 @@ const db = await openDatabase(":memory:");
 const settings = new SettingsRepository(db);
 await settings.setApiToken("secret-token");
 const shares = new ShareRepository(db);
-const queue = new ShareQueue(shares, identifyNothing, async () => 2);
 const webhooks = new WebhookRepository(db);
+const sender = new WebhookSender(webhooks, async () => "");
+const queue = new ShareQueue({ shares, settings, sender, identify: identifyNothing });
 const app = createApp({
   apiToken: () => "secret-token",
   settings,
   shares,
   queue,
   webhooks,
-  sender: new WebhookSender(webhooks, async () => ""),
+  sender,
   seerr: async () => new Seerr({ url: "http://seerr.test", apiKey: "key" }),
 });
 const call = (method: string, body: unknown = {}, headers: Record<string, string> = {}) =>
