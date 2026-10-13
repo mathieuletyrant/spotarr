@@ -1,11 +1,11 @@
 import { afterEach, expect, mock, test } from "bun:test";
 import pkg from "../package.json";
+import { WebhookSender } from "./api/webhooks/sender";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ShareRepository } from "./domain/shares/repository";
 import { WebhookRepository } from "./domain/webhooks/repository";
-import { WebhookSender } from "./domain/webhooks/sender";
 import {
   getGetMovieMovieIdResponseMock,
   getPostRequestResponseMock,

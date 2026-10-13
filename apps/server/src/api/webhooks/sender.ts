@@ -1,12 +1,14 @@
+import type { Event } from "../../domain/shares/events";
+import type { Share } from "../../domain/shares/types";
+import type { WebhookRepository } from "../../domain/webhooks/repository";
+import type { EventName, Webhook } from "../../domain/webhooks/types";
 import { postWebhook } from "../../integrations/webhook/post";
 import { log } from "../../log";
-import type { Candidate, Share } from "../shares/types";
 import { eventBody } from "./event-body";
-import type { WebhookRepository } from "./repository";
-import type { EventName, Webhook } from "./types";
 
-// Sends Events to the Webhooks that chose them, one try each, and records how
-// each delivery went. A Webhook failing never fails anything else.
+// Listens to the domain's Events and sends each one to the Webhooks that chose
+// it, one try each, recording how each delivery went. A Webhook failing never
+// fails anything else.
 export class WebhookSender {
   constructor(
     private readonly webhooks: WebhookRepository,
@@ -14,30 +16,20 @@ export class WebhookSender {
     private readonly webUiUrl: () => Promise<string>,
   ) {}
 
-  // An Identification ended: READY, NO_MATCH or FAILED.
-  async identificationEnded(share: Share): Promise<void> {
-    const status = share.identification.status;
-    if (status === "READY") await this.send("identification.ready", share);
-    if (status === "NO_MATCH") await this.send("identification.no_match", share);
-    if (status === "FAILED") await this.send("identification.failed", share);
-  }
-
-  async mediaAdded(share: Share, added: Candidate): Promise<void> {
-    await this.send("media.added", share, added);
+  // The domain's Emit: index.ts hands `(event) => sender.emit(event)` to it.
+  async emit(event: Event): Promise<void> {
+    const added = event.name === "media.added" ? event.added : undefined;
+    const body = eventBody(event.name, event.share, await this.webUiUrl(), added);
+    for (const webhook of await this.webhooks.list()) {
+      if (webhook.events.some((chosen) => chosen === event.name)) {
+        await this.deliver(webhook, event.name, body);
+      }
+    }
   }
 
   // Sends a sample "test" event to one Webhook, whatever events it chose.
   async test(webhook: Webhook): Promise<void> {
     await this.deliver(webhook, "test", eventBody("test", SAMPLE, await this.webUiUrl()));
-  }
-
-  private async send(event: EventName, share: Share, added?: Candidate): Promise<void> {
-    const body = eventBody(event, share, await this.webUiUrl(), added);
-    for (const webhook of await this.webhooks.list()) {
-      if (webhook.events.some((chosen) => chosen === event)) {
-        await this.deliver(webhook, event, body);
-      }
-    }
   }
 
   private async deliver(webhook: Webhook, event: EventName, body: string): Promise<void> {

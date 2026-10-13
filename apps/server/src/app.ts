@@ -10,10 +10,10 @@ import { shareRpcs } from "./api/rpc/shares";
 import { statusRpcs } from "./api/rpc/status";
 import { webhookRpcs } from "./api/rpc/webhooks";
 import { serveWebApp } from "./api/web";
+import type { WebhookSender } from "./api/webhooks/sender";
 import type { SettingsRepository } from "./domain/settings/repository";
 import type { ShareRepository } from "./domain/shares/repository";
 import type { WebhookRepository } from "./domain/webhooks/repository";
-import type { WebhookSender } from "./domain/webhooks/sender";
 import { log } from "./log";
 
 export type AppDeps = {

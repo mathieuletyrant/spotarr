@@ -4,7 +4,7 @@ import { openDatabase } from "../../db";
 import { SettingsRepository } from "../../domain/settings/repository";
 import { ShareRepository } from "../../domain/shares/repository";
 import { WebhookRepository } from "../../domain/webhooks/repository";
-import { WebhookSender } from "../../domain/webhooks/sender";
+import { WebhookSender } from "../webhooks/sender";
 
 const db = await openDatabase(":memory:");
 const shares = new ShareRepository(db);

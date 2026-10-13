@@ -1,8 +1,8 @@
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import type { WebhookRepository } from "../../domain/webhooks/repository";
-import type { WebhookSender } from "../../domain/webhooks/sender";
 import type { Webhook } from "../../domain/webhooks/types";
 import { SpotarrError } from "../../errors";
+import type { WebhookSender } from "../webhooks/sender";
 import type { Rpcs } from "./types";
 
 export function webhookRpcs(

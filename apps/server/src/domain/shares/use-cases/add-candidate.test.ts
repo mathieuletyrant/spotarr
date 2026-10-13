@@ -6,23 +6,23 @@ import {
 } from "../../../integrations/seerr/gen/seerr.faker";
 import { fakeFetch } from "../../../testing/fake-fetch";
 import { SettingsRepository } from "../../settings/repository";
-import { WebhookRepository } from "../../webhooks/repository";
-import { WebhookSender } from "../../webhooks/sender";
+import type { Event } from "../events";
 import { ShareRepository } from "../repository";
 import { addCandidate } from "./add-candidate";
 
 afterEach(() => mock.restore());
 
-// A finished Share with one Candidate, Due Date; Seerr set in the Settings and
-// a Webhook listening to media.added.
+// A finished Share with one Candidate, Due Date; Seerr set in the Settings.
+// `emitted` collects the Events the use case emits.
 async function shareWithDueDate() {
   const db = await openDatabase(":memory:");
   const shares = new ShareRepository(db);
   const settings = new SettingsRepository(db);
   await settings.update({ seerr: { url: "http://seerr.test", apiKey: "key" } });
-  const webhooks = new WebhookRepository(db);
-  await webhooks.save("", { url: "http://ha.local/hook", events: ["media.added"], secret: "" });
-  const sender = new WebhookSender(webhooks, async () => "");
+  const emitted: Event[] = [];
+  const emit = async (event: Event) => {
+    emitted.push(event);
+  };
   const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
   await shares.finish(
     id,
@@ -43,20 +43,19 @@ async function shareWithDueDate() {
     },
     10,
   );
-  return { shares, id, deps: { shares, settings, sender } };
+  return { shares, id, emitted, deps: { shares, settings, emit } };
 }
 const dueDate = { tmdbId: 41733, type: "MOVIE" as const };
 
-// The paths fetched, in order: Seerr's and the Webhook's.
+// The paths fetched from Seerr, in order.
 const paths = (fetch: { mock: { calls: unknown[][] } }) =>
   fetch.mock.calls.map(([url]) => new URL(String(url)).pathname);
 
 test("an absent Candidate is requested from Seerr", async () => {
-  const { shares, id, deps } = await shareWithDueDate();
+  const { shares, id, emitted, deps } = await shareWithDueDate();
   const fetch = fakeFetch({
     "/api/v1/movie/41733": getGetMovieMovieIdResponseMock({ mediaInfo: undefined }),
     "/api/v1/request": getPostRequestResponseMock(),
-    "/hook": {},
   });
 
   await addCandidate(id, dueDate, deps);
@@ -66,12 +65,12 @@ test("an absent Candidate is requested from Seerr", async () => {
     { tmdbId: 41733, target: "SEERR", status: "REQUESTED", automatic: false },
   ]);
   expect(share?.summary).toBe("REQUESTED");
-  // Seerr is asked, then the Webhook hears media.added.
-  expect(paths(fetch)).toEqual(["/api/v1/movie/41733", "/api/v1/request", "/hook"]);
+  expect(paths(fetch)).toEqual(["/api/v1/movie/41733", "/api/v1/request"]);
+  expect(emitted).toMatchObject([{ name: "media.added", added: { title: "Date limite" } }]);
 });
 
 test("a Candidate already in the library is not requested again", async () => {
-  const { shares, id, deps } = await shareWithDueDate();
+  const { shares, id, emitted, deps } = await shareWithDueDate();
   const fetch = fakeFetch({
     "/api/v1/movie/41733": getGetMovieMovieIdResponseMock({ mediaInfo: { status: 5 } }),
   });
@@ -79,7 +78,8 @@ test("a Candidate already in the library is not requested again", async () => {
   await addCandidate(id, dueDate, deps);
 
   expect((await shares.get(id))?.additions.map((a) => a.status)).toEqual(["ALREADY_PRESENT"]);
-  expect(paths(fetch)).toEqual(["/api/v1/movie/41733"]); // no request, no media.added
+  expect(paths(fetch)).toEqual(["/api/v1/movie/41733"]); // no request
+  expect(emitted).toEqual([]); // no media.added
 });
 
 test("Seerr failing is recorded as a failed Addition, with the reason", async () => {
