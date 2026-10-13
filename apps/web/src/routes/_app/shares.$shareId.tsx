@@ -1,4 +1,4 @@
-import { Summary } from "@spotarr/contract";
+import { type Share, Summary } from "@spotarr/contract";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Film, Sparkles } from "lucide-react";
@@ -42,9 +42,7 @@ function SharePage() {
               Identifying… {waitingText(share.identification?.effort)}; the page follows on its own.
             </p>
           ) : share.candidates.length === 0 ? (
-            <p className="text-text-muted">
-              No candidates. Retry the identification, or open the source.
-            </p>
+            <NoCandidates share={share} />
           ) : (
             <ul className="divide-y divide-divider">
               {share.candidates.map((candidate) => (
@@ -59,5 +57,21 @@ function SharePage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+// Why there is nothing to add: the error when the Identification failed, so a
+// failure does not read like a reel with no film in it.
+function NoCandidates({ share }: { share: Share }) {
+  if (share.failureReason) {
+    return (
+      <div className="flex flex-col gap-1">
+        <p className="text-status-error">The identification failed: {share.failureReason}</p>
+        <p className="text-text-muted">Retry it, with more effort or a hint, or open the source.</p>
+      </div>
+    );
+  }
+  return (
+    <p className="text-text-muted">No candidates. Retry the identification, or open the source.</p>
   );
 }
