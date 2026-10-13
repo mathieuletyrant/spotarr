@@ -1,5 +1,5 @@
 import { SpotarrError } from "../../../errors";
-import type { ShareRepository } from "../repository";
+import type { ShareRepository } from "../../shares/repository";
 
 // Runs the Identification of a finished Share again. Its Additions are kept.
 export async function retryIdentification(id: string, shares: ShareRepository): Promise<void> {

@@ -7,7 +7,7 @@
 
 import type { Answer } from "../src/domain/identification/guess-titles";
 import { identifyShare } from "../src/domain/identification/use-cases/identify-share";
-import { identificationDeps } from "../src/domain/identification/use-cases/run-identification";
+import { identificationDeps } from "../src/domain/identification/use-cases/start-identification";
 import { SettingsSchema } from "../src/domain/settings/schema";
 
 type Case = { reel: string; expected: { title: string; tmdbId: number }[] };

@@ -1,10 +1,10 @@
 import { log } from "../../log";
-import { runIdentification } from "../identification/use-cases/run-identification";
+import { endIdentification } from "../identification/use-cases/end-identification";
+import { startIdentification } from "../identification/use-cases/start-identification";
 import type { SettingsRepository } from "../settings/repository";
 import type { Emit } from "./events";
 import type { ShareRepository } from "./repository";
 import type { IdentificationResult, ShareInput } from "./types";
-import { endIdentification } from "./use-cases/end-identification";
 
 export type Identify = (shareId: string, input: ShareInput) => Promise<IdentificationResult>;
 
@@ -35,7 +35,7 @@ export class ShareQueue {
     this.settings = deps.settings;
     this.emit = deps.emit;
     this.identify =
-      deps.identify ?? ((shareId, input) => runIdentification(shareId, input, deps.settings));
+      deps.identify ?? ((shareId, input) => startIdentification(shareId, input, deps.settings));
     this.idleMs = deps.idleMs ?? 1000;
   }
 

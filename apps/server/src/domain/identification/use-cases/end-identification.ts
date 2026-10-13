@@ -1,9 +1,9 @@
 import type { SettingsRepository } from "../../settings/repository";
-import type { Emit, IdentificationEventName } from "../events";
-import type { ShareRepository } from "../repository";
-import { candidatesToAutoAdd } from "../rules/candidates-to-auto-add";
-import type { Share } from "../types";
-import { addToLibrary } from "./add-to-library";
+import type { Emit, IdentificationEventName } from "../../shares/events";
+import type { ShareRepository } from "../../shares/repository";
+import { candidatesToAutoAdd } from "../../shares/rules/candidates-to-auto-add";
+import type { Share } from "../../shares/types";
+import { addToLibrary } from "../../shares/use-cases/add-to-library";
 
 type EndIdentificationDeps = {
   shares: ShareRepository;
