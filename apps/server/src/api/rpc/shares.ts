@@ -36,7 +36,7 @@ export function shareRpcs(
     async listShares(req) {
       const page = await listHistory(
         {
-          limit: Math.min(req.pageSize ?? 50, 100),
+          limit: req.pageSize,
           cursor: req.cursor,
           summaries: req.summaries.map((s) => Summary[s] as Share["summary"]),
           query: req.query?.trim(),
