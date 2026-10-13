@@ -8,7 +8,7 @@ import { AnswerSchema } from "../guess-titles";
 import { type IdentifyDeps, identifyShare } from "./identify-share";
 
 // Settings are read once per Identification, so a change applies to the next Share.
-export async function runIdentification(
+export async function startIdentification(
   shareId: string,
   input: ShareInput,
   settings: SettingsRepository,

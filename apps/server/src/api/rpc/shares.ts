@@ -1,11 +1,11 @@
 import { MediaType, Summary, Target } from "@spotarr/contract";
+import { retryIdentification } from "../../domain/identification/use-cases/retry-identification";
 import type { SettingsRepository } from "../../domain/settings/repository";
 import type { ShareRepository } from "../../domain/shares/repository";
 import type { Share } from "../../domain/shares/types";
 import { addToLibrary } from "../../domain/shares/use-cases/add-to-library";
 import { createShare } from "../../domain/shares/use-cases/create-share";
 import { listHistory } from "../../domain/shares/use-cases/list-history";
-import { retryIdentification } from "../../domain/shares/use-cases/retry-identification";
 import { SpotarrError } from "../../errors";
 import { shareMessage } from "../messages";
 import type { WebhookSender } from "../webhooks/sender";

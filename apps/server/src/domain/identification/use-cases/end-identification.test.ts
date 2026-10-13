@@ -6,8 +6,8 @@ import {
 } from "../../../integrations/seerr/gen/seerr.faker";
 import { fakeFetch } from "../../../testing/fake-fetch";
 import { SettingsRepository } from "../../settings/repository";
-import type { Event } from "../events";
-import { ShareRepository } from "../repository";
+import type { Event } from "../../shares/events";
+import { ShareRepository } from "../../shares/repository";
 import { endIdentification } from "./end-identification";
 
 afterEach(() => mock.restore());
