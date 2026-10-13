@@ -2,9 +2,7 @@ import { expect, test } from "bun:test";
 import { createApp } from "../../app";
 import { openDatabase } from "../../db";
 import { SettingsRepository } from "../../domain/settings/repository";
-import { ShareQueue } from "../../domain/shares/queue";
 import { ShareRepository } from "../../domain/shares/repository";
-import { identifyNothing } from "../../domain/shares/test-helpers";
 import { WebhookRepository } from "../../domain/webhooks/repository";
 import { WebhookSender } from "../../domain/webhooks/sender";
 import { Seerr } from "../../integrations/seerr/client";
@@ -14,12 +12,10 @@ const shares = new ShareRepository(db);
 const settings = new SettingsRepository(db);
 const webhooks = new WebhookRepository(db);
 const sender = new WebhookSender(webhooks, async () => "");
-const queue = new ShareQueue({ shares, settings, sender, identify: identifyNothing });
 const app = createApp({
   apiToken: () => "t",
   settings,
   shares,
-  queue,
   webhooks,
   sender,
   seerr: async () => new Seerr({ url: "http://seerr.test", apiKey: "key" }),

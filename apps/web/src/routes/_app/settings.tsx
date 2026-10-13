@@ -221,7 +221,12 @@ function SettingsForm({ saved }: { saved: Values }) {
             className={inputClass}
           />
         </Field>
-        <Field form={form} name="extraction.concurrency" label="Identifications at the same time">
+        <Field
+          form={form}
+          name="extraction.concurrency"
+          label="Identifications at the same time"
+          hint="Applies when Spotarr restarts."
+        >
           <select
             value={values["extraction.concurrency"]}
             onChange={(e) => form.change("extraction.concurrency", e.target.value)}

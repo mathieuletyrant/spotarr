@@ -8,18 +8,19 @@ import { endIdentification } from "./use-cases/end-identification";
 
 export type Identify = (shareId: string, input: ShareInput) => Promise<IdentificationResult>;
 
-// Runs Identifications in the background, at most `concurrency()` at a time.
-// The queue itself is the shares table (status QUEUED): nothing is lost on a
-// restart, and start() puts interrupted Identifications back in line.
+// Runs Identifications in the background. The queue itself is the shares
+// table: a Share is waiting while its status is QUEUED, so nothing is lost on a
+// restart. `concurrency` workers each loop: take the next QUEUED Share,
+// identify it, start over; with nothing waiting, look again a second later.
 //
 // A Share's whole lifecycle happens here: claimed, identified, finished or
 // failed, then ended (Webhooks, then auto add).
 export class ShareQueue {
-  private running = 0;
   private readonly shares: ShareRepository;
   private readonly settings: SettingsRepository;
   private readonly sender: WebhookSender;
   private readonly identify: Identify;
+  private readonly idleMs: number;
 
   constructor(deps: {
     shares: ShareRepository;
@@ -27,46 +28,34 @@ export class ShareQueue {
     sender: WebhookSender;
     // The Identification itself. Tests replace it, so no LLM is called.
     identify?: Identify;
+    // How long a worker waits when nothing is queued. Tests shorten it.
+    idleMs?: number;
   }) {
     this.shares = deps.shares;
     this.settings = deps.settings;
     this.sender = deps.sender;
     this.identify =
       deps.identify ?? ((shareId, input) => runIdentification(shareId, input, deps.settings));
+    this.idleMs = deps.idleMs ?? 1000;
   }
 
+  // Puts the Identifications a restart interrupted back in line, then starts
+  // the workers. The concurrency setting applies at the next start.
   async start(): Promise<void> {
     await this.shares.requeueInterrupted();
-    this.wake();
+    const { concurrency } = (await this.settings.get()).extraction;
+    for (let i = 0; i < concurrency; i++) void this.work();
   }
 
-  // Call after queuing a Share. Returns at once; the work happens in the background.
-  wake(): void {
-    // A database error here must not stop the queue: the next wake() retries.
-    void this.fillFreeSlots().catch((error) => log({ step: "queue", error: String(error) }));
-  }
-
-  // Starts Identifications until every slot is busy or nothing is queued.
-  private async fillFreeSlots(): Promise<void> {
-    const slots = (await this.settings.get()).extraction.concurrency;
-    while (this.running < slots) {
-      // Take the slot before the next await, so two calls cannot both take it.
-      this.running++;
-      let id: string | undefined;
-      try {
-        id = await this.shares.claimNext();
-      } catch (error) {
-        this.running--; // give the slot back, or it is lost until a restart
-        throw error;
-      }
-      if (!id) {
-        this.running--;
-        return;
-      }
-      void this.process(id).finally(() => {
-        this.running--;
-        this.wake(); // a slot just freed up: start the next queued Share
+  // One worker. Never stops: a database error only means trying again later.
+  private async work(): Promise<void> {
+    while (true) {
+      const id = await this.shares.claimNext().catch((error) => {
+        log({ step: "queue", error: String(error) });
+        return undefined;
       });
+      if (id) await this.process(id);
+      else await Bun.sleep(this.idleMs);
     }
   }
 

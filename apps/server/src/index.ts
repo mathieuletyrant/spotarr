@@ -30,8 +30,8 @@ const shares = new ShareRepository(db);
 const webhooks = new WebhookRepository(db);
 const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
 
-const queue = new ShareQueue({ shares, settings, sender });
-await queue.start();
+// Identifies the QUEUED Shares in the background.
+await new ShareQueue({ shares, settings, sender }).start();
 
 // The web UI, once built (pnpm build). In dev, Vite serves it instead.
 const webDir = new URL("../../web/dist", import.meta.url).pathname;
@@ -40,7 +40,6 @@ const app = createApp({
   apiToken: () => token,
   settings,
   shares,
-  queue,
   webhooks,
   sender,
   seerr: async () => seerrFrom(await settings.get()),

@@ -19,13 +19,14 @@ const noMatch: IdentificationResult = {
 };
 
 // A queue on a fresh database, with the default Settings (concurrency 2).
+// Call queue.start() to run its workers; they look for work every 5 ms.
 async function setUp(identify: Identify) {
   const db = await openDatabase(":memory:");
   const shares = new ShareRepository(db);
   const settings = new SettingsRepository(db);
   const webhooks = new WebhookRepository(db);
   const sender = new WebhookSender(webhooks, async () => "");
-  const queue = new ShareQueue({ shares, settings, sender, identify });
+  const queue = new ShareQueue({ shares, settings, sender, identify, idleMs: 5 });
   return { shares, settings, webhooks, queue };
 }
 
@@ -42,10 +43,8 @@ test("at most `concurrency` Identifications run at once, and all of them finish"
   });
 
   const ids: string[] = [];
-  for (let i = 0; i < 3; i++) {
-    ids.push(await shares.create({ text: `share ${i}` }, "text"));
-    queue.wake();
-  }
+  for (let i = 0; i < 3; i++) ids.push(await shares.create({ text: `share ${i}` }, "text"));
+  await queue.start();
   await until(async () => running === 2);
   const statuses = async () =>
     Promise.all(ids.map(async (id) => (await shares.get(id))?.identification.status));
@@ -61,7 +60,7 @@ test("an Identification that throws ends FAILED with its error", async () => {
     throw new Error("TMDB unreachable");
   });
   const id = await shares.create({ text: "x" }, "text");
-  queue.wake();
+  await queue.start();
 
   await until(async () => (await shares.get(id))?.identification.status === "FAILED");
   expect((await shares.get(id))?.identification.error).toBe("TMDB unreachable");
@@ -89,22 +88,27 @@ test("an ended Identification reaches the Webhooks, failed ones included", async
   });
   const fetch = fakeFetch({ "/hook": {} });
   const id = await shares.create({ text: "x" }, "text");
-  queue.wake();
+  await queue.start();
 
   await until(async () => fetch.mock.calls.length === 1);
   const body = JSON.parse(String(fetch.mock.calls[0]?.[1]?.body));
   expect(body).toMatchObject({ event: "identification.failed", shareId: id });
 });
 
-test("a database error while claiming gives the slot back", async () => {
+test("a worker survives a database error and takes the next Share", async () => {
   const { shares, settings, queue } = await setUp(async () => noMatch);
   await settings.update({ extraction: { concurrency: 1 } });
   const claim = spyOn(shares, "claimNext").mockRejectedValueOnce(new Error("database is locked"));
+  await queue.start();
+  await until(async () => claim.mock.calls.length >= 1);
 
-  queue.wake(); // fails, and must not keep the only slot
-  await until(async () => claim.mock.calls.length === 1);
   const id = await shares.create({ text: "x" }, "text");
-  queue.wake();
+  await until(async () => (await shares.get(id))?.identification.status === "NO_MATCH");
+});
 
+test("a Share queued after start() is picked up", async () => {
+  const { shares, queue } = await setUp(async () => noMatch);
+  await queue.start();
+  const id = await shares.create({ text: "x" }, "text");
   await until(async () => (await shares.get(id))?.identification.status === "NO_MATCH");
 });

@@ -14,12 +14,11 @@ const shares = new ShareRepository(db);
 const settings = new SettingsRepository(db);
 const webhooks = new WebhookRepository(db);
 const sender = new WebhookSender(webhooks, async () => "");
-const queue = new ShareQueue({ shares, settings, sender, identify: identifyNothing });
+await new ShareQueue({ shares, settings, sender, identify: identifyNothing, idleMs: 5 }).start();
 const app = createApp({
   apiToken: () => "t",
   settings,
   shares,
-  queue,
   webhooks,
   sender,
   seerr: async () => new Seerr({ url: "http://seerr.test", apiKey: "key" }),
