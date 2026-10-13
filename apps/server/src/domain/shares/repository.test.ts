@@ -261,7 +261,7 @@ test("stats count Shares and Additions by month, and Shares by source", async ()
   ]);
 });
 
-test("finish keeps the effort the LLM got; requeue keeps the one asked", async () => {
+test("finish keeps the effort the LLM got; requeue keeps what Retry asked", async () => {
   const { shares } = await repository();
   const id = await shares.create({ text: "x" }, "text");
   await shares.finish(
@@ -271,9 +271,10 @@ test("finish keeps the effort the LLM got; requeue keeps the one asked", async (
   );
   expect((await shares.get(id))?.identification.effort).toBe("low");
 
-  await shares.requeue(id, "high");
-  expect(await shares.effortAsked(id)).toBe("high");
+  await shares.requeue(id, { effort: "high", hint: "the Korean show" });
+  expect(await shares.retryRequest(id)).toEqual({ effort: "high", hint: "the Korean show" });
+  expect((await shares.get(id))?.identification.hint).toBe("the Korean show");
 
   await shares.requeue(id);
-  expect(await shares.effortAsked(id)).toBeUndefined();
+  expect(await shares.retryRequest(id)).toEqual({ effort: undefined, hint: undefined });
 });

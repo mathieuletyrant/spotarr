@@ -53,7 +53,7 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     func `listShares`(request: Spotarr_V1_ListSharesRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_ListSharesResponse>
 
     /// Resets a finished Identification and queues it again, with another effort
-    /// if asked. Additions are kept.
+    /// or a hint if asked. Additions are kept.
     @available(iOS 13, *)
     func `retryIdentification`(request: Spotarr_V1_RetryIdentificationRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_RetryIdentificationResponse>
 

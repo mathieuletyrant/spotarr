@@ -41,6 +41,9 @@ export type Summary =
 
 export type ShareInput = { url?: string; text?: string; image?: Uint8Array };
 
+// What a Retry asks for its Identification only. Absent: the setting's effort, no hint.
+export type RetryRequest = { effort?: Effort; hint?: string };
+
 export type Addition = {
   id: string;
   createdAt: string;
@@ -68,6 +71,8 @@ export type Share = {
     error?: string;
     // The LLM's effort, when method is LLM.
     effort?: Effort;
+    // The hint given with the Retry that started this Identification.
+    hint?: string;
   };
   candidates: Candidate[];
   additions: Addition[];

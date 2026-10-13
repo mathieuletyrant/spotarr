@@ -28,7 +28,7 @@ service SpotarrService {
   // Newest first, paginated, filterable by Summary and by text.
   rpc ListShares(ListSharesRequest) returns (ListSharesResponse);
   // Resets a finished Identification and queues it again, with another effort
-  // if asked. Additions are kept.
+  // or a hint if asked. Additions are kept.
   rpc RetryIdentification(RetryIdentificationRequest) returns (RetryIdentificationResponse);
   // Adds one Candidate of a Share to the library. The Share comes back with the new Addition,
   // whose status says what happened: requested, already present, or failed (with the reason).
@@ -282,6 +282,8 @@ message Identification {
   optional string error = 7;
   // The effort the LLM got ("low", "medium", "high"), when method is LLM.
   optional string effort = 8;
+  // The hint given with the Retry that started this Identification.
+  optional string hint = 9;
 }
 
 message Clues {
@@ -439,6 +441,9 @@ message RetryIdentificationRequest {
   string id = 1;
   // "low", "medium" or "high" for this Identification only; the setting's when absent.
   optional string effort = 2;
+  // One sentence for the LLM, for this Identification only: "the Korean show,
+  // not the movie". 500 characters at most.
+  optional string hint = 3;
 }
 
 message RetryIdentificationResponse {

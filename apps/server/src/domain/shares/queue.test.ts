@@ -5,7 +5,7 @@ import type { Event } from "./events";
 import { type Identify, ShareQueue } from "./queue";
 import { ShareRepository } from "./repository";
 import { deferred, until } from "./test-helpers";
-import type { IdentificationResult } from "./types";
+import type { IdentificationResult, RetryRequest } from "./types";
 
 afterEach(() => mock.restore());
 
@@ -107,23 +107,24 @@ test("a Share queued after start() is picked up", async () => {
   await until(async () => (await shares.get(id))?.identification.status === "NO_MATCH");
 });
 
-test("the effort Retry asked for reaches that Identification only", async () => {
-  const efforts: (string | undefined)[] = [];
-  const { shares, queue } = await setUp(async (_id, _input, effort) => {
-    efforts.push(effort);
+test("what Retry asked for reaches that Identification only", async () => {
+  const asked: RetryRequest[] = [];
+  const { shares, queue } = await setUp(async (_id, _input, retry) => {
+    asked.push(retry);
     return noMatch;
   });
   const id = await shares.create({ text: "x" }, "text");
   await queue.start();
-  await until(async () => efforts.length === 1);
+  await until(async () => asked.length === 1);
   await until(async () => (await shares.get(id))?.summary === "NO_MATCH");
 
-  await shares.requeue(id, "high");
-  await until(async () => efforts.length === 2);
+  await shares.requeue(id, { effort: "high", hint: "the Korean show" });
+  await until(async () => asked.length === 2);
   await until(async () => (await shares.get(id))?.summary === "NO_MATCH");
   await shares.requeue(id);
-  await until(async () => efforts.length === 3);
+  await until(async () => asked.length === 3);
 
-  // undefined: the setting's.
-  expect(efforts).toEqual([undefined, "high", undefined]);
+  // Nothing asked: the setting's effort, no hint.
+  const nothing = { effort: undefined, hint: undefined };
+  expect(asked).toEqual([nothing, { effort: "high", hint: "the Korean show" }, nothing]);
 });

@@ -1,22 +1,12 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { useMutation } from "@connectrpc/connect-query";
-import { type Share, SpotarrService, Summary } from "@spotarr/contract";
-import { useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, RotateCw } from "lucide-react";
-import { useState } from "react";
-import { EFFORTS } from "../../lib/effort";
+import type { Share } from "@spotarr/contract";
+import { ExternalLink } from "lucide-react";
 import { shareDate } from "../../lib/format";
 import { DeleteShareButton } from "./delete-share-button";
+import { RetryForm } from "./retry-form";
 
-// Title, shared URL, and the actions: retry (with another effort if chosen),
-// open the source, delete.
+// Title, shared URL, the actions (open the source, delete), then the retry.
 export function ShareHeader({ share }: { share: Share }) {
-  const queryClient = useQueryClient();
-  // Empty: the effort of the settings.
-  const [effort, setEffort] = useState("");
-  const retry = useMutation(SpotarrService.method.retryIdentification, {
-    onSuccess: () => queryClient.invalidateQueries(),
-  });
   const { day, time } = shareDate(share.createdAt ? timestampDate(share.createdAt) : new Date());
 
   return (
@@ -33,30 +23,6 @@ export function ShareHeader({ share }: { share: Share }) {
           )}
         </div>
         <div className="flex flex-wrap gap-2 md:shrink-0">
-          <div className="flex">
-            <select
-              aria-label="Effort of the retry"
-              value={effort}
-              onChange={(e) => setEffort(e.target.value)}
-              className="h-10 rounded-l-md border border-border bg-bg px-3 text-sm"
-            >
-              <option value="">Default effort</option>
-              {EFFORTS.map((e) => (
-                <option key={e} value={e}>
-                  {`${e[0]?.toUpperCase()}${e.slice(1)} effort`}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={() => retry.mutate({ id: share.id, effort: effort || undefined })}
-              disabled={retry.isPending || share.summary === Summary.IN_PROGRESS}
-              className="flex h-10 items-center gap-2 rounded-r-md border border-l-0 border-border px-4 whitespace-nowrap hover:bg-surface"
-            >
-              <RotateCw aria-hidden className="size-4" />
-              Retry identification
-            </button>
-          </div>
           {share.input?.url && (
             <a
               href={share.input.url}
@@ -71,7 +37,7 @@ export function ShareHeader({ share }: { share: Share }) {
           <DeleteShareButton share={share} />
         </div>
       </div>
-      {retry.error && <p className="text-sm text-status-error">{retry.error.message}</p>}
+      <RetryForm share={share} />
     </div>
   );
 }

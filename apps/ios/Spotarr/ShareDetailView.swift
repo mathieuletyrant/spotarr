@@ -11,6 +11,9 @@ struct ShareDetailView: View {
   @State private var share: Share?
   @State private var error: String?
   @State private var retrying = false
+  /// The hint alert is open, and what is typed in it.
+  @State private var askingHint = false
+  @State private var hint = ""
 
   private static let extractors = [
     "video": "Video",
@@ -41,13 +44,15 @@ struct ShareDetailView: View {
               Label("Open the source", systemImage: "safari")
             }
           }
-          // A tap retries with the settings' effort; a long press offers another.
+          // A tap retries with the settings' effort; a long press offers another,
+          // or a hint for the LLM.
           Menu {
             Section("Retry with the effort") {
               ForEach(["low", "medium", "high"], id: \.self) { effort in
                 Button(effort.capitalized) { Task { await retry(effort: effort) } }
               }
             }
+            Button("With a hint…", systemImage: "text.bubble") { askingHint = true }
           } label: {
             Label("Retry identification", systemImage: "arrow.clockwise")
           } primaryAction: {
@@ -56,6 +61,18 @@ struct ShareDetailView: View {
           .disabled(retrying || share.isInProgress)
         }
       }
+    }
+    .alert("Hint for the LLM", isPresented: $askingHint) {
+      TextField("The Korean show, not the movie", text: $hint)
+      Button("Retry") {
+        Task {
+          await retry(effort: nil, hint: hint)
+          hint = ""
+        }
+      }
+      Button("Cancel", role: .cancel) {}
+    } message: {
+      Text("What the identification got wrong, in one sentence.")
     }
     .refreshable { await load() }
     .task { await load() }
@@ -129,6 +146,9 @@ struct ShareDetailView: View {
           LabeledContent("Caption", value: clue(share.identification.clues.caption))
           LabeledContent("Author", value: clue(share.identification.clues.author))
           LabeledContent("Method", value: method(of: share) ?? "None")
+          if share.identification.hasHint {
+            LabeledContent("Your hint", value: share.identification.hint)
+          }
         }
       }
 
@@ -154,13 +174,14 @@ struct ShareDetailView: View {
     }
   }
 
-  /// `effort` is for this Identification only; the settings' when nil.
-  private func retry(effort: String?) async {
+  /// `effort` and `hint` are for this Identification only; nil: the settings'
+  /// effort, no hint.
+  private func retry(effort: String?, hint: String? = nil) async {
     guard let client = SpotarrClient(settings: SettingsStore.load()) else { return }
     retrying = true
     defer { retrying = false }
     do {
-      let fresh = try await client.retryIdentification(id: shareID, effort: effort)
+      let fresh = try await client.retryIdentification(id: shareID, effort: effort, hint: hint)
       show(fresh)
       error = nil
     } catch {

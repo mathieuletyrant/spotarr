@@ -53,7 +53,7 @@ export function shareRpcs(
     },
 
     async retryIdentification(req) {
-      await retryIdentification(req.id, req.effort, shares);
+      await retryIdentification(req.id, { effort: req.effort, hint: req.hint }, shares);
       return shareAnswer(req.id);
     },
 

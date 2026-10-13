@@ -1,17 +1,16 @@
-import type { Effort } from "../../integrations/llm/client";
 import { log } from "../../log";
 import { endIdentification } from "../identification/use-cases/end-identification";
 import { startIdentification } from "../identification/use-cases/start-identification";
 import type { SettingsRepository } from "../settings/repository";
 import type { Emit } from "./events";
 import type { ShareRepository } from "./repository";
-import type { IdentificationResult, ShareInput } from "./types";
+import type { IdentificationResult, RetryRequest, ShareInput } from "./types";
 
-// `effort` is the one Retry asked for; the setting's when undefined.
+// `retry` is what a Retry asked for: an effort, a hint. Empty for a new Share.
 export type Identify = (
   shareId: string,
   input: ShareInput,
-  effort: Effort | undefined,
+  retry: RetryRequest,
 ) => Promise<IdentificationResult>;
 
 // Runs Identifications in the background. The queue itself is the shares
@@ -42,7 +41,7 @@ export class ShareQueue {
     this.emit = deps.emit;
     this.identify =
       deps.identify ??
-      ((shareId, input, effort) => startIdentification(shareId, input, effort, deps.settings));
+      ((shareId, input, retry) => startIdentification(shareId, input, retry, deps.settings));
     this.idleMs = deps.idleMs ?? 1000;
   }
 
@@ -71,7 +70,7 @@ export class ShareQueue {
     const elapsed = () => Math.round(performance.now() - started);
     try {
       const input = await this.shares.input(id);
-      const result = await this.identify(id, input, await this.shares.effortAsked(id));
+      const result = await this.identify(id, input, await this.shares.retryRequest(id));
       await this.shares.finish(id, result, elapsed());
       log({ shareId: id, step: "identification", durationMs: elapsed(), status: result.status });
     } catch (error) {

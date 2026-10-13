@@ -41,6 +41,7 @@ export interface Shares {
   effort: string | null;
   error: string | null;
   extractors: Generated<string>;
+  hint: string | null;
   id: string;
   input_image: Uint8Array | null;
   input_text: string | null;

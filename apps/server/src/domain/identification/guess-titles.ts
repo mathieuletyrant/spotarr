@@ -37,16 +37,18 @@ Rules:
 - One candidate per work when the video presents several (a "5 films to watch" video gives 5 candidates).
 - When a single work is uncertain, give up to 3 guesses, the most likely first.
 - Prefer the original title and the release year: they are used to search TMDB.
-- Never invent a work: an empty list is a valid answer.`;
+- Never invent a work: an empty list is a valid answer.
+- A hint from the person who shared the video corrects an earlier wrong answer: follow it.`;
 
-// What the LLM gets: a video's frames and sound, or a photo post's picture alone.
-type LlmInput = { clues: Clues; images: Uint8Array[]; audio?: Uint8Array };
+// What the LLM gets: a video's frames and sound, or a photo post's picture alone,
+// and the hint given with a Retry.
+type LlmInput = { clues: Clues; hint?: string; images: Uint8Array[]; audio?: Uint8Array };
 
 // Asks the LLM which works the video shows, from what it reads, sees and hears.
 // `today` matters: without it the LLM dates a film released this year to the
 // years it knows, and TMDB then finds a namesake ("Kraken" 2024 → "Kraken Mare").
 export async function guessTitles(
-  { clues, images, audio }: LlmInput,
+  { clues, hint, images, audio }: LlmInput,
   llm: Llm,
   today = new Date(),
 ): Promise<LlmReply> {
@@ -60,11 +62,17 @@ export async function guessTitles(
       content: [
         {
           type: "text",
-          text: `Caption: ${clues.caption ?? "(none)"}\nAuthor: ${clues.author ?? "(unknown)"}`,
+          text: cluesText(clues, hint),
         },
         ...images.map(imagePart),
         ...(audio ? [audioPart(audio)] : []),
       ],
     },
   ]);
+}
+
+function cluesText(clues: Clues, hint: string | undefined): string {
+  const text = `Caption: ${clues.caption ?? "(none)"}\nAuthor: ${clues.author ?? "(unknown)"}`;
+  if (!hint) return text;
+  return `${text}\nHint from the person who shared it: ${hint}`;
 }

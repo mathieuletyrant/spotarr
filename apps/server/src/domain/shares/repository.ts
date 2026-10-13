@@ -11,6 +11,7 @@ import {
   type IdentificationResult,
   type IdentificationStatus,
   type Method,
+  type RetryRequest,
   type Share,
   type ShareInput,
 } from "./types";
@@ -62,6 +63,7 @@ const COLUMNS = [
   "candidates",
   "error",
   "effort",
+  "hint",
 ] as const;
 
 export class ShareRepository {
@@ -196,8 +198,8 @@ export class ShareRepository {
   }
 
   // Puts a Share back in the queue, clearing what its Identification found. Additions stay.
-  // `effort` is for this Identification only; the setting's when undefined.
-  async requeue(id: string, effort?: Effort): Promise<void> {
+  // What `retry` asks is for this Identification only.
+  async requeue(id: string, retry: RetryRequest = {}): Promise<void> {
     await this.db.transaction().execute(async (trx) => {
       await trx.deleteFrom("frames").where("share_id", "=", id).execute();
       await this.update(
@@ -211,7 +213,8 @@ export class ShareRepository {
           reasoning: null,
           candidates: "[]",
           llm_cost_usd: null,
-          effort: effort ?? null,
+          effort: retry.effort ?? null,
+          hint: retry.hint ?? null,
           error: null,
         },
         trx,
@@ -219,14 +222,17 @@ export class ShareRepository {
     });
   }
 
-  // The effort Retry asked for this Share's Identification, if any.
-  async effortAsked(id: string): Promise<Effort | undefined> {
+  // What Retry asked for this Share's Identification: an effort, a hint.
+  async retryRequest(id: string): Promise<RetryRequest> {
     const row = await this.db
       .selectFrom("shares")
-      .select("effort")
+      .select(["effort", "hint"])
       .where("id", "=", id)
       .executeTakeFirst();
-    return (row?.effort as Effort | null) ?? undefined;
+    return {
+      effort: (row?.effort as Effort | null) ?? undefined,
+      hint: row?.hint ?? undefined,
+    };
   }
 
   // What the LLM cost for the Shares of the last 30 days, counting only the
@@ -447,6 +453,7 @@ type ShareRow = {
   candidates: string;
   error: string | null;
   effort: string | null;
+  hint: string | null;
 };
 
 type AdditionRow = {
@@ -486,6 +493,7 @@ function toShare(row: ShareRow, additionRows: AdditionRow[], frameRows: FrameRow
       reasoning: row.reasoning ?? undefined,
       error: row.error ?? undefined,
       effort: (row.effort as Effort | null) ?? undefined,
+      hint: row.hint ?? undefined,
     },
     candidates,
     additions,

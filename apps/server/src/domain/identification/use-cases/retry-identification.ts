@@ -3,14 +3,27 @@ import { SpotarrError } from "../../../errors";
 import { EFFORTS } from "../../../integrations/llm/client";
 import type { ShareRepository } from "../../shares/repository";
 
-// Runs the Identification of a finished Share again, with `effort` if given
-// (else the setting's). Its Additions are kept. An unknown effort throws a ZodError.
+// What a Retry may ask: an effort, and a hint of one sentence or so. An empty
+// hint is no hint.
+const RetrySchema = z.object({
+  effort: z.enum(EFFORTS).optional(),
+  hint: z
+    .string()
+    .trim()
+    .max(500)
+    .optional()
+    .transform((hint) => hint || undefined),
+});
+
+// Runs the Identification of a finished Share again, with an effort (else the
+// setting's) and a hint if given. Its Additions are kept. An unknown effort or a
+// hint too long throws a ZodError.
 export async function retryIdentification(
   id: string,
-  effort: string | undefined,
+  retry: { effort?: string; hint?: string },
   shares: ShareRepository,
 ): Promise<void> {
-  const asked = z.enum(EFFORTS).optional().parse(effort);
+  const asked = RetrySchema.parse(retry);
   const share = await shares.get(id);
   if (!share) throw new SpotarrError("not_found", `no share ${id}`);
   if (share.summary === "IN_PROGRESS") {
