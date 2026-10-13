@@ -4,7 +4,10 @@ export function Genres({ genres }: { genres: string[] }) {
   return (
     <ul aria-label="Genres" className="flex flex-wrap gap-1">
       {genres.map((genre) => (
-        <li key={genre} className="rounded-full bg-text/8 px-2 py-0.5 text-xs text-text-muted">
+        <li
+          key={genre}
+          className="rounded-full bg-text/8 px-2 py-0.5 text-xs whitespace-nowrap text-text-muted"
+        >
           {genre}
         </li>
       ))}

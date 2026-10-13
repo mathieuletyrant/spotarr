@@ -57,7 +57,7 @@ function Confidence({ value }: { value?: number }) {
   const percent = Math.round(value * 100);
   return (
     <div className="mt-2 flex items-center gap-3 text-sm">
-      <div className="h-1.5 w-20 overflow-hidden rounded-full bg-border sm:w-32">
+      <div className="h-1.5 w-20 shrink-0 overflow-hidden rounded-full bg-border sm:w-32">
         <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
       </div>
       <span className="whitespace-nowrap">Confidence {percent} %</span>
