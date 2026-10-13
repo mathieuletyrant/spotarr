@@ -9,6 +9,8 @@ const TMDB_ROUTES = [
   "/3/tv/{series_id}",
   "/3/search/movie",
   "/3/search/tv",
+  "/3/genre/movie/list",
+  "/3/genre/tv/list",
 ];
 
 function onlyRoutes(routes: string[]): InputTransformerFn {

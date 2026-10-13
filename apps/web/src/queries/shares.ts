@@ -5,16 +5,17 @@ import { transport } from "../lib/api";
 
 const HISTORY_PAGE_SIZE = 20;
 
-export type HistoryFilter = { summary?: Summary; query: string };
+export type HistoryFilter = { summary?: Summary; genre?: string; query: string };
 
 // The history, newest first, page by page. While a Share is being identified,
 // it is asked again every 2 s. Use with TanStack Query's useInfiniteQuery.
-export function historyQuery({ summary, query }: HistoryFilter) {
+export function historyQuery({ summary, genre, query }: HistoryFilter) {
   const listShares = createInfiniteQueryOptions(
     SpotarrService.method.listShares,
     {
       pageSize: HISTORY_PAGE_SIZE,
       summaries: summary === undefined ? [] : [summary],
+      genre,
       query,
       // An empty cursor is the first page.
       cursor: "",

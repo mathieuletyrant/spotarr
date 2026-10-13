@@ -1498,6 +1498,11 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   /// Clears the value of `failure`. Subsequent reads from it will return its default value.
   public mutating func clearFailure() {self._failure = nil}
 
+  /// TMDB's genres, in the settings' language: "Science-Fiction", "Drame".
+  /// Empty when unknown, as on a Share identified before genres were kept,
+  /// until Spotarr fills them at its next start.
+  public var genres: [String] = []
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1679,7 +1684,7 @@ public nonisolated struct Spotarr_V1_ListSharesRequest: Sendable {
   /// Only these summaries; all when empty.
   public var summaries: [Spotarr_V1_Summary] = []
 
-  /// Matches the source, the URL, the text and the candidates' titles.
+  /// Matches the source, the URL, the text, the candidates' titles and genres.
   public var query: String {
     get {_query ?? String()}
     set {_query = newValue}
@@ -1689,6 +1694,16 @@ public nonisolated struct Spotarr_V1_ListSharesRequest: Sendable {
   /// Clears the value of `query`. Subsequent reads from it will return its default value.
   public mutating func clearQuery() {self._query = nil}
 
+  /// Only the Shares with a Candidate of this genre ("Horreur").
+  public var genre: String {
+    get {_genre ?? String()}
+    set {_genre = newValue}
+  }
+  /// Returns true if `genre` has been explicitly set.
+  public var hasGenre: Bool {self._genre != nil}
+  /// Clears the value of `genre`. Subsequent reads from it will return its default value.
+  public mutating func clearGenre() {self._genre = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1696,6 +1711,7 @@ public nonisolated struct Spotarr_V1_ListSharesRequest: Sendable {
   fileprivate var _pageSize: Int32? = nil
   fileprivate var _cursor: String? = nil
   fileprivate var _query: String? = nil
+  fileprivate var _genre: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_ListSharesResponse: Sendable {
@@ -1720,6 +1736,10 @@ public nonisolated struct Spotarr_V1_ListSharesResponse: Sendable {
   public var total: Int32 = 0
 
   public var counts: [Spotarr_V1_SummaryCount] = []
+
+  /// Every genre of the whole history's Candidates, alphabetical, whatever the
+  /// filters: the choices of the history's genre filter.
+  public var genres: [String] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3525,7 +3545,7 @@ nonisolated extension Spotarr_V1_Clues: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Candidate"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0\u{1}status\0\u{1}automatic\0\u{1}failure\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0\u{1}status\0\u{1}automatic\0\u{1}failure\0\u{1}genres\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3546,6 +3566,7 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
       case 11: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 12: try { try decoder.decodeSingularBoolField(value: &self.automatic) }()
       case 13: try { try decoder.decodeSingularStringField(value: &self._failure) }()
+      case 14: try { try decoder.decodeRepeatedStringField(value: &self.genres) }()
       default: break
       }
     }
@@ -3595,6 +3616,9 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     try { if let v = self._failure {
       try visitor.visitSingularStringField(value: v, fieldNumber: 13)
     } }()
+    if !self.genres.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.genres, fieldNumber: 14)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3612,6 +3636,7 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     if lhs.status != rhs.status {return false}
     if lhs.automatic != rhs.automatic {return false}
     if lhs._failure != rhs._failure {return false}
+    if lhs.genres != rhs.genres {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3830,7 +3855,7 @@ nonisolated extension Spotarr_V1_GetShareResponse: SwiftProtobuf.Message, SwiftP
 
 nonisolated extension Spotarr_V1_ListSharesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ListSharesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}page_size\0\u{1}cursor\0\u{1}summaries\0\u{1}query\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}page_size\0\u{1}cursor\0\u{1}summaries\0\u{1}query\0\u{1}genre\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3842,6 +3867,7 @@ nonisolated extension Spotarr_V1_ListSharesRequest: SwiftProtobuf.Message, Swift
       case 2: try { try decoder.decodeSingularStringField(value: &self._cursor) }()
       case 3: try { try decoder.decodeRepeatedEnumField(value: &self.summaries) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._query) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._genre) }()
       default: break
       }
     }
@@ -3864,6 +3890,9 @@ nonisolated extension Spotarr_V1_ListSharesRequest: SwiftProtobuf.Message, Swift
     try { if let v = self._query {
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
     } }()
+    try { if let v = self._genre {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3872,6 +3901,7 @@ nonisolated extension Spotarr_V1_ListSharesRequest: SwiftProtobuf.Message, Swift
     if lhs._cursor != rhs._cursor {return false}
     if lhs.summaries != rhs.summaries {return false}
     if lhs._query != rhs._query {return false}
+    if lhs._genre != rhs._genre {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3879,7 +3909,7 @@ nonisolated extension Spotarr_V1_ListSharesRequest: SwiftProtobuf.Message, Swift
 
 nonisolated extension Spotarr_V1_ListSharesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ListSharesResponse"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shares\0\u{3}next_cursor\0\u{1}total\0\u{1}counts\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shares\0\u{3}next_cursor\0\u{1}total\0\u{1}counts\0\u{1}genres\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3891,6 +3921,7 @@ nonisolated extension Spotarr_V1_ListSharesResponse: SwiftProtobuf.Message, Swif
       case 2: try { try decoder.decodeSingularStringField(value: &self._nextCursor) }()
       case 3: try { try decoder.decodeSingularInt32Field(value: &self.total) }()
       case 4: try { try decoder.decodeRepeatedMessageField(value: &self.counts) }()
+      case 5: try { try decoder.decodeRepeatedStringField(value: &self.genres) }()
       default: break
       }
     }
@@ -3913,6 +3944,9 @@ nonisolated extension Spotarr_V1_ListSharesResponse: SwiftProtobuf.Message, Swif
     if !self.counts.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.counts, fieldNumber: 4)
     }
+    if !self.genres.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.genres, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3921,6 +3955,7 @@ nonisolated extension Spotarr_V1_ListSharesResponse: SwiftProtobuf.Message, Swif
     if lhs._nextCursor != rhs._nextCursor {return false}
     if lhs.total != rhs.total {return false}
     if lhs.counts != rhs.counts {return false}
+    if lhs.genres != rhs.genres {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

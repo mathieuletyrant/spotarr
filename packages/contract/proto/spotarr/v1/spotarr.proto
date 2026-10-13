@@ -312,6 +312,10 @@ message Candidate {
   bool automatic = 12;
   // CAN_ADD after a failed Addition: its error, to show next to "Try again".
   optional string failure = 13;
+  // TMDB's genres, in the settings' language: "Science-Fiction", "Drame".
+  // Empty when unknown, as on a Share identified before genres were kept,
+  // until Spotarr fills them at its next start.
+  repeated string genres = 14;
 }
 
 message Addition {
@@ -418,8 +422,10 @@ message ListSharesRequest {
   optional string cursor = 2;
   // Only these summaries; all when empty.
   repeated Summary summaries = 3;
-  // Matches the source, the URL, the text and the candidates' titles.
+  // Matches the source, the URL, the text, the candidates' titles and genres.
   optional string query = 4;
+  // Only the Shares with a Candidate of this genre ("Horreur").
+  optional string genre = 5;
 }
 
 message ListSharesResponse {
@@ -430,6 +436,9 @@ message ListSharesResponse {
   // the filters: the counts of the history's filter buttons.
   int32 total = 3;
   repeated SummaryCount counts = 4;
+  // Every genre of the whole history's Candidates, alphabetical, whatever the
+  // filters: the choices of the history's genre filter.
+  repeated string genres = 5;
 }
 
 message SummaryCount {

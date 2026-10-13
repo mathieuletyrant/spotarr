@@ -41,6 +41,7 @@ export function shareRpcs(
           cursor: req.cursor,
           summaries: req.summaries.map((s) => Summary[s] as Share["summary"]),
           query: req.query?.trim(),
+          genre: req.genre || undefined,
         },
         { shares },
       );
@@ -49,6 +50,7 @@ export function shareRpcs(
         nextCursor: page.nextCursor,
         total: page.total,
         counts: [...page.counts].map(([summary, count]) => ({ summary: Summary[summary], count })),
+        genres: page.genres,
       };
     },
 
