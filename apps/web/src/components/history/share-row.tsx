@@ -42,11 +42,11 @@ function ShareCard({ share }: { share: Share }) {
       className="flex gap-3 p-3 hover:bg-text/4 lg:hidden"
     >
       {first ? (
-        <Poster title={first.title} url={first.posterUrl} />
+        <Poster title={first.title} url={first.posterUrl} size="large" />
       ) : (
         <div
           aria-hidden
-          className="h-21 w-14 shrink-0 rounded-md border border-dashed border-border"
+          className="h-27 w-18 shrink-0 rounded-md border border-dashed border-border"
         />
       )}
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
@@ -59,7 +59,7 @@ function ShareCard({ share }: { share: Share }) {
         {first && share.candidates.length === 1 && first.genres.length > 0 && (
           <p className="truncate text-xs text-text-muted">{first.genres.join(" · ")}</p>
         )}
-        <div className="mt-1 flex items-start gap-3">
+        <div className="mt-1 flex items-center gap-3">
           <Status share={share} />
           {/* Outside the title, whose line is cut short on a phone. */}
           {first && share.candidates.length === 1 && (
@@ -137,7 +137,7 @@ function Result({ share }: { share: Share }) {
     <div className="flex items-center gap-3">
       <div className="flex -space-x-3">
         {share.candidates.slice(0, 3).map((c) => (
-          <Poster key={c.tmdbId} title={c.title} url={c.posterUrl} small />
+          <Poster key={c.tmdbId} title={c.title} url={c.posterUrl} size="small" />
         ))}
       </div>
       <span className="text-text-muted">
