@@ -8,7 +8,7 @@ import { fakeFetch } from "../../../testing/fake-fetch";
 import { SettingsRepository } from "../../settings/repository";
 import type { Event } from "../events";
 import { ShareRepository } from "../repository";
-import { addCandidate } from "./add-candidate";
+import { addToLibrary } from "./add-to-library";
 
 afterEach(() => mock.restore());
 
@@ -58,7 +58,7 @@ test("an absent Candidate is requested from Seerr", async () => {
     "/api/v1/request": getPostRequestResponseMock(),
   });
 
-  await addCandidate(id, dueDate, deps);
+  await addToLibrary(id, dueDate, deps);
 
   const share = await shares.get(id);
   expect(share?.additions).toMatchObject([
@@ -75,7 +75,7 @@ test("a Candidate already in the library is not requested again", async () => {
     "/api/v1/movie/41733": getGetMovieMovieIdResponseMock({ mediaInfo: { status: 5 } }),
   });
 
-  await addCandidate(id, dueDate, deps);
+  await addToLibrary(id, dueDate, deps);
 
   expect((await shares.get(id))?.additions.map((a) => a.status)).toEqual(["ALREADY_PRESENT"]);
   expect(paths(fetch)).toEqual(["/api/v1/movie/41733"]); // no request
@@ -86,7 +86,7 @@ test("Seerr failing is recorded as a failed Addition, with the reason", async ()
   const { shares, id, deps } = await shareWithDueDate();
   fakeFetch({ "/api/v1/movie/41733": 503 });
 
-  await addCandidate(id, dueDate, deps);
+  await addToLibrary(id, dueDate, deps);
 
   const share = await shares.get(id);
   expect(share?.additions).toMatchObject([{ status: "FAILED", error: "Seerr answered 503" }]);
@@ -95,20 +95,20 @@ test("Seerr failing is recorded as a failed Addition, with the reason", async ()
 
 test("only a Candidate of the Share can be added", async () => {
   const { id, deps } = await shareWithDueDate();
-  await expect(addCandidate(id, { tmdbId: 1, type: "MOVIE" }, deps)).rejects.toMatchObject({
+  await expect(addToLibrary(id, { tmdbId: 1, type: "MOVIE" }, deps)).rejects.toMatchObject({
     code: "not_found",
   });
-  await expect(addCandidate("shr_x", dueDate, deps)).rejects.toMatchObject({
+  await expect(addToLibrary("shr_x", dueDate, deps)).rejects.toMatchObject({
     code: "not_found",
   });
 });
 
 test("Radarr or Sonarr directly, or no type, is refused before anything is written", async () => {
   const { shares, id, deps } = await shareWithDueDate();
-  await expect(addCandidate(id, { ...dueDate, target: "ARR" }, deps)).rejects.toMatchObject({
+  await expect(addToLibrary(id, { ...dueDate, target: "ARR" }, deps)).rejects.toMatchObject({
     code: "invalid_input",
   });
-  await expect(addCandidate(id, { tmdbId: 41733 }, deps)).rejects.toMatchObject({
+  await expect(addToLibrary(id, { tmdbId: 41733 }, deps)).rejects.toMatchObject({
     code: "invalid_input",
   });
   expect((await shares.get(id))?.additions).toEqual([]);
