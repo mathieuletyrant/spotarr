@@ -134,7 +134,14 @@ public enum SendError: Error, Equatable {
     case .unauthenticated: self = .tokenRefused
     // A proxy in front (Cloudflare Access…) answers 403 when its headers are missing or wrong.
     case .permissionDenied: self = .accessRefused
-    case .unavailable, .deadlineExceeded, .canceled: self = .unreachable
+    case .unavailable, .deadlineExceeded, .canceled:
+      // No answer at all (no headers): the address or the network is wrong. Spotarr
+      // itself answers these codes when TMDB, the LLM or Seerr fail, and says which.
+      if error.metadata.isEmpty {
+        self = .unreachable
+      } else {
+        self = .spotarr(error.message ?? "Spotarr answered an error (\(error.code)).")
+      }
     default: self = .spotarr(error.message ?? "Spotarr answered an error (\(error.code)).")
     }
   }

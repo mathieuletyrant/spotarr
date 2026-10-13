@@ -1,3 +1,4 @@
+import { Code, ConnectError } from "@connectrpc/connect";
 import { useMutation } from "@connectrpc/connect-query";
 import { SpotarrService } from "@spotarr/contract";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -110,8 +111,8 @@ function SignInForm() {
             )}
           </button>
         </span>
-        {login.isError && (
-          <span className="text-sm text-status-error">This is not Spotarr's token.</span>
+        {login.error && (
+          <span className="text-sm text-status-error">{loginErrorOf(login.error)}</span>
         )}
       </label>
 
@@ -142,4 +143,12 @@ function SignInForm() {
       </div>
     </form>
   );
+}
+
+// A wrong token is the usual mistake. Anything else (Spotarr down, a proxy
+// refusing the call) is not the token's fault: say what happened instead.
+function loginErrorOf(error: unknown): string {
+  const connectError = ConnectError.from(error);
+  if (connectError.code === Code.Unauthenticated) return "This is not Spotarr's token.";
+  return `Spotarr could not check the token: ${connectError.rawMessage}`;
 }

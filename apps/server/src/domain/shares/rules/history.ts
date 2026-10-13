@@ -1,7 +1,9 @@
+import { SpotarrError } from "../../../errors";
 import type { Share, Summary } from "../types";
 
 export type HistoryRequest = {
-  limit: number;
+  // Shares per page: 50 when absent, 100 at most.
+  limit?: number;
   // The id of the last Share of the previous page.
   cursor?: string;
   // Only these Summaries; all when empty.
@@ -12,7 +14,11 @@ export type HistoryRequest = {
 
 // One page of the history, newest first. `shares` is the whole history, newest first.
 export function historyPage(shares: Share[], request: HistoryRequest) {
-  const { limit, cursor, summaries, query } = request;
+  const { cursor, summaries, query } = request;
+  if (request.limit !== undefined && request.limit < 1) {
+    throw new SpotarrError("invalid_input", "page_size: at least 1");
+  }
+  const limit = Math.min(request.limit ?? 50, 100);
 
   const matching = shares.filter(
     (share) =>
