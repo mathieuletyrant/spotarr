@@ -76,10 +76,21 @@ const genred = [
   withGenres("shr_1", undefined),
 ];
 
-test("filters by genre, and lists the history's genres alphabetically", () => {
-  const page = historyPage(genred, { limit: 10, summaries: [], genre: "Horreur" });
-  expect(page.shares.map((s) => s.id)).toEqual(["shr_3"]);
-  expect(page.genres).toEqual(["Comédie", "Horreur", "Thriller"]);
+test("filters by any of the genres chosen", () => {
+  const one = historyPage(genred, { limit: 10, summaries: [], genres: ["Horreur"] });
+  expect(one.shares.map((s) => s.id)).toEqual(["shr_3"]);
+  const two = historyPage(genred, { limit: 10, summaries: [], genres: ["Horreur", "Comédie"] });
+  expect(two.shares.map((s) => s.id)).toEqual(["shr_3", "shr_2"]);
+});
+
+test("counts Shares per genre over the whole history, most first, then alphabetical", () => {
+  const history = [...genred, withGenres("shr_0", ["Thriller"])];
+  const page = historyPage(history, { limit: 10, summaries: [], genres: ["Comédie"] });
+  expect(page.genres).toEqual([
+    { genre: "Thriller", count: 2 },
+    { genre: "Comédie", count: 1 },
+    { genre: "Horreur", count: 1 },
+  ]);
 });
 
 test("the text search finds a genre", () => {

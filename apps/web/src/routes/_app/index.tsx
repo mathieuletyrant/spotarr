@@ -3,6 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useDeferredValue, useState } from "react";
 import { EmptyHistory } from "../../components/history/empty-history";
+import { GenreFilter } from "../../components/history/genre-filter";
 import { HistoryFilters } from "../../components/history/history-filters";
 import { HistoryTable } from "../../components/history/history-table";
 import { historyQuery } from "../../queries/shares";
@@ -11,12 +12,12 @@ export const Route = createFileRoute("/_app/")({ component: HistoryPage });
 
 function HistoryPage() {
   const [summary, setSummary] = useState<Summary>();
-  const [genre, setGenre] = useState<string>();
+  const [genres, setGenres] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   // Typing stays smooth: the list follows a moment after the keystrokes.
   const query = useDeferredValue(search.trim());
 
-  const history = useInfiniteQuery(historyQuery({ summary, genre, query }));
+  const history = useInfiniteQuery(historyQuery({ summary, genres, query }));
   const firstPage = history.data?.pages[0];
   const shares = history.data?.pages.flatMap((page) => page.shares) ?? [];
 
@@ -32,21 +33,20 @@ function HistoryPage() {
         counts={firstPage?.counts ?? []}
         summary={summary}
         onSummaryChange={setSummary}
-        genres={firstPage?.genres ?? []}
-        genre={genre}
-        onGenreChange={setGenre}
         search={search}
         onSearchChange={setSearch}
       />
+
+      <GenreFilter genres={firstPage?.genres ?? []} selected={genres} onChange={setGenres} />
 
       {history.isPending && <p className="text-text-muted">Loading…</p>}
       {history.error && <p className="text-status-error">{history.error.message}</p>}
       {history.isSuccess && shares.length === 0 && (
         <EmptyHistory
-          filtered={summary !== undefined || genre !== undefined || query !== ""}
+          filtered={summary !== undefined || genres.length > 0 || query !== ""}
           onClear={() => {
             setSummary(undefined);
-            setGenre(undefined);
+            setGenres([]);
             setSearch("");
           }}
         />

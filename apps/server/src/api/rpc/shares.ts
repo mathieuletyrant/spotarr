@@ -41,7 +41,7 @@ export function shareRpcs(
           cursor: req.cursor,
           summaries: req.summaries.map((s) => Summary[s] as Share["summary"]),
           query: req.query?.trim(),
-          genre: req.genre || undefined,
+          genres: req.genres,
         },
         { shares },
       );

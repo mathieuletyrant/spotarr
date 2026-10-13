@@ -56,6 +56,9 @@ function ShareCard({ share }: { share: Share }) {
         <p className="truncate text-sm text-text-muted">
           {share.source} · {day} {time}
         </p>
+        {first && share.candidates.length === 1 && first.genres.length > 0 && (
+          <p className="truncate text-xs text-text-muted">{first.genres.join(" · ")}</p>
+        )}
         <div className="mt-1 flex items-start gap-3">
           <Status share={share} />
           {/* Outside the title, whose line is cut short on a phone. */}
@@ -159,6 +162,9 @@ function OneCandidate({ candidate }: { candidate: Candidate }) {
           </span>
           <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} compact />
         </div>
+        {candidate.genres.length > 0 && (
+          <p className="mt-1 truncate text-xs text-text-muted">{candidate.genres.join(" · ")}</p>
+        )}
       </div>
     </div>
   );

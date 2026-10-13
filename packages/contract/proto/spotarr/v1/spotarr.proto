@@ -424,8 +424,9 @@ message ListSharesRequest {
   repeated Summary summaries = 3;
   // Matches the source, the URL, the text, the candidates' titles and genres.
   optional string query = 4;
-  // Only the Shares with a Candidate of this genre ("Horreur").
-  optional string genre = 5;
+  // Only the Shares with a Candidate of one of these genres ("Horreur");
+  // all when empty.
+  repeated string genres = 5;
 }
 
 message ListSharesResponse {
@@ -436,9 +437,15 @@ message ListSharesResponse {
   // the filters: the counts of the history's filter buttons.
   int32 total = 3;
   repeated SummaryCount counts = 4;
-  // Every genre of the whole history's Candidates, alphabetical, whatever the
-  // filters: the choices of the history's genre filter.
-  repeated string genres = 5;
+  // Every genre of the whole history's Candidates, with how many Shares have
+  // it, most Shares first, whatever the filters: the history's genre filter.
+  repeated GenreCount genres = 5;
+}
+
+message GenreCount {
+  string genre = 1;
+  // Shares with at least one Candidate of this genre.
+  int32 count = 2;
 }
 
 message SummaryCount {

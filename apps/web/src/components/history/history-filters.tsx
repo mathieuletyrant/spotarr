@@ -32,16 +32,12 @@ type Props = {
   counts: SummaryCount[];
   summary?: Summary;
   onSummaryChange: (summary?: Summary) => void;
-  // Every genre of the history, for the genre menu; hidden when there is none.
-  genres: string[];
-  genre?: string;
-  onGenreChange: (genre?: string) => void;
   search: string;
   onSearchChange: (search: string) => void;
 };
 
-// The Summary filters with their counts, the genre menu and the search, on one
-// line. A Summary with no share is hidden, unless it is the one selected.
+// The Summary filters with their counts, and the search, on one line. A
+// Summary with no share is hidden, unless it is the one selected.
 export function HistoryFilters(props: Props) {
   const countOf = (summary: Summary) => props.counts.find((c) => c.summary === summary)?.count ?? 0;
 
@@ -90,22 +86,6 @@ export function HistoryFilters(props: Props) {
           )}
         </div>
       </div>
-
-      {props.genres.length > 0 && (
-        <select
-          aria-label="Filter by genre"
-          value={props.genre ?? ""}
-          onChange={(e) => props.onGenreChange(e.target.value || undefined)}
-          className="h-9 max-w-40 rounded-md border border-border bg-surface px-2 text-sm lg:ml-auto"
-        >
-          <option value="">All genres</option>
-          {props.genres.map((genre) => (
-            <option key={genre} value={genre}>
-              {genre}
-            </option>
-          ))}
-        </select>
-      )}
 
       <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm lg:w-64 lg:flex-none">
         <Search aria-hidden className="size-4 text-text-muted" />

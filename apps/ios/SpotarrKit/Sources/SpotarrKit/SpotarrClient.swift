@@ -52,16 +52,19 @@ public struct SpotarrClient: Sendable {
     return response.message?.version ?? ""
   }
 
-  /// One page of the history, newest first: only `summary` and `genre` when
-  /// given, and only the Shares matching `query` when it is not empty. `cursor`
-  /// is the previous page's `nextCursor`.
-  public func listShares(summary: Summary?, genre: String? = nil, query: String, cursor: String?)
+  /// One page of the history, newest first: only `summary` when given, only the
+  /// Shares of one of `genres` when there are some, and only the Shares
+  /// matching `query` when it is not empty. `cursor` is the previous page's
+  /// `nextCursor`.
+  public func listShares(
+    summary: Summary?, genres: [String] = [], query: String, cursor: String?
+  )
     async throws(SendError) -> HistoryPage
   {
     var request = Spotarr_V1_ListSharesRequest()
     request.pageSize = 30
     if let summary { request.summaries = [summary] }
-    if let genre { request.genre = genre }
+    request.genres = genres
     let query = query.trimmingCharacters(in: .whitespaces)
     if !query.isEmpty { request.query = query }
     if let cursor { request.cursor = cursor }
