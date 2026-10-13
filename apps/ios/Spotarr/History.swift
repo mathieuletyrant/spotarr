@@ -2,9 +2,11 @@ import Foundation
 import Observation
 import SpotarrKit
 
-/// What the history shows: one Summary (all when nil) and a text to match.
+/// What the history shows: one Summary (all when nil), the Shares of any of
+/// some genres (all when empty), and a text to match.
 struct HistoryFilter: Equatable {
   var summary: Summary?
+  var genres: [String] = []
   var query = ""
 }
 
@@ -15,6 +17,8 @@ final class History {
   private(set) var shares: [Share] = []
   private(set) var total = 0
   private(set) var counts: [Summary: Int] = [:]
+  /// Every genre of the history with its count, for the genre filter.
+  private(set) var genres: [GenreCount] = []
   private(set) var nextCursor: String?
   private(set) var error: String?
   private(set) var notConfigured = false
@@ -43,7 +47,7 @@ final class History {
     notConfigured = false
     do {
       let page = try await client.listShares(
-        summary: filter.summary, query: filter.query, cursor: nil)
+        summary: filter.summary, genres: filter.genres, query: filter.query, cursor: nil)
       // A newer filter took over while this page was on its way.
       if Task.isCancelled { return }
       shares = page.shares
@@ -51,6 +55,7 @@ final class History {
       total = Int(page.total)
       counts = [:]
       for count in page.counts { counts[count.summary] = Int(count.count) }
+      genres = page.genres
       loadedFilter = filter
       loadedSettings = settings
       error = nil
@@ -70,7 +75,7 @@ final class History {
     defer { loadingMore = false }
     do {
       let page = try await client.listShares(
-        summary: filter.summary, query: filter.query, cursor: cursor)
+        summary: filter.summary, genres: filter.genres, query: filter.query, cursor: cursor)
       shares += page.shares
       nextCursor = page.hasNextCursor ? page.nextCursor : nil
     } catch {

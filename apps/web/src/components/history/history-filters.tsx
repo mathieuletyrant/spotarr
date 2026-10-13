@@ -1,4 +1,4 @@
-import { Summary, type SummaryCount } from "@spotarr/contract";
+import { type GenreCount, Summary, type SummaryCount } from "@spotarr/contract";
 import { Search } from "lucide-react";
 import type { ReactNode } from "react";
 import { SUMMARY_LABELS, SummaryLabel } from "../status-badge";
@@ -32,17 +32,22 @@ type Props = {
   counts: SummaryCount[];
   summary?: Summary;
   onSummaryChange: (summary?: Summary) => void;
+  // The history's genres, most Shares first; the menu is hidden when there is none.
+  genres: GenreCount[];
+  genre?: string;
+  onGenreChange: (genre?: string) => void;
   search: string;
   onSearchChange: (search: string) => void;
 };
 
-// The Summary filters with their counts, and the search, on one line. A
-// Summary with no share is hidden, unless it is the one selected.
+// The Summary filters with their counts, then the genre menu and the search, on
+// one line. A Summary with no share is hidden, unless it is the one selected.
 export function HistoryFilters(props: Props) {
   const countOf = (summary: Summary) => props.counts.find((c) => c.summary === summary)?.count ?? 0;
 
   return (
-    <div className="flex items-center gap-2 lg:justify-between">
+    // On a phone the two menus share a line, and the search takes the next one.
+    <div className="flex flex-wrap items-center gap-2 lg:flex-nowrap lg:justify-between">
       {/* On a phone or a tablet: a native menu, next to the search. */}
       <select
         aria-label="Filter by status"
@@ -52,7 +57,7 @@ export function HistoryFilters(props: Props) {
             e.target.value === "" ? undefined : (Number(e.target.value) as Summary),
           )
         }
-        className="h-9 rounded-md border border-border bg-surface px-2 text-sm lg:hidden"
+        className="h-9 min-w-0 flex-1 rounded-md border border-border bg-surface px-2 text-sm sm:flex-none lg:hidden"
       >
         <option value="">All ({props.total})</option>
         {FILTERS.filter((summary) => countOf(summary) > 0 || props.summary === summary).map(
@@ -87,12 +92,28 @@ export function HistoryFilters(props: Props) {
         </div>
       </div>
 
-      <label className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm lg:w-64 lg:flex-none">
+      {props.genres.length > 0 && (
+        <select
+          aria-label="Filter by genre"
+          value={props.genre ?? ""}
+          onChange={(e) => props.onGenreChange(e.target.value || undefined)}
+          className="h-9 min-w-0 flex-1 rounded-md border border-border bg-surface px-2 text-sm sm:max-w-44 sm:flex-none lg:ml-auto"
+        >
+          <option value="">All genres</option>
+          {props.genres.map(({ genre, count }) => (
+            <option key={genre} value={genre}>
+              {genre} ({count})
+            </option>
+          ))}
+        </select>
+      )}
+
+      <label className="flex h-9 min-w-0 basis-full items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm sm:flex-1 sm:basis-0 lg:w-64 lg:flex-none lg:basis-auto">
         <Search aria-hidden className="size-4 text-text-muted" />
-        <span className="sr-only">Search by title or source</span>
+        <span className="sr-only">Search by title, genre or source</span>
         <input
           type="search"
-          placeholder="Title or source"
+          placeholder="Title, genre or source"
           value={props.search}
           onChange={(e) => props.onSearchChange(e.target.value)}
           className="w-full bg-transparent outline-none placeholder:text-text-muted"

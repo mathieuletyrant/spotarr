@@ -3,7 +3,9 @@ import { fakeFetch } from "../../testing/fake-fetch";
 import { Tmdb } from "./client";
 import {
   getFindByIdResponseMock,
+  getGenreMovieListResponseMock,
   getMovieDetailsResponseMock,
+  getSearchMovieResponseMock,
   getTvSeriesDetailsResponseMock,
 } from "./gen/tmdb.faker";
 
@@ -108,4 +110,44 @@ test("no token configured says where to set it", async () => {
     code: "not_configured",
     message: "TMDB token not configured (Settings → Identification)",
   });
+});
+
+test("a search names its results' genres from TMDB's list, read once", async () => {
+  const fetch = fakeFetch({
+    "/3/search/movie": getSearchMovieResponseMock({
+      results: [{ id: 1, title: "Alien", genre_ids: [27, 878] }],
+    }),
+    "/3/genre/movie/list": getGenreMovieListResponseMock({
+      genres: [
+        { id: 27, name: "Horreur" },
+        { id: 878, name: "Science-Fiction" },
+      ],
+    }),
+  });
+  const client = tmdb();
+
+  expect((await client.searchMovies("Alien"))[0]?.genres).toEqual(["Horreur", "Science-Fiction"]);
+  await client.searchMovies("Alien");
+  const lists = fetch.mock.calls.filter(([url]) => String(url).includes("/genre/movie/list"));
+  expect(lists).toHaveLength(1);
+  expect(new URL(String(lists[0]?.[0])).searchParams.get("language")).toBe("fr-FR");
+});
+
+test("a title's details name their genres themselves", async () => {
+  fakeFetch({
+    "/3/movie/693134": { ...dune, genres: [{ id: 878, name: "Science-Fiction" }] },
+  });
+  expect((await tmdb().movie(693134))?.genres).toEqual(["Science-Fiction"]);
+});
+
+test("without TMDB's genre list, a search's genres are unknown, not empty", async () => {
+  fakeFetch({
+    "/3/search/movie": getSearchMovieResponseMock({
+      results: [{ id: 1, title: "Alien", genre_ids: [27] }],
+    }),
+    "/3/genre/movie/list": 500,
+  });
+  const [alien] = await tmdb().searchMovies("Alien");
+  expect(alien?.title).toBe("Alien");
+  expect(alien?.genres).toBeUndefined();
 });

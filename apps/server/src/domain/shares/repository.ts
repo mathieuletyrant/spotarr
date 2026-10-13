@@ -224,6 +224,21 @@ export class ShareRepository {
     });
   }
 
+  // Replaces the Candidates of a finished Share, e.g. with their genres filled.
+  // A Share back in the queue meanwhile is left alone: its Identification
+  // will write its own Candidates.
+  async setCandidates(id: string, candidates: Candidate[]): Promise<void> {
+    await this.db
+      .updateTable("shares")
+      .set({
+        candidates: JSON.stringify(CandidateSchema.array().parse(candidates)),
+        updated_at: NOW,
+      })
+      .where("id", "=", id)
+      .where("status", "not in", ["QUEUED", "PROCESSING"])
+      .execute();
+  }
+
   // What Retry asked for this Share's Identification: an effort, a hint.
   async retryRequest(id: string): Promise<RetryRequest> {
     const row = await this.db
