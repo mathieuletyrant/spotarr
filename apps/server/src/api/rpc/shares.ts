@@ -11,7 +11,11 @@ import {
 } from "@spotarr/contract";
 import type { SettingsRepository } from "../../domain/settings/repository";
 import type { ShareRepository } from "../../domain/shares/repository";
-import { addedCountOf, candidateStatusOf, failureReasonOf } from "../../domain/shares/summary";
+import {
+  addedCountOf,
+  candidateStatusOf,
+  failureReasonOf,
+} from "../../domain/shares/rules/summary";
 import type { Share } from "../../domain/shares/types";
 import { addCandidate } from "../../domain/shares/use-cases/add-candidate";
 import { createShare } from "../../domain/shares/use-cases/create-share";

@@ -1,7 +1,7 @@
 import { type Kysely, sql, type Updateable } from "kysely";
 import type { DB } from "../../db";
 import type { Shares } from "../../db/gen/types";
-import { summaryOf } from "./summary";
+import { summaryOf } from "./rules/summary";
 import {
   type Addition,
   type Candidate,

@@ -1,7 +1,7 @@
 import type { SettingsRepository } from "../../settings/repository";
 import type { WebhookSender } from "../../webhooks/sender";
-import { candidatesToAutoAdd } from "../candidates-to-auto-add";
 import type { ShareRepository } from "../repository";
+import { candidatesToAutoAdd } from "../rules/candidates-to-auto-add";
 import { addCandidate } from "./add-candidate";
 
 type EndIdentificationDeps = {

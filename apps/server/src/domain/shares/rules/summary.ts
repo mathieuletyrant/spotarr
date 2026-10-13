@@ -1,4 +1,4 @@
-import type { Addition, Candidate, IdentificationStatus, Share, Summary } from "./types";
+import type { Addition, Candidate, IdentificationStatus, Share, Summary } from "../types";
 
 // What the history shows for a Share. The first rule that applies wins.
 export function summaryOf(

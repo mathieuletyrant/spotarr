@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
+import type { Addition, Candidate } from "../types";
 import { addedCountOf, candidateStatusOf, summaryOf } from "./summary";
-import type { Addition, Candidate } from "./types";
 
 const candidate = (libraryState: Candidate["libraryState"]): Candidate => ({
   tmdbId: 1,
