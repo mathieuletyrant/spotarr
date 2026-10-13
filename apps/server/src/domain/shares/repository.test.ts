@@ -142,6 +142,32 @@ test("the video's thumbnails are stored, replaced by a new Identification and cl
   expect(await shares.frameThumbnail(id, 0)).toBeUndefined();
 });
 
+test("a finish that fails writes nothing: the frames and the status stay", async () => {
+  const { shares } = await repository();
+  const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
+  await shares.claimNext();
+  const frames = [{ atMs: 0, thumbnail: new Uint8Array([9]) }];
+  const invalid = { tmdbId: 1, type: "MOVIE" as const, title: "Dune", confidence: 2 };
+
+  await expect(
+    shares.finish(
+      id,
+      {
+        status: "READY",
+        extractors: ["video"],
+        clues: {},
+        candidates: [{ ...invalid, libraryState: "ABSENT" }],
+        frames,
+      },
+      10,
+    ),
+  ).rejects.toThrow();
+
+  const share = await shares.get(id);
+  expect(share?.identification.status).toBe("PROCESSING");
+  expect(share?.frames).toEqual([]);
+});
+
 test("the LLM cost adds up the Identifications whose cost is known", async () => {
   const { shares } = await repository();
   const result = { status: "NO_MATCH" as const, extractors: [], clues: {}, candidates: [] };
