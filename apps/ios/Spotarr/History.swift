@@ -86,6 +86,20 @@ final class History {
     }
   }
 
+  /// Deletes a Share in Spotarr, then takes its row and its count out.
+  func delete(_ share: Share) async {
+    guard let client = SpotarrClient(settings: SettingsStore.load()) else { return }
+    do {
+      try await client.deleteShare(id: share.id)
+      shares.removeAll { $0.id == share.id }
+      total -= 1
+      if let count = counts[share.summary] { counts[share.summary] = count - 1 }
+      error = nil
+    } catch {
+      self.error = error.message
+    }
+  }
+
   /// A Share changed on its page (added, retried): the row follows.
   func replace(_ share: Share) {
     if let index = shares.firstIndex(where: { $0.id == share.id }) {

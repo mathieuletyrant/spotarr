@@ -2,7 +2,7 @@ import SpotarrKit
 import SwiftUI
 
 // The history, newest first: a filter by status in the toolbar, pull to
-// refresh, the next page at the bottom. The search tab shows the same list
+// refresh, swipe to delete, the next page at the bottom. The search tab shows the same list
 // for its text.
 struct HistoryView: View {
   /// Nil in the History tab; the search tab's text otherwise.
@@ -11,6 +11,8 @@ struct HistoryView: View {
 
   @State private var history = History()
   @State private var summary: Summary?
+  /// The Share whose deletion waits for a confirmation.
+  @State private var toDelete: Share?
   @Environment(\.scenePhase) private var scenePhase
 
   private var filter: HistoryFilter {
@@ -87,6 +89,12 @@ struct HistoryView: View {
     List {
       ForEach(history.shares) { share in
         NavigationLink(value: share) { HistoryRow(share: share) }
+          // Spotarr refuses while the Identification runs.
+          .swipeActions {
+            if share.identification.status != .processing {
+              Button("Delete", systemImage: "trash") { toDelete = share }.tint(.red)
+            }
+          }
           .onAppear {
             if share.id == history.shares.last?.id {
               Task { await history.loadMore() }
@@ -101,6 +109,16 @@ struct HistoryView: View {
       }
     }
     .listStyle(.plain)
+    .confirmationDialog(
+      "Delete this Share?",
+      isPresented: Binding(get: { toDelete != nil }, set: { if !$0 { toDelete = nil } }),
+      titleVisibility: .visible,
+      presenting: toDelete
+    ) { share in
+      Button("Delete", role: .destructive) { Task { await history.delete(share) } }
+    } message: { _ in
+      Text("It leaves Spotarr's history and stats. What was already requested in Seerr stays there.")
+    }
   }
 
   @ViewBuilder private var emptyHistory: some View {

@@ -98,6 +98,15 @@ public struct SpotarrClient: Sendable {
     return response.message?.share ?? Share()
   }
 
+  /// Deletes the Share from Spotarr; what was requested in Seerr stays there.
+  /// Spotarr refuses while its Identification runs.
+  public func deleteShare(id: String) async throws(SendError) {
+    var request = Spotarr_V1_DeleteShareRequest()
+    request.id = id
+    let response = await client.deleteShare(request: request, headers: headers)
+    if let error = response.error { throw SendError(error) }
+  }
+
   /// A thumbnail of the shared video, as JPEG. Not an RPC: a plain GET on
   /// Spotarr's /frames, behind the token like the API.
   public func frameImage(_ frame: Frame) async throws(SendError) -> Data {

@@ -5,6 +5,7 @@ import type { ShareRepository } from "../../domain/shares/repository";
 import type { Share } from "../../domain/shares/types";
 import { addToLibrary } from "../../domain/shares/use-cases/add-to-library";
 import { createShare } from "../../domain/shares/use-cases/create-share";
+import { deleteShare } from "../../domain/shares/use-cases/delete-share";
 import { listHistory } from "../../domain/shares/use-cases/list-history";
 import { SpotarrError } from "../../errors";
 import { shareMessage } from "../messages";
@@ -16,7 +17,7 @@ export function shareRpcs(
   shares: ShareRepository,
   settings: SettingsRepository,
   sender: WebhookSender,
-): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification" | "add"> {
+): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification" | "add" | "deleteShare"> {
   async function shareAnswer(id: string) {
     const share = await shares.get(id);
     if (!share) throw new SpotarrError("not_found", `no share ${id}`);
@@ -67,6 +68,11 @@ export function shareRpcs(
         { shares, settings, emit: (event) => sender.emit(event) },
       );
       return shareAnswer(req.shareId);
+    },
+
+    async deleteShare(req) {
+      await deleteShare(req.id, shares);
+      return {};
     },
   };
 }

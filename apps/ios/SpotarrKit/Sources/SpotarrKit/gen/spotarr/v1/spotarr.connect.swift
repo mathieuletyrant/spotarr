@@ -61,6 +61,11 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `add`(request: Spotarr_V1_AddRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_AddResponse>
 
+    /// Deletes a Share from Spotarr with its Candidates, Additions and frames. What
+    /// was requested in Seerr stays there. Refused (busy) while its Identification runs.
+    @available(iOS 13, *)
+    func `deleteShare`(request: Spotarr_V1_DeleteShareRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_DeleteShareResponse>
+
     @available(iOS 13, *)
     func `listWebhooks`(request: Spotarr_V1_ListWebhooksRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_ListWebhooksResponse>
 
@@ -145,6 +150,11 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
     }
 
     @available(iOS 13, *)
+    public func `deleteShare`(request: Spotarr_V1_DeleteShareRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_DeleteShareResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/DeleteShare", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `listWebhooks`(request: Spotarr_V1_ListWebhooksRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_ListWebhooksResponse> {
         return await self.client.unary(path: "/spotarr.v1.SpotarrService/ListWebhooks", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -178,6 +188,7 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
             public static let listShares = Connect.MethodSpec(name: "ListShares", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let retryIdentification = Connect.MethodSpec(name: "RetryIdentification", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let add = Connect.MethodSpec(name: "Add", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let deleteShare = Connect.MethodSpec(name: "DeleteShare", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let listWebhooks = Connect.MethodSpec(name: "ListWebhooks", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let saveWebhook = Connect.MethodSpec(name: "SaveWebhook", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let deleteWebhook = Connect.MethodSpec(name: "DeleteWebhook", service: "spotarr.v1.SpotarrService", type: .unary)

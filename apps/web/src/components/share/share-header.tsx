@@ -4,8 +4,9 @@ import { type Share, SpotarrService, Summary } from "@spotarr/contract";
 import { useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, RotateCw } from "lucide-react";
 import { shareDate } from "../../lib/format";
+import { DeleteShareButton } from "./delete-share-button";
 
-// Title, shared URL, and the two actions: retry, open the source.
+// Title, shared URL, and the actions: retry, open the source, delete.
 export function ShareHeader({ share }: { share: Share }) {
   const queryClient = useQueryClient();
   const retry = useMutation(SpotarrService.method.retryIdentification, {
@@ -47,6 +48,7 @@ export function ShareHeader({ share }: { share: Share }) {
               Open the source
             </a>
           )}
+          <DeleteShareButton share={share} />
         </div>
       </div>
       {retry.error && <p className="text-sm text-status-error">{retry.error.message}</p>}
