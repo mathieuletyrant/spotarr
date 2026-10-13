@@ -1,8 +1,8 @@
 import SpotarrKit
 import SwiftUI
 
-// The history, newest first: a filter by status in the toolbar, genre
-// capsules on top, pull to refresh, swipe to delete, the next page at the bottom. The search tab shows the same list
+// The history, newest first: a filter by status and genre in the toolbar, pull
+// to refresh, swipe to delete, the next page at the bottom. The search tab shows the same list
 // for its text.
 struct HistoryView: View {
   /// Nil in the History tab; the search tab's text otherwise.
@@ -11,24 +11,17 @@ struct HistoryView: View {
 
   @State private var history = History()
   @State private var summary: Summary?
-  @State private var genres: [String] = []
+  @State private var genre: String?
   /// The Share whose deletion waits for a confirmation.
   @State private var toDelete: Share?
   @Environment(\.scenePhase) private var scenePhase
 
   private var filter: HistoryFilter {
-    HistoryFilter(summary: summary, genres: genres, query: query ?? "")
+    HistoryFilter(summary: summary, genres: genre.map { [$0] } ?? [], query: query ?? "")
   }
 
   var body: some View {
     content
-      // Above the list and its empty states alike, so a filter that empties
-      // the list can still be undone.
-      .safeAreaInset(edge: .top) {
-        if query == nil && !history.genres.isEmpty {
-          GenreChips(genres: history.genres, selected: $genres).background(.bar)
-        }
-      }
       .navigationTitle(query == nil ? "History" : "Search")
       .navigationDestination(for: Share.self) { share in
         ShareDetailView(shareID: share.id) { history.replace($0) }
@@ -132,7 +125,7 @@ struct HistoryView: View {
   @ViewBuilder private var emptyHistory: some View {
     if query != nil {
       ContentUnavailableView.search(text: filter.query)
-    } else if summary != nil || !genres.isEmpty {
+    } else if summary != nil || genre != nil {
       ContentUnavailableView(
         "Nothing here", systemImage: "line.3.horizontal.decrease",
         description: Text("No Share matches these filters."))
@@ -143,7 +136,8 @@ struct HistoryView: View {
     }
   }
 
-  // The statuses with their counts; one with no Share is hidden unless chosen.
+  // The statuses with their counts (one with no Share is hidden unless chosen),
+  // then the genres of the history, most Shares first.
   private var filterMenu: some View {
     Menu {
       Picker("Status", selection: $summary) {
@@ -152,10 +146,19 @@ struct HistoryView: View {
           Text("\(summary.label) (\(history.counts[summary] ?? 0))").tag(Summary?.some(summary))
         }
       }
+      if !history.genres.isEmpty {
+        Picker("Genre", selection: $genre) {
+          Text("All genres").tag(String?.none)
+          ForEach(history.genres, id: \.genre) { item in
+            Text("\(item.genre) (\(item.count))").tag(String?.some(item.genre))
+          }
+        }
+        .pickerStyle(.menu)
+      }
     } label: {
       Label(
-        "Filter by status",
-        systemImage: summary == nil
+        "Filter",
+        systemImage: summary == nil && genre == nil
           ? "line.3.horizontal.decrease" : "line.3.horizontal.decrease.circle.fill")
     }
   }
