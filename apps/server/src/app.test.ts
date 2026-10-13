@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { afterEach, expect, mock, test } from "bun:test";
 import pkg from "../package.json";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
@@ -6,7 +6,13 @@ import { SettingsRepository } from "./domain/settings/repository";
 import { ShareRepository } from "./domain/shares/repository";
 import { WebhookRepository } from "./domain/webhooks/repository";
 import { WebhookSender } from "./domain/webhooks/sender";
-import { Seerr } from "./integrations/seerr/client";
+import {
+  getGetMovieMovieIdResponseMock,
+  getPostRequestResponseMock,
+} from "./integrations/seerr/gen/seerr.faker";
+import { fakeFetch } from "./testing/fake-fetch";
+
+afterEach(() => mock.restore());
 
 const db = await openDatabase(":memory:");
 const settings = new SettingsRepository(db);
@@ -20,7 +26,6 @@ const app = createApp({
   shares,
   webhooks,
   sender,
-  seerr: async () => new Seerr({ url: "http://seerr.test", apiKey: "key" }),
 });
 const call = (method: string, body: unknown = {}, headers: Record<string, string> = {}) =>
   app.request(`/api/spotarr.v1.SpotarrService/${method}`, {
@@ -146,4 +151,30 @@ test("a video thumbnail is served as JPEG, and only with the token", async () =>
       })
     ).status,
   ).toBe(404);
+});
+
+test("Add requests a Candidate through Seerr and answers with the Share", async () => {
+  await settings.update({ seerr: { url: "http://seerr.test", apiKey: "key" } });
+  const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
+  await shares.finish(
+    id,
+    {
+      status: "READY",
+      extractors: ["video"],
+      clues: {},
+      candidates: [{ tmdbId: 41733, type: "MOVIE", title: "Date limite", libraryState: "ABSENT" }],
+    },
+    10,
+  );
+  fakeFetch({
+    "/api/v1/movie/41733": getGetMovieMovieIdResponseMock({ mediaInfo: undefined }),
+    "/api/v1/request": getPostRequestResponseMock(),
+  });
+
+  const res = await authed("Add", { shareId: id, tmdbId: 41733, type: "MEDIA_TYPE_MOVIE" });
+
+  expect(res.status).toBe(200);
+  const { share } = await res.json();
+  expect(share.candidates[0].status).toBe("CANDIDATE_STATUS_REQUESTED");
+  expect(share.summary).toBe("SUMMARY_REQUESTED");
 });

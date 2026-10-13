@@ -9,6 +9,7 @@ import {
   Summary,
   Target,
 } from "@spotarr/contract";
+import type { SettingsRepository } from "../../domain/settings/repository";
 import type { ShareRepository } from "../../domain/shares/repository";
 import { addedCountOf, candidateStatusOf, failureReasonOf } from "../../domain/shares/summary";
 import type { Share } from "../../domain/shares/types";
@@ -18,13 +19,12 @@ import { listHistory } from "../../domain/shares/use-cases/list-history";
 import { retryIdentification } from "../../domain/shares/use-cases/retry-identification";
 import type { WebhookSender } from "../../domain/webhooks/sender";
 import { SpotarrError } from "../../errors";
-import type { Seerr } from "../../integrations/seerr/client";
 import type { Rpcs } from "./types";
 
 // Each RPC translates the contract into a use case of domain/shares, and back.
 export function shareRpcs(
   shares: ShareRepository,
-  seerr: () => Promise<Seerr>,
+  settings: SettingsRepository,
   sender: WebhookSender,
 ): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification" | "add"> {
   async function shareMessage(id: string) {
@@ -67,27 +67,25 @@ export function shareRpcs(
     },
 
     async add(req) {
-      if (req.target === Target.ARR) {
-        throw new SpotarrError(
-          "invalid_input",
-          "adding to Radarr or Sonarr directly is not supported yet",
-        );
-      }
-      if (req.type === MediaType.UNSPECIFIED)
-        throw new SpotarrError("invalid_input", "type is required");
-      const type = req.type === MediaType.TV ? "TV" : "MOVIE";
       await addCandidate(
         req.shareId,
-        { tmdbId: req.tmdbId, type },
         {
-          shares,
-          seerr: await seerr(),
-          mediaAdded: (share, added) => sender.mediaAdded(share, added),
+          tmdbId: req.tmdbId,
+          type: mediaTypeOf(req.type),
+          target: req.target === Target.ARR ? "ARR" : "SEERR",
         },
+        { shares, settings, sender },
       );
       return shareMessage(req.shareId);
     },
   };
+}
+
+// The contract's UNSPECIFIED means the client did not say.
+function mediaTypeOf(type: MediaType): "MOVIE" | "TV" | undefined {
+  if (type === MediaType.MOVIE) return "MOVIE";
+  if (type === MediaType.TV) return "TV";
+  return undefined;
 }
 
 // The domain writes enum values as names ("READY"), the contract as numbers.

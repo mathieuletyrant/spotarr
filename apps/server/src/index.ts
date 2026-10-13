@@ -2,7 +2,6 @@ import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
-import { seerrFrom } from "./domain/settings/adapters";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import { ShareQueue } from "./domain/shares/queue";
@@ -42,7 +41,6 @@ const app = createApp({
   shares,
   webhooks,
   sender,
-  seerr: async () => seerrFrom(await settings.get()),
   webDir: existsSync(webDir) ? webDir : undefined,
 });
 Bun.serve({ port, fetch: app.fetch });

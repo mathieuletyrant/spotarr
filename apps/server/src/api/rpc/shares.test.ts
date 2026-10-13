@@ -7,7 +7,6 @@ import { ShareRepository } from "../../domain/shares/repository";
 import { identifyNothing, until } from "../../domain/shares/test-helpers";
 import { WebhookRepository } from "../../domain/webhooks/repository";
 import { WebhookSender } from "../../domain/webhooks/sender";
-import { Seerr } from "../../integrations/seerr/client";
 
 const db = await openDatabase(":memory:");
 const shares = new ShareRepository(db);
@@ -21,7 +20,6 @@ const app = createApp({
   shares,
   webhooks,
   sender,
-  seerr: async () => new Seerr({ url: "http://seerr.test", apiKey: "key" }),
 });
 const call = async (method: string, body: unknown) => {
   const res = await app.request(`/api/spotarr.v1.SpotarrService/${method}`, {
