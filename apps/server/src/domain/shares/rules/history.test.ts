@@ -54,3 +54,13 @@ test("counts cover the whole history, whatever the filters", () => {
   expect(page.total).toBe(3);
   expect(Object.fromEntries(page.counts)).toEqual({ TO_CHOOSE: 2, NO_MATCH: 1 });
 });
+
+test("a page holds 50 Shares when no size is asked, 100 at most, and at least 1", () => {
+  const many = Array.from({ length: 120 }, (_, i) =>
+    share(`shr_${String(i).padStart(3, "0")}`, "TO_CHOOSE"),
+  );
+  expect(historyPage(many, { summaries: [] }).shares).toHaveLength(50);
+  expect(historyPage(many, { limit: 500, summaries: [] }).shares).toHaveLength(100);
+  expect(() => historyPage(many, { limit: 0, summaries: [] })).toThrow("page_size");
+  expect(() => historyPage(many, { limit: -5, summaries: [] })).toThrow("page_size");
+});
