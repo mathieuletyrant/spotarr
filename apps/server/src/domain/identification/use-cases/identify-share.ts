@@ -8,7 +8,7 @@ import { guessTitles, type Llm } from "../guess-titles";
 
 // TMDB stays a class: its tests replay recorded answers. The rest are plain
 // functions, so a test hands in what the link, the LLM or the library answer.
-type IdentifyDeps = {
+export type IdentifyDeps = {
   tmdb: Tmdb;
   readLink: (url: string) => Promise<Link>;
   llm: Llm;
