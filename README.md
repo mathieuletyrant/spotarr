@@ -41,7 +41,7 @@ An identification costs about $0.01 with the default model. Settings shows the c
 
 ## 📱 Share from the iPhone
 
-**The app** (`apps/ios`) puts Spotarr in the share sheet: share a reel, it says "Sent to Spotarr" and closes, or says why it failed with a Retry button.
+**The app** (`apps/ios`) puts Spotarr in the share sheet: share a reel, it says "Sent to Spotarr" and closes, or says why it failed with a Retry button. The app itself has three tabs: **History** (filter by status, search, pull to refresh), each Share's page to **Add** a Candidate or retry the identification, and **Settings**.
 
 1. Open `apps/ios/Spotarr.xcodeproj` in Xcode. In both targets' Signing & Capabilities, pick your team (a free Apple account works; its apps must be reinstalled every 7 days).
 2. Run it on your iPhone, over Wi-Fi once paired. In the app, set Spotarr's address (`http://umbrel.local:3838` on Umbrel), the API token, and "Test the connection".

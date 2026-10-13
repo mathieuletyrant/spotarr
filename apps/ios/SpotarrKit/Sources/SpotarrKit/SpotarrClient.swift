@@ -5,6 +5,7 @@ import Foundation
 public struct SpotarrClient: Sendable {
   private let client: Spotarr_V1_SpotarrServiceClient
   private let headers: Headers
+  private let base: URL
 
   /// Nil while the settings miss the address or the token.
   public init?(settings: Settings) {
@@ -21,6 +22,7 @@ public struct SpotarrClient: Sendable {
     )
     client = Spotarr_V1_SpotarrServiceClient(client: protocolClient)
     headers = Self.headers(for: settings)
+    self.base = base
   }
 
   /// The token, then every custom header that has a name. The token's
@@ -48,6 +50,75 @@ public struct SpotarrClient: Sendable {
     let response = await client.getStatus(request: .init(), headers: headers)
     if let error = response.error { throw SendError(error) }
     return response.message?.version ?? ""
+  }
+
+  /// One page of the history, newest first: only `summary` when given, and only
+  /// the Shares matching `query` when it is not empty. `cursor` is the previous
+  /// page's `nextCursor`.
+  public func listShares(summary: Summary?, query: String, cursor: String?)
+    async throws(SendError) -> HistoryPage
+  {
+    var request = Spotarr_V1_ListSharesRequest()
+    request.pageSize = 30
+    if let summary { request.summaries = [summary] }
+    let query = query.trimmingCharacters(in: .whitespaces)
+    if !query.isEmpty { request.query = query }
+    if let cursor { request.cursor = cursor }
+    let response = await client.listShares(request: request, headers: headers)
+    if let error = response.error { throw SendError(error) }
+    return response.message ?? HistoryPage()
+  }
+
+  public func getShare(id: String) async throws(SendError) -> Share {
+    var request = Spotarr_V1_GetShareRequest()
+    request.id = id
+    let response = await client.getShare(request: request, headers: headers)
+    if let error = response.error { throw SendError(error) }
+    return response.message?.share ?? Share()
+  }
+
+  /// Queues the Identification again; the Share comes back in progress.
+  public func retryIdentification(id: String) async throws(SendError) -> Share {
+    var request = Spotarr_V1_RetryIdentificationRequest()
+    request.id = id
+    let response = await client.retryIdentification(request: request, headers: headers)
+    if let error = response.error { throw SendError(error) }
+    return response.message?.share ?? Share()
+  }
+
+  /// Asks Seerr for the Candidate. The Share comes back with the new Addition,
+  /// which may have failed: its status and error say so.
+  public func add(_ candidate: Candidate, from shareID: String) async throws(SendError) -> Share {
+    var request = Spotarr_V1_AddRequest()
+    request.shareID = shareID
+    request.tmdbID = candidate.tmdbID
+    request.type = candidate.type
+    let response = await client.add(request: request, headers: headers)
+    if let error = response.error { throw SendError(error) }
+    return response.message?.share ?? Share()
+  }
+
+  /// A thumbnail of the shared video, as JPEG. Not an RPC: a plain GET on
+  /// Spotarr's /frames, behind the token like the API.
+  public func frameImage(_ frame: Frame) async throws(SendError) -> Data {
+    // frame.url is a path on Spotarr's origin: "/frames/<share id>/<n>.jpg".
+    let path = String(frame.url.drop { $0 == "/" })
+    var request = URLRequest(url: base.appending(path: path), timeoutInterval: 20)
+    for (name, values) in headers {
+      request.setValue(values.joined(separator: ","), forHTTPHeaderField: name)
+    }
+    let data: Data
+    let answer: URLResponse
+    do {
+      (data, answer) = try await URLSession.shared.data(for: request)
+    } catch {
+      throw SendError.unreachable
+    }
+    let status = (answer as? HTTPURLResponse)?.statusCode ?? 0
+    if status == 401 { throw SendError.tokenRefused }
+    if status == 403 { throw SendError.accessRefused }
+    if status != 200 { throw SendError.spotarr("Spotarr answered \(status) for a frame.") }
+    return data
   }
 }
 
