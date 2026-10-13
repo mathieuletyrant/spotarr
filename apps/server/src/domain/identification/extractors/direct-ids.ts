@@ -16,10 +16,16 @@ const MAX_IDS = 4;
 export function findDirectIds(text: string): DirectId[] {
   const ids: DirectId[] = [];
 
-  for (const [, imdbId = ""] of text.matchAll(IMDB_LINK)) {
+  // The same link twice (in the URL and in the text) is one title.
+  const seen = new Set<string>();
+  for (const [link, imdbId = ""] of text.matchAll(IMDB_LINK)) {
+    if (seen.has(link)) continue;
+    seen.add(link);
     ids.push({ source: "imdb", id: imdbId });
   }
-  for (const [, kind, tmdbId] of text.matchAll(TMDB_LINK)) {
+  for (const [link, kind, tmdbId] of text.matchAll(TMDB_LINK)) {
+    if (seen.has(link)) continue;
+    seen.add(link);
     ids.push({ source: "tmdb", type: kind === "tv" ? "TV" : "MOVIE", id: Number(tmdbId) });
   }
 
