@@ -1,5 +1,5 @@
-import type { Settings } from "../../settings/schema";
-import type { Candidate } from "../types";
+import type { Settings } from "../settings/schema";
+import type { Candidate } from "./types";
 
 // The Candidates auto add requests on its own, by the rule of Settings → Auto
 // add. Only the confidence counts; a direct IMDb/TMDB link, certain, has none

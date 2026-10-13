@@ -1,8 +1,8 @@
 import type { SettingsRepository } from "../../settings/repository";
 import type { WebhookSender } from "../../webhooks/sender";
+import { candidatesToAutoAdd } from "../candidates-to-auto-add";
 import type { ShareRepository } from "../repository";
 import { addCandidate } from "./add-candidate";
-import { candidatesToAutoAdd } from "./auto-add";
 
 type EndIdentificationDeps = {
   shares: ShareRepository;

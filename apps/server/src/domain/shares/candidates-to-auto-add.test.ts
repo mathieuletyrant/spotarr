@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import type { Candidate } from "../types";
-import { candidatesToAutoAdd } from "./auto-add";
+import { candidatesToAutoAdd } from "./candidates-to-auto-add";
+import type { Candidate } from "./types";
 
 const rule = { enabled: true, minConfidence: 95, onlyOne: true };
 
