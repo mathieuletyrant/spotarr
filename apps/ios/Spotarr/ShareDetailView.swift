@@ -11,9 +11,8 @@ struct ShareDetailView: View {
   @State private var share: Share?
   @State private var error: String?
   @State private var retrying = false
-  /// The hint alert is open, and what is typed in it.
-  @State private var askingHint = false
-  @State private var hint = ""
+  /// The retry sheet is open: effort and hint.
+  @State private var choosingRetry = false
 
   private static let extractors = [
     "video": "Video",
@@ -44,35 +43,17 @@ struct ShareDetailView: View {
               Label("Open the source", systemImage: "safari")
             }
           }
-          // A tap retries with the settings' effort; a long press offers another,
-          // or a hint for the LLM.
-          Menu {
-            Section("Retry with the effort") {
-              ForEach(["low", "medium", "high"], id: \.self) { effort in
-                Button(effort.capitalized) { Task { await retry(effort: effort) } }
-              }
-            }
-            Button("With a hint…", systemImage: "text.bubble") { askingHint = true }
-          } label: {
-            Label("Retry identification", systemImage: "arrow.clockwise")
-          } primaryAction: {
-            Task { await retry(effort: nil) }
+          Button("Retry identification", systemImage: "arrow.clockwise") {
+            choosingRetry = true
           }
           .disabled(retrying || share.isInProgress)
         }
       }
     }
-    .alert("Hint for the LLM", isPresented: $askingHint) {
-      TextField("The Korean show, not the movie", text: $hint)
-      Button("Retry") {
-        Task {
-          await retry(effort: nil, hint: hint)
-          hint = ""
-        }
+    .sheet(isPresented: $choosingRetry) {
+      RetrySheet { effort, hint in
+        Task { await retry(effort: effort, hint: hint) }
       }
-      Button("Cancel", role: .cancel) {}
-    } message: {
-      Text("What the identification got wrong, in one sentence.")
     }
     .refreshable { await load() }
     .task { await load() }
@@ -174,9 +155,9 @@ struct ShareDetailView: View {
     }
   }
 
-  /// `effort` and `hint` are for this Identification only; nil: the settings'
-  /// effort, no hint.
-  private func retry(effort: String?, hint: String? = nil) async {
+  /// `effort` and `hint` are for this Identification only; nil effort: the
+  /// settings', empty hint: none.
+  private func retry(effort: String?, hint: String) async {
     guard let client = SpotarrClient(settings: SettingsStore.load()) else { return }
     retrying = true
     defer { retrying = false }

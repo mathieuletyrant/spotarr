@@ -3,9 +3,9 @@ import type { Share } from "@spotarr/contract";
 import { ExternalLink } from "lucide-react";
 import { shareDate } from "../../lib/format";
 import { DeleteShareButton } from "./delete-share-button";
-import { RetryForm } from "./retry-form";
+import { RetryButton } from "./retry-button";
 
-// Title, shared URL, the actions (open the source, delete), then the retry.
+// Title, shared URL, and the actions: retry, open the source, delete.
 export function ShareHeader({ share }: { share: Share }) {
   const { day, time } = shareDate(share.createdAt ? timestampDate(share.createdAt) : new Date());
 
@@ -23,6 +23,7 @@ export function ShareHeader({ share }: { share: Share }) {
           )}
         </div>
         <div className="flex flex-wrap gap-2 md:shrink-0">
+          <RetryButton share={share} />
           {share.input?.url && (
             <a
               href={share.input.url}
@@ -37,7 +38,6 @@ export function ShareHeader({ share }: { share: Share }) {
           <DeleteShareButton share={share} />
         </div>
       </div>
-      <RetryForm share={share} />
     </div>
   );
 }
