@@ -2,13 +2,11 @@ import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
-import { runIdentification } from "./domain/identification/use-cases/run-identification";
 import { seerrFrom } from "./domain/settings/adapters";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
-import { endIdentification } from "./domain/shares/use-cases/end-identification";
 import { WebhookRepository } from "./domain/webhooks/repository";
 import { WebhookSender } from "./domain/webhooks/sender";
 import { log } from "./log";
@@ -32,13 +30,8 @@ const shares = new ShareRepository(db);
 const webhooks = new WebhookRepository(db);
 const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
 
-const queue = new ShareQueue(
-  shares,
-  (shareId, input) => runIdentification(shareId, input, settings),
-  async () => (await settings.get()).extraction.concurrency,
-  (shareId) => endIdentification(shareId, { shares, settings, sender }),
-);
-await queue.start();
+// Identifies the QUEUED Shares in the background.
+await new ShareQueue({ shares, settings, sender }).start();
 
 // The web UI, once built (pnpm build). In dev, Vite serves it instead.
 const webDir = new URL("../../web/dist", import.meta.url).pathname;
@@ -47,7 +40,6 @@ const app = createApp({
   apiToken: () => token,
   settings,
   shares,
-  queue,
   webhooks,
   sender,
   seerr: async () => seerrFrom(await settings.get()),

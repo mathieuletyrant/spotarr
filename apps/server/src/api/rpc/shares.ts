@@ -9,7 +9,6 @@ import {
   Summary,
   Target,
 } from "@spotarr/contract";
-import type { ShareQueue } from "../../domain/shares/queue";
 import type { ShareRepository } from "../../domain/shares/repository";
 import { addedCountOf, candidateStatusOf, failureReasonOf } from "../../domain/shares/summary";
 import type { Share } from "../../domain/shares/types";
@@ -25,7 +24,6 @@ import type { Rpcs } from "./types";
 // Each RPC translates the contract into a use case of domain/shares, and back.
 export function shareRpcs(
   shares: ShareRepository,
-  queue: ShareQueue,
   seerr: () => Promise<Seerr>,
   sender: WebhookSender,
 ): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification" | "add"> {
@@ -37,7 +35,7 @@ export function shareRpcs(
 
   return {
     async createShare(req) {
-      const id = await createShare(req, { shares, queue });
+      const id = await createShare(req, shares);
       return shareMessage(id);
     },
 
@@ -64,7 +62,7 @@ export function shareRpcs(
     },
 
     async retryIdentification(req) {
-      await retryIdentification(req.id, { shares, queue });
+      await retryIdentification(req.id, shares);
       return shareMessage(req.id);
     },
 

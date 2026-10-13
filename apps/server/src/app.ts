@@ -11,7 +11,6 @@ import { statusRpcs } from "./api/rpc/status";
 import { webhookRpcs } from "./api/rpc/webhooks";
 import { serveWebApp } from "./api/web";
 import type { SettingsRepository } from "./domain/settings/repository";
-import type { ShareQueue } from "./domain/shares/queue";
 import type { ShareRepository } from "./domain/shares/repository";
 import type { WebhookRepository } from "./domain/webhooks/repository";
 import type { WebhookSender } from "./domain/webhooks/sender";
@@ -22,7 +21,6 @@ export type AppDeps = {
   apiToken: () => string;
   settings: SettingsRepository;
   shares: ShareRepository;
-  queue: ShareQueue;
   webhooks: WebhookRepository;
   sender: WebhookSender;
   // Built from the settings at each call, so a change applies at once.
@@ -39,7 +37,6 @@ export function createApp({
   apiToken,
   settings,
   shares,
-  queue,
   webhooks,
   sender,
   seerr,
@@ -50,7 +47,7 @@ export function createApp({
       ...authRpcs(apiToken),
       ...statusRpcs(settings, shares),
       ...settingsRpcs(settings),
-      ...shareRpcs(shares, queue, seerr, sender),
+      ...shareRpcs(shares, seerr, sender),
       ...webhookRpcs(webhooks, sender),
     }),
   );

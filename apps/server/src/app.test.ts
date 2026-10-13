@@ -3,9 +3,7 @@ import pkg from "../package.json";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { SettingsRepository } from "./domain/settings/repository";
-import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
-import { identifyNothing } from "./domain/shares/test-helpers";
 import { WebhookRepository } from "./domain/webhooks/repository";
 import { WebhookSender } from "./domain/webhooks/sender";
 import { Seerr } from "./integrations/seerr/client";
@@ -14,15 +12,14 @@ const db = await openDatabase(":memory:");
 const settings = new SettingsRepository(db);
 await settings.setApiToken("secret-token");
 const shares = new ShareRepository(db);
-const queue = new ShareQueue(shares, identifyNothing, async () => 2);
 const webhooks = new WebhookRepository(db);
+const sender = new WebhookSender(webhooks, async () => "");
 const app = createApp({
   apiToken: () => "secret-token",
   settings,
   shares,
-  queue,
   webhooks,
-  sender: new WebhookSender(webhooks, async () => ""),
+  sender,
   seerr: async () => new Seerr({ url: "http://seerr.test", apiKey: "key" }),
 });
 const call = (method: string, body: unknown = {}, headers: Record<string, string> = {}) =>

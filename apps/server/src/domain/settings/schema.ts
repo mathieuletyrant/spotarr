@@ -32,6 +32,7 @@ export const SettingsSchema = z.object({
       // 15 images at most reach the LLM per Identification: each one costs tokens.
       framesPerVideo: z.int().min(1).max(15).default(6),
       maxVideoMb: z.int().min(1).max(2000).default(200),
+      // Read when the queue starts: a change applies at the next restart.
       concurrency: z.int().min(1).max(4).default(2),
     })
     .prefault({}),
