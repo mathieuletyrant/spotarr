@@ -46,7 +46,7 @@ Tailwind v4 syntax: the `tailwind-best-practices` skill (`.agents/skills/`, link
 - **Repeated class lists become a React component** (`<StatusBadge>`, `<Poster>`), not an `@apply` class. `@apply` is for `styles.css` base rules only.
 - **Mobile first**: base classes for a phone, `md:` and up for wider screens. The History table becomes cards on a phone.
 - **Accessible by default**: real `<button>` and `<a>`, a label on every field, visible focus (`focus-visible:`), no `autoFocus`.
-- **Devtools**: under `pnpm dev`, TanStack Query's (bottom left) and TanStack Router's (bottom right) buttons open their devtools; `pnpm build` leaves them out.
+- **Devtools**: under `pnpm dev`, one TanStack Devtools button (`@tanstack/react-devtools`, in `main.tsx`) opens the Query and Router panels. The `devtools()` Vite plugin, first in `vite.config.ts`, removes them from `pnpm build`.
 - **Everything in English**, UI text included. The mockups are in French: translate their labels.
 
 ## How work happens
