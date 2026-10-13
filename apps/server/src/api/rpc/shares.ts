@@ -1,6 +1,7 @@
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import {
   AdditionStatus,
+  CandidateStatus,
   IdentificationStatus,
   LibraryState,
   MediaType,
@@ -10,6 +11,7 @@ import {
 } from "@spotarr/contract";
 import type { ShareQueue } from "../../domain/shares/queue";
 import type { ShareRepository } from "../../domain/shares/repository";
+import { addedCountOf, candidateStatusOf, failureReasonOf } from "../../domain/shares/summary";
 import type { Share } from "../../domain/shares/types";
 import { addCandidate } from "../../domain/shares/use-cases/add-candidate";
 import { createShare } from "../../domain/shares/use-cases/create-share";
@@ -103,11 +105,17 @@ function toMessage(share: Share) {
       status: IdentificationStatus[share.identification.status],
       method: Method[share.identification.method ?? "UNSPECIFIED"],
     },
-    candidates: share.candidates.map((candidate) => ({
-      ...candidate,
-      type: MediaType[candidate.type],
-      libraryState: LibraryState[candidate.libraryState],
-    })),
+    candidates: share.candidates.map((candidate) => {
+      const { status, automatic, failure } = candidateStatusOf(candidate, share.additions);
+      return {
+        ...candidate,
+        type: MediaType[candidate.type],
+        libraryState: LibraryState[candidate.libraryState],
+        status: CandidateStatus[status],
+        automatic,
+        failure,
+      };
+    }),
     additions: share.additions.map((addition) => ({
       ...addition,
       createdAt: timestampFromDate(new Date(addition.createdAt)),
@@ -120,5 +128,7 @@ function toMessage(share: Share) {
       url: `/frames/${share.id}/${frame.position}.jpg`,
     })),
     summary: Summary[share.summary],
+    failureReason: failureReasonOf(share),
+    addedCount: addedCountOf(share.additions),
   };
 }

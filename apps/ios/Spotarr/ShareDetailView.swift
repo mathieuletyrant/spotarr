@@ -76,8 +76,8 @@ struct ShareDetailView: View {
         LabeledContent("Status") {
           StatusBadge(summary: share.summary, detail: share.additionProgress)
         }
-        if let reason = share.failureReason {
-          Text(reason).font(.footnote).foregroundStyle(.red)
+        if share.hasFailureReason {
+          Text(share.failureReason).font(.footnote).foregroundStyle(.red)
         }
         if let error {
           Text(error).font(.footnote).foregroundStyle(.red)
@@ -95,7 +95,7 @@ struct ShareDetailView: View {
             .foregroundStyle(.secondary)
         } else {
           ForEach(share.candidates) { candidate in
-            CandidateRow(candidate: candidate, state: share.state(of: candidate)) {
+            CandidateRow(candidate: candidate, state: candidate.state) {
               await add(candidate)
             }
           }

@@ -1,13 +1,5 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import {
-  AdditionStatus,
-  type Candidate,
-  MediaType,
-  Method,
-  type Share,
-  Summary,
-  Target,
-} from "@spotarr/contract";
+import { type Candidate, MediaType, Method, type Share, Summary, Target } from "@spotarr/contract";
 import { Link } from "@tanstack/react-router";
 import { seconds, shareDate } from "../../lib/format";
 import { Poster } from "../poster";
@@ -15,9 +7,6 @@ import { SourceIcon } from "../source-icon";
 import { StatusBadge } from "../status-badge";
 import { TmdbRating } from "../tmdb-rating";
 import { HISTORY_COLUMNS } from "./columns";
-
-// Additions that put the work in the library, or found it there already.
-const SUCCESSES = [AdditionStatus.ADDED, AdditionStatus.REQUESTED, AdditionStatus.ALREADY_PRESENT];
 
 // One Share of the history: a compact card on a phone or a tablet, a row of
 // six columns from lg on. Either way, it links to the Share's page.
@@ -140,7 +129,7 @@ function Result({ share }: { share: Share }) {
   if (!first) return <span className="text-text-muted">No candidates</span>;
   if (others.length === 0) return <OneCandidate candidate={first} />;
 
-  const added = share.additions.filter((a) => SUCCESSES.includes(a.status)).length;
+  const added = share.addedCount;
   return (
     <div className="flex items-center gap-3">
       <div className="flex -space-x-3">
@@ -178,16 +167,12 @@ function OneCandidate({ candidate }: { candidate: Candidate }) {
 // The badge, with "1/3" when several Candidates were found, and the reason of a failure.
 function Status({ share }: { share: Share }) {
   const several = share.candidates.length > 1 && share.additions.length > 0;
-  const added = share.additions.filter((a) => SUCCESSES.includes(a.status)).length;
-  const reason =
-    share.summary === Summary.FAILED
-      ? (share.additions.at(-1)?.error ?? share.identification?.error)
-      : undefined;
+  const reason = share.failureReason;
   return (
     <div className="min-w-0">
       <StatusBadge
         summary={share.summary}
-        detail={several ? `${added}/${share.candidates.length}` : undefined}
+        detail={several ? `${share.addedCount}/${share.candidates.length}` : undefined}
       />
       {reason && <p className="mt-1 line-clamp-2 text-xs text-status-error">{reason}</p>}
     </div>
