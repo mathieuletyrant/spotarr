@@ -42,7 +42,7 @@ export function shareMessage(share: Share) {
     })),
     summary: Summary[share.summary],
     failureReason: failureReasonOf(share),
-    addedCount: addedCountOf(share.additions),
+    addedCount: addedCountOf(share.candidates, share.additions),
   };
 }
 

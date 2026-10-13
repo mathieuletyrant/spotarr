@@ -777,7 +777,8 @@ export type Share = Message<"spotarr.v1.Share"> & {
   failureReason?: string | undefined;
 
   /**
-   * Additions that put a Candidate in the library or found it there already.
+   * Candidates whose latest Addition put them in the library or found them
+   * there already. Never more than the Candidates.
    *
    * @generated from field: int32 added_count = 11;
    */
