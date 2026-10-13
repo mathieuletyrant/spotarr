@@ -49,7 +49,12 @@ import Testing
 @Test func errorsAreSaidForAPerson() {
   #expect(SendError(ConnectError(code: .unauthenticated, message: nil)) == .tokenRefused)
   #expect(SendError(ConnectError(code: .permissionDenied, message: nil)) == .accessRefused)
+  // No answer at all: the network or the address.
   #expect(SendError(ConnectError(code: .unavailable, message: nil)) == .unreachable)
+  // Spotarr answered: a service behind it failed, and the message says which.
+  let answered = ConnectError(
+    code: .unavailable, message: "TMDB answered 401", metadata: ["content-type": ["application/json"]])
+  #expect(SendError(answered) == .spotarr("TMDB answered 401"))
   #expect(
     SendError(ConnectError(code: .invalidArgument, message: "url: only http and https links"))
       == .spotarr("url: only http and https links"))
