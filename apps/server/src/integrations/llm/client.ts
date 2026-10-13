@@ -7,6 +7,11 @@ import { SpotarrError } from "../../errors";
 export const EFFORTS = ["low", "medium", "high"] as const;
 export type Effort = (typeof EFFORTS)[number];
 
+// How long the LLM may think at each effort before Spotarr gives up. Gemini 3.8
+// Flash answers in 3 to 6 s at low; at medium it once went past 60 s (2026-10-13).
+// The web UI and the iOS app show these next to each effort: keep them in step.
+const TIMEOUT_SECONDS: Record<Effort, number> = { low: 60, medium: 180, high: 300 };
+
 export type LlmConfig = { apiUrl: string; apiKey: string; model: string; effort: Effort };
 export type ChatMessage = OpenAI.Chat.ChatCompletionMessageParam;
 
@@ -27,7 +32,7 @@ export async function chat<Schema extends z.ZodType>(
       reasoning_effort: config.effort,
     })
     .catch((error) => {
-      throw llmError(error);
+      throw llmError(error, config.effort);
     });
 
   const answer = completion.choices[0]?.message;
@@ -46,7 +51,7 @@ export async function ping(config: LlmConfig): Promise<void> {
       max_completion_tokens: 16,
     })
     .catch((error) => {
-      throw llmError(error);
+      throw llmError(error, config.effort);
     });
 }
 
@@ -71,18 +76,24 @@ function newClient(config: LlmConfig): OpenAI {
     );
   }
 
-  // One automatic retry on a network error, not the SDK's default two.
+  // The SDK also retries after a timeout: at low, one retry still ends within
+  // 2 minutes; at medium or high, it would only double a long wait.
+  let maxRetries = 0;
+  if (config.effort === "low") maxRetries = 1;
   return new OpenAI({
     baseURL: config.apiUrl,
     apiKey: config.apiKey,
-    timeout: 60_000,
-    maxRetries: 1,
+    timeout: TIMEOUT_SECONDS[config.effort] * 1000,
+    maxRetries,
   });
 }
 
-function llmError(error: unknown): SpotarrError {
+function llmError(error: unknown, effort: Effort): SpotarrError {
   if (error instanceof OpenAI.APIConnectionTimeoutError) {
-    return new SpotarrError("timeout", "the LLM took more than 60 s");
+    return new SpotarrError(
+      "timeout",
+      `the LLM took more than ${TIMEOUT_SECONDS[effort]} s at ${effort} effort`,
+    );
   }
   if (error instanceof OpenAI.APIError && error.status) {
     return new SpotarrError("unavailable", `the LLM answered ${error.status}: ${error.message}`);

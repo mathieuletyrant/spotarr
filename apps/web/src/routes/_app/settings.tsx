@@ -169,7 +169,9 @@ function SettingsForm({ saved }: { saved: Values }) {
             className={inputClass}
           >
             {EFFORTS.map((effort) => (
-              <option key={effort}>{effort}</option>
+              <option key={effort.value} value={effort.value}>
+                {effort.label}
+              </option>
             ))}
           </select>
         </Field>

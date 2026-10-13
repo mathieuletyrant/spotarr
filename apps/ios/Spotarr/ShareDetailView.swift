@@ -44,8 +44,8 @@ struct ShareDetailView: View {
           // A tap retries with the settings' effort; a long press offers another.
           Menu {
             Section("Retry with the effort") {
-              ForEach(["low", "medium", "high"], id: \.self) { effort in
-                Button(effort.capitalized) { Task { await retry(effort: effort) } }
+              ForEach(Effort.all, id: \.value) { effort in
+                Button(effort.label) { Task { await retry(effort: effort.value) } }
               }
             }
           } label: {

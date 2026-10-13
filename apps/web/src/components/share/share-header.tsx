@@ -42,8 +42,8 @@ export function ShareHeader({ share }: { share: Share }) {
             >
               <option value="">Default effort</option>
               {EFFORTS.map((e) => (
-                <option key={e} value={e}>
-                  {`${e[0]?.toUpperCase()}${e.slice(1)} effort`}
+                <option key={e.value} value={e.value}>
+                  {e.label}
                 </option>
               ))}
             </select>
