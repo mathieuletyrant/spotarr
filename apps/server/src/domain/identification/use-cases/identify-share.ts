@@ -1,20 +1,18 @@
-import type { Seerr } from "../../../integrations/seerr/client";
 import type { Tmdb } from "../../../integrations/tmdb/client";
-import { isNoVideoError } from "../../../integrations/ytdlp/ytdlp";
 import { step } from "../../../log";
 import type { Candidate, Clues, IdentificationResult, ShareInput } from "../../shares/types";
 import { confirmOnTmdb } from "../confirm-on-tmdb";
 import { type DirectId, findDirectIds } from "../extractors/direct-ids";
-import type { Photo } from "../extractors/photo";
-import type { Video } from "../extractors/video";
+import type { Link } from "../extractors/link";
 import { guessTitles, type Llm } from "../guess-titles";
 
-export type IdentifyDeps = {
+// TMDB stays a class: its tests replay recorded answers. The rest are plain
+// functions, so a test hands in what the link, the LLM or the library answer.
+type IdentifyDeps = {
   tmdb: Tmdb;
-  seerr: Seerr;
-  readVideo: (url: string) => Promise<Video>;
-  readPhoto: (url: string) => Promise<Photo>;
+  readLink: (url: string) => Promise<Link>;
   llm: Llm;
+  libraryState: (type: Candidate["type"], tmdbId: number) => Promise<Candidate["libraryState"]>;
 };
 
 // An IMDb/TMDB link is enough. Otherwise the shared video (or photo post) is
@@ -23,7 +21,7 @@ export type IdentifyDeps = {
 export async function identifyShare(
   shareId: string,
   input: ShareInput,
-  { tmdb, seerr, readVideo, readPhoto, llm }: IdentifyDeps,
+  { tmdb, readLink, llm, libraryState }: IdentifyDeps,
 ): Promise<IdentificationResult> {
   // 1. The shared link may itself be an IMDb or TMDB page: certain, no LLM.
   const ids = findDirectIds(input.url ?? "");
@@ -34,7 +32,7 @@ export async function identifyShare(
       () => lookUpAll(ids, tmdb),
       (titles) => ({ candidates: titles.length }),
     );
-    const candidates = await checkLibrary(shareId, found, seerr);
+    const candidates = await checkLibrary(shareId, found, libraryState);
     if (candidates.length > 0) {
       return {
         status: "READY",
@@ -48,10 +46,16 @@ export async function identifyShare(
 
   // 2. Otherwise it is a video (a reel), or an Instagram photo post. If it
   // cannot be read, the Identification fails with the reason.
-  if (!input.url) {
+  const url = input.url;
+  if (!url) {
     return { status: "NO_MATCH", extractors: [], clues: {}, candidates: [] };
   }
-  const read = await readLink(shareId, input.url, readVideo, readPhoto);
+  const read = await step(
+    shareId,
+    "read",
+    () => readLink(url),
+    (link) => ({ extractor: link.extractor, images: link.images.length, audio: !!link.audio }),
+  );
   const clues: Clues = { caption: read.caption, author: read.author };
 
   // 3. The LLM reads the caption, looks at the images and listens to the sound;
@@ -68,7 +72,7 @@ export async function identifyShare(
     () => confirmOnTmdb(answer.guesses, tmdb),
     (titles) => ({ candidates: titles.length }),
   );
-  const candidates = await checkLibrary(shareId, confirmed, seerr);
+  const candidates = await checkLibrary(shareId, confirmed, libraryState);
   return {
     status: candidates.length > 0 ? "READY" : "NO_MATCH",
     method: "LLM",
@@ -81,71 +85,28 @@ export async function identifyShare(
   };
 }
 
-// What a shared link gave: the images (and sound) for the LLM, and the frames
-// kept to show on the Share's page, a photo post having none.
-type ReadLink = {
-  extractor: "video" | "instagram-photo";
-  caption?: string;
-  author?: string;
-  images: Uint8Array[];
-  audio?: Uint8Array;
-  frames?: { atMs: number; thumbnail: Uint8Array }[];
-};
-
-// Reads the link as a video. yt-dlp only reads videos: when it says the post
-// has none, it is an Instagram photo post, read from its page instead.
-async function readLink(
-  shareId: string,
-  url: string,
-  readVideo: IdentifyDeps["readVideo"],
-  readPhoto: IdentifyDeps["readPhoto"],
-): Promise<ReadLink> {
-  try {
-    const video = await step(
-      shareId,
-      "video",
-      () => readVideo(url),
-      (read) => ({ frames: read.frames.length, audio: read.audio !== undefined }),
-    );
-    return {
-      extractor: "video",
-      caption: video.caption,
-      author: video.author,
-      images: video.frames.map((frame) => frame.jpeg),
-      audio: video.audio,
-      // Kept to show on the Share's page; the full frames only served the LLM.
-      frames: video.frames.map(({ atMs, thumbnail }) => ({ atMs, thumbnail })),
-    };
-  } catch (error) {
-    if (!isNoVideoError(error)) throw error;
-  }
-
-  const photo = await step(shareId, "photo", () => readPhoto(url));
-  return {
-    extractor: "instagram-photo",
-    caption: photo.caption,
-    author: photo.author,
-    images: [photo.picture],
-  };
-}
-
 // Asks Seerr whether each Candidate is already in the library. Seerr being down
 // or not configured does not fail the Identification: Candidates stay ABSENT.
 async function checkLibrary(
   shareId: string,
   candidates: Candidate[],
-  seerr: Seerr,
+  libraryState: IdentifyDeps["libraryState"],
 ): Promise<Candidate[]> {
   try {
-    await step(shareId, "library-check", async () => {
+    return await step(shareId, "library-check", async () => {
+      const checked: Candidate[] = [];
       for (const candidate of candidates) {
-        candidate.libraryState = await seerr.libraryState(candidate.type, candidate.tmdbId);
+        checked.push({
+          ...candidate,
+          libraryState: await libraryState(candidate.type, candidate.tmdbId),
+        });
       }
+      return checked;
     });
   } catch {
     // Already logged by step().
+    return candidates;
   }
-  return candidates;
 }
 
 async function lookUpAll(ids: DirectId[], tmdb: Tmdb): Promise<Candidate[]> {
