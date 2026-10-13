@@ -68,11 +68,19 @@ struct CandidateRow: View {
           adding = false
         }
       } label: {
-        if adding {
-          ProgressView()
-        } else {
-          Label(message == nil ? "Add" : "Try again", systemImage: "plus")
+        // A plain HStack: inside a glass button a Label drops its icon and
+        // leaves a gap. Same width while adding, so the button does not jump.
+        HStack(spacing: 6) {
+          if adding {
+            ProgressView().tint(.black)
+          } else {
+            Image(systemName: "plus")
+          }
+          Text(message == nil ? "Add" : "Try again")
         }
+        .fontWeight(.semibold)
+        // Black reads better than white on the yellow accent.
+        .foregroundStyle(.black)
       }
       .buttonStyle(.glassProminent)
       .disabled(adding)
