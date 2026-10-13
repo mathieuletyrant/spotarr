@@ -4,17 +4,21 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Trash2 } from "lucide-react";
 import { useRef } from "react";
+import { useToast } from "../toast";
 
-// Deletes the Share after a confirmation, then goes back to the History. A
+// Deletes the Share after a confirmation, then goes back to the History and says
+// so in a toast. A
 // native <dialog>: Escape closes it, and focus stays inside.
 export function DeleteShareButton({ share }: { share: Share }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const toast = useToast();
   const remove = useMutation(SpotarrService.method.deleteShare, {
     onSuccess: async () => {
       dialog.current?.close();
       await navigate({ to: "/" });
+      toast("Share deleted");
       // After leaving the page: its own query would ask for a Share that is gone.
       await queryClient.invalidateQueries();
     },

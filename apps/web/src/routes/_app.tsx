@@ -3,6 +3,7 @@ import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/
 import { Plus } from "lucide-react";
 import { ShareDialog } from "../components/share-dialog";
 import { ThemeButton } from "../components/theme-button";
+import { ToastProvider } from "../components/toast";
 import { queryClient } from "../lib/api";
 import { statusQuery } from "../queries/status";
 
@@ -33,55 +34,57 @@ function AppLayout() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen">
-      <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
-        <Link to="/" className="flex items-center gap-2 font-semibold">
-          <img src="/favicon.svg" alt="Spotarr" className="size-6" />
-          <span className="hidden sm:inline">Spotarr</span>
-        </Link>
-        <nav className="flex gap-1 text-sm">
-          <Link
-            to="/"
-            className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
-          >
-            History
+    <ToastProvider>
+      <div className="min-h-screen">
+        <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
+          <Link to="/" className="flex items-center gap-2 font-semibold">
+            <img src="/favicon.svg" alt="Spotarr" className="size-6" />
+            <span className="hidden sm:inline">Spotarr</span>
           </Link>
-          <Link
-            to="/stats"
-            className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
-          >
-            Stats
-          </Link>
-          <Link
-            to="/settings"
-            className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
-          >
-            Settings
-          </Link>
-        </nav>
-        {/* The page's main action, on every page: share a link from the computer. */}
-        <div className="ml-auto flex items-center gap-1">
-          <ThemeButton />
-          <Link
-            to="."
-            search={(previous) => ({ ...previous, share: true })}
-            aria-label="Share a link"
-            className="flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text"
-          >
-            <Plus aria-hidden className="size-4" />
-            <span className="hidden sm:inline">Share</span>
-          </Link>
-        </div>
-      </header>
-      <main className="mx-auto max-w-7xl p-4 md:p-6">
-        <Outlet />
-      </main>
-      <ShareDialog
-        open={share === true}
-        onClose={() =>
-          navigate({ to: ".", search: (previous) => ({ ...previous, share: undefined }) })
-        }
-      />
-    </div>
+          <nav className="flex gap-1 text-sm">
+            <Link
+              to="/"
+              className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
+            >
+              History
+            </Link>
+            <Link
+              to="/stats"
+              className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
+            >
+              Stats
+            </Link>
+            <Link
+              to="/settings"
+              className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
+            >
+              Settings
+            </Link>
+          </nav>
+          {/* The page's main action, on every page: share a link from the computer. */}
+          <div className="ml-auto flex items-center gap-1">
+            <ThemeButton />
+            <Link
+              to="."
+              search={(previous) => ({ ...previous, share: true })}
+              aria-label="Share a link"
+              className="flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text"
+            >
+              <Plus aria-hidden className="size-4" />
+              <span className="hidden sm:inline">Share</span>
+            </Link>
+          </div>
+        </header>
+        <main className="mx-auto max-w-7xl p-4 md:p-6">
+          <Outlet />
+        </main>
+        <ShareDialog
+          open={share === true}
+          onClose={() =>
+            navigate({ to: ".", search: (previous) => ({ ...previous, share: undefined }) })
+          }
+        />
+      </div>
+    </ToastProvider>
   );
 }
