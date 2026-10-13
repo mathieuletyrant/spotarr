@@ -33,7 +33,7 @@ How the candidates were found: `DIRECT_ID` (an IMDb/TMDB ID found in the Clues, 
 _Avoid_: mode, strategy
 
 **Effort**:
-How long the LLM thinks before answering: `low` (the default), `medium` or `high`. Higher is slower and dearer. Set in Settings; Retry can ask for another, for that Identification only.
+How long the LLM thinks before answering: `low` (the default), `medium` or `high`. Higher is slower and dearer. Spotarr waits up to 60 s, 3 min or 5 min. Set in Settings; Retry can ask for another, for that Identification only.
 _Avoid_: reasoning level, thinking budget, mode
 
 **Hint**:

@@ -59,13 +59,13 @@ export function RetryButton({ share }: { share: Share }) {
             >
               <option value="">Default (Settings)</option>
               {EFFORTS.map((e) => (
-                <option key={e} value={e}>
-                  {e}
+                <option key={e.value} value={e.value}>
+                  {e.label}
                 </option>
               ))}
             </select>
             <span className="text-sm text-text-muted">
-              Higher thinks longer: slower and dearer.
+              Higher thinks longer: slower and dearer, and may find what a quick look missed.
             </span>
           </label>
           <label className="flex flex-col gap-1.5">

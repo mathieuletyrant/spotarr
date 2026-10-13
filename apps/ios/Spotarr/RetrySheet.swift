@@ -16,12 +16,12 @@ struct RetrySheet: View {
         Section {
           Picker("Effort", selection: $effort) {
             Text("Default (Settings)").tag(String?.none)
-            ForEach(["low", "medium", "high"], id: \.self) { effort in
-              Text(effort.capitalized).tag(String?.some(effort))
+            ForEach(Effort.all, id: \.value) { effort in
+              Text(effort.label).tag(String?.some(effort.value))
             }
           }
         } footer: {
-          Text("Higher thinks longer: slower and dearer.")
+          Text("Higher thinks longer: slower and dearer, and may find what a quick look missed.")
         }
         Section {
           TextField("The Korean show, not the movie", text: $hint, axis: .vertical)
