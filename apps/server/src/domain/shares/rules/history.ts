@@ -1,4 +1,4 @@
-import type { Share, Summary } from "./types";
+import type { Share, Summary } from "../types";
 
 export type HistoryRequest = {
   limit: number;

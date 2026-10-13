@@ -14,7 +14,6 @@ import type { SettingsRepository } from "./domain/settings/repository";
 import type { ShareRepository } from "./domain/shares/repository";
 import type { WebhookRepository } from "./domain/webhooks/repository";
 import type { WebhookSender } from "./domain/webhooks/sender";
-import type { Seerr } from "./integrations/seerr/client";
 import { log } from "./log";
 
 export type AppDeps = {
@@ -23,8 +22,6 @@ export type AppDeps = {
   shares: ShareRepository;
   webhooks: WebhookRepository;
   sender: WebhookSender;
-  // Built from the settings at each call, so a change applies at once.
-  seerr: () => Promise<Seerr>;
   // The built web UI; absent in tests and when running the API alone.
   webDir?: string;
 };
@@ -33,21 +30,13 @@ export type AppDeps = {
 // for Login), GET /frames/* (video thumbnails, token required), and the web UI
 // on every other GET.
 // Each file in api/rpc/ implements the RPCs of one domain.
-export function createApp({
-  apiToken,
-  settings,
-  shares,
-  webhooks,
-  sender,
-  seerr,
-  webDir,
-}: AppDeps): Hono {
+export function createApp({ apiToken, settings, shares, webhooks, sender, webDir }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
     router.service(SpotarrService, {
       ...authRpcs(apiToken),
       ...statusRpcs(settings, shares),
       ...settingsRpcs(settings),
-      ...shareRpcs(shares, seerr, sender),
+      ...shareRpcs(shares, settings, sender),
       ...webhookRpcs(webhooks, sender),
     }),
   );

@@ -1,16 +1,6 @@
-import { afterEach, describe, expect, mock, test } from "bun:test";
-import { openDatabase } from "../../../db";
-import { Seerr } from "../../../integrations/seerr/client";
-import {
-  getGetMovieMovieIdResponseMock,
-  getPostRequestResponseMock,
-} from "../../../integrations/seerr/gen/seerr.faker";
-import { fakeFetch } from "../../../testing/fake-fetch";
-import { ShareRepository } from "../repository";
+import { describe, expect, test } from "bun:test";
 import type { Candidate } from "../types";
-import { autoAdd, candidatesToAutoAdd } from "./auto-add";
-
-afterEach(() => mock.restore());
+import { candidatesToAutoAdd } from "./candidates-to-auto-add";
 
 const rule = { enabled: true, minConfidence: 95, onlyOne: true };
 
@@ -61,40 +51,4 @@ describe("which Candidates auto add requests", () => {
   test("a single confident Candidate already in the library is not requested again", () => {
     expect(candidatesToAutoAdd([candidate("Dune", 1, false)], rule)).toEqual([]);
   });
-});
-
-test("auto add requests through Seerr, marks the Addition automatic and tells the Webhooks", async () => {
-  const shares = new ShareRepository(await openDatabase(":memory:"));
-  const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
-  await shares.finish(
-    id,
-    {
-      status: "READY",
-      method: "LLM",
-      extractors: ["video"],
-      clues: {},
-      candidates: [candidate("Kraken", 0.98)],
-    },
-    10,
-  );
-  fakeFetch({
-    "/api/v1/movie/6": getGetMovieMovieIdResponseMock({ mediaInfo: undefined }),
-    "/api/v1/request": getPostRequestResponseMock(),
-  });
-  const added: string[] = [];
-
-  const share = await shares.get(id);
-  if (!share) throw new Error("no share");
-  await autoAdd(share, rule, {
-    shares,
-    seerr: new Seerr({ url: "http://seerr.test", apiKey: "key" }),
-    mediaAdded: async (_share, candidate) => {
-      added.push(candidate.title);
-    },
-  });
-
-  expect((await shares.get(id))?.additions).toMatchObject([
-    { status: "REQUESTED", automatic: true },
-  ]);
-  expect(added).toEqual(["Kraken"]);
 });

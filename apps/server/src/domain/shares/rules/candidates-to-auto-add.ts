@@ -1,6 +1,5 @@
 import type { Settings } from "../../settings/schema";
-import type { Candidate, Share } from "../types";
-import { type AddCandidateDeps, addCandidate } from "./add-candidate";
+import type { Candidate } from "../types";
 
 // The Candidates auto add requests on its own, by the rule of Settings → Auto
 // add. Only the confidence counts; a direct IMDb/TMDB link, certain, has none
@@ -16,16 +15,4 @@ export function candidatesToAutoAdd(
     (c) =>
       Math.round((c.confidence ?? 1) * 100) >= rule.minConfidence && c.libraryState === "ABSENT",
   );
-}
-
-// Requests them through Seerr, as a click on Add would, marked automatic.
-export async function autoAdd(
-  share: Share,
-  rule: Settings["autoAdd"],
-  deps: AddCandidateDeps,
-): Promise<void> {
-  if (share.identification.status !== "READY") return;
-  for (const candidate of candidatesToAutoAdd(share.candidates, rule)) {
-    await addCandidate(share.id, candidate, { ...deps, automatic: true });
-  }
 }

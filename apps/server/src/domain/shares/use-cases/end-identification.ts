@@ -1,8 +1,8 @@
-import { seerrFrom } from "../../settings/adapters";
 import type { SettingsRepository } from "../../settings/repository";
 import type { WebhookSender } from "../../webhooks/sender";
 import type { ShareRepository } from "../repository";
-import { autoAdd } from "./auto-add";
+import { candidatesToAutoAdd } from "../rules/candidates-to-auto-add";
+import { addCandidate } from "./add-candidate";
 
 type EndIdentificationDeps = {
   shares: ShareRepository;
@@ -18,11 +18,13 @@ export async function endIdentification(
 ): Promise<void> {
   const share = await shares.get(shareId);
   if (!share) return;
-  const current = await settings.get();
   await sender.identificationEnded(share);
-  await autoAdd(share, current.autoAdd, {
-    shares,
-    seerr: seerrFrom(current),
-    mediaAdded: (share, added) => sender.mediaAdded(share, added),
-  });
+
+  // Auto add: only a READY Share has Candidates to request.
+  if (share.identification.status !== "READY") return;
+  const { autoAdd } = await settings.get();
+  for (const candidate of candidatesToAutoAdd(share.candidates, autoAdd)) {
+    const request = { tmdbId: candidate.tmdbId, type: candidate.type, automatic: true };
+    await addCandidate(share.id, request, { shares, settings, sender });
+  }
 }

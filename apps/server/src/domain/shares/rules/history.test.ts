@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
+import type { Share } from "../types";
 import { historyPage } from "./history";
-import type { Share } from "./types";
 
 function share(id: string, summary: Share["summary"], text = ""): Share {
   return {
