@@ -156,8 +156,12 @@ export class ShareRepository {
     return row?.id;
   }
 
-  // Stores what the Identification found, and replaces the video's thumbnails.
+  // Stores what the Identification found, and replaces the video's thumbnails,
+  // in one transaction: a crash halfway leaves the Share as it was.
   async finish(id: string, result: IdentificationResult, durationMs: number): Promise<void> {
+    // Validated first: an invalid result throws before anything is written.
+    const clues = JSON.stringify(CluesSchema.parse(result.clues));
+    const candidates = JSON.stringify(CandidateSchema.array().parse(result.candidates));
     await this.db.transaction().execute(async (trx) => {
       await trx.deleteFrom("frames").where("share_id", "=", id).execute();
       for (const [position, frame] of (result.frames ?? []).entries()) {
@@ -166,17 +170,21 @@ export class ShareRepository {
           .values({ share_id: id, position, at_ms: frame.atMs, thumbnail: frame.thumbnail })
           .execute();
       }
-    });
-    await this.update(id, {
-      status: result.status,
-      method: result.method ?? null,
-      duration_ms: durationMs,
-      extractors: JSON.stringify(result.extractors),
-      clues: JSON.stringify(CluesSchema.parse(result.clues)),
-      reasoning: result.reasoning ?? null,
-      candidates: JSON.stringify(CandidateSchema.array().parse(result.candidates)),
-      llm_cost_usd: result.llmCostUsd ?? null,
-      error: null,
+      await this.update(
+        id,
+        {
+          status: result.status,
+          method: result.method ?? null,
+          duration_ms: durationMs,
+          extractors: JSON.stringify(result.extractors),
+          clues,
+          reasoning: result.reasoning ?? null,
+          candidates,
+          llm_cost_usd: result.llmCostUsd ?? null,
+          error: null,
+        },
+        trx,
+      );
     });
   }
 
@@ -186,17 +194,23 @@ export class ShareRepository {
 
   // Puts a Share back in the queue, clearing what its Identification found. Additions stay.
   async requeue(id: string): Promise<void> {
-    await this.db.deleteFrom("frames").where("share_id", "=", id).execute();
-    await this.update(id, {
-      status: "QUEUED",
-      method: null,
-      duration_ms: null,
-      extractors: "[]",
-      clues: "{}",
-      reasoning: null,
-      candidates: "[]",
-      llm_cost_usd: null,
-      error: null,
+    await this.db.transaction().execute(async (trx) => {
+      await trx.deleteFrom("frames").where("share_id", "=", id).execute();
+      await this.update(
+        id,
+        {
+          status: "QUEUED",
+          method: null,
+          duration_ms: null,
+          extractors: "[]",
+          clues: "{}",
+          reasoning: null,
+          candidates: "[]",
+          llm_cost_usd: null,
+          error: null,
+        },
+        trx,
+      );
     });
   }
 
@@ -376,8 +390,13 @@ export class ShareRepository {
       .execute();
   }
 
-  private async update(id: string, values: Updateable<Shares>): Promise<void> {
-    await this.db
+  // `db` is a transaction when the update goes with other writes.
+  private async update(
+    id: string,
+    values: Updateable<Shares>,
+    db: Kysely<DB> = this.db,
+  ): Promise<void> {
+    await db
       .updateTable("shares")
       .set({ ...values, updated_at: NOW })
       .where("id", "=", id)
