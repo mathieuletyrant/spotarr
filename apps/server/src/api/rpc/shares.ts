@@ -2,7 +2,7 @@ import { MediaType, Summary, Target } from "@spotarr/contract";
 import type { SettingsRepository } from "../../domain/settings/repository";
 import type { ShareRepository } from "../../domain/shares/repository";
 import type { Share } from "../../domain/shares/types";
-import { addCandidate } from "../../domain/shares/use-cases/add-candidate";
+import { addToLibrary } from "../../domain/shares/use-cases/add-to-library";
 import { createShare } from "../../domain/shares/use-cases/create-share";
 import { listHistory } from "../../domain/shares/use-cases/list-history";
 import { retryIdentification } from "../../domain/shares/use-cases/retry-identification";
@@ -57,7 +57,7 @@ export function shareRpcs(
     },
 
     async add(req) {
-      await addCandidate(
+      await addToLibrary(
         req.shareId,
         {
           tmdbId: req.tmdbId,

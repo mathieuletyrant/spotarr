@@ -3,7 +3,7 @@ import type { Emit, IdentificationEventName } from "../events";
 import type { ShareRepository } from "../repository";
 import { candidatesToAutoAdd } from "../rules/candidates-to-auto-add";
 import type { Share } from "../types";
-import { addCandidate } from "./add-candidate";
+import { addToLibrary } from "./add-to-library";
 
 type EndIdentificationDeps = {
   shares: ShareRepository;
@@ -26,7 +26,7 @@ export async function endIdentification(
   const { autoAdd } = await settings.get();
   for (const candidate of candidatesToAutoAdd(share.candidates, autoAdd)) {
     const request = { tmdbId: candidate.tmdbId, type: candidate.type, automatic: true };
-    await addCandidate(share.id, request, { shares, settings, emit });
+    await addToLibrary(share.id, request, { shares, settings, emit });
   }
 }
 

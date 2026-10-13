@@ -6,7 +6,7 @@ import type { Emit } from "../events";
 import type { ShareRepository } from "../repository";
 import type { Candidate } from "../types";
 
-type AddCandidateDeps = {
+type AddToLibraryDeps = {
   shares: ShareRepository;
   settings: SettingsRepository;
   emit: Emit;
@@ -26,10 +26,10 @@ export type AdditionRequest = {
 // Adds one Candidate of a Share to the library through Seerr, records an
 // Addition saying what happened, and emits media.added once Seerr accepted.
 // Seerr failing is recorded too (FAILED, with the reason), so the history shows it.
-export async function addCandidate(
+export async function addToLibrary(
   shareId: string,
   request: AdditionRequest,
-  { shares, settings, emit }: AddCandidateDeps,
+  { shares, settings, emit }: AddToLibraryDeps,
 ): Promise<void> {
   if (request.target === "ARR") {
     throw new SpotarrError(
