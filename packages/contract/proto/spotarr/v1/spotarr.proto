@@ -239,6 +239,11 @@ message Share {
   Summary summary = 8;
   // Thumbnails of the shared video, in order.
   repeated Frame frames = 9;
+  // Why the Share failed, when its summary is FAILED: the latest Addition's
+  // error, else the Identification's.
+  optional string failure_reason = 10;
+  // Additions that put a Candidate in the library or found it there already.
+  int32 added_count = 11;
 }
 
 // A thumbnail taken from the shared video, 240 px wide.
@@ -289,6 +294,12 @@ message Candidate {
   // Absent when nobody rated it, and on Shares identified before ratings were kept.
   optional float tmdb_rating = 9;
   optional int32 tmdb_votes = 10;
+  // Where the Candidate stands. Derived, never stored.
+  CandidateStatus status = 11;
+  // REQUESTED or ADDED by auto add, without a click.
+  bool automatic = 12;
+  // CAN_ADD after a failed Addition: its error, to show next to "Try again".
+  optional string failure = 13;
 }
 
 message Addition {
@@ -347,6 +358,15 @@ enum AdditionStatus {
   ADDITION_STATUS_REQUESTED = 2;
   ADDITION_STATUS_ALREADY_PRESENT = 3;
   ADDITION_STATUS_FAILED = 4;
+}
+
+// Its latest Addition's status when one exists, else its Library state.
+enum CandidateStatus {
+  CANDIDATE_STATUS_UNSPECIFIED = 0;
+  CANDIDATE_STATUS_CAN_ADD = 1;
+  CANDIDATE_STATUS_REQUESTED = 2;
+  CANDIDATE_STATUS_ADDED = 3;
+  CANDIDATE_STATUS_ALREADY_PRESENT = 4;
 }
 
 enum Summary {

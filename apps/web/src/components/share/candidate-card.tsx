@@ -1,9 +1,7 @@
 import { useMutation } from "@connectrpc/connect-query";
 import {
-  type Addition,
-  AdditionStatus,
   type Candidate,
-  LibraryState,
+  CandidateStatus,
   MediaType,
   type Share,
   SpotarrService,
@@ -72,23 +70,21 @@ function CandidateAction({ share, candidate }: { share: Share; candidate: Candid
     onSuccess: () => queryClient.invalidateQueries(),
   });
 
-  const addition = latestAdditionOf(share, candidate);
-  if (addition?.status === AdditionStatus.REQUESTED) {
+  if (candidate.status === CandidateStatus.REQUESTED) {
     return (
       <div className="flex flex-col items-end gap-1">
         <StatusBadge summary={Summary.REQUESTED} />
-        {addition.automatic && <span className="text-xs text-text-muted">automatically</span>}
+        {candidate.automatic && <span className="text-xs text-text-muted">automatically</span>}
       </div>
     );
   }
-  if (addition?.status === AdditionStatus.ADDED) return <StatusBadge summary={Summary.ADDED} />;
-  if (addition?.status === AdditionStatus.ALREADY_PRESENT || inLibrary(candidate)) {
+  if (candidate.status === CandidateStatus.ADDED) return <StatusBadge summary={Summary.ADDED} />;
+  if (candidate.status === CandidateStatus.ALREADY_PRESENT) {
     return <StatusBadge summary={Summary.ALREADY_PRESENT} />;
   }
-  if (candidate.libraryState === LibraryState.REQUESTED)
-    return <StatusBadge summary={Summary.REQUESTED} />;
 
-  const failure = addition?.status === AdditionStatus.FAILED ? addition.error : add.error?.message;
+  // The last failed Addition, else the click that just failed.
+  const failure = candidate.failure ?? add.error?.message;
   return (
     <div className="flex flex-col items-end gap-1">
       <button
@@ -111,17 +107,4 @@ function CandidateAction({ share, candidate }: { share: Share; candidate: Candid
 function tmdbUrl(candidate: Candidate): string {
   const kind = candidate.type === MediaType.TV ? "tv" : "movie";
   return `https://www.themoviedb.org/${kind}/${candidate.tmdbId}`;
-}
-
-function latestAdditionOf(share: Share, candidate: Candidate): Addition | undefined {
-  return share.additions.findLast(
-    (a) => a.tmdbId === candidate.tmdbId && a.type === candidate.type,
-  );
-}
-
-function inLibrary(candidate: Candidate): boolean {
-  return (
-    candidate.libraryState === LibraryState.AVAILABLE ||
-    candidate.libraryState === LibraryState.PARTIAL
-  );
 }

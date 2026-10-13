@@ -331,6 +331,53 @@ public nonisolated enum Spotarr_V1_AdditionStatus: SwiftProtobuf.Enum, Swift.Cas
 
 }
 
+/// Its latest Addition's status when one exists, else its Library state.
+public nonisolated enum Spotarr_V1_CandidateStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unspecified // = 0
+  case canAdd // = 1
+  case requested // = 2
+  case added // = 3
+  case alreadyPresent // = 4
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unspecified
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .canAdd
+    case 2: self = .requested
+    case 3: self = .added
+    case 4: self = .alreadyPresent
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .canAdd: return 1
+    case .requested: return 2
+    case .added: return 3
+    case .alreadyPresent: return 4
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Spotarr_V1_CandidateStatus] = [
+    .unspecified,
+    .canAdd,
+    .requested,
+    .added,
+    .alreadyPresent,
+  ]
+
+}
+
 public nonisolated enum Spotarr_V1_Summary: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
@@ -1154,6 +1201,23 @@ public nonisolated struct Spotarr_V1_Share: @unchecked Sendable {
     set {_uniqueStorage()._frames = newValue}
   }
 
+  /// Why the Share failed, when its summary is FAILED: the latest Addition's
+  /// error, else the Identification's.
+  public var failureReason: String {
+    get {_storage._failureReason ?? String()}
+    set {_uniqueStorage()._failureReason = newValue}
+  }
+  /// Returns true if `failureReason` has been explicitly set.
+  public var hasFailureReason: Bool {_storage._failureReason != nil}
+  /// Clears the value of `failureReason`. Subsequent reads from it will return its default value.
+  public mutating func clearFailureReason() {_uniqueStorage()._failureReason = nil}
+
+  /// Additions that put a Candidate in the library or found it there already.
+  public var addedCount: Int32 {
+    get {_storage._addedCount}
+    set {_uniqueStorage()._addedCount = newValue}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1383,6 +1447,22 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   /// Clears the value of `tmdbVotes`. Subsequent reads from it will return its default value.
   public mutating func clearTmdbVotes() {self._tmdbVotes = nil}
 
+  /// Where the Candidate stands. Derived, never stored.
+  public var status: Spotarr_V1_CandidateStatus = .unspecified
+
+  /// REQUESTED or ADDED by auto add, without a click.
+  public var automatic: Bool = false
+
+  /// CAN_ADD after a failed Addition: its error, to show next to "Try again".
+  public var failure: String {
+    get {_failure ?? String()}
+    set {_failure = newValue}
+  }
+  /// Returns true if `failure` has been explicitly set.
+  public var hasFailure: Bool {self._failure != nil}
+  /// Clears the value of `failure`. Subsequent reads from it will return its default value.
+  public mutating func clearFailure() {self._failure = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1393,6 +1473,7 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   fileprivate var _confidence: Float? = nil
   fileprivate var _tmdbRating: Float? = nil
   fileprivate var _tmdbVotes: Int32? = nil
+  fileprivate var _failure: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_Addition: Sendable {
@@ -2039,6 +2120,10 @@ nonisolated extension Spotarr_V1_Target: SwiftProtobuf._ProtoNameProviding {
 
 nonisolated extension Spotarr_V1_AdditionStatus: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0ADDITION_STATUS_UNSPECIFIED\0\u{1}ADDITION_STATUS_ADDED\0\u{1}ADDITION_STATUS_REQUESTED\0\u{1}ADDITION_STATUS_ALREADY_PRESENT\0\u{1}ADDITION_STATUS_FAILED\0")
+}
+
+nonisolated extension Spotarr_V1_CandidateStatus: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0CANDIDATE_STATUS_UNSPECIFIED\0\u{1}CANDIDATE_STATUS_CAN_ADD\0\u{1}CANDIDATE_STATUS_REQUESTED\0\u{1}CANDIDATE_STATUS_ADDED\0\u{1}CANDIDATE_STATUS_ALREADY_PRESENT\0")
 }
 
 nonisolated extension Spotarr_V1_Summary: SwiftProtobuf._ProtoNameProviding {
@@ -3017,7 +3102,7 @@ nonisolated extension Spotarr_V1_UpdateSettingsResponse: SwiftProtobuf.Message, 
 
 nonisolated extension Spotarr_V1_Share: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Share"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{3}created_at\0\u{1}input\0\u{1}source\0\u{1}identification\0\u{1}candidates\0\u{1}additions\0\u{1}summary\0\u{1}frames\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{3}created_at\0\u{1}input\0\u{1}source\0\u{1}identification\0\u{1}candidates\0\u{1}additions\0\u{1}summary\0\u{1}frames\0\u{3}failure_reason\0\u{3}added_count\0")
 
   fileprivate class _StorageClass {
     var _id: String = String()
@@ -3029,6 +3114,8 @@ nonisolated extension Spotarr_V1_Share: SwiftProtobuf.Message, SwiftProtobuf._Me
     var _additions: [Spotarr_V1_Addition] = []
     var _summary: Spotarr_V1_Summary = .unspecified
     var _frames: [Spotarr_V1_Frame] = []
+    var _failureReason: String? = nil
+    var _addedCount: Int32 = 0
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -3048,6 +3135,8 @@ nonisolated extension Spotarr_V1_Share: SwiftProtobuf.Message, SwiftProtobuf._Me
       _additions = source._additions
       _summary = source._summary
       _frames = source._frames
+      _failureReason = source._failureReason
+      _addedCount = source._addedCount
     }
   }
 
@@ -3075,6 +3164,8 @@ nonisolated extension Spotarr_V1_Share: SwiftProtobuf.Message, SwiftProtobuf._Me
         case 7: try { try decoder.decodeRepeatedMessageField(value: &_storage._additions) }()
         case 8: try { try decoder.decodeSingularEnumField(value: &_storage._summary) }()
         case 9: try { try decoder.decodeRepeatedMessageField(value: &_storage._frames) }()
+        case 10: try { try decoder.decodeSingularStringField(value: &_storage._failureReason) }()
+        case 11: try { try decoder.decodeSingularInt32Field(value: &_storage._addedCount) }()
         default: break
         }
       }
@@ -3114,6 +3205,12 @@ nonisolated extension Spotarr_V1_Share: SwiftProtobuf.Message, SwiftProtobuf._Me
       if !_storage._frames.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._frames, fieldNumber: 9)
       }
+      try { if let v = _storage._failureReason {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 10)
+      } }()
+      if _storage._addedCount != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._addedCount, fieldNumber: 11)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -3132,6 +3229,8 @@ nonisolated extension Spotarr_V1_Share: SwiftProtobuf.Message, SwiftProtobuf._Me
         if _storage._additions != rhs_storage._additions {return false}
         if _storage._summary != rhs_storage._summary {return false}
         if _storage._frames != rhs_storage._frames {return false}
+        if _storage._failureReason != rhs_storage._failureReason {return false}
+        if _storage._addedCount != rhs_storage._addedCount {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -3330,7 +3429,7 @@ nonisolated extension Spotarr_V1_Clues: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Candidate"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0\u{1}status\0\u{1}automatic\0\u{1}failure\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3348,6 +3447,9 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
       case 8: try { try decoder.decodeSingularEnumField(value: &self.libraryState) }()
       case 9: try { try decoder.decodeSingularFloatField(value: &self._tmdbRating) }()
       case 10: try { try decoder.decodeSingularInt32Field(value: &self._tmdbVotes) }()
+      case 11: try { try decoder.decodeSingularEnumField(value: &self.status) }()
+      case 12: try { try decoder.decodeSingularBoolField(value: &self.automatic) }()
+      case 13: try { try decoder.decodeSingularStringField(value: &self._failure) }()
       default: break
       }
     }
@@ -3388,6 +3490,15 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     try { if let v = self._tmdbVotes {
       try visitor.visitSingularInt32Field(value: v, fieldNumber: 10)
     } }()
+    if self.status != .unspecified {
+      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 11)
+    }
+    if self.automatic != false {
+      try visitor.visitSingularBoolField(value: self.automatic, fieldNumber: 12)
+    }
+    try { if let v = self._failure {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 13)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3402,6 +3513,9 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     if lhs.libraryState != rhs.libraryState {return false}
     if lhs._tmdbRating != rhs._tmdbRating {return false}
     if lhs._tmdbVotes != rhs._tmdbVotes {return false}
+    if lhs.status != rhs.status {return false}
+    if lhs.automatic != rhs.automatic {return false}
+    if lhs._failure != rhs._failure {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -40,6 +40,10 @@ _Avoid_: result, match, suggestion
 What the library already knows of a Candidate: `ABSENT`, `REQUESTED`, `PARTIAL` (some seasons) or `AVAILABLE`. Only an `ABSENT` Candidate can be added.
 _Avoid_: in_library, present, exists
 
+**Candidate status**:
+Where a Candidate stands. Derived, never stored: its latest Addition's status when one exists, else `ALREADY_PRESENT` when its Library state is `AVAILABLE` or `PARTIAL`, `REQUESTED` when `REQUESTED`, else `CAN_ADD` (with the latest failed Addition's error, if any).
+_Avoid_: candidate state, action
+
 **Addition**:
 The request to add a Candidate to the library through a Target. A Share can have several Additions, one per chosen Candidate.
 _Avoid_: request, download, order

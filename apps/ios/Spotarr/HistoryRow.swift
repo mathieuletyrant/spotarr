@@ -21,8 +21,8 @@ struct HistoryRow: View {
             TmdbRating(candidate: share.candidates[0], compact: true)
           }
         }
-        if let reason = share.failureReason {
-          Text(reason).font(.caption).foregroundStyle(.red).lineLimit(2)
+        if share.hasFailureReason {
+          Text(share.failureReason).font(.caption).foregroundStyle(.red).lineLimit(2)
         }
       }
     }

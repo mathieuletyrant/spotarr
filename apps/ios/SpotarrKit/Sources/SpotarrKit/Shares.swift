@@ -48,43 +48,25 @@ public enum CandidateState: Equatable, Sendable {
   case alreadyPresent
 }
 
+extension Spotarr_V1_Candidate {
+  /// Where the Candidate stands, as the server derived it.
+  public var state: CandidateState {
+    switch status {
+    case .requested: .requested(automatic: automatic)
+    case .added: .added
+    case .alreadyPresent: .alreadyPresent
+    default: .canAdd(failure: hasFailure ? failure : nil)
+    }
+  }
+}
+
 extension Spotarr_V1_Share {
   public var isInProgress: Bool { summary == .inProgress }
-
-  /// The last Addition of the Candidate decides first, then its Library state,
-  /// as in the web UI.
-  public func state(of candidate: Candidate) -> CandidateState {
-    let addition = additions.last { $0.tmdbID == candidate.tmdbID && $0.type == candidate.type }
-    if let addition, addition.status == .requested {
-      return .requested(automatic: addition.automatic)
-    }
-    if addition?.status == .added { return .added }
-    if addition?.status == .alreadyPresent { return .alreadyPresent }
-    if candidate.libraryState == .available || candidate.libraryState == .partial {
-      return .alreadyPresent
-    }
-    if candidate.libraryState == .requested { return .requested(automatic: false) }
-    if let addition, addition.status == .failed, addition.hasError {
-      return .canAdd(failure: addition.error)
-    }
-    return .canAdd(failure: nil)
-  }
-
-  /// Why a failed Share failed: its last Addition's error, else the Identification's.
-  public var failureReason: String? {
-    if summary != .failed { return nil }
-    if let addition = additions.last, addition.hasError { return addition.error }
-    if identification.hasError { return identification.error }
-    return nil
-  }
 
   /// "2/3" when several Candidates were found and some were added: how many
   /// are in the library or on their way.
   public var additionProgress: String? {
     if candidates.count < 2 || additions.isEmpty { return nil }
-    let succeeded = additions.filter {
-      [.added, .requested, .alreadyPresent].contains($0.status)
-    }.count
-    return "\(succeeded)/\(candidates.count)"
+    return "\(addedCount)/\(candidates.count)"
   }
 }
