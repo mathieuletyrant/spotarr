@@ -381,6 +381,18 @@ export class ShareRepository {
     return row?.thumbnail;
   }
 
+  // Deletes a Share unless its Identification is running; its frames and
+  // Additions go with it (ON DELETE CASCADE). False when nothing was deleted.
+  async delete(id: string): Promise<boolean> {
+    const row = await this.db
+      .deleteFrom("shares")
+      .where("id", "=", id)
+      .where("status", "!=", "PROCESSING")
+      .returning("id")
+      .executeTakeFirst();
+    return row !== undefined;
+  }
+
   // At startup: Identifications cut short by a restart start over.
   async requeueInterrupted(): Promise<void> {
     await this.db

@@ -32,6 +32,9 @@ service SpotarrService {
   // Adds one Candidate of a Share to the library. The Share comes back with the new Addition,
   // whose status says what happened: requested, already present, or failed (with the reason).
   rpc Add(AddRequest) returns (AddResponse);
+  // Deletes a Share from Spotarr with its Candidates, Additions and frames. What
+  // was requested in Seerr stays there. Refused (busy) while its Identification runs.
+  rpc DeleteShare(DeleteShareRequest) returns (DeleteShareResponse);
 
   rpc ListWebhooks(ListWebhooksRequest) returns (ListWebhooksResponse);
   // Creates the Webhook when its id is empty, else replaces it.
@@ -445,6 +448,12 @@ message AddRequest {
 message AddResponse {
   Share share = 1;
 }
+
+message DeleteShareRequest {
+  string id = 1;
+}
+
+message DeleteShareResponse {}
 
 message LoginRequest {
   string token = 1;

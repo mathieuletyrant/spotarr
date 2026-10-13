@@ -5,7 +5,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   Activity,
-  Check,
   Film,
   KeyRound,
   Library,
@@ -27,6 +26,7 @@ import {
   TextField,
 } from "../../components/settings/fields";
 import { WebhooksList } from "../../components/settings/webhooks-list";
+import { useToast } from "../../components/toast";
 import {
   changedFields,
   changes,
@@ -105,15 +105,14 @@ function SettingsPage() {
 
 function SettingsForm({ saved }: { saved: Values }) {
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [values, setValues] = useState(saved);
   const [errors, setErrors] = useState<Values>({});
-  const [justSaved, setJustSaved] = useState(false);
   const save = useMutation(SpotarrService.method.updateSettings, {
     onSuccess: async ({ settings }) => {
       if (settings) setValues(toValues(settings));
       setErrors({});
-      setJustSaved(true);
-      setTimeout(() => setJustSaved(false), 3000);
+      toast("Settings saved");
       await queryClient.invalidateQueries({ queryKey: settingsQuery().queryKey });
       // New keys or URLs: check the Dependencies again.
       await queryClient.invalidateQueries({ queryKey: dependenciesQuery().queryKey });
@@ -265,17 +264,7 @@ function SettingsForm({ saved }: { saved: Values }) {
         <ApiTokenField token={values["access.apiToken"] ?? ""} />
       </Section>
 
-      {justSaved && (
-        <p
-          role="status"
-          className="fixed bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-border bg-surface-raised px-5 py-2.5 text-sm font-medium text-status-ok shadow-lg"
-        >
-          <Check aria-hidden className="size-4" />
-          Settings saved
-        </p>
-      )}
-
-      {(changed > 0 || errors[""]) && !justSaved && (
+      {(changed > 0 || errors[""]) && (
         <div className="fixed inset-x-0 bottom-6 z-10 flex justify-center px-4">
           <div className="flex items-center gap-4 rounded-full border border-border bg-surface-raised py-2 pr-2 pl-5 shadow-lg">
             <p className="text-sm">

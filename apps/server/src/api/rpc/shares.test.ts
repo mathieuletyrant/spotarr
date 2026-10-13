@@ -103,3 +103,14 @@ test("Add refuses Radarr and Sonarr directly, for now", async () => {
   });
   expect(res.body.code).toBe("invalid_argument");
 });
+
+test("DeleteShare removes a finished Share; an unknown one is not_found", async () => {
+  const { body } = await call("CreateShare", { text: "delete me" });
+  const id = body.share.id;
+  await until(async () => (await shares.get(id))?.summary === "NO_MATCH");
+
+  const deleted = await call("DeleteShare", { id });
+  expect(deleted.status).toBe(200);
+  expect((await call("GetShare", { id })).body.code).toBe("not_found");
+  expect((await call("DeleteShare", { id })).body.code).toBe("not_found");
+});
