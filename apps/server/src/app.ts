@@ -9,7 +9,6 @@ import { settingsRpcs } from "./api/rpc/settings";
 import { shareRpcs } from "./api/rpc/shares";
 import { statusRpcs } from "./api/rpc/status";
 import { webhookRpcs } from "./api/rpc/webhooks";
-import { serveWebApp } from "./api/web";
 import type { WebhookSender } from "./api/webhooks/sender";
 import type { SettingsRepository } from "./domain/settings/repository";
 import type { ShareRepository } from "./domain/shares/repository";
@@ -22,15 +21,13 @@ export type AppDeps = {
   shares: ShareRepository;
   webhooks: WebhookRepository;
   sender: WebhookSender;
-  // The built web UI; absent in tests and when running the API alone.
-  webDir?: string;
 };
 
 // Routes: GET /health (open), POST /api/* (Connect RPCs, token required but
-// for Login), GET /frames/* (video thumbnails, token required), and the web UI
-// on every other GET.
+// for Login), GET /frames/* (video thumbnails, token required). index.ts adds
+// the web UI after them.
 // Each file in api/rpc/ implements the RPCs of one domain.
-export function createApp({ apiToken, settings, shares, webhooks, sender, webDir }: AppDeps): Hono {
+export function createApp({ apiToken, settings, shares, webhooks, sender }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
     router.service(SpotarrService, {
       ...authRpcs(apiToken),
@@ -61,7 +58,6 @@ export function createApp({ apiToken, settings, shares, webhooks, sender, webDir
   app.post("/api/*", (c) => rpc(c, "/api"));
   app.use("/frames/*", requireToken(apiToken));
   app.get("/frames/:shareId/:file", serveFrame(shares));
-  if (webDir) app.get("*", serveWebApp(webDir));
 
   return app;
 }

@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { serveWebApp } from "./api/web";
 import { WebhookSender } from "./api/webhooks/sender";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
@@ -11,40 +12,37 @@ import { ShareRepository } from "./domain/shares/repository";
 import { WebhookRepository } from "./domain/webhooks/repository";
 import { log } from "./log";
 
+// ── 1. Config ────────────────────────────────────────────────────────
 // The only environment variables; everything else is set in the UI.
 // API_TOKEN (optional) fixes the API token, e.g. to the Umbrel app password.
 const port = Number(process.env.PORT ?? 3000);
 const dataDir = process.env.DATA_DIR ?? "/data";
 
+// ── 2. Storage: the database and its repositories ───────────────────
 mkdirSync(dataDir, { recursive: true });
 const db = await openDatabase(join(dataDir, "spotarr.db"));
-
 const settings = new SettingsRepository(db);
-const { token, created } = await ensureApiToken(settings, process.env.API_TOKEN);
+const shares = new ShareRepository(db);
+const webhooks = new WebhookRepository(db);
+
 // Printed at every start: the logs are where the token is found again if
 // lost, since the Settings page that shows it needs it to sign in.
+const { token, created } = await ensureApiToken(settings, process.env.API_TOKEN);
 console.log(`API token${created ? " (new)" : ""}: ${token}`);
 
-const shares = new ShareRepository(db);
-
-const webhooks = new WebhookRepository(db);
+// ── 3. Background: the Webhooks listen to Events, workers identify ──
 const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
-
-// Identifies the QUEUED Shares in the background.
-// The domain emits its Events; the Webhooks listen.
 const emit = (event: Event) => sender.emit(event);
 await new ShareQueue({ shares, settings, emit }).start();
 
-// The web UI, once built (pnpm build). In dev, Vite serves it instead.
-const webDir = new URL("../../web/dist", import.meta.url).pathname;
+// ── 4. API: /health, the RPCs under /api, the frames ────────────────
+const app = createApp({ apiToken: () => token, settings, shares, webhooks, sender });
 
-const app = createApp({
-  apiToken: () => token,
-  settings,
-  shares,
-  webhooks,
-  sender,
-  webDir: existsSync(webDir) ? webDir : undefined,
-});
+// ── 5. Web UI: the built front (pnpm build), on every other GET ─────
+// Added last, so it never catches an API route. In dev, Vite serves the
+// front itself and forwards /api here.
+const webDir = new URL("../../web/dist", import.meta.url).pathname;
+if (existsSync(webDir)) app.get("*", serveWebApp(webDir));
+
 Bun.serve({ port, fetch: app.fetch });
 log({ step: "start", port });
