@@ -119,6 +119,7 @@ Bump `YT_DLP_VERSION` in the `Dockerfile` when Instagram, TikTok or YouTube vide
 - **Live checks use the gitignored `.env`** at the repo root (OpenRouter key, TMDB token, Seerr). Spotarr itself never reads it; push the values into a dev server with `UpdateSettings`. Never print them.
 - **knip** reports code nobody uses. Its `knip.json` declares what it cannot see: the entry points (scripts, migrations, the Shortcut's build), `protoc-gen-es` (run by buf), and macOS's `plutil` and `shortcuts`. Generated code and `apps/ios` are ignored. An export used only in its own file is reported: drop the `export`.
 - **`pnpm exec biome`** may print an odd "ESLint output" line from a shell hook; use `pnpm lint` / `pnpm format`.
+- **Agent skills** come from skills.sh: `npx skills add <owner/repo> -s <skill> -a claude-code -y` copies one into `.claude/skills/` and records it in `skills-lock.json`; `npx skills update` refreshes them. Biome skips `.claude/skills` (third-party files, e.g. an SVG failing `noSvgWithoutTitle`).
 
 ## Versions
 

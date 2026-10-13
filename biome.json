@@ -21,7 +21,7 @@
     }
   },
   "files": {
-    "includes": ["**", "!**/gen", "!apps/ios"]
+    "includes": ["**", "!**/gen", "!apps/ios", "!.claude/skills"]
   },
   "css": {
     "parser": {
