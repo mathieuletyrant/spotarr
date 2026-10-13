@@ -2,8 +2,7 @@ import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
-import { readPhoto } from "./domain/identification/extractors/photo";
-import { readVideo } from "./domain/identification/extractors/video";
+import { readLink } from "./domain/identification/extractors/link";
 import { AnswerSchema } from "./domain/identification/guess-titles";
 import { identifyShare } from "./domain/identification/use-cases/identify-share";
 import { SettingsRepository } from "./domain/settings/repository";
@@ -39,12 +38,12 @@ const shares = new ShareRepository(db);
 // Settings are read once per Identification, so a change applies to the next share.
 async function runIdentification(shareId: string, input: ShareInput) {
   const { identification, extraction } = await settings.get();
+  const seerr = await seerrFromSettings();
   return identifyShare(shareId, input, {
     tmdb: new Tmdb({ token: identification.tmdbToken, language: identification.language }),
-    seerr: await seerrFromSettings(),
-    readVideo: (url) => readVideo(url, extraction),
-    readPhoto,
+    readLink: (url) => readLink(url, extraction),
     llm: (messages) => chat(llmConfig(identification), messages, AnswerSchema),
+    libraryState: (type, tmdbId) => seerr.libraryState(type, tmdbId),
   });
 }
 

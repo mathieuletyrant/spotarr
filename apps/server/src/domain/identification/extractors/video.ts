@@ -10,11 +10,16 @@ export type Video = { caption?: string; author?: string; frames: Frame[]; audio?
 
 // Reads a shared video: what yt-dlp knows about it, a few frames and its sound
 // for the LLM.
+// Undefined when the post has no video (an Instagram photo post).
 // Everything happens in a temporary folder, deleted at the end: no video is kept.
-export async function readVideo(url: string, extraction: Settings["extraction"]): Promise<Video> {
+export async function readVideo(
+  url: string,
+  extraction: Settings["extraction"],
+): Promise<Video | undefined> {
+  const info = await readVideoInfo(url);
+  if (!info) return undefined;
   const dir = await mkdtemp(join(tmpdir(), "spotarr-"));
   try {
-    const info = await readVideoInfo(url);
     const video = await downloadVideo(url, dir, extraction.maxVideoMb);
     const [frames, audio] = await Promise.all([
       extractFrames(video, extraction.framesPerVideo),

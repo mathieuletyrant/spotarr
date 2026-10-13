@@ -16,12 +16,19 @@ const YtDlpJson = z.object({
 // Deno by default, and the image has Bun.
 const JS_RUNTIME = ["--js-runtimes", "bun"];
 
-export async function readVideoInfo(url: string): Promise<VideoInfo> {
-  const json = await run(
-    ["yt-dlp", ...JS_RUNTIME, "--dump-single-json", "--skip-download", "--no-warnings", url],
-    45_000,
-  );
-  return parseVideoInfo(json);
+// Undefined when the post has no video: yt-dlp only reads videos, and an
+// Instagram post can be made of pictures only.
+export async function readVideoInfo(url: string): Promise<VideoInfo | undefined> {
+  try {
+    const json = await run(
+      ["yt-dlp", ...JS_RUNTIME, "--dump-single-json", "--skip-download", "--no-warnings", url],
+      45_000,
+    );
+    return parseVideoInfo(json);
+  } catch (error) {
+    if (isNoVideoError(error)) return undefined;
+    throw error;
+  }
 }
 
 export function parseVideoInfo(json: string): VideoInfo {
@@ -32,8 +39,7 @@ export function parseVideoInfo(json: string): VideoInfo {
   };
 }
 
-// yt-dlp only reads videos: this is its answer for an Instagram post made of
-// pictures only.
+// yt-dlp's answer for an Instagram post made of pictures only.
 export function isNoVideoError(error: unknown): boolean {
   return error instanceof SpotarrError && error.message.includes("There is no video in this post");
 }

@@ -6,7 +6,7 @@
 //   pnpm --filter @spotarr/server eval        (reads the keys from ../../.env)
 
 import { confirmOnTmdb } from "../src/domain/identification/confirm-on-tmdb";
-import { readVideo } from "../src/domain/identification/extractors/video";
+import { readLink } from "../src/domain/identification/extractors/link";
 import { AnswerSchema, guessTitles } from "../src/domain/identification/guess-titles";
 import { SettingsSchema } from "../src/domain/settings/schema";
 import { chat } from "../src/integrations/llm/client";
@@ -58,12 +58,12 @@ const tmdb = new Tmdb({ token: process.env.TMDB_TOKEN ?? "", language: "fr-FR" }
 
 let passed = 0;
 for (const { reel, expected } of CASES) {
-  const video = await readVideo(`https://www.instagram.com/reel/${reel}/`, settings.extraction);
+  const link = await readLink(`https://www.instagram.com/reel/${reel}/`, settings.extraction);
   const { answer } = await guessTitles(
     {
-      clues: { caption: video.caption, author: video.author },
-      images: video.frames.map((f) => f.jpeg),
-      audio: video.audio,
+      clues: { caption: link.caption, author: link.author },
+      images: link.images,
+      audio: link.audio,
     },
     (messages) => chat(llmConfig, messages, AnswerSchema),
   );
