@@ -32,7 +32,7 @@ export function RetryForm({ share }: { share: Share }) {
           value={hint}
           onChange={(e) => setHint(e.target.value)}
           maxLength={500}
-          placeholder="Hint for the LLM, optional: “the Korean show, not the movie”"
+          placeholder="Hint for the LLM, optional"
           className="h-10 w-full rounded-md border border-border bg-surface px-3 text-sm placeholder:text-text-muted md:flex-1"
         />
         <div className="flex">
