@@ -1,14 +1,15 @@
 import { afterEach, expect, mock, test } from "bun:test";
 import { z } from "zod";
 import { fakeFetch } from "../../testing/fake-fetch";
-import { chat, ping } from "./client";
+import { chat, type LlmConfig, ping } from "./client";
 
 afterEach(() => mock.restore());
 
-const config = {
+const config: LlmConfig = {
   apiUrl: "https://openrouter.ai/api/v1",
   apiKey: "key",
   model: "google/gemini-3.8-flash",
+  effort: "low",
 };
 const Answer = z.object({ title: z.string() });
 
@@ -34,6 +35,29 @@ test("returns the answer parsed with the schema", async () => {
     answer: { title: "Due Date" },
     costUsd: 0.0012,
   });
+});
+
+test("asks for the configured effort", async () => {
+  const fetch = fakeFetch({
+    "/api/v1/chat/completions": {
+      id: "1",
+      object: "chat.completion",
+      created: 0,
+      model: config.model,
+      choices: [
+        {
+          index: 0,
+          finish_reason: "stop",
+          message: { role: "assistant", content: '{"title":"Due Date"}' },
+        },
+      ],
+    },
+  });
+  await chat({ ...config, effort: "high" }, [], Answer);
+
+  // The OpenAI SDK calls fetch(url, init), the JSON body in init.
+  const init = fetch.mock.calls[0]?.[1];
+  expect(JSON.parse(String(init?.body))).toMatchObject({ reasoning_effort: "high" });
 });
 
 test("ping fails like chat when the key is refused", async () => {

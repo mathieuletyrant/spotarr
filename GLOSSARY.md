@@ -32,6 +32,10 @@ _Avoid_: metadata, hints, features
 How the candidates were found: `DIRECT_ID` (an IMDb/TMDB ID found in the Clues, no LLM) or `LLM`.
 _Avoid_: mode, strategy
 
+**Effort**:
+How long the LLM thinks before answering: `low` (the default), `medium` or `high`. Higher is slower and dearer. Set in Settings; Retry can ask for another, for that Identification only.
+_Avoid_: reasoning level, thinking budget, mode
+
 **Candidate**:
 A TMDB title proposed by the Identification, with a confidence and a Library state.
 _Avoid_: result, match, suggestion

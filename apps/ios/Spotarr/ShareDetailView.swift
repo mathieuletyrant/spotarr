@@ -41,8 +41,17 @@ struct ShareDetailView: View {
               Label("Open the source", systemImage: "safari")
             }
           }
-          Button("Retry identification", systemImage: "arrow.clockwise") {
-            Task { await retry() }
+          // A tap retries with the settings' effort; a long press offers another.
+          Menu {
+            Section("Retry with the effort") {
+              ForEach(["low", "medium", "high"], id: \.self) { effort in
+                Button(effort.capitalized) { Task { await retry(effort: effort) } }
+              }
+            }
+          } label: {
+            Label("Retry identification", systemImage: "arrow.clockwise")
+          } primaryAction: {
+            Task { await retry(effort: nil) }
           }
           .disabled(retrying || share.isInProgress)
         }
@@ -145,12 +154,13 @@ struct ShareDetailView: View {
     }
   }
 
-  private func retry() async {
+  /// `effort` is for this Identification only; the settings' when nil.
+  private func retry(effort: String?) async {
     guard let client = SpotarrClient(settings: SettingsStore.load()) else { return }
     retrying = true
     defer { retrying = false }
     do {
-      let fresh = try await client.retryIdentification(id: shareID)
+      let fresh = try await client.retryIdentification(id: shareID, effort: effort)
       show(fresh)
       error = nil
     } catch {
@@ -187,14 +197,16 @@ struct ShareDetailView: View {
     return names.isEmpty ? nil : names.joined(separator: ", ")
   }
 
-  // "LLM · 14 s" or "Direct link · 2 s"; only the duration when it failed
-  // before choosing a method.
+  // "LLM, high effort · 14 s" or "Direct link · 2 s"; only the duration when it
+  // failed before choosing a method.
   private func method(of share: Share) -> String? {
     let identification = share.identification
     if !identification.hasDurationMs { return nil }
     let time = duration(identification.durationMs)
     switch identification.method {
     case .directID: return "Direct link · \(time)"
+    case .llm where identification.hasEffort:
+      return "LLM, \(identification.effort) effort · \(time)"
     case .llm: return "LLM · \(time)"
     default: return time
     }

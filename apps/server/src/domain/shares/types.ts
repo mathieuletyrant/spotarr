@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { Effort } from "../../integrations/llm/client";
 
 // Candidates and clues are stored as JSON in the shares table; these schemas
 // validate them on the way in and out, like the settings document.
@@ -65,6 +66,8 @@ export type Share = {
     clues: Clues;
     reasoning?: string;
     error?: string;
+    // The LLM's effort, when method is LLM.
+    effort?: Effort;
   };
   candidates: Candidate[];
   additions: Addition[];
@@ -84,4 +87,6 @@ export type IdentificationResult = {
   frames?: { atMs: number; thumbnail: Uint8Array }[];
   // In US dollars, when the LLM's provider reports it.
   llmCostUsd?: number;
+  // The effort the LLM got, when one was called.
+  effort?: Effort;
 };

@@ -1,6 +1,7 @@
 import { type Kysely, sql, type Updateable } from "kysely";
 import type { DB } from "../../db";
 import type { Shares } from "../../db/gen/types";
+import type { Effort } from "../../integrations/llm/client";
 import { summaryOf } from "./rules/summary";
 import {
   type Addition,
@@ -60,6 +61,7 @@ const COLUMNS = [
   "reasoning",
   "candidates",
   "error",
+  "effort",
 ] as const;
 
 export class ShareRepository {
@@ -181,6 +183,7 @@ export class ShareRepository {
           reasoning: result.reasoning ?? null,
           candidates,
           llm_cost_usd: result.llmCostUsd ?? null,
+          effort: result.effort ?? null,
           error: null,
         },
         trx,
@@ -193,7 +196,8 @@ export class ShareRepository {
   }
 
   // Puts a Share back in the queue, clearing what its Identification found. Additions stay.
-  async requeue(id: string): Promise<void> {
+  // `effort` is for this Identification only; the setting's when undefined.
+  async requeue(id: string, effort?: Effort): Promise<void> {
     await this.db.transaction().execute(async (trx) => {
       await trx.deleteFrom("frames").where("share_id", "=", id).execute();
       await this.update(
@@ -207,11 +211,22 @@ export class ShareRepository {
           reasoning: null,
           candidates: "[]",
           llm_cost_usd: null,
+          effort: effort ?? null,
           error: null,
         },
         trx,
       );
     });
+  }
+
+  // The effort Retry asked for this Share's Identification, if any.
+  async effortAsked(id: string): Promise<Effort | undefined> {
+    const row = await this.db
+      .selectFrom("shares")
+      .select("effort")
+      .where("id", "=", id)
+      .executeTakeFirst();
+    return (row?.effort as Effort | null) ?? undefined;
   }
 
   // What the LLM cost for the Shares of the last 30 days, counting only the
@@ -431,6 +446,7 @@ type ShareRow = {
   reasoning: string | null;
   candidates: string;
   error: string | null;
+  effort: string | null;
 };
 
 type AdditionRow = {
@@ -469,6 +485,7 @@ function toShare(row: ShareRow, additionRows: AdditionRow[], frameRows: FrameRow
       clues: CluesSchema.parse(JSON.parse(row.clues)),
       reasoning: row.reasoning ?? undefined,
       error: row.error ?? undefined,
+      effort: (row.effort as Effort | null) ?? undefined,
     },
     candidates,
     additions,

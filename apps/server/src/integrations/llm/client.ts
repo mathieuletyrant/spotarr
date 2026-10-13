@@ -3,7 +3,11 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import { SpotarrError } from "../../errors";
 
-export type LlmConfig = { apiUrl: string; apiKey: string; model: string };
+// How long a thinking model thinks before answering: slower and dearer as it goes up.
+export const EFFORTS = ["low", "medium", "high"] as const;
+export type Effort = (typeof EFFORTS)[number];
+
+export type LlmConfig = { apiUrl: string; apiKey: string; model: string; effort: Effort };
 export type ChatMessage = OpenAI.Chat.ChatCompletionMessageParam;
 
 // Sends a conversation to any OpenAI-compatible API (OpenRouter by default) and
@@ -20,9 +24,7 @@ export async function chat<Schema extends z.ZodType>(
       model: config.model,
       messages,
       response_format: zodResponseFormat(schema, "answer"),
-      // Thinking models (Gemini 3.8 Flash) answered in 15 to 45 s without this,
-      // in 3 to 6 s with it, naming the same films on the test reel.
-      reasoning_effort: "low",
+      reasoning_effort: config.effort,
     })
     .catch((error) => {
       throw llmError(error);

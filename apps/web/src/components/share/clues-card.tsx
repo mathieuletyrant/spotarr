@@ -75,6 +75,7 @@ function methodOf(share: Share): string | undefined {
   if (!idf?.durationMs) return undefined;
   const duration = seconds(idf.durationMs);
   if (idf.method === Method.DIRECT_ID) return `Direct link · ${duration}`;
+  if (idf.method === Method.LLM && idf.effort) return `LLM, ${idf.effort} effort · ${duration}`;
   if (idf.method === Method.LLM) return `LLM · ${duration}`;
   return duration;
 }

@@ -106,3 +106,24 @@ test("a Share queued after start() is picked up", async () => {
   const id = await shares.create({ text: "x" }, "text");
   await until(async () => (await shares.get(id))?.identification.status === "NO_MATCH");
 });
+
+test("the effort Retry asked for reaches that Identification only", async () => {
+  const efforts: (string | undefined)[] = [];
+  const { shares, queue } = await setUp(async (_id, _input, effort) => {
+    efforts.push(effort);
+    return noMatch;
+  });
+  const id = await shares.create({ text: "x" }, "text");
+  await queue.start();
+  await until(async () => efforts.length === 1);
+  await until(async () => (await shares.get(id))?.summary === "NO_MATCH");
+
+  await shares.requeue(id, "high");
+  await until(async () => efforts.length === 2);
+  await until(async () => (await shares.get(id))?.summary === "NO_MATCH");
+  await shares.requeue(id);
+  await until(async () => efforts.length === 3);
+
+  // undefined: the setting's.
+  expect(efforts).toEqual([undefined, "high", undefined]);
+});

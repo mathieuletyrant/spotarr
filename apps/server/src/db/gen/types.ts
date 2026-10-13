@@ -38,6 +38,7 @@ export interface Shares {
   clues: Generated<string>;
   created_at: Generated<string>;
   duration_ms: number | null;
+  effort: string | null;
   error: string | null;
   extractors: Generated<string>;
   id: string;

@@ -114,3 +114,14 @@ test("DeleteShare removes a finished Share; an unknown one is not_found", async 
   expect((await call("GetShare", { id })).body.code).toBe("not_found");
   expect((await call("DeleteShare", { id })).body.code).toBe("not_found");
 });
+
+test("RetryIdentification takes an effort, and refuses an unknown one", async () => {
+  const { body } = await call("CreateShare", { text: "retry me harder" });
+  const id = body.share.id;
+  await until(async () => (await shares.get(id))?.summary === "NO_MATCH");
+
+  expect((await call("RetryIdentification", { id, effort: "extreme" })).body.code).toBe(
+    "invalid_argument",
+  );
+  expect((await call("RetryIdentification", { id, effort: "high" })).status).toBe(200);
+});

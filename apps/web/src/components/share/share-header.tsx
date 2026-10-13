@@ -3,12 +3,17 @@ import { useMutation } from "@connectrpc/connect-query";
 import { type Share, SpotarrService, Summary } from "@spotarr/contract";
 import { useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, RotateCw } from "lucide-react";
+import { useState } from "react";
+import { EFFORTS } from "../../lib/effort";
 import { shareDate } from "../../lib/format";
 import { DeleteShareButton } from "./delete-share-button";
 
-// Title, shared URL, and the actions: retry, open the source, delete.
+// Title, shared URL, and the actions: retry (with another effort if chosen),
+// open the source, delete.
 export function ShareHeader({ share }: { share: Share }) {
   const queryClient = useQueryClient();
+  // Empty: the effort of the settings.
+  const [effort, setEffort] = useState("");
   const retry = useMutation(SpotarrService.method.retryIdentification, {
     onSuccess: () => queryClient.invalidateQueries(),
   });
@@ -28,15 +33,30 @@ export function ShareHeader({ share }: { share: Share }) {
           )}
         </div>
         <div className="flex flex-wrap gap-2 md:shrink-0">
-          <button
-            type="button"
-            onClick={() => retry.mutate({ id: share.id })}
-            disabled={retry.isPending || share.summary === Summary.IN_PROGRESS}
-            className="flex h-10 items-center gap-2 rounded-md border border-border px-4 whitespace-nowrap hover:bg-surface"
-          >
-            <RotateCw aria-hidden className="size-4" />
-            Retry identification
-          </button>
+          <div className="flex">
+            <select
+              aria-label="Effort of the retry"
+              value={effort}
+              onChange={(e) => setEffort(e.target.value)}
+              className="h-10 rounded-l-md border border-border bg-bg px-3 text-sm"
+            >
+              <option value="">Default effort</option>
+              {EFFORTS.map((e) => (
+                <option key={e} value={e}>
+                  {`${e[0]?.toUpperCase()}${e.slice(1)} effort`}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => retry.mutate({ id: share.id, effort: effort || undefined })}
+              disabled={retry.isPending || share.summary === Summary.IN_PROGRESS}
+              className="flex h-10 items-center gap-2 rounded-r-md border border-l-0 border-border px-4 whitespace-nowrap hover:bg-surface"
+            >
+              <RotateCw aria-hidden className="size-4" />
+              Retry identification
+            </button>
+          </div>
           {share.input?.url && (
             <a
               href={share.input.url}

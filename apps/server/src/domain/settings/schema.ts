@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EFFORTS } from "../../integrations/llm/client";
 
 // The settings as the rest of the server sees them, with their defaults.
 // Field names match the contract's (camelCase) so mapping is a plain copy.
@@ -14,6 +15,9 @@ export const SettingsSchema = z.object({
       // Chosen on 2026-10-12, the only one of 4 vision models to find all 3
       // films of a test reel.
       model: z.string().default("google/gemini-3.8-flash"),
+      // Gemini 3.8 Flash answered in 15 to 45 s without an effort, in 3 to 6 s
+      // with "low", naming the same films on the test reel.
+      effort: z.enum(EFFORTS).default("low"),
       tmdbToken: z.string().default(""),
       language: z
         .string()
@@ -60,5 +64,7 @@ export const SettingsSchema = z.object({
 
 export type Settings = z.infer<typeof SettingsSchema>;
 
-// What UpdateSettings may carry: any subset of any section.
-export type SettingsPatch = { [S in keyof Settings]?: Partial<Settings[S]> };
+// What UpdateSettings may carry: any subset of any section. A choice among a
+// few strings (the effort) arrives as any string: update() validates it.
+type Patch<Section> = { [K in keyof Section]?: Section[K] extends string ? string : Section[K] };
+export type SettingsPatch = { [S in keyof Settings]?: Patch<Settings[S]> };
