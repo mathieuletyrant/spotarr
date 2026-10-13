@@ -85,7 +85,7 @@ Bump `YT_DLP_VERSION` in the `Dockerfile` when Instagram, TikTok or YouTube vide
 
 ## Evaluation
 
-`pnpm --filter @spotarr/server eval` runs the real Identification on the reels listed in `apps/server/scripts/eval.ts` (keys from `.env`, about $0.01 a reel, `MODEL=… ` to try another model). A reel passes when its works are in the first 3 Candidates. Re-run it after any change to the prompt, the model or the TMDB matching, and add a case for every misidentified reel.
+`pnpm --filter @spotarr/server eval` runs the real Identification on the reels listed in `apps/server/scripts/eval.ts` (keys from `.env`, about $0.01 a reel, `MODEL=…` to try another model, `EFFORT=medium` or `high` another effort). A reel passes when its works are in the first 3 Candidates. Re-run it after any change to the prompt, the model, the effort or the TMDB matching, and add a case for every misidentified reel.
 
 | Date | Model | Score | Note |
 | --- | --- | --- | --- |

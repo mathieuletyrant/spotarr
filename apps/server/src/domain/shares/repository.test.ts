@@ -260,3 +260,21 @@ test("stats count Shares and Additions by month, and Shares by source", async ()
     { source: "tiktok.com", shares: 1 },
   ]);
 });
+
+test("finish keeps the effort the LLM got; requeue keeps what Retry asked", async () => {
+  const { shares } = await repository();
+  const id = await shares.create({ text: "x" }, "text");
+  await shares.finish(
+    id,
+    { status: "NO_MATCH", method: "LLM", extractors: [], clues: {}, candidates: [], effort: "low" },
+    12,
+  );
+  expect((await shares.get(id))?.identification.effort).toBe("low");
+
+  await shares.requeue(id, { effort: "high", hint: "the Korean show" });
+  expect(await shares.retryRequest(id)).toEqual({ effort: "high", hint: "the Korean show" });
+  expect((await shares.get(id))?.identification.hint).toBe("the Korean show");
+
+  await shares.requeue(id);
+  expect(await shares.retryRequest(id)).toEqual({ effort: undefined, hint: undefined });
+});

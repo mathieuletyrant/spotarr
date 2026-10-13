@@ -20,6 +20,8 @@ export function CluesCard({ share }: { share: Share }) {
     ["Author", clues?.author],
     ["Method", methodOf(share)],
   ];
+  // Only when a Retry gave one: "None" would read as a missing clue.
+  if (idf?.hint) rows.push(["Your hint", idf.hint]);
 
   // Nothing to show yet: say so rather than listing "None" everywhere.
   if (share.summary === Summary.IN_PROGRESS) {
@@ -75,6 +77,7 @@ function methodOf(share: Share): string | undefined {
   if (!idf?.durationMs) return undefined;
   const duration = seconds(idf.durationMs);
   if (idf.method === Method.DIRECT_ID) return `Direct link · ${duration}`;
+  if (idf.method === Method.LLM && idf.effort) return `LLM, ${idf.effort} effort · ${duration}`;
   if (idf.method === Method.LLM) return `LLM · ${duration}`;
   return duration;
 }

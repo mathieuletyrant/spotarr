@@ -70,3 +70,19 @@ test("the LLM is told today's date, so this year's films are not dated to past y
   await guessTitles({ clues: {}, images: [] }, llm, new Date("2026-10-12T10:00:00Z"));
   expect(String(sent[0]?.content)).toContain("Today is 2026-10-12.");
 });
+
+test("a Retry's hint goes after the caption and the author", async () => {
+  let sent: ChatMessage[] = [];
+  const llm = async (messages: ChatMessage[]) => {
+    sent = messages;
+    return { answer };
+  };
+  await guessTitles(
+    { clues: { caption: "mood ?" }, hint: "the Korean show, not the movie", images: [] },
+    llm,
+  );
+  const user = sent[1]?.content as { type: string; text?: string }[];
+  expect(user[0]?.text).toBe(
+    "Caption: mood ?\nAuthor: (unknown)\nHint from the person who shared it: the Korean show, not the movie",
+  );
+});

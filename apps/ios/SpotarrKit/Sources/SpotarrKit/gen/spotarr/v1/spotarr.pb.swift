@@ -900,6 +900,17 @@ public nonisolated struct Spotarr_V1_IdentificationSettings: Sendable {
   /// Clears the value of `model`. Subsequent reads from it will return its default value.
   public mutating func clearModel() {self._model = nil}
 
+  /// How long the LLM thinks before answering: "low", "medium" or "high".
+  /// Higher is slower and dearer, and may find what a quick look misses.
+  public var effort: String {
+    get {_effort ?? String()}
+    set {_effort = newValue}
+  }
+  /// Returns true if `effort` has been explicitly set.
+  public var hasEffort: Bool {self._effort != nil}
+  /// Clears the value of `effort`. Subsequent reads from it will return its default value.
+  public mutating func clearEffort() {self._effort = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -912,6 +923,7 @@ public nonisolated struct Spotarr_V1_IdentificationSettings: Sendable {
   fileprivate var _tmdbToken: String? = nil
   fileprivate var _language: String? = nil
   fileprivate var _model: String? = nil
+  fileprivate var _effort: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_SeerrSettings: Sendable {
@@ -1327,6 +1339,26 @@ public nonisolated struct Spotarr_V1_Identification: Sendable {
   /// Clears the value of `error`. Subsequent reads from it will return its default value.
   public mutating func clearError() {self._error = nil}
 
+  /// The effort the LLM got ("low", "medium", "high"), when method is LLM.
+  public var effort: String {
+    get {_effort ?? String()}
+    set {_effort = newValue}
+  }
+  /// Returns true if `effort` has been explicitly set.
+  public var hasEffort: Bool {self._effort != nil}
+  /// Clears the value of `effort`. Subsequent reads from it will return its default value.
+  public mutating func clearEffort() {self._effort = nil}
+
+  /// The hint given with the Retry that started this Identification.
+  public var hint: String {
+    get {_hint ?? String()}
+    set {_hint = newValue}
+  }
+  /// Returns true if `hint` has been explicitly set.
+  public var hasHint: Bool {self._hint != nil}
+  /// Clears the value of `hint`. Subsequent reads from it will return its default value.
+  public mutating func clearHint() {self._hint = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1335,6 +1367,8 @@ public nonisolated struct Spotarr_V1_Identification: Sendable {
   fileprivate var _clues: Spotarr_V1_Clues? = nil
   fileprivate var _reasoning: String? = nil
   fileprivate var _error: String? = nil
+  fileprivate var _effort: String? = nil
+  fileprivate var _hint: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_Clues: Sendable {
@@ -1715,9 +1749,33 @@ public nonisolated struct Spotarr_V1_RetryIdentificationRequest: Sendable {
 
   public var id: String = String()
 
+  /// "low", "medium" or "high" for this Identification only; the setting's when absent.
+  public var effort: String {
+    get {_effort ?? String()}
+    set {_effort = newValue}
+  }
+  /// Returns true if `effort` has been explicitly set.
+  public var hasEffort: Bool {self._effort != nil}
+  /// Clears the value of `effort`. Subsequent reads from it will return its default value.
+  public mutating func clearEffort() {self._effort = nil}
+
+  /// One sentence for the LLM, for this Identification only: "the Korean show,
+  /// not the movie". 500 characters at most.
+  public var hint: String {
+    get {_hint ?? String()}
+    set {_hint = newValue}
+  }
+  /// Returns true if `hint` has been explicitly set.
+  public var hasHint: Bool {self._hint != nil}
+  /// Clears the value of `hint`. Subsequent reads from it will return its default value.
+  public mutating func clearHint() {self._hint = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+
+  fileprivate var _effort: String? = nil
+  fileprivate var _hint: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_RetryIdentificationResponse: Sendable {
@@ -2798,7 +2856,7 @@ nonisolated extension Spotarr_V1_WebhookSettings: SwiftProtobuf.Message, SwiftPr
 
 nonisolated extension Spotarr_V1_IdentificationSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".IdentificationSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}llm_api_url\0\u{3}llm_api_key\0\u{3}text_model\0\u{3}image_model\0\u{3}force_json\0\u{3}tmdb_token\0\u{1}language\0\u{1}model\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}llm_api_url\0\u{3}llm_api_key\0\u{3}text_model\0\u{3}image_model\0\u{3}force_json\0\u{3}tmdb_token\0\u{1}language\0\u{1}model\0\u{1}effort\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -2814,6 +2872,7 @@ nonisolated extension Spotarr_V1_IdentificationSettings: SwiftProtobuf.Message, 
       case 6: try { try decoder.decodeSingularStringField(value: &self._tmdbToken) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._language) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self._model) }()
+      case 9: try { try decoder.decodeSingularStringField(value: &self._effort) }()
       default: break
       }
     }
@@ -2848,6 +2907,9 @@ nonisolated extension Spotarr_V1_IdentificationSettings: SwiftProtobuf.Message, 
     try { if let v = self._model {
       try visitor.visitSingularStringField(value: v, fieldNumber: 8)
     } }()
+    try { if let v = self._effort {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 9)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2860,6 +2922,7 @@ nonisolated extension Spotarr_V1_IdentificationSettings: SwiftProtobuf.Message, 
     if lhs._tmdbToken != rhs._tmdbToken {return false}
     if lhs._language != rhs._language {return false}
     if lhs._model != rhs._model {return false}
+    if lhs._effort != rhs._effort {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3344,7 +3407,7 @@ nonisolated extension Spotarr_V1_ShareInput: SwiftProtobuf.Message, SwiftProtobu
 
 nonisolated extension Spotarr_V1_Identification: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Identification"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}method\0\u{3}duration_ms\0\u{1}extractors\0\u{1}clues\0\u{1}reasoning\0\u{1}error\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}status\0\u{1}method\0\u{3}duration_ms\0\u{1}extractors\0\u{1}clues\0\u{1}reasoning\0\u{1}error\0\u{1}effort\0\u{1}hint\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3359,6 +3422,8 @@ nonisolated extension Spotarr_V1_Identification: SwiftProtobuf.Message, SwiftPro
       case 5: try { try decoder.decodeSingularMessageField(value: &self._clues) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self._reasoning) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._error) }()
+      case 8: try { try decoder.decodeSingularStringField(value: &self._effort) }()
+      case 9: try { try decoder.decodeSingularStringField(value: &self._hint) }()
       default: break
       }
     }
@@ -3390,6 +3455,12 @@ nonisolated extension Spotarr_V1_Identification: SwiftProtobuf.Message, SwiftPro
     try { if let v = self._error {
       try visitor.visitSingularStringField(value: v, fieldNumber: 7)
     } }()
+    try { if let v = self._effort {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 8)
+    } }()
+    try { if let v = self._hint {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 9)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3401,6 +3472,8 @@ nonisolated extension Spotarr_V1_Identification: SwiftProtobuf.Message, SwiftPro
     if lhs._clues != rhs._clues {return false}
     if lhs._reasoning != rhs._reasoning {return false}
     if lhs._error != rhs._error {return false}
+    if lhs._effort != rhs._effort {return false}
+    if lhs._hint != rhs._hint {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3890,7 +3963,7 @@ nonisolated extension Spotarr_V1_SummaryCount: SwiftProtobuf.Message, SwiftProto
 
 nonisolated extension Spotarr_V1_RetryIdentificationRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".RetryIdentificationRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}effort\0\u{1}hint\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3899,20 +3972,34 @@ nonisolated extension Spotarr_V1_RetryIdentificationRequest: SwiftProtobuf.Messa
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._effort) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._hint) }()
       default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if !self.id.isEmpty {
       try visitor.visitSingularStringField(value: self.id, fieldNumber: 1)
     }
+    try { if let v = self._effort {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._hint {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Spotarr_V1_RetryIdentificationRequest, rhs: Spotarr_V1_RetryIdentificationRequest) -> Bool {
     if lhs.id != rhs.id {return false}
+    if lhs._effort != rhs._effort {return false}
+    if lhs._hint != rhs._hint {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

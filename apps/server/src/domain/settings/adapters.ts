@@ -19,5 +19,6 @@ export function llmConfigFrom({ identification }: Settings): LlmConfig {
     apiUrl: identification.llmApiUrl,
     apiKey: identification.llmApiKey,
     model: identification.model,
+    effort: identification.effort,
   };
 }

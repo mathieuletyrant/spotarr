@@ -1,6 +1,7 @@
 import { type Kysely, sql, type Updateable } from "kysely";
 import type { DB } from "../../db";
 import type { Shares } from "../../db/gen/types";
+import type { Effort } from "../../integrations/llm/client";
 import { summaryOf } from "./rules/summary";
 import {
   type Addition,
@@ -10,6 +11,7 @@ import {
   type IdentificationResult,
   type IdentificationStatus,
   type Method,
+  type RetryRequest,
   type Share,
   type ShareInput,
 } from "./types";
@@ -60,13 +62,16 @@ const COLUMNS = [
   "reasoning",
   "candidates",
   "error",
+  "effort",
+  "hint",
 ] as const;
 
 export class ShareRepository {
   constructor(private readonly db: Kysely<DB>) {}
 
   // Returns the new Share's id. UUIDv7 starts with a timestamp, so ids sort by creation time.
-  async create(input: ShareInput, source: string): Promise<string> {
+  // `effort` is the one its Identification will get; the setting's then when undefined.
+  async create(input: ShareInput, source: string, effort?: Effort): Promise<string> {
     const id = `shr_${Bun.randomUUIDv7()}`;
     await this.db
       .insertInto("shares")
@@ -76,6 +81,7 @@ export class ShareRepository {
         input_url: input.url ?? null,
         input_text: input.text ?? null,
         input_image: input.image ?? null,
+        effort: effort ?? null,
       })
       .execute();
     return id;
@@ -181,6 +187,7 @@ export class ShareRepository {
           reasoning: result.reasoning ?? null,
           candidates,
           llm_cost_usd: result.llmCostUsd ?? null,
+          effort: result.effort ?? null,
           error: null,
         },
         trx,
@@ -193,7 +200,8 @@ export class ShareRepository {
   }
 
   // Puts a Share back in the queue, clearing what its Identification found. Additions stay.
-  async requeue(id: string): Promise<void> {
+  // What `retry` asks is for this Identification only.
+  async requeue(id: string, retry: RetryRequest = {}): Promise<void> {
     await this.db.transaction().execute(async (trx) => {
       await trx.deleteFrom("frames").where("share_id", "=", id).execute();
       await this.update(
@@ -207,11 +215,26 @@ export class ShareRepository {
           reasoning: null,
           candidates: "[]",
           llm_cost_usd: null,
+          effort: retry.effort ?? null,
+          hint: retry.hint ?? null,
           error: null,
         },
         trx,
       );
     });
+  }
+
+  // What Retry asked for this Share's Identification: an effort, a hint.
+  async retryRequest(id: string): Promise<RetryRequest> {
+    const row = await this.db
+      .selectFrom("shares")
+      .select(["effort", "hint"])
+      .where("id", "=", id)
+      .executeTakeFirst();
+    return {
+      effort: (row?.effort as Effort | null) ?? undefined,
+      hint: row?.hint ?? undefined,
+    };
   }
 
   // What the LLM cost for the Shares of the last 30 days, counting only the
@@ -431,6 +454,8 @@ type ShareRow = {
   reasoning: string | null;
   candidates: string;
   error: string | null;
+  effort: string | null;
+  hint: string | null;
 };
 
 type AdditionRow = {
@@ -469,6 +494,8 @@ function toShare(row: ShareRow, additionRows: AdditionRow[], frameRows: FrameRow
       clues: CluesSchema.parse(JSON.parse(row.clues)),
       reasoning: row.reasoning ?? undefined,
       error: row.error ?? undefined,
+      effort: (row.effort as Effort | null) ?? undefined,
+      hint: row.hint ?? undefined,
     },
     candidates,
     additions,

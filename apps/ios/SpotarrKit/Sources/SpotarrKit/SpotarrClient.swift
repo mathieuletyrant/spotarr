@@ -77,10 +77,17 @@ public struct SpotarrClient: Sendable {
     return response.message?.share ?? Share()
   }
 
-  /// Queues the Identification again; the Share comes back in progress.
-  public func retryIdentification(id: String) async throws(SendError) -> Share {
+  /// Queues the Identification again, with `effort` ("low", "medium", "high")
+  /// or the one of Spotarr's settings when nil, and a `hint` for the LLM if
+  /// given; the Share comes back in progress.
+  public func retryIdentification(id: String, effort: String? = nil, hint: String? = nil)
+    async throws(SendError) -> Share
+  {
     var request = Spotarr_V1_RetryIdentificationRequest()
     request.id = id
+    if let effort { request.effort = effort }
+    let hint = hint?.trimmingCharacters(in: .whitespaces) ?? ""
+    if !hint.isEmpty { request.hint = hint }
     let response = await client.retryIdentification(request: request, headers: headers)
     if let error = response.error { throw SendError(error) }
     return response.message?.share ?? Share()

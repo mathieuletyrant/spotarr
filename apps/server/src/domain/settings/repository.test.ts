@@ -10,6 +10,7 @@ test("an empty database gives the defaults", async () => {
   const s = await (await repository()).get();
   expect(s.identification.llmApiUrl).toBe("https://openrouter.ai/api/v1");
   expect(s.identification.language).toBe("fr-FR");
+  expect(s.identification.effort).toBe("low");
   expect(s.seerr).toEqual({ url: "", apiKey: "" });
   expect(s.extraction).toEqual({
     framesPerVideo: 6,
@@ -35,6 +36,7 @@ test("an invalid value is refused and nothing is saved", async () => {
   const bad = settings.update({ seerr: { url: "not a url" }, extraction: { concurrency: 1 } });
   await expect(bad).rejects.toThrow();
   expect((await settings.get()).extraction.concurrency).toBe(2);
+  await expect(settings.update({ identification: { effort: "extreme" } })).rejects.toThrow();
 });
 
 test("the API token is read-only for update, set only by setApiToken", async () => {

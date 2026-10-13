@@ -11,6 +11,8 @@ struct ShareDetailView: View {
   @State private var share: Share?
   @State private var error: String?
   @State private var retrying = false
+  /// The retry sheet is open: effort and hint.
+  @State private var choosingRetry = false
 
   private static let extractors = [
     "video": "Video",
@@ -42,10 +44,15 @@ struct ShareDetailView: View {
             }
           }
           Button("Retry identification", systemImage: "arrow.clockwise") {
-            Task { await retry() }
+            choosingRetry = true
           }
           .disabled(retrying || share.isInProgress)
         }
+      }
+    }
+    .sheet(isPresented: $choosingRetry) {
+      RetrySheet { effort, hint in
+        Task { await retry(effort: effort, hint: hint) }
       }
     }
     .refreshable { await load() }
@@ -87,7 +94,7 @@ struct ShareDetailView: View {
       Section("Candidates") {
         if share.isInProgress {
           Label(
-            "Identifying… This takes 10 to 30 seconds; the page follows on its own.",
+            "Identifying… \(Effort.waiting(share.identification.effort)); the page follows on its own.",
             systemImage: "hourglass")
           .foregroundStyle(.secondary)
         } else if share.candidates.isEmpty {
@@ -120,6 +127,9 @@ struct ShareDetailView: View {
           LabeledContent("Caption", value: clue(share.identification.clues.caption))
           LabeledContent("Author", value: clue(share.identification.clues.author))
           LabeledContent("Method", value: method(of: share) ?? "None")
+          if share.identification.hasHint {
+            LabeledContent("Your hint", value: share.identification.hint)
+          }
         }
       }
 
@@ -145,12 +155,14 @@ struct ShareDetailView: View {
     }
   }
 
-  private func retry() async {
+  /// `effort` and `hint` are for this Identification only; nil effort: the
+  /// settings', empty hint: none.
+  private func retry(effort: String?, hint: String) async {
     guard let client = SpotarrClient(settings: SettingsStore.load()) else { return }
     retrying = true
     defer { retrying = false }
     do {
-      let fresh = try await client.retryIdentification(id: shareID)
+      let fresh = try await client.retryIdentification(id: shareID, effort: effort, hint: hint)
       show(fresh)
       error = nil
     } catch {
@@ -187,14 +199,16 @@ struct ShareDetailView: View {
     return names.isEmpty ? nil : names.joined(separator: ", ")
   }
 
-  // "LLM · 14 s" or "Direct link · 2 s"; only the duration when it failed
-  // before choosing a method.
+  // "LLM, high effort · 14 s" or "Direct link · 2 s"; only the duration when it
+  // failed before choosing a method.
   private func method(of share: Share) -> String? {
     let identification = share.identification
     if !identification.hasDurationMs { return nil }
     let time = duration(identification.durationMs)
     switch identification.method {
     case .directID: return "Direct link · \(time)"
+    case .llm where identification.hasEffort:
+      return "LLM, \(identification.effort) effort · \(time)"
     case .llm: return "LLM · \(time)"
     default: return time
     }

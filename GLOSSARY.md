@@ -32,6 +32,14 @@ _Avoid_: metadata, hints, features
 How the candidates were found: `DIRECT_ID` (an IMDb/TMDB ID found in the Clues, no LLM) or `LLM`.
 _Avoid_: mode, strategy
 
+**Effort**:
+How long the LLM thinks before answering: `low` (the default), `medium` or `high`. Higher is slower and dearer. Spotarr waits up to 60 s, 3 min or 5 min. Set in Settings; Retry can ask for another, for that Identification only.
+_Avoid_: reasoning level, thinking budget, mode
+
+**Hint**:
+One sentence given with a Retry for the LLM, saying what the Identification got wrong ("the Korean show, not the movie"). For that Identification only; unused when an IMDb or TMDB link answers.
+_Avoid_: comment, note, prompt
+
 **Candidate**:
 A TMDB title proposed by the Identification, with a confidence and a Library state.
 _Avoid_: result, match, suggestion

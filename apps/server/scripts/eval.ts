@@ -50,6 +50,7 @@ const settings = SettingsSchema.parse({
     llmApiKey: process.env.OPENROUTER_API_KEY ?? "",
     tmdbToken: process.env.TMDB_TOKEN ?? "",
     ...(process.env.MODEL ? { model: process.env.MODEL } : {}),
+    ...(process.env.EFFORT ? { effort: process.env.EFFORT } : {}),
   },
 });
 const model = settings.identification.model;
@@ -93,4 +94,4 @@ for (const { reel, expected } of CASES) {
     }
   }
 }
-console.log(`\n${model}: ${passed}/${CASES.length}`);
+console.log(`\n${model} (${settings.identification.effort}): ${passed}/${CASES.length}`);

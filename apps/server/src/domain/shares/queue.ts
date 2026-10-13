@@ -4,9 +4,14 @@ import { startIdentification } from "../identification/use-cases/start-identific
 import type { SettingsRepository } from "../settings/repository";
 import type { Emit } from "./events";
 import type { ShareRepository } from "./repository";
-import type { IdentificationResult, ShareInput } from "./types";
+import type { IdentificationResult, RetryRequest, ShareInput } from "./types";
 
-export type Identify = (shareId: string, input: ShareInput) => Promise<IdentificationResult>;
+// `retry` is what a Retry asked for: an effort, a hint. Empty for a new Share.
+export type Identify = (
+  shareId: string,
+  input: ShareInput,
+  retry: RetryRequest,
+) => Promise<IdentificationResult>;
 
 // Runs Identifications in the background. The queue itself is the shares
 // table: a Share is waiting while its status is QUEUED, so nothing is lost on a
@@ -35,7 +40,8 @@ export class ShareQueue {
     this.settings = deps.settings;
     this.emit = deps.emit;
     this.identify =
-      deps.identify ?? ((shareId, input) => startIdentification(shareId, input, deps.settings));
+      deps.identify ??
+      ((shareId, input, retry) => startIdentification(shareId, input, retry, deps.settings));
     this.idleMs = deps.idleMs ?? 1000;
   }
 
@@ -63,7 +69,8 @@ export class ShareQueue {
     const started = performance.now();
     const elapsed = () => Math.round(performance.now() - started);
     try {
-      const result = await this.identify(id, await this.shares.input(id));
+      const input = await this.shares.input(id);
+      const result = await this.identify(id, input, await this.shares.retryRequest(id));
       await this.shares.finish(id, result, elapsed());
       log({ shareId: id, step: "identification", durationMs: elapsed(), status: result.status });
     } catch (error) {

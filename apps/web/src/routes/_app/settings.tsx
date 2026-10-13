@@ -27,6 +27,7 @@ import {
 } from "../../components/settings/fields";
 import { WebhooksList } from "../../components/settings/webhooks-list";
 import { useToast } from "../../components/toast";
+import { EFFORTS } from "../../lib/effort";
 import {
   changedFields,
   changes,
@@ -155,6 +156,24 @@ function SettingsForm({ saved }: { saved: Values }) {
           hint="It gets the video's frames and sound: it must read images and hear audio."
           wide
         />
+        <Field
+          form={form}
+          name="identification.effort"
+          label="Effort"
+          hint="How long the LLM thinks: higher is slower and dearer. Retry can ask for another."
+        >
+          <select
+            value={values["identification.effort"]}
+            onChange={(e) => form.change("identification.effort", e.target.value)}
+            className={inputClass}
+          >
+            {EFFORTS.map((effort) => (
+              <option key={effort.value} value={effort.value}>
+                {effort.label}
+              </option>
+            ))}
+          </select>
+        </Field>
         <SecretField form={form} name="identification.tmdbToken" label="TMDB token (read access)" />
         <TextField
           form={form}

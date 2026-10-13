@@ -17,11 +17,12 @@ export type IdentifyDeps = {
 
 // An IMDb/TMDB link is enough. Otherwise the shared video (or photo post) is
 // read, the LLM names the works it shows, and TMDB confirms them. Each step
-// logs one line with the Share's id.
+// logs one line with the Share's id. `hint`, given with a Retry, goes to the LLM.
 export async function identifyShare(
   shareId: string,
   input: ShareInput,
   { tmdb, readLink, llm, libraryState }: IdentifyDeps,
+  hint?: string,
 ): Promise<IdentificationResult> {
   // 1. The shared link, or a link in the shared text, may be an IMDb or TMDB
   // page: certain, no LLM.
@@ -64,7 +65,7 @@ export async function identifyShare(
   const { answer, costUsd } = await step(
     shareId,
     "llm",
-    () => guessTitles({ clues, images: read.images, audio: read.audio }, llm),
+    () => guessTitles({ clues, hint, images: read.images, audio: read.audio }, llm),
     (reply) => ({ guesses: reply.answer.guesses.length, costUsd: reply.costUsd }),
   );
   const confirmed = await step(

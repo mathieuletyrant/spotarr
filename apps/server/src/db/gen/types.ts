@@ -38,8 +38,10 @@ export interface Shares {
   clues: Generated<string>;
   created_at: Generated<string>;
   duration_ms: number | null;
+  effort: string | null;
   error: string | null;
   extractors: Generated<string>;
+  hint: string | null;
   id: string;
   input_image: Uint8Array | null;
   input_text: string | null;

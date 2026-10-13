@@ -6,6 +6,7 @@ import { CandidateCard } from "../../components/share/candidate-card";
 import { Card } from "../../components/share/card";
 import { CluesCard } from "../../components/share/clues-card";
 import { ShareHeader } from "../../components/share/share-header";
+import { waitingText } from "../../lib/effort";
 import { shareQuery } from "../../queries/shares";
 
 export const Route = createFileRoute("/_app/shares/$shareId")({ component: SharePage });
@@ -38,7 +39,7 @@ function SharePage() {
         <Card icon={<Film aria-hidden className="size-4" />} title="Candidates">
           {share.summary === Summary.IN_PROGRESS ? (
             <p className="text-text-muted">
-              Identifying… This takes 10 to 30 seconds; the page follows on its own.
+              Identifying… {waitingText(share.identification?.effort)}; the page follows on its own.
             </p>
           ) : share.candidates.length === 0 ? (
             <p className="text-text-muted">

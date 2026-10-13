@@ -1,17 +1,12 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { useMutation } from "@connectrpc/connect-query";
-import { type Share, SpotarrService, Summary } from "@spotarr/contract";
-import { useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, RotateCw } from "lucide-react";
+import type { Share } from "@spotarr/contract";
+import { ExternalLink } from "lucide-react";
 import { shareDate } from "../../lib/format";
 import { DeleteShareButton } from "./delete-share-button";
+import { RetryButton } from "./retry-button";
 
 // Title, shared URL, and the actions: retry, open the source, delete.
 export function ShareHeader({ share }: { share: Share }) {
-  const queryClient = useQueryClient();
-  const retry = useMutation(SpotarrService.method.retryIdentification, {
-    onSuccess: () => queryClient.invalidateQueries(),
-  });
   const { day, time } = shareDate(share.createdAt ? timestampDate(share.createdAt) : new Date());
 
   return (
@@ -28,15 +23,7 @@ export function ShareHeader({ share }: { share: Share }) {
           )}
         </div>
         <div className="flex flex-wrap gap-2 md:shrink-0">
-          <button
-            type="button"
-            onClick={() => retry.mutate({ id: share.id })}
-            disabled={retry.isPending || share.summary === Summary.IN_PROGRESS}
-            className="flex h-10 items-center gap-2 rounded-md border border-border px-4 whitespace-nowrap hover:bg-surface"
-          >
-            <RotateCw aria-hidden className="size-4" />
-            Retry identification
-          </button>
+          <RetryButton share={share} />
           {share.input?.url && (
             <a
               href={share.input.url}
@@ -51,7 +38,6 @@ export function ShareHeader({ share }: { share: Share }) {
           <DeleteShareButton share={share} />
         </div>
       </div>
-      {retry.error && <p className="text-sm text-status-error">{retry.error.message}</p>}
     </div>
   );
 }
