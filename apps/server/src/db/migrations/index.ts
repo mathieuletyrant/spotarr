@@ -7,6 +7,7 @@ import * as webhooks from "./2026-10-12T1900-webhooks";
 import * as autoAdd from "./2026-10-12T2000-auto-add";
 import * as effort from "./2026-10-13T1700-effort";
 import * as hint from "./2026-10-13T1900-hint";
+import * as autoAddRules from "./2026-10-14T0900-auto-add-rules";
 
 // Listed by hand rather than read from disk: the list survives bundling.
 // Kysely applies them in the alphabetical order of their names, so a name is
@@ -21,4 +22,5 @@ export const migrations: Record<string, Migration> = {
   "2026-10-12T2000-auto-add": autoAdd,
   "2026-10-13T1700-effort": effort,
   "2026-10-13T1900-hint": hint,
+  "2026-10-14T0900-auto-add-rules": autoAddRules,
 };

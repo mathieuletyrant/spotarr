@@ -724,6 +724,9 @@ public nonisolated struct Spotarr_V1_Settings: @unchecked Sendable {
   /// Clears the value of `webhooks`. Subsequent reads from it will return its default value.
   public mutating func clearWebhooks() {_uniqueStorage()._webhooks = nil}
 
+  /// Replaced by the Rules (ListRules, SaveRule): the old settings became the first Rule.
+  ///
+  /// NOTE: This field was marked as deprecated in the .proto file.
   public var autoAdd: Spotarr_V1_AutoAddSettings {
     get {_storage._autoAdd ?? Spotarr_V1_AutoAddSettings()}
     set {_uniqueStorage()._autoAdd = newValue}
@@ -740,8 +743,7 @@ public nonisolated struct Spotarr_V1_Settings: @unchecked Sendable {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-/// Requesting a Candidate without a click, when the Identification is confident.
-/// A direct IMDb/TMDB link counts as 100 %.
+/// Replaced by the Rules.
 public nonisolated struct Spotarr_V1_AutoAddSettings: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1463,7 +1465,8 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   public var libraryState: Spotarr_V1_LibraryState = .unspecified
 
   /// TMDB's users' average, out of 10, and how many votes it rests on.
-  /// Absent when nobody rated it, and on Shares identified before ratings were kept.
+  /// Absent when nobody rated it, and on Shares identified before ratings were
+  /// kept, until Spotarr fills them at its next start.
   public var tmdbRating: Float {
     get {_tmdbRating ?? 0}
     set {_tmdbRating = newValue}
@@ -1503,6 +1506,16 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   /// until Spotarr fills them at its next start.
   public var genres: [String] = []
 
+  /// REQUESTED or ADDED by auto add: the name of the Rule that did it.
+  public var rule: String {
+    get {_rule ?? String()}
+    set {_rule = newValue}
+  }
+  /// Returns true if `rule` has been explicitly set.
+  public var hasRule: Bool {self._rule != nil}
+  /// Clears the value of `rule`. Subsequent reads from it will return its default value.
+  public mutating func clearRule() {self._rule = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1514,6 +1527,7 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   fileprivate var _tmdbRating: Float? = nil
   fileprivate var _tmdbVotes: Int32? = nil
   fileprivate var _failure: String? = nil
+  fileprivate var _rule: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_Addition: Sendable {
@@ -1552,12 +1566,23 @@ public nonisolated struct Spotarr_V1_Addition: Sendable {
   /// Made by auto add, without a click.
   public var automatic: Bool = false
 
+  /// The name of the Rule that made it, as it was then. Absent for a click.
+  public var rule: String {
+    get {_rule ?? String()}
+    set {_rule = newValue}
+  }
+  /// Returns true if `rule` has been explicitly set.
+  public var hasRule: Bool {self._rule != nil}
+  /// Clears the value of `rule`. Subsequent reads from it will return its default value.
+  public mutating func clearRule() {self._rule = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
   fileprivate var _createdAt: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
   fileprivate var _error: String? = nil
+  fileprivate var _rule: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_CreateShareRequest: Sendable {
@@ -2197,6 +2222,226 @@ public nonisolated struct Spotarr_V1_TestWebhookResponse: Sendable {
   public init() {}
 
   fileprivate var _webhook: Spotarr_V1_Webhook? = nil
+}
+
+/// When auto add requests a Candidate without a click. All its conditions must
+/// hold; an absent condition is no condition.
+public nonisolated struct Spotarr_V1_Rule: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Empty in SaveRule to create one.
+  public var id: String = String()
+
+  /// "Safe movies": shown on the Share's page next to what the Rule added.
+  public var name: String = String()
+
+  public var enabled: Bool = false
+
+  /// Only movies, or only TV shows. UNSPECIFIED: both.
+  public var type: Spotarr_V1_MediaType = .unspecified
+
+  /// Only when the Identification found a single Candidate in total.
+  public var onlyOne: Bool = false
+
+  /// Percent, 1 to 100. A direct IMDb/TMDB link counts as 100.
+  public var minConfidence: Int32 {
+    get {_minConfidence ?? 0}
+    set {_minConfidence = newValue}
+  }
+  /// Returns true if `minConfidence` has been explicitly set.
+  public var hasMinConfidence: Bool {self._minConfidence != nil}
+  /// Clears the value of `minConfidence`. Subsequent reads from it will return its default value.
+  public mutating func clearMinConfidence() {self._minConfidence = nil}
+
+  /// TMDB rating, out of 10. A Candidate nobody rated fails it, unless
+  /// unreleased_skips_rating lets a title not out yet through.
+  public var minRating: Float {
+    get {_minRating ?? 0}
+    set {_minRating = newValue}
+  }
+  /// Returns true if `minRating` has been explicitly set.
+  public var hasMinRating: Bool {self._minRating != nil}
+  /// Clears the value of `minRating`. Subsequent reads from it will return its default value.
+  public mutating func clearMinRating() {self._minRating = nil}
+
+  /// How many TMDB votes the rating rests on, at least.
+  public var minVotes: Int32 {
+    get {_minVotes ?? 0}
+    set {_minVotes = newValue}
+  }
+  /// Returns true if `minVotes` has been explicitly set.
+  public var hasMinVotes: Bool {self._minVotes != nil}
+  /// Clears the value of `minVotes`. Subsequent reads from it will return its default value.
+  public mutating func clearMinVotes() {self._minVotes = nil}
+
+  /// A title not out yet (released after today, or with no date on TMDB) has
+  /// no rating to judge: it skips min_rating and min_votes, not the others.
+  public var unreleasedSkipsRating: Bool = false
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _minConfidence: Int32? = nil
+  fileprivate var _minRating: Float? = nil
+  fileprivate var _minVotes: Int32? = nil
+}
+
+public nonisolated struct Spotarr_V1_ListRulesRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_ListRulesResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var rules: [Spotarr_V1_Rule] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_SaveRuleRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var rule: Spotarr_V1_Rule {
+    get {_rule ?? Spotarr_V1_Rule()}
+    set {_rule = newValue}
+  }
+  /// Returns true if `rule` has been explicitly set.
+  public var hasRule: Bool {self._rule != nil}
+  /// Clears the value of `rule`. Subsequent reads from it will return its default value.
+  public mutating func clearRule() {self._rule = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _rule: Spotarr_V1_Rule? = nil
+}
+
+public nonisolated struct Spotarr_V1_SaveRuleResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var rule: Spotarr_V1_Rule {
+    get {_rule ?? Spotarr_V1_Rule()}
+    set {_rule = newValue}
+  }
+  /// Returns true if `rule` has been explicitly set.
+  public var hasRule: Bool {self._rule != nil}
+  /// Clears the value of `rule`. Subsequent reads from it will return its default value.
+  public mutating func clearRule() {self._rule = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _rule: Spotarr_V1_Rule? = nil
+}
+
+public nonisolated struct Spotarr_V1_DeleteRuleRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var id: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_DeleteRuleResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_PreviewRulesRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// The Rules to try, saved or not; their enabled switch counts.
+  public var rules: [Spotarr_V1_Rule] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_PreviewRulesResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// How many of the latest identified Shares were looked at.
+  public var shares: Int32 = 0
+
+  /// What the Rules would have requested, newest Share first.
+  public var additions: [Spotarr_V1_PreviewedAddition] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_PreviewedAddition: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var shareID: String = String()
+
+  public var title: String = String()
+
+  public var year: Int32 {
+    get {_year ?? 0}
+    set {_year = newValue}
+  }
+  /// Returns true if `year` has been explicitly set.
+  public var hasYear: Bool {self._year != nil}
+  /// Clears the value of `year`. Subsequent reads from it will return its default value.
+  public mutating func clearYear() {self._year = nil}
+
+  public var type: Spotarr_V1_MediaType = .unspecified
+
+  public var posterURL: String {
+    get {_posterURL ?? String()}
+    set {_posterURL = newValue}
+  }
+  /// Returns true if `posterURL` has been explicitly set.
+  public var hasPosterURL: Bool {self._posterURL != nil}
+  /// Clears the value of `posterURL`. Subsequent reads from it will return its default value.
+  public mutating func clearPosterURL() {self._posterURL = nil}
+
+  /// The name of the first Rule that holds for it.
+  public var rule: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _year: Int32? = nil
+  fileprivate var _posterURL: String? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -3553,7 +3798,7 @@ nonisolated extension Spotarr_V1_Clues: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Candidate"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0\u{1}status\0\u{1}automatic\0\u{1}failure\0\u{1}genres\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0\u{1}status\0\u{1}automatic\0\u{1}failure\0\u{1}genres\0\u{1}rule\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3575,6 +3820,7 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
       case 12: try { try decoder.decodeSingularBoolField(value: &self.automatic) }()
       case 13: try { try decoder.decodeSingularStringField(value: &self._failure) }()
       case 14: try { try decoder.decodeRepeatedStringField(value: &self.genres) }()
+      case 15: try { try decoder.decodeSingularStringField(value: &self._rule) }()
       default: break
       }
     }
@@ -3627,6 +3873,9 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     if !self.genres.isEmpty {
       try visitor.visitRepeatedStringField(value: self.genres, fieldNumber: 14)
     }
+    try { if let v = self._rule {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 15)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3645,6 +3894,7 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     if lhs.automatic != rhs.automatic {return false}
     if lhs._failure != rhs._failure {return false}
     if lhs.genres != rhs.genres {return false}
+    if lhs._rule != rhs._rule {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3652,7 +3902,7 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
 
 nonisolated extension Spotarr_V1_Addition: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Addition"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{3}created_at\0\u{3}tmdb_id\0\u{1}type\0\u{1}target\0\u{1}status\0\u{1}error\0\u{1}automatic\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{3}created_at\0\u{3}tmdb_id\0\u{1}type\0\u{1}target\0\u{1}status\0\u{1}error\0\u{1}automatic\0\u{1}rule\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3668,6 +3918,7 @@ nonisolated extension Spotarr_V1_Addition: SwiftProtobuf.Message, SwiftProtobuf.
       case 6: try { try decoder.decodeSingularEnumField(value: &self.status) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self._error) }()
       case 8: try { try decoder.decodeSingularBoolField(value: &self.automatic) }()
+      case 9: try { try decoder.decodeSingularStringField(value: &self._rule) }()
       default: break
       }
     }
@@ -3702,6 +3953,9 @@ nonisolated extension Spotarr_V1_Addition: SwiftProtobuf.Message, SwiftProtobuf.
     if self.automatic != false {
       try visitor.visitSingularBoolField(value: self.automatic, fieldNumber: 8)
     }
+    try { if let v = self._rule {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 9)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3714,6 +3968,7 @@ nonisolated extension Spotarr_V1_Addition: SwiftProtobuf.Message, SwiftProtobuf.
     if lhs.status != rhs.status {return false}
     if lhs._error != rhs._error {return false}
     if lhs.automatic != rhs.automatic {return false}
+    if lhs._rule != rhs._rule {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4786,6 +5041,370 @@ nonisolated extension Spotarr_V1_TestWebhookResponse: SwiftProtobuf.Message, Swi
 
   public static func ==(lhs: Spotarr_V1_TestWebhookResponse, rhs: Spotarr_V1_TestWebhookResponse) -> Bool {
     if lhs._webhook != rhs._webhook {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_Rule: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".Rule"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{1}enabled\0\u{1}type\0\u{3}only_one\0\u{3}min_confidence\0\u{3}min_rating\0\u{3}min_votes\0\u{3}unreleased_skips_rating\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 3: try { try decoder.decodeSingularBoolField(value: &self.enabled) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self.type) }()
+      case 5: try { try decoder.decodeSingularBoolField(value: &self.onlyOne) }()
+      case 6: try { try decoder.decodeSingularInt32Field(value: &self._minConfidence) }()
+      case 7: try { try decoder.decodeSingularFloatField(value: &self._minRating) }()
+      case 8: try { try decoder.decodeSingularInt32Field(value: &self._minVotes) }()
+      case 9: try { try decoder.decodeSingularBoolField(value: &self.unreleasedSkipsRating) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.id.isEmpty {
+      try visitor.visitSingularStringField(value: self.id, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    if self.enabled != false {
+      try visitor.visitSingularBoolField(value: self.enabled, fieldNumber: 3)
+    }
+    if self.type != .unspecified {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 4)
+    }
+    if self.onlyOne != false {
+      try visitor.visitSingularBoolField(value: self.onlyOne, fieldNumber: 5)
+    }
+    try { if let v = self._minConfidence {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 6)
+    } }()
+    try { if let v = self._minRating {
+      try visitor.visitSingularFloatField(value: v, fieldNumber: 7)
+    } }()
+    try { if let v = self._minVotes {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 8)
+    } }()
+    if self.unreleasedSkipsRating != false {
+      try visitor.visitSingularBoolField(value: self.unreleasedSkipsRating, fieldNumber: 9)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_Rule, rhs: Spotarr_V1_Rule) -> Bool {
+    if lhs.id != rhs.id {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs.enabled != rhs.enabled {return false}
+    if lhs.type != rhs.type {return false}
+    if lhs.onlyOne != rhs.onlyOne {return false}
+    if lhs._minConfidence != rhs._minConfidence {return false}
+    if lhs._minRating != rhs._minRating {return false}
+    if lhs._minVotes != rhs._minVotes {return false}
+    if lhs.unreleasedSkipsRating != rhs.unreleasedSkipsRating {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_ListRulesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ListRulesRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_ListRulesRequest, rhs: Spotarr_V1_ListRulesRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_ListRulesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ListRulesResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rules\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.rules) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.rules.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.rules, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_ListRulesResponse, rhs: Spotarr_V1_ListRulesResponse) -> Bool {
+    if lhs.rules != rhs.rules {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_SaveRuleRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SaveRuleRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rule\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._rule) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._rule {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_SaveRuleRequest, rhs: Spotarr_V1_SaveRuleRequest) -> Bool {
+    if lhs._rule != rhs._rule {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_SaveRuleResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SaveRuleResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rule\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._rule) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._rule {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_SaveRuleResponse, rhs: Spotarr_V1_SaveRuleResponse) -> Bool {
+    if lhs._rule != rhs._rule {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_DeleteRuleRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DeleteRuleRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.id) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.id.isEmpty {
+      try visitor.visitSingularStringField(value: self.id, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_DeleteRuleRequest, rhs: Spotarr_V1_DeleteRuleRequest) -> Bool {
+    if lhs.id != rhs.id {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_DeleteRuleResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DeleteRuleResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_DeleteRuleResponse, rhs: Spotarr_V1_DeleteRuleResponse) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_PreviewRulesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PreviewRulesRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}rules\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.rules) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.rules.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.rules, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_PreviewRulesRequest, rhs: Spotarr_V1_PreviewRulesRequest) -> Bool {
+    if lhs.rules != rhs.rules {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_PreviewRulesResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PreviewRulesResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}shares\0\u{1}additions\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt32Field(value: &self.shares) }()
+      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.additions) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.shares != 0 {
+      try visitor.visitSingularInt32Field(value: self.shares, fieldNumber: 1)
+    }
+    if !self.additions.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.additions, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_PreviewRulesResponse, rhs: Spotarr_V1_PreviewRulesResponse) -> Bool {
+    if lhs.shares != rhs.shares {return false}
+    if lhs.additions != rhs.additions {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_PreviewedAddition: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".PreviewedAddition"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}share_id\0\u{1}title\0\u{1}year\0\u{1}type\0\u{3}poster_url\0\u{1}rule\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.shareID) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.title) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self._year) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self.type) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._posterURL) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self.rule) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.shareID.isEmpty {
+      try visitor.visitSingularStringField(value: self.shareID, fieldNumber: 1)
+    }
+    if !self.title.isEmpty {
+      try visitor.visitSingularStringField(value: self.title, fieldNumber: 2)
+    }
+    try { if let v = self._year {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 3)
+    } }()
+    if self.type != .unspecified {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 4)
+    }
+    try { if let v = self._posterURL {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
+    if !self.rule.isEmpty {
+      try visitor.visitSingularStringField(value: self.rule, fieldNumber: 6)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_PreviewedAddition, rhs: Spotarr_V1_PreviewedAddition) -> Bool {
+    if lhs.shareID != rhs.shareID {return false}
+    if lhs.title != rhs.title {return false}
+    if lhs._year != rhs._year {return false}
+    if lhs.type != rhs.type {return false}
+    if lhs._posterURL != rhs._posterURL {return false}
+    if lhs.rule != rhs.rule {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
 import { createApp } from "../../app";
 import { openDatabase } from "../../db";
+import { RuleRepository } from "../../domain/auto-add/repository";
 import { SettingsRepository } from "../../domain/settings/repository";
 import { ShareRepository } from "../../domain/shares/repository";
 import { WebhookRepository } from "../../domain/webhooks/repository";
@@ -12,6 +13,7 @@ const settings = new SettingsRepository(db);
 const webhooks = new WebhookRepository(db);
 const sender = new WebhookSender(webhooks, async () => "");
 const app = createApp({
+  rules: new RuleRepository(db),
   apiToken: () => "t",
   settings,
   shares,

@@ -16,6 +16,10 @@ export function dependenciesQuery() {
   });
 }
 
+export function rulesQuery() {
+  return queryOptions(createQueryOptions(SpotarrService.method.listRules, {}, { transport }));
+}
+
 export function webhooksQuery() {
   return queryOptions(createQueryOptions(SpotarrService.method.listWebhooks, {}, { transport }));
 }

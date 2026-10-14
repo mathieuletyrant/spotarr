@@ -37,6 +37,7 @@ test("an IMDb id finds a movie, sending the token and the language", async () =>
     title: "Dune : Deuxième partie",
     originalTitle: "Dune: Part Two",
     year: 2024,
+    releaseDate: "2024-02-27",
     posterUrl: "https://image.tmdb.org/t/p/w500/qpyaW4xUPeIiYA5ckg5zAZFHvsb.jpg",
     tmdbRating: 8.1,
     tmdbVotes: 7012,

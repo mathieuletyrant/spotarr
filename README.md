@@ -9,7 +9,7 @@ Share an Instagram reel or photo post, a TikTok or a YouTube Short from your iPh
 - 🎞️ **Watches and listens.** It downloads the reel, then an LLM looks at a few frames and hears the sound. The title is often only said out loud.
 - 🎯 **Confirms on TMDB.** It keeps the titles that exist on TMDB, with a poster and a confidence. A reel naming three films gives three candidates.
 - 📚 **Knows your library.** Seerr tells what is already there.
-- ➕ **Adds in one click**, or on its own: auto add requests a candidate when Spotarr is sure of it, by a rule you set. A TV show gets season 1 only.
+- ➕ **Adds in one click**, or on its own: auto add requests a candidate on its own when one of your rules holds (movies or TV shows, a single candidate, confidence, TMDB rating), with a preview of what each rule would have added. A TV show gets season 1 only.
 - 🔔 **Tells other services** through webhooks.
 - 🖥️ **A web UI** for the history, the candidates and the settings, in light and dark.
 

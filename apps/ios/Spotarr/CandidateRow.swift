@@ -86,7 +86,8 @@ struct CandidateRow: View {
       HStack(spacing: 6) {
         StatusBadge(summary: .requested)
         if automatic {
-          Text("automatically").font(.caption).foregroundStyle(.secondary)
+          Text(candidate.hasRule ? "by \(candidate.rule)" : "automatically")
+            .font(.caption).foregroundStyle(.secondary)
         }
       }
     case .added:

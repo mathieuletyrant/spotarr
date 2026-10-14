@@ -21,6 +21,8 @@ export type TmdbTitle = {
   title: string;
   originalTitle?: string;
   year?: number;
+  // "2026-12-18": the first release, or first air date. Absent when TMDB has none yet.
+  releaseDate?: string;
   posterUrl?: string;
   // TMDB's users' average, out of 10, and how many votes it rests on.
   tmdbRating?: number;
@@ -177,6 +179,7 @@ function movieTitle(
     title: movie.title,
     originalTitle: movie.original_title,
     year: yearOf(movie.release_date),
+    releaseDate: dateOf(movie.release_date),
     posterUrl: movie.poster_path ? POSTERS + movie.poster_path : undefined,
     ...ratingOf(movie.vote_average, movie.vote_count),
     originalLanguage: movie.original_language,
@@ -196,6 +199,7 @@ function showTitle(
     title: show.name,
     originalTitle: show.original_name,
     year: yearOf(show.first_air_date),
+    releaseDate: dateOf(show.first_air_date),
     posterUrl: show.poster_path ? POSTERS + show.poster_path : undefined,
     ...ratingOf(show.vote_average, show.vote_count),
     originalLanguage: show.original_language,
@@ -216,6 +220,11 @@ function genresOf(title: GenreIds | GenreNames, genres: Genres | undefined): str
 function ratingOf(average?: number, votes?: number) {
   if (!average || !votes) return {};
   return { tmdbRating: average, tmdbVotes: votes };
+}
+
+// TMDB sends "" when the date is unknown.
+function dateOf(date?: string): string | undefined {
+  return date ? date : undefined;
 }
 
 // "2024-02-27" → 2024. TMDB sends "" when the date is unknown.

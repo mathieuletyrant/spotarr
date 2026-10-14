@@ -1,6 +1,7 @@
 import { expect, test } from "bun:test";
 import { createApp } from "../../app";
 import { openDatabase } from "../../db";
+import { RuleRepository } from "../../domain/auto-add/repository";
 import { SettingsRepository } from "../../domain/settings/repository";
 import { ShareQueue } from "../../domain/shares/queue";
 import { ShareRepository } from "../../domain/shares/repository";
@@ -16,11 +17,13 @@ const sender = new WebhookSender(webhooks, async () => "");
 await new ShareQueue({
   shares,
   settings,
+  rules: new RuleRepository(db),
   emit: (event) => sender.emit(event),
   identify: identifyNothing,
   idleMs: 5,
 }).start();
 const app = createApp({
+  rules: new RuleRepository(db),
   apiToken: () => "t",
   settings,
   shares,

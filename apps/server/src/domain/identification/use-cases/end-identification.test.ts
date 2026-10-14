@@ -5,6 +5,7 @@ import {
   getPostRequestResponseMock,
 } from "../../../integrations/seerr/gen/seerr.faker";
 import { fakeFetch } from "../../../testing/fake-fetch";
+import { RuleRepository } from "../../auto-add/repository";
 import { SettingsRepository } from "../../settings/repository";
 import type { Event } from "../../shares/events";
 import { ShareRepository } from "../../shares/repository";
@@ -12,18 +13,17 @@ import { endIdentification } from "./end-identification";
 
 afterEach(() => mock.restore());
 
-test("a READY Share emits identification.ready, then auto add requests its Candidate", async () => {
+test("a READY Share emits identification.ready, then a Rule requests its Candidate", async () => {
   const db = await openDatabase(":memory:");
   const shares = new ShareRepository(db);
   const settings = new SettingsRepository(db);
+  const rules = new RuleRepository(db);
   const emitted: Event["name"][] = [];
   const emit = async (event: Event) => {
     emitted.push(event.name);
   };
-  await settings.update({
-    seerr: { url: "http://seerr.test", apiKey: "key" },
-    autoAdd: { enabled: true, minConfidence: 95, onlyOne: true },
-  });
+  await settings.update({ seerr: { url: "http://seerr.test", apiKey: "key" } });
+  await rules.save("", { name: "Sure", enabled: true, onlyOne: true, minConfidence: 95 });
   const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
   await shares.finish(
     id,
@@ -49,10 +49,10 @@ test("a READY Share emits identification.ready, then auto add requests its Candi
     "/api/v1/request": getPostRequestResponseMock(),
   });
 
-  await endIdentification(id, { shares, settings, emit });
+  await endIdentification(id, { shares, settings, rules, emit });
 
   expect(emitted).toEqual(["identification.ready", "media.added"]);
   expect((await shares.get(id))?.additions).toMatchObject([
-    { status: "REQUESTED", automatic: true },
+    { status: "REQUESTED", automatic: true, rule: "Sure" },
   ]);
 });
