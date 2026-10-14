@@ -38,23 +38,31 @@ export function linkReaders(extraction: Settings["extraction"]): LinkReaders {
   };
 }
 
-// Any link works, read in three steps. Each step's failure is kept as a value
-// (`.catch`): the next step decides what to do with it.
+// Any link works. The page is read once, at the start, and used twice: its
+// IMDb and TMDB links first, its content for the LLM last, when the link is
+// no video. From the surest answer to the least sure:
+//   1. the page's IMDb or TMDB links: certain, no LLM;
+//   2. the video: its frames and sound for the LLM;
+//   3. the page's content: its text and pictures for the LLM.
+// Each step's failure is kept as a value (`.catch`): a later step uses it.
 export async function readLink(url: string, readers: LinkReaders): Promise<Link> {
-  // 1. The page: a film's page (Letterboxd, Wikipedia) links to IMDb or TMDB,
-  // which is enough.
   const page = await readers.readPage(url).catch((error: Error) => error);
+
+  // 1. The page's IMDb or TMDB links (Letterboxd, Wikipedia) name its work.
   if (!(page instanceof Error) && page.directIds.length > 0) {
-    return fromPage(page, []);
+    return fromPageLinks(page);
   }
 
-  // 2. A video. A post without one is an Instagram photo post.
+  // 2. The video. A post without one is an Instagram photo post.
   const video = await readers.readVideo(url).catch((error: Error) => error);
   if (video === undefined) return fromPhoto(await readers.readPhoto(url));
   if (!(video instanceof Error)) return fromVideo(video);
 
-  // 3. No video (an article, a picture): the page itself, its text and pictures.
-  if (!(page instanceof Error)) return fromPage(page, await readers.readPagePictures(page));
+  // 3. No video (an article, a poster): the page's content goes to the LLM,
+  // its text and its pictures, downloaded now.
+  if (!(page instanceof Error)) {
+    return fromPageContent(page, await readers.readPagePictures(page));
+  }
 
   // Neither could be read. When yt-dlp knows nothing of the site, why the page
   // could not be read says more.
@@ -62,14 +70,27 @@ export async function readLink(url: string, readers: LinkReaders): Promise<Link>
   throw video;
 }
 
-function fromPage(page: Page, images: Uint8Array[]): Link {
+// The page's IMDb and TMDB links answer: no pictures to download. Its text
+// stays for the LLM, in case TMDB knows none of the links.
+function fromPageLinks(page: Page): Link {
   return {
     extractor: "web",
     caption: page.caption,
     author: page.author,
     text: page.text,
-    images,
+    images: [],
     directIds: page.directIds,
+  };
+}
+
+// The page's content, for the LLM to read and look at.
+function fromPageContent(page: Page, pictures: Uint8Array[]): Link {
+  return {
+    extractor: "web",
+    caption: page.caption,
+    author: page.author,
+    text: page.text,
+    images: pictures,
   };
 }
 

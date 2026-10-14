@@ -53,7 +53,7 @@ function readers(answers: Partial<LinkReaders>): LinkReaders {
   };
 }
 
-test("a page linking to IMDb or TMDB is enough: no video, no pictures", async () => {
+test("1. the page's IMDb or TMDB links are enough: no video, no pictures", async () => {
   const link = await readLink(
     "https://letterboxd.com/film/dune-part-two/",
     readers({ readPage: async () => letterboxd }),
@@ -68,7 +68,7 @@ test("a page linking to IMDb or TMDB is enough: no video, no pictures", async ()
   });
 });
 
-test("a video gives its frames and sound, even when its page could not be read", async () => {
+test("2. a video gives its frames and sound, even when its page could not be read", async () => {
   const link = await readLink(
     "https://www.instagram.com/reel/x/",
     readers({
@@ -86,7 +86,7 @@ test("a video gives its frames and sound, even when its page could not be read",
   });
 });
 
-test("a post without a video is an Instagram photo post", async () => {
+test("2. a post without a video is an Instagram photo post", async () => {
   const link = await readLink(
     "https://www.instagram.com/p/x/",
     readers({
@@ -103,7 +103,7 @@ test("a post without a video is an Instagram photo post", async () => {
   });
 });
 
-test("a link that is no video is read as a page: its text and pictures", async () => {
+test("3. a link that is no video: the page's content, its text and pictures, for the LLM", async () => {
   const link = await readLink(
     "https://www.ecranlarge.com/x",
     readers({
@@ -118,7 +118,6 @@ test("a link that is no video is read as a page: its text and pictures", async (
     author: "Ecran Large",
     text: "Nicholas Kazan fait mieux avec Cortés.",
     images: [new Uint8Array([7])],
-    directIds: [],
   });
 });
 
