@@ -391,7 +391,10 @@ export class ShareRepository {
   // Records what happened when adding a Candidate. Returns nothing: read the Share again.
   async addAddition(
     shareId: string,
-    addition: Pick<Addition, "tmdbId" | "type" | "target" | "status" | "error" | "automatic">,
+    addition: Pick<
+      Addition,
+      "tmdbId" | "type" | "target" | "status" | "error" | "automatic" | "rule"
+    >,
   ): Promise<void> {
     await this.db
       .insertInto("additions")
@@ -404,6 +407,7 @@ export class ShareRepository {
         status: addition.status,
         error: addition.error ?? null,
         automatic: addition.automatic ? 1 : 0,
+        rule: addition.rule ?? null,
       })
       .execute();
   }
@@ -482,6 +486,7 @@ type AdditionRow = {
   status: string;
   error: string | null;
   automatic: number;
+  rule: string | null;
 };
 
 // SQLite stores enums as text and lists as JSON: this turns a row back into a Share.
@@ -529,5 +534,6 @@ function toAddition(row: AdditionRow): Addition {
     status: row.status as Addition["status"],
     error: row.error ?? undefined,
     automatic: row.automatic === 1,
+    rule: row.rule ?? undefined,
   };
 }

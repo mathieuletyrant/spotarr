@@ -1,3 +1,4 @@
+import type { RuleRepository } from "../../auto-add/repository";
 import type { SettingsRepository } from "../../settings/repository";
 import type { Emit, IdentificationEventName } from "../../shares/events";
 import type { ShareRepository } from "../../shares/repository";
@@ -8,14 +9,15 @@ import { addToLibrary } from "../../shares/use-cases/add-to-library";
 type EndIdentificationDeps = {
   shares: ShareRepository;
   settings: SettingsRepository;
+  rules: RuleRepository;
   emit: Emit;
 };
 
 // When an Identification ends, its Event is emitted, then auto add requests
-// the Candidates its rule allows (each one emits media.added).
+// the Candidates its Rules allow (each one emits media.added).
 export async function endIdentification(
   shareId: string,
-  { shares, settings, emit }: EndIdentificationDeps,
+  { shares, settings, rules, emit }: EndIdentificationDeps,
 ): Promise<void> {
   const share = await shares.get(shareId);
   if (!share) return;
@@ -23,9 +25,15 @@ export async function endIdentification(
 
   // Auto add: only a READY Share has Candidates to request.
   if (share.identification.status !== "READY") return;
-  const { autoAdd } = await settings.get();
-  for (const candidate of candidatesToAutoAdd(share.candidates, autoAdd)) {
-    const request = { tmdbId: candidate.tmdbId, type: candidate.type, automatic: true };
+  const today = new Date().toISOString().slice(0, 10);
+  const additions = candidatesToAutoAdd(share.candidates, await rules.list(), today);
+  for (const { candidate, rule } of additions) {
+    const request = {
+      tmdbId: candidate.tmdbId,
+      type: candidate.type,
+      automatic: true,
+      rule: rule.name,
+    };
     await addToLibrary(share.id, request, { shares, settings, emit });
   }
 }

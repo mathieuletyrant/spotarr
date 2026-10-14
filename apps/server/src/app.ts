@@ -5,11 +5,13 @@ import { connectHandler } from "./api/connect";
 import { serveFrame } from "./api/frames";
 import { authRpcs } from "./api/rpc/auth";
 import { errorsToConnect } from "./api/rpc/errors";
+import { ruleRpcs } from "./api/rpc/rules";
 import { settingsRpcs } from "./api/rpc/settings";
 import { shareRpcs } from "./api/rpc/shares";
 import { statusRpcs } from "./api/rpc/status";
 import { webhookRpcs } from "./api/rpc/webhooks";
 import type { WebhookSender } from "./api/webhooks/sender";
+import type { RuleRepository } from "./domain/auto-add/repository";
 import type { SettingsRepository } from "./domain/settings/repository";
 import type { ShareRepository } from "./domain/shares/repository";
 import type { WebhookRepository } from "./domain/webhooks/repository";
@@ -20,6 +22,7 @@ export type AppDeps = {
   settings: SettingsRepository;
   shares: ShareRepository;
   webhooks: WebhookRepository;
+  rules: RuleRepository;
   sender: WebhookSender;
 };
 
@@ -27,7 +30,7 @@ export type AppDeps = {
 // for Login), GET /frames/* (video thumbnails, token required). index.ts adds
 // the web UI after them.
 // Each file in api/rpc/ implements the RPCs of one domain.
-export function createApp({ apiToken, settings, shares, webhooks, sender }: AppDeps): Hono {
+export function createApp({ apiToken, settings, shares, webhooks, rules, sender }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
     router.service(SpotarrService, {
       ...authRpcs(apiToken),
@@ -35,6 +38,7 @@ export function createApp({ apiToken, settings, shares, webhooks, sender }: AppD
       ...settingsRpcs(settings),
       ...shareRpcs(shares, settings, sender),
       ...webhookRpcs(webhooks, sender),
+      ...ruleRpcs(rules, shares),
     }),
   );
 

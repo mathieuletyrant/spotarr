@@ -3,6 +3,7 @@ import pkg from "../package.json";
 import { WebhookSender } from "./api/webhooks/sender";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
+import { RuleRepository } from "./domain/auto-add/repository";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ShareRepository } from "./domain/shares/repository";
 import { WebhookRepository } from "./domain/webhooks/repository";
@@ -21,6 +22,7 @@ const shares = new ShareRepository(db);
 const webhooks = new WebhookRepository(db);
 const sender = new WebhookSender(webhooks, async () => "");
 const app = createApp({
+  rules: new RuleRepository(db),
   apiToken: () => "secret-token",
   settings,
   shares,

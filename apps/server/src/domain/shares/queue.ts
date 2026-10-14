@@ -1,4 +1,5 @@
 import { log } from "../../log";
+import type { RuleRepository } from "../auto-add/repository";
 import { endIdentification } from "../identification/use-cases/end-identification";
 import { startIdentification } from "../identification/use-cases/start-identification";
 import type { SettingsRepository } from "../settings/repository";
@@ -23,6 +24,7 @@ export type Identify = (
 export class ShareQueue {
   private readonly shares: ShareRepository;
   private readonly settings: SettingsRepository;
+  private readonly rules: RuleRepository;
   private readonly emit: Emit;
   private readonly identify: Identify;
   private readonly idleMs: number;
@@ -30,6 +32,8 @@ export class ShareQueue {
   constructor(deps: {
     shares: ShareRepository;
     settings: SettingsRepository;
+    // Auto add's Rules, read when an Identification ends.
+    rules: RuleRepository;
     emit: Emit;
     // The Identification itself. Tests replace it, so no LLM is called.
     identify?: Identify;
@@ -38,6 +42,7 @@ export class ShareQueue {
   }) {
     this.shares = deps.shares;
     this.settings = deps.settings;
+    this.rules = deps.rules;
     this.emit = deps.emit;
     this.identify =
       deps.identify ??
@@ -79,7 +84,12 @@ export class ShareQueue {
       await this.shares.fail(id, message, elapsed());
     }
     // Outside the try: what follows never changes the Share's outcome.
-    const deps = { shares: this.shares, settings: this.settings, emit: this.emit };
+    const deps = {
+      shares: this.shares,
+      settings: this.settings,
+      rules: this.rules,
+      emit: this.emit,
+    };
     await endIdentification(id, deps).catch((error) =>
       log({ shareId: id, step: "ended", error: String(error) }),
     );

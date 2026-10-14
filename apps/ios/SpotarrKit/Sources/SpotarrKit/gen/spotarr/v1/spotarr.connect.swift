@@ -80,6 +80,23 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     /// Sends a sample "test" event to one Webhook; returns it with that delivery.
     @available(iOS 13, *)
     func `testWebhook`(request: Spotarr_V1_TestWebhookRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_TestWebhookResponse>
+
+    /// Auto add's Rules, oldest first. A Candidate is requested without a click
+    /// when one enabled Rule holds for it; the first such Rule is credited.
+    @available(iOS 13, *)
+    func `listRules`(request: Spotarr_V1_ListRulesRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_ListRulesResponse>
+
+    /// Creates the Rule when its id is empty, else replaces it.
+    @available(iOS 13, *)
+    func `saveRule`(request: Spotarr_V1_SaveRuleRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_SaveRuleResponse>
+
+    @available(iOS 13, *)
+    func `deleteRule`(request: Spotarr_V1_DeleteRuleRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_DeleteRuleResponse>
+
+    /// What these Rules would have added over the recent history. Adds nothing:
+    /// the Rule being edited is checked before it is saved.
+    @available(iOS 13, *)
+    func `previewRules`(request: Spotarr_V1_PreviewRulesRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_PreviewRulesResponse>
 }
 
 /// Concrete implementation of `Spotarr_V1_SpotarrServiceClientInterface`.
@@ -175,6 +192,26 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
         return await self.client.unary(path: "/spotarr.v1.SpotarrService/TestWebhook", idempotencyLevel: .unknown, request: request, headers: headers)
     }
 
+    @available(iOS 13, *)
+    public func `listRules`(request: Spotarr_V1_ListRulesRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_ListRulesResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/ListRules", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `saveRule`(request: Spotarr_V1_SaveRuleRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_SaveRuleResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/SaveRule", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `deleteRule`(request: Spotarr_V1_DeleteRuleRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_DeleteRuleResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/DeleteRule", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `previewRules`(request: Spotarr_V1_PreviewRulesRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_PreviewRulesResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/PreviewRules", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
     public enum Metadata {
         public enum Methods {
             public static let login = Connect.MethodSpec(name: "Login", service: "spotarr.v1.SpotarrService", type: .unary)
@@ -194,6 +231,10 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
             public static let saveWebhook = Connect.MethodSpec(name: "SaveWebhook", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let deleteWebhook = Connect.MethodSpec(name: "DeleteWebhook", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let testWebhook = Connect.MethodSpec(name: "TestWebhook", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let listRules = Connect.MethodSpec(name: "ListRules", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let saveRule = Connect.MethodSpec(name: "SaveRule", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let deleteRule = Connect.MethodSpec(name: "DeleteRule", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let previewRules = Connect.MethodSpec(name: "PreviewRules", service: "spotarr.v1.SpotarrService", type: .unary)
         }
     }
 }

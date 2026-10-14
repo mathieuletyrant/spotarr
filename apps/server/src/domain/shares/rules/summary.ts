@@ -23,8 +23,9 @@ export function summaryOf(
 
 export type CandidateStatus = {
   status: "CAN_ADD" | "REQUESTED" | "ADDED" | "ALREADY_PRESENT";
-  // Requested or added by auto add, without a click.
+  // Requested or added by auto add, without a click, and by which Rule.
   automatic: boolean;
+  rule?: string;
   // CAN_ADD after a failed Addition: its error.
   failure?: string;
 };
@@ -34,7 +35,7 @@ export type CandidateStatus = {
 export function candidateStatusOf(candidate: Candidate, additions: Addition[]): CandidateStatus {
   const addition = latestAdditionOf(candidate, additions);
   if (addition?.status === "REQUESTED" || addition?.status === "ADDED") {
-    return { status: addition.status, automatic: addition.automatic };
+    return { status: addition.status, automatic: addition.automatic, rule: addition.rule };
   }
   if (addition?.status === "ALREADY_PRESENT")
     return { status: "ALREADY_PRESENT", automatic: false };

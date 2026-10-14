@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { type SubmitEvent, useEffect, useState } from "react";
 import { ApiTokenField } from "../../components/settings/api-token-field";
-import { AutoAddFields } from "../../components/settings/auto-add-fields";
 import { DependenciesCard } from "../../components/settings/dependencies-card";
 import {
   Field,
@@ -25,6 +24,7 @@ import {
   Section,
   TextField,
 } from "../../components/settings/fields";
+import { RulesList } from "../../components/settings/rules-list";
 import { WebhooksList } from "../../components/settings/webhooks-list";
 import { useToast } from "../../components/toast";
 import { EFFORTS } from "../../lib/effort";
@@ -203,9 +203,10 @@ function SettingsForm({ saved }: { saved: Values }) {
         id="auto-add"
         icon={<Zap aria-hidden className="size-5" />}
         title="Auto add"
-        description="Request a candidate without a click, when Spotarr is sure of it."
+        description="Rules that request a candidate without a click."
+        info="A candidate is requested through Seerr when one enabled rule holds for it, and credited to the first one. A title already in the library is never requested again; a TV show gets season 1."
       >
-        <AutoAddFields form={form} />
+        <RulesList />
       </Section>
 
       <Section

@@ -48,13 +48,14 @@ export function shareMessage(share: Share) {
 
 // A Candidate, with its Candidate status: `additions` are its Share's.
 export function candidateMessage(candidate: Candidate, additions: Addition[]) {
-  const { status, automatic, failure } = candidateStatusOf(candidate, additions);
+  const { status, automatic, rule, failure } = candidateStatusOf(candidate, additions);
   return {
     ...candidate,
     type: MediaType[candidate.type],
     libraryState: LibraryState[candidate.libraryState],
     status: CandidateStatus[status],
     automatic,
+    rule,
     failure,
   };
 }

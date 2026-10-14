@@ -9,16 +9,19 @@ export const CandidateSchema = z.object({
   title: z.string(),
   originalTitle: z.string().optional(),
   year: z.int().optional(),
+  // "2026-12-18". Absent when TMDB has no date yet, and on Shares identified
+  // before release dates were kept, until fillMissingDetails() runs.
+  releaseDate: z.string().optional(),
   posterUrl: z.string().optional(),
   // TMDB's average, out of 10. Absent when nobody rated the title, and on
-  // Shares identified before ratings were kept.
+  // Shares identified before ratings were kept, until fillMissingDetails() runs.
   tmdbRating: z.number().min(0).max(10).optional(),
   tmdbVotes: z.int().optional(),
   // Absent for a direct ID, which is certain.
   confidence: z.number().min(0).max(1).optional(),
   libraryState: z.enum(["ABSENT", "REQUESTED", "PARTIAL", "AVAILABLE"]),
   // TMDB's genres, in the settings' language. Absent when unknown: Shares
-  // identified before genres were kept, until fillMissingGenres() runs.
+  // identified before genres were kept, until fillMissingDetails() runs.
   genres: z.array(z.string()).optional(),
 });
 export type Candidate = z.infer<typeof CandidateSchema>;
@@ -57,6 +60,8 @@ export type Addition = {
   error?: string;
   // Made by auto add, without a click.
   automatic: boolean;
+  // The name of the Rule that made it, as it was then. Absent for a click.
+  rule?: string;
 };
 
 export type Share = {
