@@ -27,6 +27,7 @@ export class SettingsRepository {
           ...current.access,
           ...present(patch.access),
           apiToken: current.access.apiToken, // read-only: only setApiToken changes it
+          mcpToken: current.access.mcpToken, // read-only: only setMcpToken changes it
         },
       });
       await this.write(trx, next);
@@ -38,6 +39,13 @@ export class SettingsRepository {
     await this.db.transaction().execute(async (trx) => {
       const current = await this.read(trx);
       await this.write(trx, { ...current, access: { ...current.access, apiToken } });
+    });
+  }
+
+  async setMcpToken(mcpToken: string): Promise<void> {
+    await this.db.transaction().execute(async (trx) => {
+      const current = await this.read(trx);
+      await this.write(trx, { ...current, access: { ...current.access, mcpToken } });
     });
   }
 

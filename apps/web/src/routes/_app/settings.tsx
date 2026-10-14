@@ -14,7 +14,6 @@ import {
   Zap,
 } from "lucide-react";
 import { type SubmitEvent, useEffect, useState } from "react";
-import { ApiTokenField } from "../../components/settings/api-token-field";
 import { DependenciesCard } from "../../components/settings/dependencies-card";
 import {
   Field,
@@ -24,7 +23,9 @@ import {
   Section,
   TextField,
 } from "../../components/settings/fields";
+import { McpUrlField } from "../../components/settings/mcp-url-field";
 import { RulesList } from "../../components/settings/rules-list";
+import { TokenField } from "../../components/settings/token-field";
 import { WebhooksList } from "../../components/settings/webhooks-list";
 import { useToast } from "../../components/toast";
 import { EFFORTS } from "../../lib/effort";
@@ -279,9 +280,15 @@ function SettingsForm({ saved }: { saved: Values }) {
         id="access"
         icon={<KeyRound aria-hidden className="size-5" />}
         title="Access"
-        description="The token that lets the iPhone and scripts call Spotarr."
+        description="What lets the iPhone, scripts and Home Assistant call Spotarr."
       >
-        <ApiTokenField token={values["access.apiToken"] ?? ""} />
+        <TokenField
+          id="api-token"
+          label="API token"
+          value={values["access.apiToken"] ?? ""}
+          hint="Sent by the iPhone and scripts in the Authorization header."
+        />
+        <McpUrlField form={form} />
       </Section>
 
       {(changed > 0 || errors[""]) && (

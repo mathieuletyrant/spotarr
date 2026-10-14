@@ -25,6 +25,7 @@ const dueDateDetails = getMovieDetailsResponseMock({
   release_date: "2010-11-03",
   vote_average: 6.4,
   vote_count: 5321,
+  overview: "Un futur papa traverse le pays avec un inconnu.",
   genres: [
     { id: 35, name: "Comédie" },
     { id: 18, name: "Drame" },
@@ -41,7 +42,7 @@ async function shareWith(candidates: Candidate[]) {
 
 const tmdb = new Tmdb({ token: "tok", language: "fr-FR" });
 
-test("an old Candidate gets its genres, rating, votes and release date from TMDB", async () => {
+test("an old Candidate gets its genres, rating, votes, release date and overview from TMDB", async () => {
   const { shares, id } = await shareWith([dueDate]);
   fakeFetch({ "/3/movie/41733": dueDateDetails });
 
@@ -51,12 +52,19 @@ test("an old Candidate gets its genres, rating, votes and release date from TMDB
     tmdbRating: 6.4,
     tmdbVotes: 5321,
     releaseDate: "2010-11-03",
+    overview: "Un futur papa traverse le pays avec un inconnu.",
   });
 });
 
 test("a Candidate that has them all, rated and out, is not asked again", async () => {
   const { shares } = await shareWith([
-    { ...dueDate, genres: ["Comédie"], releaseDate: "2010-11-03", tmdbRating: 6.4 },
+    {
+      ...dueDate,
+      genres: ["Comédie"],
+      releaseDate: "2010-11-03",
+      tmdbRating: 6.4,
+      overview: "Un futur papa traverse le pays avec un inconnu.",
+    },
   ]);
   const fetch = fakeFetch({});
 
@@ -74,7 +82,13 @@ test("a title not out yet is asked again, and gets its rating once out", async (
 });
 
 test("nothing new from TMDB: the Share is not written again", async () => {
-  const noDate = { ...dueDate, genres: ["Comédie", "Drame"], tmdbRating: 6.4, tmdbVotes: 5321 };
+  const noDate = {
+    ...dueDate,
+    genres: ["Comédie", "Drame"],
+    tmdbRating: 6.4,
+    tmdbVotes: 5321,
+    overview: "Un futur papa traverse le pays avec un inconnu.",
+  };
   const { shares } = await shareWith([noDate]);
   fakeFetch({ "/3/movie/41733": { ...dueDateDetails, release_date: "" } });
   const write = mock(() => Promise.resolve());

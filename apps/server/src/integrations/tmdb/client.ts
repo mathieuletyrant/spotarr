@@ -33,6 +33,8 @@ export type TmdbTitle = {
   // "Science-Fiction", "Drame", in the language asked. Absent when TMDB's list
   // of genre names could not be read: unknown, not "no genre".
   genres?: string[];
+  // The synopsis, in the language asked. Absent when TMDB has none in it.
+  overview?: string;
 };
 
 // A search result carries genre ids; the details carry the names.
@@ -185,6 +187,7 @@ function movieTitle(
     originalLanguage: movie.original_language,
     popularity: movie.popularity,
     genres: genresOf(movie, genres),
+    overview: textOf(movie.overview),
   };
 }
 
@@ -205,6 +208,7 @@ function showTitle(
     originalLanguage: show.original_language,
     popularity: show.popularity,
     genres: genresOf(show, genres),
+    overview: textOf(show.overview),
   };
 }
 
@@ -220,6 +224,11 @@ function genresOf(title: GenreIds | GenreNames, genres: Genres | undefined): str
 function ratingOf(average?: number, votes?: number) {
   if (!average || !votes) return {};
   return { tmdbRating: average, tmdbVotes: votes };
+}
+
+// TMDB sends "" when it has no overview in the language asked.
+function textOf(text?: string): string | undefined {
+  return text ? text : undefined;
 }
 
 // TMDB sends "" when the date is unknown.

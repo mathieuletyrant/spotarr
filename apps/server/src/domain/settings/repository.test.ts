@@ -48,3 +48,11 @@ test("the API token is read-only for update, set only by setApiToken", async () 
   expect(s.access.apiToken).toBe("tok");
   expect(s.seerr.apiKey).toBe("k");
 });
+
+test("the MCP token is read-only for update, set only by setMcpToken", async () => {
+  const settings = await repository();
+  await settings.setMcpToken("mcp");
+  await settings.update({ access: { mcpToken: "hijack" } });
+
+  expect((await settings.get()).access.mcpToken).toBe("mcp");
+});

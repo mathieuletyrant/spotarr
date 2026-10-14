@@ -48,6 +48,14 @@ _Avoid_: result, match, suggestion
 A Candidate's TMDB genre, in the settings' language ("Horreur", "Science-Fiction"). The History filters by it: a Share matches when one of its Candidates has it.
 _Avoid_: theme, category, tag
 
+**Overview**:
+A Candidate's TMDB synopsis, in the settings' language; none when TMDB has none in it. Kept for the MCP client, so Claude can judge a title it does not know.
+_Avoid_: description, summary, plot
+
+**MCP token**:
+The read-only token MCP clients (Home Assistant, Claude through it) give in `/mcp?token=…`. It only lists Shares; the API token keeps every other right, and each is refused where the other belongs.
+_Avoid_: read token, API key
+
 **Rule**:
 When auto add requests a Candidate without a click: a name, an on/off switch, and conditions that must all hold (type, a single Candidate, minimum confidence, minimum TMDB rating and votes). A title not out yet has no rating: a Rule may let it skip the rating and votes. A Candidate is added when one enabled Rule holds for it, credited to the first one; the Addition keeps the Rule's name.
 _Avoid_: filter, automation, policy

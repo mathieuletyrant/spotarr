@@ -50,6 +50,9 @@ export const SettingsSchema = z.object({
     .object({
       // Generated at first start, read-only for clients (see SettingsRepository.update).
       apiToken: z.string().default(""),
+      // Read-only access for MCP clients, at /mcp?token=…; the API refuses it.
+      // Generated at first start, changed by regenerateMcpToken() only.
+      mcpToken: z.string().default(""),
     })
     .prefault({}),
 });

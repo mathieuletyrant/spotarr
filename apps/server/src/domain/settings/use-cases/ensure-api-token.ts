@@ -1,3 +1,4 @@
+import { newToken } from "../new-token";
 import type { SettingsRepository } from "../repository";
 
 // Returns the API token, creating it on first start. `created` tells the caller
@@ -14,7 +15,7 @@ export async function ensureApiToken(
     return { token: fromEnvironment, created: false };
   }
   if (apiToken) return { token: apiToken, created: false };
-  const token = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url");
+  const token = newToken();
   await settings.setApiToken(token);
   return { token, created: true };
 }

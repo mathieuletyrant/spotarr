@@ -41,6 +41,10 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `updateSettings`(request: Spotarr_V1_UpdateSettingsRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_UpdateSettingsResponse>
 
+    /// Replaces the MCP token with a new one: the old one stops working at once.
+    @available(iOS 13, *)
+    func `regenerateMcpToken`(request: Spotarr_V1_RegenerateMcpTokenRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_RegenerateMcpTokenResponse>
+
     /// Records a Share and queues its Identification. Answers at once, status QUEUED.
     @available(iOS 13, *)
     func `createShare`(request: Spotarr_V1_CreateShareRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_CreateShareResponse>
@@ -143,6 +147,11 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
     }
 
     @available(iOS 13, *)
+    public func `regenerateMcpToken`(request: Spotarr_V1_RegenerateMcpTokenRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_RegenerateMcpTokenResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/RegenerateMcpToken", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `createShare`(request: Spotarr_V1_CreateShareRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_CreateShareResponse> {
         return await self.client.unary(path: "/spotarr.v1.SpotarrService/CreateShare", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -221,6 +230,7 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
             public static let getStats = Connect.MethodSpec(name: "GetStats", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let getSettings = Connect.MethodSpec(name: "GetSettings", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let updateSettings = Connect.MethodSpec(name: "UpdateSettings", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let regenerateMcpToken = Connect.MethodSpec(name: "RegenerateMcpToken", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let createShare = Connect.MethodSpec(name: "CreateShare", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let getShare = Connect.MethodSpec(name: "GetShare", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let listShares = Connect.MethodSpec(name: "ListShares", service: "spotarr.v1.SpotarrService", type: .unary)
