@@ -12,9 +12,9 @@ test("a Rule's conditions read in the form's order", () => {
     minVotes: 100,
   });
   expect(conditionsOf(rule)).toEqual([
-    "Movies",
+    "a movie",
     "a single candidate",
-    "confidence ≥ 90 %",
+    "confidence ≥ 90%",
     "TMDB ≥ 6.5 (100+ votes)",
   ]);
 });
@@ -27,5 +27,5 @@ test("a title not out yet skipping the rating joins the rating's chip, and only 
   const rated = create(RuleSchema, { minRating: 7.5, unreleasedSkipsRating: true });
   expect(conditionsOf(rated)).toEqual(["TMDB ≥ 7.5 or not out yet"]);
   const unrated = create(RuleSchema, { minConfidence: 90, unreleasedSkipsRating: true });
-  expect(conditionsOf(unrated)).toEqual(["confidence ≥ 90 %"]);
+  expect(conditionsOf(unrated)).toEqual(["confidence ≥ 90%"]);
 });

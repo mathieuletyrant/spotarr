@@ -1,13 +1,13 @@
 import { MediaType, type Rule } from "@spotarr/contract";
 
-// A Rule's conditions in words, in the order the form shows them: ["Movies",
-// "a single candidate", "confidence ≥ 90 %"]. Empty: the Rule adds every candidate.
+// A Rule's conditions in words, in the order the form shows them: ["a movie",
+// "a single candidate", "confidence ≥ 90%"]. Empty: the Rule adds every candidate.
 export function conditionsOf(rule: Rule): string[] {
   const conditions: string[] = [];
-  if (rule.type === MediaType.MOVIE) conditions.push("Movies");
-  if (rule.type === MediaType.TV) conditions.push("TV shows");
+  if (rule.type === MediaType.MOVIE) conditions.push("a movie");
+  if (rule.type === MediaType.TV) conditions.push("a TV show");
   if (rule.onlyOne) conditions.push("a single candidate");
-  if (rule.minConfidence !== undefined) conditions.push(`confidence ≥ ${rule.minConfidence} %`);
+  if (rule.minConfidence !== undefined) conditions.push(`confidence ≥ ${rule.minConfidence}%`);
   const rating = ratingOf(rule);
   if (rating && rule.unreleasedSkipsRating) conditions.push(`${rating} or not out yet`);
   else if (rating) conditions.push(rating);

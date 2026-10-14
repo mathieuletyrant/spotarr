@@ -4,8 +4,8 @@ import { createQueryOptions, useMutation } from "@connectrpc/connect-query";
 import { MediaType, type Rule, RuleSchema, SpotarrService } from "@spotarr/contract";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Pencil } from "lucide-react";
-import { useDeferredValue, useId, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import { Fragment, useDeferredValue, useId, useState } from "react";
 import { transport } from "../../lib/api";
 import { conditionsOf } from "../../lib/rules";
 import { rulesQuery } from "../../queries/settings";
@@ -78,58 +78,59 @@ export function RuleCard({ rule, onDone }: { rule?: Rule; onDone?: () => void })
     );
   }
 
+  // The whole card opens the form: an invisible button covers it, under the
+  // switch, which sits above it to stay clickable on its own.
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-border p-4">
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          role="switch"
-          aria-checked={rule.enabled}
-          aria-label={`${rule.name}: ${rule.enabled ? "on" : "off"}`}
-          disabled={toggle.isPending}
-          onClick={() => toggle.mutate({ rule: { ...rule, enabled: !rule.enabled } })}
-          className="relative h-6 w-11 shrink-0 rounded-full bg-text/15 transition-colors aria-checked:bg-accent"
-        >
-          <span
-            aria-hidden
-            className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-bg shadow transition-transform ${rule.enabled ? "translate-x-5" : ""}`}
-          />
-        </button>
-        <p
-          className={`min-w-0 flex-1 truncate font-medium ${rule.enabled ? "" : "text-text-muted"}`}
-        >
-          {rule.name}
-        </p>
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="flex h-8 items-center gap-1.5 rounded-md px-2 text-sm text-text-muted hover:bg-text/8 hover:text-text"
-        >
-          <Pencil aria-hidden className="size-3.5" />
-          Edit
-        </button>
+    <div className="relative flex items-start gap-3 rounded-lg border border-border bg-surface p-4 hover:border-text/30">
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        aria-label={`Edit ${rule.name}`}
+        className="absolute inset-0 rounded-lg"
+      />
+      {/* A rule switched off fades, so the ones at work stand out. */}
+      <div className={`flex min-w-0 flex-1 flex-col gap-2 ${rule.enabled ? "" : "opacity-50"}`}>
+        <p className="truncate leading-7 font-medium">{rule.name}</p>
+        <RuleSentence rule={rule} />
+        {toggle.error && <p className="text-sm text-status-error">{toggle.error.rawMessage}</p>}
       </div>
-      <RuleSentence rule={rule} />
-      {toggle.error && <p className="text-sm text-status-error">{toggle.error.rawMessage}</p>}
+      <button
+        type="button"
+        role="switch"
+        aria-checked={rule.enabled}
+        aria-label={`${rule.name}: ${rule.enabled ? "on" : "off"}`}
+        disabled={toggle.isPending}
+        onClick={() => toggle.mutate({ rule: { ...rule, enabled: !rule.enabled } })}
+        className="relative mt-0.5 h-6 w-11 shrink-0 rounded-full bg-text/15 transition-colors aria-checked:bg-accent"
+      >
+        <span
+          aria-hidden
+          className={`absolute top-0.5 left-0.5 size-5 rounded-full bg-bg shadow transition-transform ${rule.enabled ? "translate-x-5" : ""}`}
+        />
+      </button>
     </div>
   );
 }
 
-// "If Movies · a single candidate → add to the library", the conditions as chips.
+// "If a movie and a single candidate → add to the library", the conditions as
+// chips: all of them must hold.
 function RuleSentence({ rule }: { rule: Rule }) {
   const conditions = conditionsOf(rule);
   return (
     <p className="flex flex-wrap items-center gap-1.5 text-sm">
       <span className="text-text-muted">If</span>
       {conditions.length === 0 && (
-        <span className="rounded-full bg-status-error/10 px-2 py-0.5 text-status-error">
+        <span className="rounded-md bg-status-error/10 px-2 py-0.5 text-xs font-medium text-status-error">
           any candidate
         </span>
       )}
-      {conditions.map((condition) => (
-        <span key={condition} className="rounded-full bg-text/8 px-2 py-0.5 whitespace-nowrap">
-          {condition}
-        </span>
+      {conditions.map((condition, index) => (
+        <Fragment key={condition}>
+          {index > 0 && <span className="text-text-muted">and</span>}
+          <span className="rounded-md bg-text/8 px-2 py-0.5 text-xs font-medium whitespace-nowrap">
+            {condition}
+          </span>
+        </Fragment>
       ))}
       <ArrowRight aria-hidden className="size-3.5 text-text-muted" />
       <span className="text-text-muted">add to the library</span>

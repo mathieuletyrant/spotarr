@@ -33,11 +33,6 @@ export function RulesList() {
           Add a rule
         </button>
       )}
-      <p className="text-sm text-text-muted">
-        A candidate is requested through Seerr when one enabled rule holds for it, and credited to
-        the first one. A title already in the library is never requested again; a TV show gets
-        season 1.
-      </p>
     </div>
   );
 }

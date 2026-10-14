@@ -1,4 +1,4 @@
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Info } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import type { Values } from "../../lib/settings-form";
 
@@ -10,12 +10,14 @@ export type Form = {
 };
 
 // One block of the page, reachable from the menu by its id: an amber icon, the
-// title and what it is for, an optional button on the right, then the fields.
+// title and what it is for, an optional ⓘ with more details, an optional
+// button on the right, then the fields.
 export function Section({
   id,
   icon,
   title,
   description,
+  info,
   action,
   children,
 }: {
@@ -23,6 +25,7 @@ export function Section({
   icon: ReactNode;
   title: string;
   description: string;
+  info?: string;
   action?: ReactNode;
   children: ReactNode;
 }) {
@@ -36,13 +39,43 @@ export function Section({
           {icon}
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="font-semibold">{title}</h2>
+          <div className="flex items-center gap-1.5">
+            <h2 className="font-semibold">{title}</h2>
+            {info && <InfoBubble id={`${id}-info`} text={info} />}
+          </div>
           <p className="mt-0.5 text-sm text-text-muted">{description}</p>
         </div>
         {action}
       </div>
       <div className="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">{children}</div>
     </section>
+  );
+}
+
+// An ⓘ button opening a small bubble under it. The browser's popover handles
+// opening on click or tap, and closing on Escape or a click elsewhere.
+function InfoBubble({ id, text }: { id: string; text: string }) {
+  const anchor = `--${id}`;
+  return (
+    <>
+      <button
+        type="button"
+        popoverTarget={id}
+        aria-label="More about this"
+        style={{ anchorName: anchor }}
+        className="rounded-full text-text-muted hover:text-text"
+      >
+        <Info aria-hidden className="size-4" />
+      </button>
+      <div
+        id={id}
+        popover="auto"
+        style={{ positionAnchor: anchor, top: "anchor(bottom)", left: "anchor(left)" }}
+        className="m-0 mt-2 max-w-xs rounded-md border border-border bg-surface-raised p-3 text-sm text-text shadow-lg"
+      >
+        {text}
+      </div>
+    </>
   );
 }
 
