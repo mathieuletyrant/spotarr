@@ -650,7 +650,7 @@ export type AccessSettings = Message<"spotarr.v1.AccessSettings"> & {
   aud?: string | undefined;
 
   /**
-   * Read-only access for MCP clients (Home Assistant), at /mcp?token=<mcp_token>.
+   * Read-only access for MCP clients, at /mcp?token=<mcp_token>.
    * Generated at first start, changed by RegenerateMcpToken only: ignored by
    * UpdateSettings. It calls nothing but /mcp; the API refuses it.
    *

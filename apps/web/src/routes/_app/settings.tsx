@@ -280,7 +280,7 @@ function SettingsForm({ saved }: { saved: Values }) {
         id="access"
         icon={<KeyRound aria-hidden className="size-5" />}
         title="Access"
-        description="What lets the iPhone, scripts and Home Assistant call Spotarr."
+        description="What lets the iPhone, scripts and MCP clients call Spotarr."
       >
         <TokenField
           id="api-token"

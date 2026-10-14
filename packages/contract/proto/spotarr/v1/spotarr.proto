@@ -228,7 +228,7 @@ message AccessSettings {
   optional string team_domain = 3 [deprecated = true];
   // Removed, see public_hostname.
   optional string aud = 4 [deprecated = true];
-  // Read-only access for MCP clients (Home Assistant), at /mcp?token=<mcp_token>.
+  // Read-only access for MCP clients, at /mcp?token=<mcp_token>.
   // Generated at first start, changed by RegenerateMcpToken only: ignored by
   // UpdateSettings. It calls nothing but /mcp; the API refuses it.
   optional string mcp_token = 5;

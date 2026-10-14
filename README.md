@@ -97,11 +97,11 @@ In Settings → Webhooks, add a URL and pick its events: `identification.ready`,
 }
 ```
 
-## 🤖 Ask Claude through Home Assistant
+## 🤖 Ask an AI assistant
 
-Spotarr answers MCP (Model Context Protocol) clients at `/mcp`, with one read-only tool, `list_shares`: the History, filterable by genre, text and Summary, each Candidate with its TMDB genres, rating, overview and whether it was added. Claude, reaching Home Assistant, can then pick "a comedy for tonight" among what you shared.
+Spotarr answers MCP (Model Context Protocol) clients at `/mcp`, with one read-only tool, `list_shares`: the History, filterable by genre, text and Summary, each Candidate with its TMDB genres, rating, overview and whether it was added. An assistant like Claude can then pick "a comedy for tonight" among what you shared.
 
-In Home Assistant, add the **Model Context Protocol** integration and give it the MCP URL from Spotarr's Settings → Access (`http://umbrel.local:3838/mcp?token=…` on Umbrel). The token is in the URL because Home Assistant's MCP client sends no header of ours; it only reads, and the API refuses it. Regenerate it there if it leaks: the old URL stops working at once.
+Give your MCP client the MCP URL from Spotarr's Settings → Access (`http://umbrel.local:3838/mcp?token=…` on Umbrel). The token is in the URL because some MCP clients send no header of ours; it only reads, and the API refuses it. Regenerate it there if it leaks: the old URL stops working at once.
 
 ## 🛠️ Develop
 

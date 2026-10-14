@@ -8,8 +8,8 @@ import { useToast } from "../toast";
 import type { Form } from "./fields";
 import { TokenField } from "./token-field";
 
-// The address Home Assistant's MCP client is given: read-only, it lists the
-// Shares. The MCP token sits in it because that client only sends the URL.
+// The address an MCP client is given: read-only, it lists the Shares. The MCP
+// token sits in it because some MCP clients only send the URL they were given.
 // Regenerate asks first, in a native <dialog>, like deleting a Share.
 export function McpUrlField({ form }: { form: Form }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -34,7 +34,7 @@ export function McpUrlField({ form }: { form: Form }) {
         id="mcp-url"
         label="MCP URL"
         value={url}
-        hint="Give it to Home Assistant's MCP client: Claude then reads the history through it, and nothing more. It uses this page's address; change it if Home Assistant reaches Spotarr at another one."
+        hint="Give it to an MCP client: an AI assistant like Claude then reads the history through it, and nothing more. It uses this page's address; change it if the client reaches Spotarr at another one."
       >
         <button
           type="button"
@@ -56,7 +56,7 @@ export function McpUrlField({ form }: { form: Form }) {
             Make a new MCP URL?
           </h2>
           <p className="text-sm text-text-muted">
-            The current one stops working at once: give the new one to Home Assistant.
+            The current one stops working at once: give the new one to your MCP clients.
           </p>
           {regenerate.error && (
             <p className="text-sm text-status-error">{regenerate.error.rawMessage}</p>

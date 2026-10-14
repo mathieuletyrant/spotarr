@@ -53,7 +53,7 @@ A Candidate's TMDB synopsis, in the settings' language; none when TMDB has none 
 _Avoid_: description, summary, plot
 
 **MCP token**:
-The read-only token MCP clients (Home Assistant, Claude through it) give in `/mcp?token=…`. It only lists Shares; the API token keeps every other right, and each is refused where the other belongs.
+The read-only token MCP clients (an AI assistant like Claude) give in `/mcp?token=…`. It only lists Shares; the API token keeps every other right, and each is refused where the other belongs.
 _Avoid_: read token, API key
 
 **Rule**:
@@ -98,4 +98,4 @@ _Avoid_: notification, hook, trigger
 
 **Webhook**:
 A URL Spotarr calls with the full Event payload, chosen per Event. Spotarr knows nothing about what sits behind it.
-_Avoid_: integration, notifier, Home Assistant
+_Avoid_: integration, notifier

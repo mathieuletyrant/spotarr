@@ -1066,7 +1066,7 @@ public nonisolated struct Spotarr_V1_AccessSettings: Sendable {
   /// Clears the value of `aud`. Subsequent reads from it will return its default value.
   public mutating func clearAud() {self._aud = nil}
 
-  /// Read-only access for MCP clients (Home Assistant), at /mcp?token=<mcp_token>.
+  /// Read-only access for MCP clients, at /mcp?token=<mcp_token>.
   /// Generated at first start, changed by RegenerateMcpToken only: ignored by
   /// UpdateSettings. It calls nothing but /mcp; the API refuses it.
   public var mcpToken: String {

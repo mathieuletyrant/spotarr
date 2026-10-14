@@ -1,6 +1,6 @@
-// Mounts an MCP server (Model Context Protocol) in Hono: Home Assistant's MCP
-// client calls it, and Claude through it. Stateless: each request gets its
-// own server and transport, so nothing is kept between requests.
+// Mounts an MCP server (Model Context Protocol) in Hono, for AI assistants
+// like Claude. Stateless: each request gets its own server and transport, so
+// nothing is kept between requests.
 import { StreamableHTTPTransport } from "@hono/mcp";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { Context } from "hono";

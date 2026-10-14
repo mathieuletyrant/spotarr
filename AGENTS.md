@@ -68,10 +68,10 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 - A TV show requests season 1 only. No manual TMDB search in V1 (no `Search` RPC).
 - `Share` is the entity; RPCs are `CreateShare`, `GetShare`, `ListShares`, `RetryIdentification`, `Add`. Candidate carries a `LibraryState` enum, not `in_library`.
 - Secrets are stored plain in SQLite under `/data`, visible and copyable in the UI, never logged. No encryption layer.
-- Webhooks carry the full payload (poster, confidence, library state); Spotarr has no Home Assistant code.
+- Webhooks carry the full payload (poster, confidence, library state); Spotarr has no code for any particular receiver.
 - The shared video is never kept, but a 240 px thumbnail of each frame is (≈10 KB each, table `frames`), shown on the Share's page and served by `GET /frames/<share id>/<n>.jpg` behind the token. Decided 2026-10-12, against the spec's "no images kept".
 - No Cloudflare Access JWT check in Spotarr for now (the spec's third layer): Access in front plus the API token are enough. Its settings (public hostname, team domain, AUD) were removed on 2026-10-12; to be decided again at the real deployment.
-- An MCP server, read-only, for Claude through Home Assistant (2026-10-14): its own MCP token, passed as `/mcp?token=<MCP token>` because Home Assistant's MCP client only speaks OAuth and sends the configured URL as is. The API refuses the MCP token and `/mcp` the API token. Spotarr logs only the path, never the query.
+- An MCP server, read-only, for AI assistants like Claude (2026-10-14): its own MCP token, passed as `/mcp?token=<MCP token>` because some MCP clients only speak OAuth and send the configured URL as is. The API refuses the MCP token and `/mcp` the API token. Spotarr logs only the path, never the query.
 - SQLite from milestone 1. No history purge, no `VACUUM INTO`. Design tokens from milestone 0; macOS CI job only with the SwiftUI app.
 
 ## Releasing

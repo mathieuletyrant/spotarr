@@ -24,8 +24,8 @@ export function requireToken(getToken: () => string): MiddlewareHandler {
   };
 }
 
-// The MCP token, in the URL's `token` parameter: Home Assistant's MCP client
-// sends no header of ours, only the URL it was given. Read at each request,
+// The MCP token, in the URL's `token` parameter: some MCP clients send no
+// header of ours, only the URL they were given. Read at each request,
 // so a regenerated token applies at once. The API token is refused here,
 // as the MCP token is refused by requireToken.
 export function requireMcpToken(getToken: () => Promise<string>): MiddlewareHandler {
