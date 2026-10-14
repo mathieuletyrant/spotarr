@@ -32,7 +32,7 @@ export type Llm = (messages: ChatMessage[]) => Promise<LlmReply>;
 
 const INSTRUCTIONS = `You identify films and TV shows from what someone shared: usually a short social media video, sometimes a photo post or a web page.
 For a video, you get the caption, the author, frames taken across the video, and usually its sound. The person speaking often says the title out loud: listen for it. On-screen text, posters and actors' faces are good clues too.
-For a web page, you get its title and description as the caption, its site as the author, its text and its main picture. Name the works the page is about, not every work it mentions in passing.
+For a web page, you get its title and description as the caption, its site as the author, its text and its pictures (posters, stills, the share picture). Name the works the page is about, not every work it mentions in passing.
 
 Rules:
 - One candidate per work when the share presents several (a "5 films to watch" video gives 5 candidates).
@@ -42,7 +42,7 @@ Rules:
 - A hint from the person who shared the video corrects an earlier wrong answer: follow it.`;
 
 // What the LLM gets: a video's frames and sound, a photo post's picture alone,
-// or a web page's text and picture, and the hint given with a Retry.
+// or a web page's text and pictures, and the hint given with a Retry.
 type LlmInput = {
   clues: Clues;
   hint?: string;

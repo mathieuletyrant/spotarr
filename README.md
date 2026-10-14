@@ -1,14 +1,14 @@
 # 🎬 Spotarr
 
-Share an Instagram reel or photo post, a TikTok, a YouTube Short or any web page (an article, a Letterboxd, AlloCiné or Wikipedia page) from your iPhone: Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
+Share any link from your iPhone (a reel, a TikTok, a YouTube video, an article, a film's page on Letterboxd, AlloCiné or Wikipedia): Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
 
 ![The History page, in dark mode](docs/screenshots/history-dark.png)
 
 ## ✨ What it does
 
-- 🎞️ **Watches and listens.** It downloads the reel, then an LLM looks at a few frames and hears the sound. The title is often only said out loud.
-- 📰 **Reads web pages.** A page linking to IMDb or TMDB (Letterboxd, Wikipedia) names its work at once, without the LLM. Any other page (an article, AlloCiné) is read by the LLM: its title, description, text, picture and the title and year it gives search engines.
-- 🎯 **Confirms on TMDB.** It keeps the titles that exist on TMDB, with a poster and a confidence. A reel naming three films gives three candidates.
+- 🎞️ **Watches and listens.** A video (Instagram, TikTok, YouTube…) is downloaded, then an LLM looks at a few frames and hears the sound. The title is often only said out loud.
+- 📰 **Reads any page.** A page linking to IMDb or TMDB (Letterboxd, Wikipedia) names its work at once, without the LLM. Any other link (an article, AlloCiné, a photo post, a poster) is read by the LLM: the page's title, description, text and pictures.
+- 🎯 **Confirms on TMDB.** It keeps the titles that exist on TMDB, with a poster and a confidence. A video or an article naming three films gives three candidates.
 - 📚 **Knows your library.** Seerr tells what is already there.
 - ➕ **Adds in one click**, or on its own: auto add requests a candidate on its own when one of your rules holds (movies or TV shows, a single candidate, confidence, TMDB rating), with a preview of what each rule would have added. A TV show gets season 1 only.
 - 🔔 **Tells other services** through webhooks.
@@ -42,20 +42,20 @@ An identification costs about $0.01 with the default model. Settings shows the c
 
 ## 📱 Share from the iPhone
 
-**The app** (`apps/ios`) puts Spotarr in the share sheet: share a reel, it says "Sent to Spotarr" and closes, or says why it failed with a Retry button. The app itself has three tabs: **History** (filter by status, search, pull to refresh), each Share's page to **Add** a Candidate or retry the identification, and **Settings**.
+**The app** (`apps/ios`) puts Spotarr in the share sheet: share a link from any app, it says "Sent to Spotarr" and closes, or says why it failed with a Retry button. The app itself has three tabs: **History** (filter by status, search, pull to refresh), each Share's page to **Add** a Candidate or retry the identification, and **Settings**.
 
 1. Open `apps/ios/Spotarr.xcodeproj` in Xcode. In both targets' Signing & Capabilities, pick your team (a free Apple account works; its apps must be reinstalled every 7 days).
 2. Run it on your iPhone, over Wi-Fi once paired. In the app, set Spotarr's address (`http://umbrel.local:3838` on Umbrel), the API token, and "Test the connection".
 3. Through a proxy such as Cloudflare Access, add its headers in **Custom headers**: `CF-Access-Client-Id` and `CF-Access-Client-Secret`, from a service token.
-4. In Instagram, TikTok or YouTube, Share → More → Spotarr, once; it then stays in the list.
+4. In any app (Instagram, TikTok, YouTube, Safari…), Share → More → Spotarr, once; it then stays in the list.
 
 ### The Shortcut, without the app
 
-[`shortcuts/Spotarr.shortcut`](shortcuts/Spotarr.shortcut) puts **Spotarr** in the share sheet for links: share a reel, and a notification says "Sent to Spotarr", or shows Spotarr's error.
+[`shortcuts/Spotarr.shortcut`](shortcuts/Spotarr.shortcut) puts **Spotarr** in the share sheet for links: share one, and a notification says "Sent to Spotarr", or shows Spotarr's error.
 
 1. Open the file on the iPhone (AirDrop it, or open it from GitHub), or on a Mac signed in to the same iCloud account.
 2. Add it, then edit it (Shortcuts → Spotarr → ⋯): in the second Text action, replace `PASTE-YOUR-API-TOKEN-HERE` with the API token (Settings → Access → Copy). The first one is Spotarr's address, `http://umbrel.local:3838` on Umbrel.
-3. In Instagram, Share → More → Spotarr. The reel shows up in the History.
+3. In any app, Share → More → Spotarr. The link shows up in the History.
 
 **From outside home, through Cloudflare Access** (Spotarr itself needs nothing more):
 
@@ -124,7 +124,7 @@ Needs [pnpm](https://pnpm.io) (its version comes from `package.json`), [Bun](htt
 | 📱 `shortcuts` | The iOS Shortcut and the script that builds it |
 | 🧭 `docs/adr` | Architecture decisions |
 
-Three documented workarounds: Connect-RPC is mounted inside Hono through a small adapter ([ADR 0001](docs/adr/0001-connect-rpc-mounted-in-hono.md)), Kysely talks to `bun:sqlite` through an in-house dialect ([ADR 0002](docs/adr/0002-kysely-over-bun-sqlite-with-custom-dialect.md)), and an Instagram photo post, which yt-dlp cannot read, is read from the Open Graph tags of its public page (`apps/server/src/integrations/instagram/post.ts`): its caption, its author and its first picture only. Instagram may show a login wall instead; share a screenshot then.
+Three documented workarounds: Connect-RPC is mounted inside Hono through a small adapter ([ADR 0001](docs/adr/0001-connect-rpc-mounted-in-hono.md)), Kysely talks to `bun:sqlite` through an in-house dialect ([ADR 0002](docs/adr/0002-kysely-over-bun-sqlite-with-custom-dialect.md)), and an Instagram photo post, which yt-dlp cannot read, is read from the Open Graph tags of its public page (`apps/server/src/integrations/instagram/post.ts`): its caption, its author and its first picture only.
 
 Roadmap: [milestones](https://github.com/mathieuletyrant/spotarr/milestones) and the [project board](https://github.com/users/mathieuletyrant/projects/1).
 

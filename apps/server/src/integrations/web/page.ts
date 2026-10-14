@@ -7,7 +7,8 @@ export type WebPage = {
   title?: string;
   description?: string;
   siteName?: string;
-  imageUrl?: string;
+  // Its share picture (og:image) first, then the pictures of its content.
+  imageUrls: string[];
   // The films and shows its JSON-LD describes: `Movie "Dune: Part Two" (2024)`.
   works: string[];
   // Every link of the page, where IMDb and TMDB links hide.
@@ -17,6 +18,9 @@ export type WebPage = {
 };
 
 const MAX_TEXT = 8000;
+const MAX_IMAGES = 6;
+// Thumbnails of other articles and icons are smaller: they would mislead the LLM.
+const MIN_IMAGE_SIZE = 300;
 
 // Some sites (Wikipedia) refuse a request without a browser's User-Agent.
 const HEADERS = {
@@ -28,6 +32,10 @@ const HEADERS = {
 export async function readWebPage(url: string): Promise<WebPage> {
   const res = await fetchOrFail(url, "the page");
   const type = res.headers.get("content-type") ?? "";
+  // A link to a picture (a poster) is a page made of that picture alone.
+  if (type.startsWith("image/")) {
+    return { imageUrls: [res.url || url], works: [], links: [], text: "" };
+  }
   if (!type.includes("html")) {
     throw new SpotarrError("invalid_input", `the link is not a web page (${type || "no type"})`);
   }
@@ -35,7 +43,7 @@ export async function readWebPage(url: string): Promise<WebPage> {
   return parseWebPage(await res.text(), res.url || url);
 }
 
-// Downloads the page's picture.
+// Downloads one of the page's pictures.
 export async function downloadImage(imageUrl: string): Promise<Uint8Array> {
   const image = await fetchOrFail(imageUrl, "the picture");
   return new Uint8Array(await image.arrayBuffer());
@@ -50,17 +58,19 @@ export function parseWebPage(html: string, pageUrl: string): WebPage {
   const image = meta("og:image") ?? meta("twitter:image");
   const works = worksOf($);
   const links = linksOf($, pageUrl);
-  // Last: it removes the menus and footers from the page.
-  const text = textOf($);
+  // Last: the menus, headers and footers are removed from the page.
+  const content = contentOf($);
+  const imageUrls = imagesOf($, content, pageUrl);
+  if (image) imageUrls.unshift(absolute(image, pageUrl));
   return {
     title:
       meta("og:title") ?? meta("twitter:title") ?? ($("title").first().text().trim() || undefined),
     description: meta("og:description") ?? meta("description"),
     siteName: meta("og:site_name"),
-    imageUrl: image ? absolute(image, pageUrl) : undefined,
+    imageUrls: [...new Set(imageUrls)].slice(0, MAX_IMAGES),
     works,
     links,
-    text,
+    text: textOf($, content),
   };
 }
 
@@ -80,20 +90,53 @@ function linksOf($: cheerio.CheerioAPI, pageUrl: string): string[] {
   return links;
 }
 
-// The paragraphs of the article (or main part) when the page marks one.
-// Menus, headers and footers are left out.
-function textOf($: cheerio.CheerioAPI): string {
+// The article (or main part) when the page marks one, else the whole body,
+// without its menus, headers and footers.
+function contentOf($: cheerio.CheerioAPI) {
   $("script, style, noscript, nav, header, footer, aside, form").remove();
-  let root = $("article").first();
-  if (root.length === 0) root = $("main").first();
-  if (root.length === 0) root = $("body");
+  let content = $("article").first();
+  if (content.length === 0) content = $("main").first();
+  if (content.length === 0) content = $("body");
+  return content;
+}
 
+type Content = ReturnType<typeof contentOf>;
+
+function textOf($: cheerio.CheerioAPI, content: Content): string {
   const paragraphs: string[] = [];
-  root.find("h1, p").each((_, element) => {
+  content.find("h1, p").each((_, element) => {
     const text = $(element).text().replace(/\s+/g, " ").trim();
     if (text) paragraphs.push(text);
   });
   return paragraphs.join("\n").slice(0, MAX_TEXT);
+}
+
+// The content's pictures, in order. Lazy-loaded ones keep their address in
+// `data-src`. Vector drawings (logos), small pictures and the cards of other
+// articles ("You may also like": a picture inside a link to another page) are
+// left out.
+function imagesOf($: cheerio.CheerioAPI, content: Content, pageUrl: string): string[] {
+  const urls: string[] = [];
+  content.find("img").each((_, element) => {
+    const img = $(element);
+    const src = img.attr("data-src") ?? img.attr("data-lazy-src") ?? img.attr("src");
+    if (!src || src.startsWith("data:") || /\.svg(\?|$)/i.test(src)) return;
+    if (isSmall(img.attr("width")) || isSmall(img.attr("height"))) return;
+    if (linksToAnotherPage(img.closest("a[href]").attr("href"))) return;
+    urls.push(absolute(src, pageUrl));
+  });
+  return urls;
+}
+
+// A link around a picture often opens it full size: that one stays.
+function linksToAnotherPage(href: string | undefined): boolean {
+  if (!href || href.startsWith("#")) return false;
+  return !/\.(jpe?g|png|webp|gif|avif)(\?|$)/i.test(href);
+}
+
+function isSmall(size: string | undefined): boolean {
+  const pixels = Number.parseInt(size ?? "", 10);
+  return !Number.isNaN(pixels) && pixels < MIN_IMAGE_SIZE;
 }
 
 const WORK_TYPES = ["Movie", "TVSeries", "TVSeason", "TVEpisode"];

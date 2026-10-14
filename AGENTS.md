@@ -4,7 +4,7 @@ Project memory for humans and coding agents. Keep it current: a trap found while
 
 ## What Spotarr is
 
-Self-hosted personal service (Docker; also in Mathieu's Umbrel community store): an iOS share (reel, link, screenshot, text) is identified as a movie or TV show in the background, then added to the library through Seerr once Mathieu picks a candidate in the history. One user, one server. Vocabulary: [GLOSSARY.md](./GLOSSARY.md). Decisions: [docs/adr/](./docs/adr/).
+Self-hosted personal service (Docker; also in Mathieu's Umbrel community store): an iOS share (any link: a video, an article, a film's page; a screenshot, a text) is identified as a movie or TV show in the background, then added to the library through Seerr once Mathieu picks a candidate in the history. One user, one server. Vocabulary: [GLOSSARY.md](./GLOSSARY.md). Decisions: [docs/adr/](./docs/adr/).
 
 ## Commands
 

@@ -19,7 +19,7 @@ test("a Letterboxd film page gives its title, its JSON-LD work and its IMDb and 
   );
   expect(page.title).toBe("Dune: Part Two (2024)");
   expect(page.description).toStartWith("Follow the mythic journey of Paul Atreides");
-  expect(page.imageUrl).toStartWith("https://a.ltrbxd.com/resized/");
+  expect(page.imageUrls[0]).toStartWith("https://a.ltrbxd.com/resized/");
   expect(page.works).toEqual(['Movie "Dune: Part Two" (2024)']);
   // The id on <body> comes first, as a TMDB link.
   expect(page.links[0]).toBe("https://www.themoviedb.org/movie/693134");
@@ -64,9 +64,49 @@ test("relative addresses are made absolute, and the text is capped", () => {
 <a href="/title/tt0816692/">Interstellar</a>
 <p>${"a".repeat(10_000)}</p>`;
   const page = parseWebPage(html, "https://www.imdb.com/fr/");
-  expect(page.imageUrl).toBe("https://www.imdb.com/poster.jpg");
+  expect(page.imageUrls).toEqual(["https://www.imdb.com/poster.jpg"]);
   expect(page.links).toEqual(["https://www.imdb.com/title/tt0816692/"]);
   expect(page.text).toHaveLength(8000);
+});
+
+test("the content's pictures follow the share picture; logos, thumbnails and other articles are left out", () => {
+  const html = `<meta property="og:image" content="https://cdn.test/share.jpg">
+<header><img src="https://cdn.test/header.jpg"></header>
+<article>
+  <img src="https://cdn.test/share.jpg">
+  <img src="/logo.svg">
+  <img src="data:image/gif;base64,R0lGOD">
+  <img src="https://cdn.test/still.jpg" width="1260" height="708">
+  <img src="https://cdn.test/other-article.jpg" width="286" height="161">
+  <img src="placeholder.gif" data-src="https://cdn.test/poster.webp">
+  <a href="https://cdn.test/full.jpg"><img src="https://cdn.test/full-small.jpg"></a>
+  <a href="/news/another-film"><img src="https://cdn.test/another-film.jpg"></a>
+</article>`;
+  expect(parseWebPage(html, "https://example.org/").imageUrls).toEqual([
+    "https://cdn.test/share.jpg",
+    "https://cdn.test/still.jpg",
+    "https://cdn.test/poster.webp",
+    "https://cdn.test/full-small.jpg",
+  ]);
+});
+
+test("a page gives 6 pictures at most", () => {
+  const images = Array.from({ length: 10 }, (_, i) => `<img src="/${i}.jpg">`).join("");
+  expect(parseWebPage(`<main>${images}</main>`, "https://example.org/").imageUrls).toHaveLength(6);
+});
+
+test("a link to a picture is a page made of that picture", async () => {
+  spyOn(globalThis, "fetch").mockImplementation((async () => {
+    const res = new Response("jpeg", { headers: { "content-type": "image/jpeg" } });
+    Object.defineProperty(res, "url", { value: "https://cdn.test/poster.jpg" });
+    return res;
+  }) as unknown as typeof fetch);
+  expect(await readWebPage("https://cdn.test/poster.jpg")).toEqual({
+    imageUrls: ["https://cdn.test/poster.jpg"],
+    works: [],
+    links: [],
+    text: "",
+  });
 });
 
 test("an unreadable JSON-LD block is skipped", () => {

@@ -43,3 +43,9 @@ test("a page with nothing to read (a login wall) throws", async () => {
     "the page shows nothing to read",
   );
 });
+
+test("a page with pictures only is read, for the LLM to look at", async () => {
+  serving(`<title>Poster</title><main><img src="https://cdn.test/poster.jpg"></main>`);
+  const page = await readPage("https://example.org/poster");
+  expect(page.imageUrls).toEqual(["https://cdn.test/poster.jpg"]);
+});

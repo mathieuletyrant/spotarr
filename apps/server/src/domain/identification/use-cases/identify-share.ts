@@ -41,7 +41,7 @@ export async function identifyShare(
     }
   }
 
-  // 2. Otherwise it is a video (a reel), an Instagram photo post or a web page.
+  // 2. Otherwise the link is read: a video, an Instagram photo post or any web page.
   // If it cannot be read, the Identification fails with the reason.
   const url = input.url;
   if (!url) {

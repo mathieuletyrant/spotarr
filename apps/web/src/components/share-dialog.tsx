@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Link2, X } from "lucide-react";
 import { type SubmitEvent, useEffect, useRef, useState } from "react";
 
-// Paste a video link from the computer: Spotarr identifies it like a share
+// Paste a link from the computer: Spotarr identifies it like a share
 // from the iPhone, then the Share's page follows the Identification. A native
 // <dialog>: Escape and the backdrop close it, and focus stays inside.
 export function ShareDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -46,7 +46,7 @@ export function ShareDialog({ open, onClose }: { open: boolean; onClose: () => v
           <div>
             <h2 className="text-lg font-semibold">Share a link</h2>
             <p className="mt-1 text-sm text-text-muted">
-              A reel, a TikTok or a YouTube video: Spotarr finds the films and shows it mentions.
+              A video, an article, a film's page: Spotarr finds the films and shows it is about.
             </p>
           </div>
           <button
@@ -61,12 +61,12 @@ export function ShareDialog({ open, onClose }: { open: boolean; onClose: () => v
 
         <label className="flex h-11 items-center gap-2 rounded-md border border-border bg-surface px-3 focus-within:outline-2 focus-within:outline-accent">
           <Link2 aria-hidden className="size-4 text-text-muted" />
-          <span className="sr-only">Video link</span>
+          <span className="sr-only">Link</span>
           <input
             ref={field}
             type="url"
             required
-            placeholder="https://www.instagram.com/reel/…"
+            placeholder="https://…"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="w-full bg-transparent outline-none placeholder:text-text-muted"
