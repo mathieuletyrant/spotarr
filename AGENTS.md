@@ -76,11 +76,13 @@ The spec document predates the grilling session of 2026-10-12. Where they disagr
 
 ## Releasing
 
-The Docker image (`Dockerfile`, Alpine + Bun + ffmpeg + yt-dlp, about 440 MB) is published by `.github/workflows/release.yml` when a tag is pushed:
+One manual step: merging the release PR. [release-please](https://github.com/googleapis/release-please-action) (`.github/workflows/release-please.yml`, `release-please-config.json`) keeps a "chore: release X.Y.Z" PR up to date from the Conventional Commits on main: `feat` bumps the minor version, `fix` the patch (a breaking change too, until 1.0).
 
-1. Bump `version` in `apps/server/package.json` in a PR (GetStatus reports it), and merge it.
-2. On main: `git tag vX.Y.Z && git push origin vX.Y.Z`. The workflow refuses a tag that differs from that version.
-3. It pushes `ghcr.io/mathieuletyrant/spotarr:X.Y.Z` and `:latest` for amd64 and arm64. The Umbrel store app (`mathieu-spotarr`) pins the new digest.
+1. The PR sets the version in `package.json`, `apps/server/package.json` (GetStatus reports it) and `apps/ios/Version.xcconfig` (the iOS app's `MARKETING_VERSION`, kept out of `project.pbxproj`, which Xcode rewrites), and adds the release's notes to `CHANGELOG.md`. `.release-please-manifest.json` holds the last version released. Never bump a version by hand.
+2. Merging it tags `vX.Y.Z` and makes the GitHub Release. The tag runs `.github/workflows/release.yml`, which builds the Docker image (`Dockerfile`, Alpine + Bun + ffmpeg + yt-dlp, about 440 MB) and pushes `ghcr.io/mathieuletyrant/spotarr:X.Y.Z` and `:latest` for amd64 and arm64. It refuses a tag that differs from `apps/server/package.json`.
+3. Renovate sees the new tag and opens the Umbrel store's PR for `mathieu-spotarr`, verified and merged by the store's routine.
+
+release-please runs with `RELEASE_PLEASE_TOKEN`, a fine-grained personal access token on this repo (Contents and Pull requests: read and write). GitHub Actions' own token would open a PR that runs no CI, so `main`'s protection could never let it merge, and its tag would run no workflow. Renew the token before it expires: the Release PR workflow fails, naming it, when it is missing.
 
 Bump `YT_DLP_VERSION` in the `Dockerfile` when Instagram, TikTok or YouTube videos stop downloading: yt-dlp follows Instagram's changes.
 

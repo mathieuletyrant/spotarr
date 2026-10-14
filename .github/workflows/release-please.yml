@@ -1,0 +1,25 @@
+name: Release PR
+
+# Keeps a "chore: release X.Y.Z" PR up to date from the Conventional Commits
+# on main. Merging it tags vX.Y.Z and makes the GitHub Release; the tag then
+# runs release.yml, which publishes the image.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      # GitHub Actions' own token would open a PR that runs no CI (so it could
+      # never be merged) and push a tag that runs no workflow.
+      - name: RELEASE_PLEASE_TOKEN is set
+        env:
+          TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: test -n "$TOKEN" || { echo "::error::Add the RELEASE_PLEASE_TOKEN secret, see AGENTS.md → Releasing"; exit 1; }
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
