@@ -3,6 +3,7 @@ import { ConnectError } from "@connectrpc/connect";
 import { createQueryOptions, useMutation } from "@connectrpc/connect-query";
 import { MediaType, type Rule, RuleSchema, SpotarrService } from "@spotarr/contract";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, Pencil } from "lucide-react";
 import { useDeferredValue, useId, useState } from "react";
 import { transport } from "../../lib/api";
@@ -272,7 +273,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
 }
 
 // How many titles the Rule would have added over the latest Shares, and the
-// first of them, posters first.
+// first of them, posters first, each opening the Share it came from.
 const PREVIEWED = 6;
 
 function Preview(props: {
@@ -295,11 +296,21 @@ function Preview(props: {
       {count > 0 && (
         <ul className="flex flex-wrap gap-3">
           {props.additions.slice(0, PREVIEWED).map((a) => (
-            <li key={`${a.shareId}-${a.title}`} className="flex w-14 flex-col gap-1">
-              <Poster title={a.title} url={a.posterUrl} />
-              <span className="truncate text-xs text-text-muted" title={a.title}>
-                {a.title}
-              </span>
+            <li key={`${a.shareId}-${a.title}`} className="w-14">
+              {/* A new tab, so the Rule being edited is not lost. */}
+              <Link
+                to="/shares/$shareId"
+                params={{ shareId: a.shareId }}
+                target="_blank"
+                title={a.title}
+                className="group flex flex-col gap-1 rounded-md"
+              >
+                <Poster title={a.title} url={a.posterUrl} />
+                <span className="truncate text-xs text-text-muted group-hover:text-text group-hover:underline">
+                  {a.title}
+                </span>
+                <span className="sr-only">(opens its share in a new tab)</span>
+              </Link>
             </li>
           ))}
           {count > PREVIEWED && (
