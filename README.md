@@ -97,6 +97,12 @@ In Settings → Webhooks, add a URL and pick its events: `identification.ready`,
 }
 ```
 
+## 🤖 Ask an AI assistant
+
+Spotarr answers MCP (Model Context Protocol) clients at `/mcp`, with two read-only tools: `list_shares`, the History, filterable by genre, text and Summary, each Candidate with its TMDB genres, rating, overview and whether it was added; and `list_genres`, the genres the filter accepts. An assistant like Claude can then pick "a comedy for tonight" among what you shared.
+
+Give your MCP client the MCP URL from Spotarr's Settings → Access (`http://umbrel.local:3838/mcp?token=…` on Umbrel). The token is in the URL because some MCP clients send no header of ours; it only reads, and the API refuses it. Regenerate it there if it leaks: the old URL stops working at once.
+
 ## 🛠️ Develop
 
 ```

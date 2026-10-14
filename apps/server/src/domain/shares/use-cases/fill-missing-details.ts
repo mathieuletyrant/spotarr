@@ -3,10 +3,11 @@ import type { ShareRepository } from "../repository";
 import type { Candidate } from "../types";
 
 // Shares identified before Spotarr kept a detail get it from TMDB's details:
-// genres, rating and votes, release date. A title without a rating, or not out
-// yet, is asked again too: it gets one once out. Run at start, in the background. A
-// Candidate TMDB fails for stays as it was, and is tried again at the next
-// start. `today` is "2026-10-14". Returns how many Candidates were updated.
+// genres, rating and votes, release date, overview. A title without a rating
+// or an overview, or not out yet, is asked again too: it gets them once out.
+// Run at start, in the background. A Candidate TMDB fails for stays as it
+// was, and is tried again at the next start. `today` is "2026-10-14".
+// Returns how many Candidates were updated.
 export async function fillMissingDetails(
   shares: ShareRepository,
   tmdb: Tmdb,
@@ -34,12 +35,14 @@ export async function fillMissingDetails(
 }
 
 // No genres or no release date: identified before they were kept. No rating,
-// or not out yet: TMDB may know more now. A title nobody rates is asked at
-// every start; there are few.
+// no overview, or not out yet: TMDB may know more now. A title nobody rates,
+// or with no overview in the settings' language, is asked at every start;
+// there are few.
 function needsDetails(candidate: Candidate, today: string): boolean {
   if (candidate.genres === undefined) return true;
   if (candidate.releaseDate === undefined) return true;
   if (candidate.tmdbRating === undefined) return true;
+  if (candidate.overview === undefined) return true;
   return candidate.releaseDate > today;
 }
 
@@ -51,6 +54,7 @@ function withDetails(candidate: Candidate, title: TmdbTitle): Candidate {
     releaseDate: title.releaseDate,
     tmdbRating: title.tmdbRating,
     tmdbVotes: title.tmdbVotes,
+    overview: title.overview,
   };
 }
 

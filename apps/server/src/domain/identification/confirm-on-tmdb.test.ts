@@ -1,6 +1,10 @@
 import { afterEach, expect, mock, test } from "bun:test";
 import { Tmdb } from "../../integrations/tmdb/client";
-import { getSearchTvResponseMock } from "../../integrations/tmdb/gen/tmdb.faker";
+import {
+  getGenreMovieListResponseMock,
+  getSearchMovieResponseMock,
+  getSearchTvResponseMock,
+} from "../../integrations/tmdb/gen/tmdb.faker";
 import { fakeFetch } from "../../testing/fake-fetch";
 import { confirmOnTmdb } from "./confirm-on-tmdb";
 import type { Guess } from "./guess-titles";
@@ -123,4 +127,23 @@ test("unknown titles are dropped, duplicates merged, best first", async () => {
     [950028, 0.9],
     [1571766, 0.8],
   ]);
+});
+
+test("a new Candidate keeps TMDB's overview", async () => {
+  fakeFetch({
+    "/3/search/movie": getSearchMovieResponseMock({
+      results: [
+        {
+          id: 41733,
+          title: "Date limite",
+          original_title: "Due Date",
+          release_date: "2010-11-03",
+          overview: "Un futur papa traverse le pays avec un inconnu.",
+        },
+      ],
+    }),
+    "/3/genre/movie/list": getGenreMovieListResponseMock({ genres: [] }),
+  });
+  const [candidate] = await confirmOnTmdb([guess({ title: "Date limite" })], tmdb);
+  expect(candidate?.overview).toBe("Un futur papa traverse le pays avec un inconnu.");
 });

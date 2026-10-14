@@ -21,6 +21,8 @@ service SpotarrService {
   rpc GetSettings(GetSettingsRequest) returns (GetSettingsResponse);
   // Changes only the fields that are present; returns the settings as saved.
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
+  // Replaces the MCP token with a new one: the old one stops working at once.
+  rpc RegenerateMcpToken(RegenerateMcpTokenRequest) returns (RegenerateMcpTokenResponse);
 
   // Records a Share and queues its Identification. Answers at once, status QUEUED.
   rpc CreateShare(CreateShareRequest) returns (CreateShareResponse);
@@ -226,6 +228,10 @@ message AccessSettings {
   optional string team_domain = 3 [deprecated = true];
   // Removed, see public_hostname.
   optional string aud = 4 [deprecated = true];
+  // Read-only access for MCP clients, at /mcp?token=<mcp_token>.
+  // Generated at first start, changed by RegenerateMcpToken only: ignored by
+  // UpdateSettings. It calls nothing but /mcp; the API refuses it.
+  optional string mcp_token = 5;
 }
 
 message GetSettingsRequest {}
@@ -240,6 +246,12 @@ message UpdateSettingsRequest {
 
 message UpdateSettingsResponse {
   Settings settings = 1;
+}
+
+message RegenerateMcpTokenRequest {}
+
+message RegenerateMcpTokenResponse {
+  string mcp_token = 1;
 }
 
 // A piece of content sent to Spotarr and everything that follows from it.
@@ -329,6 +341,10 @@ message Candidate {
   repeated string genres = 14;
   // REQUESTED or ADDED by auto add: the name of the Rule that did it.
   optional string rule = 15;
+  // TMDB's synopsis, in the settings' language. Absent when TMDB has none in
+  // it, and on Shares identified before overviews were kept, until Spotarr
+  // fills them at its next start.
+  optional string overview = 16;
 }
 
 message Addition {

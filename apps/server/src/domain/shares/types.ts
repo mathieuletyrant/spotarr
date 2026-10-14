@@ -23,6 +23,10 @@ export const CandidateSchema = z.object({
   // TMDB's genres, in the settings' language. Absent when unknown: Shares
   // identified before genres were kept, until fillMissingDetails() runs.
   genres: z.array(z.string()).optional(),
+  // TMDB's synopsis, in the settings' language. Absent when TMDB has none in
+  // it, and on Shares identified before overviews were kept, until
+  // fillMissingDetails() runs.
+  overview: z.string().optional(),
 });
 export type Candidate = z.infer<typeof CandidateSchema>;
 

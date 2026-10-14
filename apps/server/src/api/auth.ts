@@ -24,6 +24,20 @@ export function requireToken(getToken: () => string): MiddlewareHandler {
   };
 }
 
+// The MCP token, in the URL's `token` parameter: some MCP clients send no
+// header of ours, only the URL they were given. Read at each request,
+// so a regenerated token applies at once. The API token is refused here,
+// as the MCP token is refused by requireToken.
+export function requireMcpToken(getToken: () => Promise<string>): MiddlewareHandler {
+  return async (c, next) => {
+    const given = c.req.query("token");
+    if (!given || !sameSecret(given, await getToken())) {
+      return c.json({ code: "unauthenticated", message: "missing or invalid MCP token" }, 401);
+    }
+    await next();
+  };
+}
+
 // Constant-time comparison, so response timing reveals nothing about the token.
 export function sameSecret(a: string, b: string): boolean {
   const x = Buffer.from(a);

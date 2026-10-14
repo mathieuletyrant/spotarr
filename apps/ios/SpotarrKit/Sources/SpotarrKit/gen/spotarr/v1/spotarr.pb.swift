@@ -1066,6 +1066,18 @@ public nonisolated struct Spotarr_V1_AccessSettings: Sendable {
   /// Clears the value of `aud`. Subsequent reads from it will return its default value.
   public mutating func clearAud() {self._aud = nil}
 
+  /// Read-only access for MCP clients, at /mcp?token=<mcp_token>.
+  /// Generated at first start, changed by RegenerateMcpToken only: ignored by
+  /// UpdateSettings. It calls nothing but /mcp; the API refuses it.
+  public var mcpToken: String {
+    get {_mcpToken ?? String()}
+    set {_mcpToken = newValue}
+  }
+  /// Returns true if `mcpToken` has been explicitly set.
+  public var hasMcpToken: Bool {self._mcpToken != nil}
+  /// Clears the value of `mcpToken`. Subsequent reads from it will return its default value.
+  public mutating func clearMcpToken() {self._mcpToken = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1074,6 +1086,7 @@ public nonisolated struct Spotarr_V1_AccessSettings: Sendable {
   fileprivate var _publicHostname: String? = nil
   fileprivate var _teamDomain: String? = nil
   fileprivate var _aud: String? = nil
+  fileprivate var _mcpToken: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_GetSettingsRequest: Sendable {
@@ -1147,6 +1160,28 @@ public nonisolated struct Spotarr_V1_UpdateSettingsResponse: Sendable {
   public init() {}
 
   fileprivate var _settings: Spotarr_V1_Settings? = nil
+}
+
+public nonisolated struct Spotarr_V1_RegenerateMcpTokenRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_RegenerateMcpTokenResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var mcpToken: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
 }
 
 /// A piece of content sent to Spotarr and everything that follows from it.
@@ -1516,6 +1551,18 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   /// Clears the value of `rule`. Subsequent reads from it will return its default value.
   public mutating func clearRule() {self._rule = nil}
 
+  /// TMDB's synopsis, in the settings' language. Absent when TMDB has none in
+  /// it, and on Shares identified before overviews were kept, until Spotarr
+  /// fills them at its next start.
+  public var overview: String {
+    get {_overview ?? String()}
+    set {_overview = newValue}
+  }
+  /// Returns true if `overview` has been explicitly set.
+  public var hasOverview: Bool {self._overview != nil}
+  /// Clears the value of `overview`. Subsequent reads from it will return its default value.
+  public mutating func clearOverview() {self._overview = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1528,6 +1575,7 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   fileprivate var _tmdbVotes: Int32? = nil
   fileprivate var _failure: String? = nil
   fileprivate var _rule: String? = nil
+  fileprivate var _overview: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_Addition: Sendable {
@@ -3291,7 +3339,7 @@ nonisolated extension Spotarr_V1_ExtractionSettings: SwiftProtobuf.Message, Swif
 
 nonisolated extension Spotarr_V1_AccessSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccessSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}api_token\0\u{3}public_hostname\0\u{3}team_domain\0\u{1}aud\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}api_token\0\u{3}public_hostname\0\u{3}team_domain\0\u{1}aud\0\u{3}mcp_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3303,6 +3351,7 @@ nonisolated extension Spotarr_V1_AccessSettings: SwiftProtobuf.Message, SwiftPro
       case 2: try { try decoder.decodeSingularStringField(value: &self._publicHostname) }()
       case 3: try { try decoder.decodeSingularStringField(value: &self._teamDomain) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._aud) }()
+      case 5: try { try decoder.decodeSingularStringField(value: &self._mcpToken) }()
       default: break
       }
     }
@@ -3325,6 +3374,9 @@ nonisolated extension Spotarr_V1_AccessSettings: SwiftProtobuf.Message, SwiftPro
     try { if let v = self._aud {
       try visitor.visitSingularStringField(value: v, fieldNumber: 4)
     } }()
+    try { if let v = self._mcpToken {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3333,6 +3385,7 @@ nonisolated extension Spotarr_V1_AccessSettings: SwiftProtobuf.Message, SwiftPro
     if lhs._publicHostname != rhs._publicHostname {return false}
     if lhs._teamDomain != rhs._teamDomain {return false}
     if lhs._aud != rhs._aud {return false}
+    if lhs._mcpToken != rhs._mcpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3454,6 +3507,55 @@ nonisolated extension Spotarr_V1_UpdateSettingsResponse: SwiftProtobuf.Message, 
 
   public static func ==(lhs: Spotarr_V1_UpdateSettingsResponse, rhs: Spotarr_V1_UpdateSettingsResponse) -> Bool {
     if lhs._settings != rhs._settings {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_RegenerateMcpTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".RegenerateMcpTokenRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_RegenerateMcpTokenRequest, rhs: Spotarr_V1_RegenerateMcpTokenRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_RegenerateMcpTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".RegenerateMcpTokenResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}mcp_token\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.mcpToken) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.mcpToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.mcpToken, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_RegenerateMcpTokenResponse, rhs: Spotarr_V1_RegenerateMcpTokenResponse) -> Bool {
+    if lhs.mcpToken != rhs.mcpToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3798,7 +3900,7 @@ nonisolated extension Spotarr_V1_Clues: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Candidate"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0\u{1}status\0\u{1}automatic\0\u{1}failure\0\u{1}genres\0\u{1}rule\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0\u{1}status\0\u{1}automatic\0\u{1}failure\0\u{1}genres\0\u{1}rule\0\u{1}overview\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3821,6 +3923,7 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
       case 13: try { try decoder.decodeSingularStringField(value: &self._failure) }()
       case 14: try { try decoder.decodeRepeatedStringField(value: &self.genres) }()
       case 15: try { try decoder.decodeSingularStringField(value: &self._rule) }()
+      case 16: try { try decoder.decodeSingularStringField(value: &self._overview) }()
       default: break
       }
     }
@@ -3876,6 +3979,9 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     try { if let v = self._rule {
       try visitor.visitSingularStringField(value: v, fieldNumber: 15)
     } }()
+    try { if let v = self._overview {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 16)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3895,6 +4001,7 @@ nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf
     if lhs._failure != rhs._failure {return false}
     if lhs.genres != rhs.genres {return false}
     if lhs._rule != rhs._rule {return false}
+    if lhs._overview != rhs._overview {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

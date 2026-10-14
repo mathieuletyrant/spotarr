@@ -152,3 +152,15 @@ test("without TMDB's genre list, a search's genres are unknown, not empty", asyn
   expect(alien?.title).toBe("Alien");
   expect(alien?.genres).toBeUndefined();
 });
+
+test("a title keeps TMDB's overview; an empty one is no overview", async () => {
+  fakeFetch({
+    "/3/movie/693134": { ...dune, overview: "Paul Atréides s'unit à Chani et aux Fremen." },
+    "/3/movie/1": getMovieDetailsResponseMock({ id: 1, title: "Unknown", overview: "" }),
+  });
+  const client = tmdb();
+  expect((await client.movie(693134))?.overview).toBe(
+    "Paul Atréides s'unit à Chani et aux Fremen.",
+  );
+  expect((await client.movie(1))?.overview).toBeUndefined();
+});

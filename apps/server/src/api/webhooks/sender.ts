@@ -40,7 +40,7 @@ export class WebhookSender {
       ok,
       detail,
     });
-    // The URL is not logged: a Home Assistant webhook URL works as a password.
+    // The URL is not logged: many webhook URLs carry a secret and work as a password.
     log({ step: "webhook", webhookId: webhook.id, event, ok, detail });
   }
 }
