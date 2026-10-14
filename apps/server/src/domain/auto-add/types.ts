@@ -11,6 +11,8 @@ export const ConditionsSchema = z.object({
   // TMDB rating out of 10; a Candidate nobody rated fails it.
   minRating: z.number().min(0).max(10).optional(),
   minVotes: z.int().min(0).optional(),
+  // A title not out yet has no rating to judge: it skips minRating and minVotes.
+  unreleasedSkipsRating: z.boolean().default(false),
 });
 
 // What SaveRule accepts.

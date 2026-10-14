@@ -61,6 +61,7 @@ function fromMessage(rule: RuleMessage | undefined): Rule {
     minConfidence: rule?.minConfidence,
     minRating: rule?.minRating,
     minVotes: rule?.minVotes,
+    unreleasedSkipsRating: rule?.unreleasedSkipsRating ?? false,
   };
 }
 

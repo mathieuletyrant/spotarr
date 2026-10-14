@@ -9,6 +9,9 @@ export const CandidateSchema = z.object({
   title: z.string(),
   originalTitle: z.string().optional(),
   year: z.int().optional(),
+  // "2026-12-18". Absent when TMDB has no date yet, and on Shares identified
+  // before release dates were kept.
+  releaseDate: z.string().optional(),
   posterUrl: z.string().optional(),
   // TMDB's average, out of 10. Absent when nobody rated the title, and on
   // Shares identified before ratings were kept.

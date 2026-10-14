@@ -23,6 +23,7 @@ type Draft = {
   minConfidence: string;
   minRating: string;
   minVotes: string;
+  unreleasedSkipsRating: boolean;
 };
 
 function draftOf(rule?: Rule): Draft {
@@ -34,6 +35,7 @@ function draftOf(rule?: Rule): Draft {
     minConfidence: rule?.minConfidence?.toString() ?? "",
     minRating: rule?.minRating?.toString() ?? "",
     minVotes: rule?.minVotes?.toString() ?? "",
+    unreleasedSkipsRating: rule?.unreleasedSkipsRating ?? false,
   };
 }
 
@@ -47,6 +49,7 @@ function ruleOf(draft: Draft, id = ""): Rule {
     minConfidence: numberOf(draft.minConfidence),
     minRating: numberOf(draft.minRating),
     minVotes: numberOf(draft.minVotes),
+    unreleasedSkipsRating: draft.unreleasedSkipsRating,
   });
 }
 
@@ -139,6 +142,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState(draftOf(rule));
   const change = (fields: Partial<Draft>) => setDraft({ ...draft, ...fields });
+  const asksRating = draft.minRating.trim() !== "" || draft.minVotes.trim() !== "";
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: rulesQuery().queryKey });
   const save = useMutation(SpotarrService.method.saveRule, {
@@ -225,6 +229,23 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
           />
           <span className="text-sm text-text-muted">
             A new release with 3 votes at 9/10 says little.
+          </span>
+        </label>
+        <label
+          className={`flex items-start gap-2 text-sm md:col-span-2 ${asksRating ? "" : "text-text-muted"}`}
+        >
+          <input
+            type="checkbox"
+            checked={draft.unreleasedSkipsRating}
+            disabled={!asksRating}
+            onChange={(e) => change({ unreleasedSkipsRating: e.target.checked })}
+            className="mt-0.5 accent-accent"
+          />
+          <span>
+            Titles not out yet skip the rating
+            <span className="block text-text-muted">
+              Nobody has rated them: the other conditions still apply.
+            </span>
           </span>
         </label>
         <label className="flex items-center gap-2 text-sm md:col-span-2">

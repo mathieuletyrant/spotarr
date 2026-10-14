@@ -593,10 +593,14 @@ message Rule {
   bool only_one = 5;
   // Percent, 1 to 100. A direct IMDb/TMDB link counts as 100.
   optional int32 min_confidence = 6;
-  // TMDB rating, out of 10. A Candidate nobody rated fails it.
+  // TMDB rating, out of 10. A Candidate nobody rated fails it, unless
+  // unreleased_skips_rating lets a title not out yet through.
   optional float min_rating = 7;
   // How many TMDB votes the rating rests on, at least.
   optional int32 min_votes = 8;
+  // A title not out yet (released after today, or with no date on TMDB) has
+  // no rating to judge: it skips min_rating and min_votes, not the others.
+  bool unreleased_skips_rating = 9;
 }
 
 message ListRulesRequest {}

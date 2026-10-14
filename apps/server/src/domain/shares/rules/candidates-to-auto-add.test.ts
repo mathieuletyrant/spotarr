@@ -4,7 +4,14 @@ import type { Candidate } from "../types";
 import { candidatesToAutoAdd } from "./candidates-to-auto-add";
 
 // Today's auto add, as the migration turns it into a Rule.
-const sure: Rule = { id: "rul_1", name: "Sure", enabled: true, onlyOne: true, minConfidence: 95 };
+const sure: Rule = {
+  id: "rul_1",
+  name: "Sure",
+  enabled: true,
+  onlyOne: true,
+  unreleasedSkipsRating: false,
+  minConfidence: 95,
+};
 
 function candidate(title: string, fields: Partial<Candidate> = {}): Candidate {
   return {
@@ -17,8 +24,12 @@ function candidate(title: string, fields: Partial<Candidate> = {}): Candidate {
   };
 }
 
+const today = "2026-10-14";
+
 const added = (candidates: Candidate[], rules: Rule[]) =>
-  candidatesToAutoAdd(candidates, rules).map((a) => `${a.candidate.title} by ${a.rule.name}`);
+  candidatesToAutoAdd(candidates, rules, today).map(
+    (a) => `${a.candidate.title} by ${a.rule.name}`,
+  );
 
 describe("which Candidates auto add requests, and by which Rule", () => {
   test("nothing without an enabled Rule", () => {
@@ -54,6 +65,7 @@ describe("which Candidates auto add requests, and by which Rule", () => {
       name: "Movies",
       enabled: true,
       onlyOne: false,
+      unreleasedSkipsRating: false,
       type: "MOVIE",
     };
     expect(added([candidate("Severance", { type: "TV" })], [movies])).toEqual([]);
@@ -66,6 +78,7 @@ describe("which Candidates auto add requests, and by which Rule", () => {
       name: "Rated",
       enabled: true,
       onlyOne: false,
+      unreleasedSkipsRating: false,
       minRating: 7,
       minVotes: 100,
     };
@@ -77,16 +90,59 @@ describe("which Candidates auto add requests, and by which Rule", () => {
     expect(added([candidate("Unrated")], [rated])).toEqual([]);
   });
 
+  test("a title not out yet skips the rating when the Rule says so, not the other conditions", () => {
+    const rated: Rule = {
+      id: "rul_6",
+      name: "Rated",
+      enabled: true,
+      onlyOne: false,
+      minConfidence: 90,
+      minRating: 7,
+      minVotes: 100,
+      unreleasedSkipsRating: true,
+    };
+    const upcoming = { releaseDate: "2026-12-18", year: 2026 };
+    expect(added([candidate("Upcoming", upcoming)], [rated])).toEqual(["Upcoming by Rated"]);
+    expect(added([candidate("No date yet")], [rated])).toEqual(["No date yet by Rated"]);
+    expect(added([candidate("Unsure", { ...upcoming, confidence: 0.8 })], [rated])).toEqual([]);
+    expect(
+      added([candidate("Upcoming", upcoming)], [{ ...rated, unreleasedSkipsRating: false }]),
+    ).toEqual([]);
+
+    // Out today or before: judged on its rating.
+    const out = { releaseDate: today, year: 2026, tmdbRating: 6, tmdbVotes: 10 };
+    expect(added([candidate("Out", out)], [rated])).toEqual([]);
+    // Identified before release dates were kept: the year tells.
+    expect(added([candidate("Old", { year: 2025 })], [rated])).toEqual([]);
+    expect(added([candidate("Next year", { year: 2027 })], [rated])).toEqual([
+      "Next year by Rated",
+    ]);
+  });
+
   test("several Rules: a Candidate is added once, credited to the first Rule that holds", () => {
     const movies: Rule = {
       id: "rul_2",
       name: "Movies",
       enabled: true,
       onlyOne: false,
+      unreleasedSkipsRating: false,
       type: "MOVIE",
     };
-    const shows: Rule = { id: "rul_4", name: "Shows", enabled: true, onlyOne: false, type: "TV" };
-    const anything: Rule = { id: "rul_5", name: "Anything", enabled: true, onlyOne: false };
+    const shows: Rule = {
+      id: "rul_4",
+      name: "Shows",
+      enabled: true,
+      onlyOne: false,
+      type: "TV",
+      unreleasedSkipsRating: false,
+    };
+    const anything: Rule = {
+      id: "rul_5",
+      name: "Anything",
+      enabled: true,
+      onlyOne: false,
+      unreleasedSkipsRating: false,
+    };
     const reel = [candidate("Alien"), candidate("Severance", { type: "TV" })];
     expect(added(reel, [movies, shows, anything])).toEqual([
       "Alien by Movies",

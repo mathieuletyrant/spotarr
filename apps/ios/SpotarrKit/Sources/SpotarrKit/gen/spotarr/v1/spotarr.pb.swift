@@ -2254,7 +2254,8 @@ public nonisolated struct Spotarr_V1_Rule: Sendable {
   /// Clears the value of `minConfidence`. Subsequent reads from it will return its default value.
   public mutating func clearMinConfidence() {self._minConfidence = nil}
 
-  /// TMDB rating, out of 10. A Candidate nobody rated fails it.
+  /// TMDB rating, out of 10. A Candidate nobody rated fails it, unless
+  /// unreleased_skips_rating lets a title not out yet through.
   public var minRating: Float {
     get {_minRating ?? 0}
     set {_minRating = newValue}
@@ -2273,6 +2274,10 @@ public nonisolated struct Spotarr_V1_Rule: Sendable {
   public var hasMinVotes: Bool {self._minVotes != nil}
   /// Clears the value of `minVotes`. Subsequent reads from it will return its default value.
   public mutating func clearMinVotes() {self._minVotes = nil}
+
+  /// A title not out yet (released after today, or with no date on TMDB) has
+  /// no rating to judge: it skips min_rating and min_votes, not the others.
+  public var unreleasedSkipsRating: Bool = false
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -5042,7 +5047,7 @@ nonisolated extension Spotarr_V1_TestWebhookResponse: SwiftProtobuf.Message, Swi
 
 nonisolated extension Spotarr_V1_Rule: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Rule"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{1}enabled\0\u{1}type\0\u{3}only_one\0\u{3}min_confidence\0\u{3}min_rating\0\u{3}min_votes\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{1}enabled\0\u{1}type\0\u{3}only_one\0\u{3}min_confidence\0\u{3}min_rating\0\u{3}min_votes\0\u{3}unreleased_skips_rating\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5058,6 +5063,7 @@ nonisolated extension Spotarr_V1_Rule: SwiftProtobuf.Message, SwiftProtobuf._Mes
       case 6: try { try decoder.decodeSingularInt32Field(value: &self._minConfidence) }()
       case 7: try { try decoder.decodeSingularFloatField(value: &self._minRating) }()
       case 8: try { try decoder.decodeSingularInt32Field(value: &self._minVotes) }()
+      case 9: try { try decoder.decodeSingularBoolField(value: &self.unreleasedSkipsRating) }()
       default: break
       }
     }
@@ -5092,6 +5098,9 @@ nonisolated extension Spotarr_V1_Rule: SwiftProtobuf.Message, SwiftProtobuf._Mes
     try { if let v = self._minVotes {
       try visitor.visitSingularInt32Field(value: v, fieldNumber: 8)
     } }()
+    if self.unreleasedSkipsRating != false {
+      try visitor.visitSingularBoolField(value: self.unreleasedSkipsRating, fieldNumber: 9)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5104,6 +5113,7 @@ nonisolated extension Spotarr_V1_Rule: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if lhs._minConfidence != rhs._minConfidence {return false}
     if lhs._minRating != rhs._minRating {return false}
     if lhs._minVotes != rhs._minVotes {return false}
+    if lhs.unreleasedSkipsRating != rhs.unreleasedSkipsRating {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -25,7 +25,9 @@ export async function endIdentification(
 
   // Auto add: only a READY Share has Candidates to request.
   if (share.identification.status !== "READY") return;
-  for (const { candidate, rule } of candidatesToAutoAdd(share.candidates, await rules.list())) {
+  const today = new Date().toISOString().slice(0, 10);
+  const additions = candidatesToAutoAdd(share.candidates, await rules.list(), today);
+  for (const { candidate, rule } of additions) {
     const request = {
       tmdbId: candidate.tmdbId,
       type: candidate.type,

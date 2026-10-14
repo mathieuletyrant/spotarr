@@ -8,12 +8,18 @@ export function conditionsOf(rule: Rule): string[] {
   if (rule.type === MediaType.TV) conditions.push("TV shows");
   if (rule.onlyOne) conditions.push("a single candidate");
   if (rule.minConfidence !== undefined) conditions.push(`confidence ≥ ${rule.minConfidence} %`);
-  if (rule.minRating !== undefined && rule.minVotes !== undefined) {
-    conditions.push(`TMDB ≥ ${rule.minRating} (${rule.minVotes}+ votes)`);
-  } else if (rule.minRating !== undefined) {
-    conditions.push(`TMDB ≥ ${rule.minRating}`);
-  } else if (rule.minVotes !== undefined) {
-    conditions.push(`${rule.minVotes}+ TMDB votes`);
-  }
+  const rating = ratingOf(rule);
+  if (rating && rule.unreleasedSkipsRating) conditions.push(`${rating} or not out yet`);
+  else if (rating) conditions.push(rating);
   return conditions;
+}
+
+// "TMDB ≥ 7.5 (100+ votes)", or undefined when the Rule asks nothing of the rating.
+function ratingOf(rule: Rule): string | undefined {
+  if (rule.minRating !== undefined && rule.minVotes !== undefined) {
+    return `TMDB ≥ ${rule.minRating} (${rule.minVotes}+ votes)`;
+  }
+  if (rule.minRating !== undefined) return `TMDB ≥ ${rule.minRating}`;
+  if (rule.minVotes !== undefined) return `${rule.minVotes}+ TMDB votes`;
+  return undefined;
 }

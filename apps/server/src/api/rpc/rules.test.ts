@@ -35,9 +35,13 @@ test("SaveRule creates, lists, replaces, and DeleteRule removes", async () => {
   const id = created.body.rule.id;
   expect(id).toMatch(/^rul_/);
 
-  await call("SaveRule", { rule: { id, name: "Safe movies", enabled: false, minRating: 6.5 } });
+  await call("SaveRule", {
+    rule: { id, name: "Safe movies", enabled: false, minRating: 6.5, unreleasedSkipsRating: true },
+  });
   const { body } = await call("ListRules", {});
-  expect(body.rules).toEqual([{ id, name: "Safe movies", minRating: 6.5 }]);
+  expect(body.rules).toEqual([
+    { id, name: "Safe movies", minRating: 6.5, unreleasedSkipsRating: true },
+  ]);
 
   await call("DeleteRule", { id });
   expect((await call("ListRules", {})).body.rules).toBeUndefined();

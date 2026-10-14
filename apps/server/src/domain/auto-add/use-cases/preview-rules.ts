@@ -15,8 +15,10 @@ export async function previewRules(
   const latest = (await shares.all())
     .filter((share) => share.identification.status === "READY")
     .slice(0, PREVIEW_SHARES);
+  // Judged as of today: a title out since the Share was made has its rating now.
+  const today = new Date().toISOString().slice(0, 10);
   const additions = latest.flatMap((share) =>
-    candidatesToAutoAdd(share.candidates, rules).map((addition) => ({ ...addition, share })),
+    candidatesToAutoAdd(share.candidates, rules, today).map((addition) => ({ ...addition, share })),
   );
   return { shares: latest.length, additions };
 }

@@ -49,7 +49,7 @@ A Candidate's TMDB genre, in the settings' language ("Horreur", "Science-Fiction
 _Avoid_: theme, category, tag
 
 **Rule**:
-When auto add requests a Candidate without a click: a name, an on/off switch, and conditions that must all hold (type, a single Candidate, minimum confidence, minimum TMDB rating and votes). A Candidate is added when one enabled Rule holds for it, credited to the first one; the Addition keeps the Rule's name.
+When auto add requests a Candidate without a click: a name, an on/off switch, and conditions that must all hold (type, a single Candidate, minimum confidence, minimum TMDB rating and votes). A title not out yet has no rating: a Rule may let it skip the rating and votes. A Candidate is added when one enabled Rule holds for it, credited to the first one; the Addition keeps the Rule's name.
 _Avoid_: filter, automation, policy
 
 **Library state**:
