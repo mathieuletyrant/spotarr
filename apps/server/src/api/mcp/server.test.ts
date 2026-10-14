@@ -90,11 +90,12 @@ async function listShares(client: Client, args: Record<string, unknown>) {
   return JSON.parse(content?.text ?? "");
 }
 
-test("with the MCP token, a client finds list_shares, read-only", async () => {
+test("with the MCP token, a client finds list_shares and list_genres, read-only", async () => {
   const client = await connect("mcp-token");
   const { tools } = await client.listTools();
   expect(tools.map((tool) => [tool.name, tool.annotations?.readOnlyHint])).toEqual([
     ["list_shares", true],
+    ["list_genres", true],
   ]);
   await client.close();
 });
@@ -134,10 +135,20 @@ test("list_shares filters by genre and marks the added Candidate", async () => {
       libraryState: "ABSENT",
     },
   ]);
-  expect(answer.genres).toEqual([
-    { genre: "Drame", count: 2 },
-    { genre: "Comédie", count: 1 },
-  ]);
+  await client.close();
+});
+
+test("list_genres gives every genre of the history, most Shares first", async () => {
+  const client = await connect("mcp-token");
+  const result = await client.callTool({ name: "list_genres", arguments: {} });
+  const [content] = result.content as { type: string; text: string }[];
+
+  expect(JSON.parse(content?.text ?? "")).toEqual({
+    genres: [
+      { genre: "Drame", count: 2 },
+      { genre: "Comédie", count: 1 },
+    ],
+  });
   await client.close();
 });
 
@@ -214,7 +225,8 @@ test("/mcp keeps no session: GET and DELETE are 405", async () => {
 test("every input of list_shares is described, each Summary included", async () => {
   const client = await connect((await settings.get()).access.mcpToken);
   const { tools } = await client.listTools();
-  const properties = tools[0]?.inputSchema.properties as Record<string, { description?: string }>;
+  const listShares = tools.find((tool) => tool.name === "list_shares");
+  const properties = listShares?.inputSchema.properties as Record<string, { description?: string }>;
 
   expect(Object.keys(properties).sort()).toEqual([
     "cursor",

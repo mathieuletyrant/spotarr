@@ -49,7 +49,7 @@ function hasGenre(share: Share, genre: string): boolean {
 
 // How many Shares per genre, over the whole history: most Shares first, then
 // alphabetical. A Share counts once per genre, however many Candidates have it.
-function countByGenre(shares: Share[]): { genre: string; count: number }[] {
+export function countByGenre(shares: Share[]): { genre: string; count: number }[] {
   const counts = new Map<string, number>();
   for (const share of shares) {
     const genres = new Set(share.candidates.flatMap((c) => c.genres ?? []));

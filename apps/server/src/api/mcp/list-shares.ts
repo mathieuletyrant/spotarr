@@ -22,7 +22,7 @@ const ListSharesInput = {
     .array(z.string())
     .optional()
     .describe(
-      'Only the Shares with at least one Candidate of one of these genres. Use the exact names TMDB gives in Spotarr\'s language, e.g. ["Comédie"] rather than ["Comedy"]: every answer lists them, with how many Shares have each, in its "genres" field. Call once without filters to learn them.',
+      'Only the Shares with at least one Candidate of one of these genres. Use the exact names list_genres gives, in Spotarr\'s language: ["Comédie"], not ["Comedy"].',
     ),
   query: z
     .string()
@@ -82,12 +82,7 @@ export function registerListShares(server: McpServer, shares: ShareRepository): 
         },
         { shares },
       );
-      const answer = {
-        shares: page.shares.map(shareForMcp),
-        nextCursor: page.nextCursor,
-        // The whole history's genres, most Shares first: the names `genres` accepts.
-        genres: page.genres,
-      };
+      const answer = { shares: page.shares.map(shareForMcp), nextCursor: page.nextCursor };
       return { content: [{ type: "text", text: JSON.stringify(answer) }] };
     },
   );
