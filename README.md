@@ -1,12 +1,13 @@
 # 🎬 Spotarr
 
-Share an Instagram reel or photo post, a TikTok or a YouTube Short from your iPhone: Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
+Share an Instagram reel or photo post, a TikTok, a YouTube Short or any web page (an article, a Letterboxd, AlloCiné or Wikipedia page) from your iPhone: Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
 
 ![The History page, in dark mode](docs/screenshots/history-dark.png)
 
 ## ✨ What it does
 
 - 🎞️ **Watches and listens.** It downloads the reel, then an LLM looks at a few frames and hears the sound. The title is often only said out loud.
+- 📰 **Reads web pages.** A page linking to IMDb or TMDB (Letterboxd, Wikipedia) names its work at once, without the LLM. Any other page (an article, AlloCiné) is read by the LLM: its title, description, text, picture and the title and year it gives search engines.
 - 🎯 **Confirms on TMDB.** It keeps the titles that exist on TMDB, with a poster and a confidence. A reel naming three films gives three candidates.
 - 📚 **Knows your library.** Seerr tells what is already there.
 - ➕ **Adds in one click**, or on its own: auto add requests a candidate on its own when one of your rules holds (movies or TV shows, a single candidate, confidence, TMDB rating), with a preview of what each rule would have added. A TV show gets season 1 only.

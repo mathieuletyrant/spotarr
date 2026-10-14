@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { SpotarrError } from "../../errors";
-import { isNoVideoError, parseVideoInfo } from "./ytdlp";
+import { isNoVideoError, isUnknownSiteError, parseVideoInfo } from "./ytdlp";
 
 // Recorded on 2026-10-12 with `yt-dlp --dump-single-json` on a real reel, trimmed to a few fields.
 const fixture = () => Bun.file(new URL("fixtures/instagram-reel.json", import.meta.url)).text();
@@ -24,4 +24,13 @@ test("a photo post is told apart from other yt-dlp failures", () => {
   expect(isNoVideoError(new SpotarrError("unavailable", photo))).toBe(true);
   const other = "yt-dlp failed: ERROR: [Instagram] x: Requested content is not available";
   expect(isNoVideoError(new SpotarrError("unavailable", other))).toBe(false);
+});
+
+test("an unknown site is told apart from a video yt-dlp cannot read", () => {
+  const failed = (line: string) => new SpotarrError("unavailable", `yt-dlp failed: ${line}`);
+  expect(isUnknownSiteError(failed("ERROR: Unsupported URL: https://letterboxd.com/"))).toBe(true);
+  expect(isUnknownSiteError(failed("ERROR: [generic] Got HTTP Error 403"))).toBe(true);
+  expect(
+    isUnknownSiteError(failed("ERROR: [Instagram] x: Requested content is not available")),
+  ).toBe(false);
 });

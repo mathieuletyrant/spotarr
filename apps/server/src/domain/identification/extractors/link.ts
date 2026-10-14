@@ -1,22 +1,51 @@
+import { isUnknownSiteError } from "../../../integrations/ytdlp/ytdlp";
 import type { Settings } from "../../settings/schema";
+import type { DirectId } from "./direct-ids";
 import { readPhoto } from "./photo";
-import { readVideo } from "./video";
+import { readVideo, type Video } from "./video";
+import { type Page, readPage, readPagePicture } from "./web-page";
 
 // What a shared link gave: the images (and sound) for the LLM, and the frames
 // kept to show on the Share's page, a photo post having none.
 export type Link = {
-  extractor: "video" | "instagram-photo";
+  extractor: "video" | "instagram-photo" | "web";
   caption?: string;
   author?: string;
+  // A web page's text, for the LLM only: not kept.
+  text?: string;
   images: Uint8Array[];
   audio?: Uint8Array;
   frames?: { atMs: number; thumbnail: Uint8Array }[];
+  // The IMDb and TMDB links of a web page: they name its work without the LLM.
+  directIds?: DirectId[];
 };
 
-// Reads the link as a video; a post without one is an Instagram photo post,
-// read from its page instead.
+// Reads the link's page first: a film's page (Letterboxd, Wikipedia) links to
+// IMDb or TMDB, which is enough. Otherwise the link is read as a video; a post
+// without one is an Instagram photo post, read from its page instead; a link
+// that is no video at all (an article, a film's page) is the web page itself.
 export async function readLink(url: string, extraction: Settings["extraction"]): Promise<Link> {
-  const video = await readVideo(url, extraction);
+  let page: Page | undefined;
+  let pageError: unknown;
+  try {
+    page = await readPage(url);
+  } catch (error) {
+    pageError = error;
+  }
+  if (page && page.directIds.length > 0) {
+    return { ...webClues(page), images: [], directIds: page.directIds };
+  }
+
+  let video: Video | undefined;
+  try {
+    video = await readVideo(url, extraction);
+  } catch (error) {
+    if (page) return { ...webClues(page), images: await readPagePicture(page) };
+    // yt-dlp knows nothing of the site: why the page could not be read says more.
+    if (pageError && isUnknownSiteError(error)) throw pageError;
+    throw error;
+  }
+
   if (video) {
     return {
       extractor: "video",
@@ -35,5 +64,14 @@ export async function readLink(url: string, extraction: Settings["extraction"]):
     caption: photo.caption,
     author: photo.author,
     images: [photo.picture],
+  };
+}
+
+function webClues(page: Page) {
+  return {
+    extractor: "web" as const,
+    caption: page.caption,
+    author: page.author,
+    text: page.text,
   };
 }
