@@ -11,7 +11,7 @@ import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import type { Event } from "./domain/shares/events";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
-import { fillMissingGenres } from "./domain/shares/use-cases/fill-missing-genres";
+import { fillMissingDetails } from "./domain/shares/use-cases/fill-missing-details";
 import { WebhookRepository } from "./domain/webhooks/repository";
 import { log } from "./log";
 
@@ -38,10 +38,11 @@ console.log(`API token${created ? " (new)" : ""}: ${token}`);
 const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
 const emit = (event: Event) => sender.emit(event);
 await new ShareQueue({ shares, settings, rules, emit }).start();
-// Not awaited: Spotarr answers while older Shares get their genres.
-fillMissingGenres(shares, tmdbFrom(await settings.get()))
-  .then((filled) => log({ step: "genres", filled }))
-  .catch((error) => log({ step: "genres", error: String(error) }));
+// Not awaited: Spotarr answers while older Shares get their TMDB details.
+const today = new Date().toISOString().slice(0, 10);
+fillMissingDetails(shares, tmdbFrom(await settings.get()), today)
+  .then((filled) => log({ step: "tmdb details", filled }))
+  .catch((error) => log({ step: "tmdb details", error: String(error) }));
 
 // ── 4. API: /health, the RPCs under /api, the frames ────────────────
 const app = createApp({ apiToken: () => token, settings, shares, webhooks, rules, sender });

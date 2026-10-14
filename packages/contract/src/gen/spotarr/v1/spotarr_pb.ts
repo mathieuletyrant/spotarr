@@ -1000,7 +1000,8 @@ export type Candidate = Message<"spotarr.v1.Candidate"> & {
 
   /**
    * TMDB's users' average, out of 10, and how many votes it rests on.
-   * Absent when nobody rated it, and on Shares identified before ratings were kept.
+   * Absent when nobody rated it, and on Shares identified before ratings were
+   * kept, until Spotarr fills them at its next start.
    *
    * @generated from field: optional float tmdb_rating = 9;
    */

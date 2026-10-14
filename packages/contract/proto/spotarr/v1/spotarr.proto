@@ -313,7 +313,8 @@ message Candidate {
   optional float confidence = 7;
   LibraryState library_state = 8;
   // TMDB's users' average, out of 10, and how many votes it rests on.
-  // Absent when nobody rated it, and on Shares identified before ratings were kept.
+  // Absent when nobody rated it, and on Shares identified before ratings were
+  // kept, until Spotarr fills them at its next start.
   optional float tmdb_rating = 9;
   optional int32 tmdb_votes = 10;
   // Where the Candidate stands. Derived, never stored.

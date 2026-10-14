@@ -1465,7 +1465,8 @@ public nonisolated struct Spotarr_V1_Candidate: Sendable {
   public var libraryState: Spotarr_V1_LibraryState = .unspecified
 
   /// TMDB's users' average, out of 10, and how many votes it rests on.
-  /// Absent when nobody rated it, and on Shares identified before ratings were kept.
+  /// Absent when nobody rated it, and on Shares identified before ratings were
+  /// kept, until Spotarr fills them at its next start.
   public var tmdbRating: Float {
     get {_tmdbRating ?? 0}
     set {_tmdbRating = newValue}
