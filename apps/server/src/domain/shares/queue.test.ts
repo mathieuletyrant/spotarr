@@ -1,5 +1,6 @@
 import { afterEach, expect, mock, spyOn, test } from "bun:test";
 import { openDatabase } from "../../db";
+import { RuleRepository } from "../auto-add/repository";
 import { SettingsRepository } from "../settings/repository";
 import type { Event } from "./events";
 import { type Identify, ShareQueue } from "./queue";
@@ -26,7 +27,8 @@ async function setUp(identify: Identify) {
   const emit = async (event: Event) => {
     emitted.push(event);
   };
-  const queue = new ShareQueue({ shares, settings, emit, identify, idleMs: 5 });
+  const rules = new RuleRepository(db);
+  const queue = new ShareQueue({ shares, settings, rules, emit, identify, idleMs: 5 });
   return { shares, settings, emitted, queue };
 }
 

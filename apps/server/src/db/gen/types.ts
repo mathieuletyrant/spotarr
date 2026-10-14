@@ -15,10 +15,19 @@ export interface Additions {
   error: string | null;
   id: string;
   media_type: string;
+  rule: string | null;
   share_id: string;
   status: string;
   target: string;
   tmdb_id: number;
+}
+
+export interface AutoAddRules {
+  conditions: Generated<string>;
+  created_at: Generated<string>;
+  enabled: Generated<number>;
+  id: string;
+  name: string;
 }
 
 export interface Frames {
@@ -65,6 +74,7 @@ export interface Webhooks {
 
 export interface DB {
   additions: Additions;
+  auto_add_rules: AutoAddRules;
   frames: Frames;
   settings: Settings;
   shares: Shares;

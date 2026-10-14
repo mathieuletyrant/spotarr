@@ -57,6 +57,8 @@ export type Addition = {
   error?: string;
   // Made by auto add, without a click.
   automatic: boolean;
+  // The name of the Rule that made it, as it was then. Absent for a click.
+  rule?: string;
 };
 
 export type Share = {

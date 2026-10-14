@@ -19,8 +19,9 @@ export type AdditionRequest = {
   type?: Candidate["type"];
   // Seerr unless the client asked for Radarr or Sonarr directly: refused for now.
   target?: "SEERR" | "ARR";
-  // True when auto add asks, not a click.
+  // True when auto add asks, not a click; `rule` names the Rule that holds.
   automatic?: boolean;
+  rule?: string;
 };
 
 // Adds one Candidate of a Share to the library through Seerr, records an
@@ -52,6 +53,7 @@ export async function addToLibrary(
     type,
     target: "SEERR" as const,
     automatic: request.automatic ?? false,
+    rule: request.rule,
   };
   try {
     const seerr = seerrFrom(await settings.get());

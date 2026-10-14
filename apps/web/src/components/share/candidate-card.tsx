@@ -76,7 +76,11 @@ function CandidateAction({ share, candidate }: { share: Share; candidate: Candid
     return (
       <div className="flex flex-col items-end gap-1">
         <StatusBadge summary={Summary.REQUESTED} />
-        {candidate.automatic && <span className="text-xs text-text-muted">automatically</span>}
+        {candidate.automatic && (
+          <span className="text-xs text-text-muted">
+            {candidate.rule ? `by ${candidate.rule}` : "automatically"}
+          </span>
+        )}
       </div>
     );
   }

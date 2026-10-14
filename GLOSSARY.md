@@ -48,6 +48,10 @@ _Avoid_: result, match, suggestion
 A Candidate's TMDB genre, in the settings' language ("Horreur", "Science-Fiction"). The History filters by it: a Share matches when one of its Candidates has it.
 _Avoid_: theme, category, tag
 
+**Rule**:
+When auto add requests a Candidate without a click: a name, an on/off switch, and conditions that must all hold (type, a single Candidate, minimum confidence, minimum TMDB rating and votes). A Candidate is added when one enabled Rule holds for it, credited to the first one; the Addition keeps the Rule's name.
+_Avoid_: filter, automation, policy
+
 **Library state**:
 What the library already knows of a Candidate: `ABSENT`, `REQUESTED`, `PARTIAL` (some seasons) or `AVAILABLE`. Only an `ABSENT` Candidate can be added.
 _Avoid_: in_library, present, exists
