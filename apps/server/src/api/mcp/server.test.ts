@@ -210,3 +210,22 @@ test("/mcp keeps no session: GET and DELETE are 405", async () => {
     expect(res.status).toBe(405);
   }
 });
+
+test("every input of list_shares is described, each Summary included", async () => {
+  const client = await connect((await settings.get()).access.mcpToken);
+  const { tools } = await client.listTools();
+  const properties = tools[0]?.inputSchema.properties as Record<string, { description?: string }>;
+
+  expect(Object.keys(properties).sort()).toEqual([
+    "cursor",
+    "genres",
+    "pageSize",
+    "query",
+    "summaries",
+  ]);
+  for (const property of Object.values(properties)) expect(property.description).toBeTruthy();
+  for (const summary of ["TO_CHOOSE", "REQUESTED", "ALREADY_PRESENT", "NO_MATCH", "FAILED"]) {
+    expect(properties.summaries?.description).toContain(`- ${summary}:`);
+  }
+  await client.close();
+});
