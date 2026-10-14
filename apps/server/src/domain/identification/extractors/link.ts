@@ -1,7 +1,7 @@
 import { isUnknownSiteError } from "../../../integrations/ytdlp/ytdlp";
 import type { Settings } from "../../settings/schema";
 import type { DirectId } from "./direct-ids";
-import { readPhoto } from "./photo";
+import { type Photo, readPhoto } from "./photo";
 import { readVideo, type Video } from "./video";
 import { type Page, readPage, readPagePictures } from "./web-page";
 
@@ -20,59 +20,58 @@ export type Link = {
   directIds?: DirectId[];
 };
 
-// Any link works. Its page is read first: a film's page (Letterboxd, Wikipedia)
-// links to IMDb or TMDB, which is enough. Otherwise the link is read as a video;
-// a post without one is an Instagram photo post, read from its page instead; a
-// link that is no video at all (an article, a picture) is the page itself, its
-// text and pictures.
+// Any link works, read in three steps. Each step's failure is kept as a value
+// (`.catch`): the next step decides what to do with it.
 export async function readLink(url: string, extraction: Settings["extraction"]): Promise<Link> {
-  let page: Page | undefined;
-  let pageError: unknown;
-  try {
-    page = await readPage(url);
-  } catch (error) {
-    pageError = error;
-  }
-  if (page && page.directIds.length > 0) {
-    return { ...webClues(page), images: [], directIds: page.directIds };
+  // 1. The page: a film's page (Letterboxd, Wikipedia) links to IMDb or TMDB,
+  // which is enough.
+  const page = await readPage(url).catch((error: Error) => error);
+  if (!(page instanceof Error) && page.directIds.length > 0) {
+    return fromPage(page, []);
   }
 
-  let video: Video | undefined;
-  try {
-    video = await readVideo(url, extraction);
-  } catch (error) {
-    if (page) return { ...webClues(page), images: await readPagePictures(page) };
-    // yt-dlp knows nothing of the site: why the page could not be read says more.
-    if (pageError && isUnknownSiteError(error)) throw pageError;
-    throw error;
-  }
+  // 2. A video. A post without one is an Instagram photo post.
+  const video = await readVideo(url, extraction).catch((error: Error) => error);
+  if (video === undefined) return fromPhoto(await readPhoto(url));
+  if (!(video instanceof Error)) return fromVideo(video);
 
-  if (video) {
-    return {
-      extractor: "video",
-      caption: video.caption,
-      author: video.author,
-      images: video.frames.map((frame) => frame.jpeg),
-      audio: video.audio,
-      // Kept to show on the Share's page; the full frames only served the LLM.
-      frames: video.frames.map(({ atMs, thumbnail }) => ({ atMs, thumbnail })),
-    };
-  }
+  // 3. No video (an article, a picture): the page itself, its text and pictures.
+  if (!(page instanceof Error)) return fromPage(page, await readPagePictures(page));
 
-  const photo = await readPhoto(url);
+  // Neither could be read. When yt-dlp knows nothing of the site, why the page
+  // could not be read says more.
+  if (isUnknownSiteError(video)) throw page;
+  throw video;
+}
+
+function fromPage(page: Page, images: Uint8Array[]): Link {
+  return {
+    extractor: "web",
+    caption: page.caption,
+    author: page.author,
+    text: page.text,
+    images,
+    directIds: page.directIds,
+  };
+}
+
+function fromVideo(video: Video): Link {
+  return {
+    extractor: "video",
+    caption: video.caption,
+    author: video.author,
+    images: video.frames.map((frame) => frame.jpeg),
+    audio: video.audio,
+    // Kept to show on the Share's page; the full frames only served the LLM.
+    frames: video.frames.map(({ atMs, thumbnail }) => ({ atMs, thumbnail })),
+  };
+}
+
+function fromPhoto(photo: Photo): Link {
   return {
     extractor: "instagram-photo",
     caption: photo.caption,
     author: photo.author,
     images: [photo.picture],
-  };
-}
-
-function webClues(page: Page) {
-  return {
-    extractor: "web" as const,
-    caption: page.caption,
-    author: page.author,
-    text: page.text,
   };
 }
