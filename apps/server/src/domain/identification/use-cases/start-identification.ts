@@ -3,7 +3,7 @@ import { llmConfigFrom, seerrFrom, tmdbFrom } from "../../settings/adapters";
 import type { SettingsRepository } from "../../settings/repository";
 import type { Settings } from "../../settings/schema";
 import type { IdentificationResult, RetryRequest, ShareInput } from "../../shares/types";
-import { readLink } from "../extractors/link";
+import { linkReaders, readLink } from "../extractors/link";
 import { AnswerSchema } from "../guess-titles";
 import { type IdentifyDeps, identifyShare } from "./identify-share";
 
@@ -32,7 +32,7 @@ export function identificationDeps(settings: Settings): IdentifyDeps {
   const seerr = seerrFrom(settings);
   return {
     tmdb: tmdbFrom(settings),
-    readLink: (url) => readLink(url, settings.extraction),
+    readLink: (url) => readLink(url, linkReaders(settings.extraction)),
     llm: (messages) => chat(llmConfigFrom(settings), messages, AnswerSchema),
     libraryState: (type, tmdbId) => seerr.libraryState(type, tmdbId),
   };
