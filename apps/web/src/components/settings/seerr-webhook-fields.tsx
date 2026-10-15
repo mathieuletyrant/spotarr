@@ -33,13 +33,30 @@ export function SeerrWebhookFields({ form }: { form: Form }) {
 
   return (
     <>
-      <p className="text-sm text-text-muted md:col-span-2">
-        So that the history follows the library (a request approved, declined, or downloaded), turn
-        on Seerr's Webhook agent in Seerr → Settings → Notifications → Webhook, with the three
-        values below. Tick these notification types: Request Pending Approval, Request Automatically
-        Approved, Request Approved, Request Declined, Request Available and Request Processing
-        Failed.
-      </p>
+      <div className="flex flex-col gap-2 text-sm md:col-span-2">
+        <p className="font-medium">Keep the history in step with Seerr</p>
+        <p className="text-text-muted">
+          Seerr then tells Spotarr when a request is approved, declined or downloaded.
+        </p>
+        <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-text-muted">
+          <li>In Seerr, open Settings → Notifications → Webhook and tick Enable Agent.</li>
+          <li>
+            Copy the Webhook URL, the Authorization header and the JSON payload below into it.
+          </li>
+          <li>
+            Tick these notification types, and leave the Issue ones:
+            <ul className="mt-1 list-disc pl-5">
+              <li>Request Pending Approval</li>
+              <li>Request Automatically Approved</li>
+              <li>Request Approved</li>
+              <li>Request Declined</li>
+              <li>Request Available</li>
+              <li>Request Processing Failed</li>
+            </ul>
+          </li>
+          <li>Press Test: Seerr shows it passed. Then Save.</li>
+        </ol>
+      </div>
       <TokenField
         id="seerr-webhook-url"
         label="Webhook URL"
