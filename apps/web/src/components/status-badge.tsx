@@ -7,7 +7,8 @@ export const SUMMARY_LABELS: Record<Summary, string> = {
   [Summary.TO_CHOOSE]: "To choose",
   [Summary.ADDED]: "Added",
   [Summary.REQUESTED]: "Requested",
-  [Summary.ALREADY_PRESENT]: "Already present",
+  // In the library, whether it was there before or came through Spotarr.
+  [Summary.ALREADY_PRESENT]: "Available",
   [Summary.NO_MATCH]: "No match",
   [Summary.FAILED]: "Failed",
 };
@@ -27,7 +28,7 @@ const COLORS: Record<Summary, string> = {
   [Summary.FAILED]: "bg-status-error/12 text-status-error",
 };
 
-// The name of a Summary, e.g. "Already present".
+// The name of a Summary, e.g. "Available".
 export function SummaryLabel({ summary }: { summary: Summary }) {
   return SUMMARY_LABELS[summary];
 }

@@ -1,7 +1,8 @@
 import { expect, test } from "bun:test";
 import { openDatabase } from "../../db";
+import { up as upLibraryState } from "../../db/migrations/2026-10-15T1000-library-state-from-additions";
 import { ShareRepository } from "./repository";
-import type { Candidate } from "./types";
+import type { Addition, Candidate } from "./types";
 
 async function repository() {
   const db = await openDatabase(":memory:");
@@ -77,10 +78,57 @@ test("a Share reads its Additions, and its Summary follows the latest", async ()
       status: "REQUESTED",
     })
     .execute();
+  await shares.setLibraryState("MOVIE", dune.tmdbId, "REQUESTED");
 
   const share = await shares.get(id);
   expect(share?.additions.map((a) => a.status)).toEqual(["REQUESTED"]);
   expect(share?.summary).toBe("REQUESTED");
+});
+
+test("a title's Library state is written in every finished Share that has it", async () => {
+  const { shares } = await repository();
+  const finished = async () => {
+    const id = await shares.create({ text: "x" }, "text");
+    await shares.finish(id, { status: "READY", extractors: [], clues: {}, candidates: [dune] }, 10);
+    return id;
+  };
+  const first = await finished();
+  const second = await finished();
+  const queued = await shares.create({ text: "x" }, "text");
+
+  await shares.setLibraryState("MOVIE", dune.tmdbId, "AVAILABLE");
+  await shares.setLibraryState("TV", dune.tmdbId, "REQUESTED"); // same id, another type
+
+  for (const id of [first, second]) {
+    expect((await shares.get(id))?.candidates.map((c) => c.libraryState)).toEqual(["AVAILABLE"]);
+  }
+  expect((await shares.get(queued))?.candidates).toEqual([]);
+});
+
+test("the migration gives each added title the Library state its latest Addition implies", async () => {
+  const { db, shares } = await repository();
+  const arrival = { ...dune, tmdbId: 329865, title: "Arrival" };
+  const her = { ...dune, tmdbId: 152601, title: "Her" };
+  const id = await shares.create({ text: "x" }, "text");
+  await shares.finish(
+    id,
+    { status: "READY", extractors: [], clues: {}, candidates: [dune, arrival, her] },
+    10,
+  );
+  const add = (tmdbId: number, status: Addition["status"]) =>
+    shares.addAddition(id, { tmdbId, type: "MOVIE", target: "SEERR", status, automatic: false });
+  await add(dune.tmdbId, "FAILED");
+  await add(dune.tmdbId, "REQUESTED");
+  await add(arrival.tmdbId, "ALREADY_PRESENT");
+  await add(her.tmdbId, "FAILED");
+
+  await upLibraryState(db);
+
+  expect((await shares.get(id))?.candidates.map((c) => c.libraryState)).toEqual([
+    "REQUESTED",
+    "AVAILABLE",
+    "ABSENT",
+  ]);
 });
 
 test("all() lists newest first", async () => {

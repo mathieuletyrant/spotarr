@@ -59,6 +59,7 @@ await shares.addAddition(reel, {
   status: "REQUESTED",
   automatic: false,
 });
+await shares.setLibraryState("MOVIE", 41733, "REQUESTED");
 const other = await shares.create({ text: "Severance" }, "text");
 await shares.finish(
   other,
@@ -123,7 +124,7 @@ test("list_shares filters by genre and marks the added Candidate", async () => {
       overview: "Un futur papa traverse le pays avec un inconnu.",
       confidence: 0.9,
       status: "REQUESTED",
-      libraryState: "ABSENT",
+      libraryState: "REQUESTED",
     },
     {
       tmdbId: 244786,

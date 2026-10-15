@@ -23,6 +23,8 @@ service SpotarrService {
   rpc UpdateSettings(UpdateSettingsRequest) returns (UpdateSettingsResponse);
   // Replaces the MCP token with a new one: the old one stops working at once.
   rpc RegenerateMcpToken(RegenerateMcpTokenRequest) returns (RegenerateMcpTokenResponse);
+  // Replaces the Seerr token with a new one: Seerr is refused until it gets it.
+  rpc RegenerateSeerrToken(RegenerateSeerrTokenRequest) returns (RegenerateSeerrTokenResponse);
 
   // Records a Share and queues its Identification. Answers at once, status QUEUED.
   rpc CreateShare(CreateShareRequest) returns (CreateShareResponse);
@@ -232,6 +234,10 @@ message AccessSettings {
   // Generated at first start, changed by RegenerateMcpToken only: ignored by
   // UpdateSettings. It calls nothing but /mcp; the API refuses it.
   optional string mcp_token = 5;
+  // What Seerr sends in the Authorization header when it reports a change, at
+  // /seerr/webhook. Generated at first start, changed by RegenerateSeerrToken
+  // only: ignored by UpdateSettings. Refused anywhere else.
+  optional string seerr_token = 6;
 }
 
 message GetSettingsRequest {}
@@ -252,6 +258,12 @@ message RegenerateMcpTokenRequest {}
 
 message RegenerateMcpTokenResponse {
   string mcp_token = 1;
+}
+
+message RegenerateSeerrTokenRequest {}
+
+message RegenerateSeerrTokenResponse {
+  string seerr_token = 1;
 }
 
 // A piece of content sent to Spotarr and everything that follows from it.
@@ -407,12 +419,14 @@ enum AdditionStatus {
   ADDITION_STATUS_FAILED = 4;
 }
 
-// Its latest Addition's status when one exists, else its Library state.
+// From its Library state, whatever path led there. Seerr keeps it current.
 enum CandidateStatus {
   CANDIDATE_STATUS_UNSPECIFIED = 0;
   CANDIDATE_STATUS_CAN_ADD = 1;
   CANDIDATE_STATUS_REQUESTED = 2;
+  // Not used: a title in the library is ALREADY_PRESENT, however it got there.
   CANDIDATE_STATUS_ADDED = 3;
+  // In the library ("Available"), whether it was there before or came through Spotarr.
   CANDIDATE_STATUS_ALREADY_PRESENT = 4;
 }
 
@@ -420,8 +434,10 @@ enum Summary {
   SUMMARY_UNSPECIFIED = 0;
   SUMMARY_IN_PROGRESS = 1;
   SUMMARY_TO_CHOOSE = 2;
+  // Not used, see CANDIDATE_STATUS_ADDED.
   SUMMARY_ADDED = 3;
   SUMMARY_REQUESTED = 4;
+  // In the library ("Available").
   SUMMARY_ALREADY_PRESENT = 5;
   SUMMARY_NO_MATCH = 6;
   SUMMARY_FAILED = 7;

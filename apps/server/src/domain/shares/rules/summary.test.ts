@@ -23,10 +23,21 @@ test("queued or processing: in progress, whatever else", () => {
   expect(summaryOf("PROCESSING", [], [addition("REQUESTED")])).toBe("IN_PROGRESS");
 });
 
-test("the latest Addition wins", () => {
-  expect(
-    summaryOf("READY", [candidate("ABSENT")], [addition("FAILED"), addition("REQUESTED")]),
-  ).toBe("REQUESTED");
+test("the latest Addition's Candidate decides, as its own status", () => {
+  const retried = [addition("FAILED"), addition("REQUESTED")];
+  expect(summaryOf("READY", [candidate("REQUESTED")], retried)).toBe("REQUESTED");
+  // Downloaded since: Seerr reported it.
+  expect(summaryOf("READY", [candidate("AVAILABLE")], retried)).toBe("ALREADY_PRESENT");
+  // Seerr declined the request.
+  expect(summaryOf("READY", [candidate("ABSENT")], retried)).toBe("TO_CHOOSE");
+});
+
+test("a failed latest Addition reads failed", () => {
+  expect(summaryOf("READY", [candidate("ABSENT")], [addition("FAILED")])).toBe("FAILED");
+});
+
+test("an Addition whose Candidate a Retry dropped keeps its own status", () => {
+  expect(summaryOf("READY", [], [addition("REQUESTED")])).toBe("REQUESTED");
 });
 
 test("without Addition: failed, no match, already present or to choose", () => {
@@ -38,13 +49,28 @@ test("without Addition: failed, no match, already present or to choose", () => {
 });
 
 describe("a Candidate's status", () => {
-  test("its latest Addition decides first", () => {
-    const additions = [addition("FAILED"), { ...addition("REQUESTED"), automatic: true }];
-    expect(candidateStatusOf(candidate("ABSENT"), additions)).toEqual({
+  test("its Library state decides, whatever path led there; auto add stays credited", () => {
+    const additions = [
+      addition("FAILED"),
+      { ...addition("REQUESTED"), automatic: true, rule: "Movies" },
+    ];
+    expect(candidateStatusOf(candidate("REQUESTED"), additions)).toEqual({
       status: "REQUESTED",
       automatic: true,
+      rule: "Movies",
     });
-    expect(candidateStatusOf(candidate("ABSENT"), [addition("ADDED")]).status).toBe("ADDED");
+    expect(candidateStatusOf(candidate("AVAILABLE"), additions)).toEqual({
+      status: "ALREADY_PRESENT",
+      automatic: true,
+      rule: "Movies",
+    });
+  });
+
+  test("requested, then declined by Seerr: it can be added again", () => {
+    expect(candidateStatusOf(candidate("ABSENT"), [addition("REQUESTED")])).toEqual({
+      status: "CAN_ADD",
+      automatic: false,
+    });
   });
 
   test("an Addition of another Candidate does not count", () => {
@@ -79,13 +105,15 @@ describe("a Candidate's status", () => {
 });
 
 describe("the added count", () => {
-  const dune = candidate("ABSENT");
+  const dune = candidate("REQUESTED");
   const arrival = { ...candidate("ABSENT"), tmdbId: 2 };
 
-  test("counts Candidates whose latest Addition did not fail", () => {
+  test("counts Candidates Spotarr added that are requested or in the library", () => {
     const retried = [addition("FAILED"), addition("REQUESTED")];
     expect(addedCountOf([dune, arrival], retried)).toBe(1);
     expect(addedCountOf([dune, arrival], [addition("FAILED")])).toBe(0);
+    // Declined by Seerr since.
+    expect(addedCountOf([candidate("ABSENT")], retried)).toBe(0);
   });
 
   test("never counts more than the Candidates, even with Additions of an earlier Identification", () => {

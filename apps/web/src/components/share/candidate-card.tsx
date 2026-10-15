@@ -65,7 +65,7 @@ function Confidence({ value }: { value?: number }) {
   );
 }
 
-// "Add", or where the title stands: requested, already in the library, failed.
+// "Add", or where the title stands: requested, available, failed.
 function CandidateAction({ share, candidate }: { share: Share; candidate: Candidate }) {
   const queryClient = useQueryClient();
   const add = useMutation(SpotarrService.method.add, {

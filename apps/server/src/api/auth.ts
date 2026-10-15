@@ -38,6 +38,20 @@ export function requireMcpToken(getToken: () => Promise<string>): MiddlewareHand
   };
 }
 
+// The Seerr token, in the Authorization header as Seerr's Webhook agent sends
+// it: the token alone, no "Bearer". Read at each request, so a regenerated
+// token applies at once. The other tokens are refused here, and it is refused
+// everywhere else.
+export function requireSeerrToken(getToken: () => Promise<string>): MiddlewareHandler {
+  return async (c, next) => {
+    const given = c.req.header("Authorization");
+    if (!given || !sameSecret(given, await getToken())) {
+      return c.json({ code: "unauthenticated", message: "missing or invalid Seerr token" }, 401);
+    }
+    await next();
+  };
+}
+
 // Constant-time comparison, so response timing reveals nothing about the token.
 export function sameSecret(a: string, b: string): boolean {
   const x = Buffer.from(a);

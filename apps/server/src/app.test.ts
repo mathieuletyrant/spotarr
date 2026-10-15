@@ -180,3 +180,56 @@ test("Add requests a Candidate through Seerr and answers with the Share", async 
   expect(share.candidates[0].status).toBe("CANDIDATE_STATUS_REQUESTED");
   expect(share.summary).toBe("SUMMARY_REQUESTED");
 });
+
+test("Seerr reporting a change updates the title's Candidates, only with the Seerr token", async () => {
+  await settings.update({ seerr: { url: "http://seerr.test", apiKey: "key" } });
+  await settings.setSeerrToken("seerr-token");
+  const id = await shares.create({ text: "Whiplash" }, "text");
+  await shares.finish(
+    id,
+    {
+      status: "READY",
+      extractors: ["text"],
+      clues: {},
+      candidates: [{ tmdbId: 244786, type: "MOVIE", title: "Whiplash", libraryState: "REQUESTED" }],
+    },
+    10,
+  );
+  fakeFetch({
+    "/api/v1/movie/244786": getGetMovieMovieIdResponseMock({ mediaInfo: { status: 5 } }),
+  });
+  const notify = (body: unknown, token: string) =>
+    app.request("/seerr/webhook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: token },
+      body: JSON.stringify(body),
+    });
+  const downloaded = { type: "movie", tmdbId: "244786" };
+
+  expect((await notify(downloaded, "secret-token")).status).toBe(401); // the API token
+  expect((await notify(downloaded, "Bearer seerr-token")).status).toBe(401);
+  expect((await shares.get(id))?.candidates[0]?.libraryState).toBe("REQUESTED");
+
+  const res = await notify(downloaded, "seerr-token");
+
+  expect(await res.json()).toEqual({ ok: true, updated: true });
+  const share = await shares.get(id);
+  expect(share?.candidates[0]?.libraryState).toBe("AVAILABLE");
+  expect(share?.summary).toBe("ALREADY_PRESENT");
+});
+
+test("Seerr's Test button, naming no title, passes and changes nothing", async () => {
+  await settings.setSeerrToken("seerr-token");
+  const res = await app.request("/seerr/webhook", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "seerr-token" },
+    body: JSON.stringify({ type: "", tmdbId: "" }),
+  });
+  expect(res.status).toBe(200);
+  expect(await res.json()).toEqual({ ok: true, updated: false });
+});
+
+test("the Seerr token is refused by the API", async () => {
+  await settings.setSeerrToken("seerr-token");
+  expect((await getStatus({ Authorization: "Bearer seerr-token" })).status).toBe(401);
+});

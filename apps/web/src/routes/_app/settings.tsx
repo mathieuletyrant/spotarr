@@ -25,6 +25,7 @@ import {
 } from "../../components/settings/fields";
 import { McpUrlField } from "../../components/settings/mcp-url-field";
 import { RulesList } from "../../components/settings/rules-list";
+import { SeerrWebhookFields } from "../../components/settings/seerr-webhook-fields";
 import { TokenField } from "../../components/settings/token-field";
 import { WebhooksList } from "../../components/settings/webhooks-list";
 import { useToast } from "../../components/toast";
@@ -189,7 +190,7 @@ function SettingsForm({ saved }: { saved: Values }) {
         id="seerr"
         icon={<Library aria-hidden className="size-5" />}
         title="Seerr"
-        description="Where Spotarr checks the library and sends additions."
+        description="Where Spotarr checks the library and sends additions, and what tells Spotarr when the library changes."
       >
         <TextField form={form} name="seerr.url" label="URL" placeholder="http://seerr:5055" />
         <SecretField
@@ -198,6 +199,7 @@ function SettingsForm({ saved }: { saved: Values }) {
           label="API key"
           placeholder="Paste Seerr's API key"
         />
+        <SeerrWebhookFields form={form} />
       </Section>
 
       <Section
