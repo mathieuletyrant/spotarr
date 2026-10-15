@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { webhooksQuery } from "../../queries/settings";
 import { WebhookCard } from "./webhook-card";
@@ -19,8 +20,9 @@ export function WebhooksList() {
         <button
           type="button"
           onClick={() => setAdding(true)}
-          className="h-9 w-fit rounded-md border border-border px-3 text-sm font-medium"
+          className="flex h-9 w-fit items-center gap-1.5 rounded-md border border-border px-3 text-sm font-medium hover:bg-surface"
         >
+          <Plus aria-hidden className="size-4" />
           Add a webhook
         </button>
       )}
