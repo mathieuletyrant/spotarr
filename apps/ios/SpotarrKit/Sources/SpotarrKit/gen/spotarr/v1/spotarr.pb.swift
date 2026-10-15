@@ -461,8 +461,9 @@ public nonisolated struct Spotarr_V1_CheckDependenciesResponse: Sendable {
 
   public var dependencies: [Spotarr_V1_Dependency] = []
 
-  /// What the LLM cost over the last 30 days, as its provider reports it
-  /// (OpenRouter does). Absent when no Identification recorded a cost.
+  /// No longer sent: GetStats gives the LLM cost month by month.
+  ///
+  /// NOTE: This field was marked as deprecated in the .proto file.
   public var llmCost: Spotarr_V1_LlmCost {
     get {_llmCost ?? Spotarr_V1_LlmCost()}
     set {_llmCost = newValue}

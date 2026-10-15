@@ -267,21 +267,6 @@ export class ShareRepository {
     };
   }
 
-  // What the LLM cost for the Shares of the last 30 days, counting only the
-  // Identifications whose cost is known.
-  async llmCostLast30Days(): Promise<{ identifications: number; totalUsd: number }> {
-    const since = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
-    const row = await this.db
-      .selectFrom("shares")
-      .select((eb) => [
-        eb.fn.count<number>("llm_cost_usd").as("identifications"),
-        eb.fn.sum<number>("llm_cost_usd").as("totalUsd"),
-      ])
-      .where("created_at", ">=", since)
-      .executeTakeFirstOrThrow();
-    return { identifications: row.identifications, totalUsd: row.totalUsd ?? 0 };
-  }
-
   // Shares and Additions counted by month ("2026-10", from the ISO date), oldest
   // first, and Shares by source. Counted by SQLite: no Share is loaded.
   async stats(): Promise<Stats> {

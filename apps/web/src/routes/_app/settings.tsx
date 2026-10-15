@@ -4,7 +4,6 @@ import { SpotarrService } from "@spotarr/contract";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  Activity,
   Bot,
   Film,
   KeyRound,
@@ -15,7 +14,6 @@ import {
   Zap,
 } from "lucide-react";
 import { type SubmitEvent, useEffect, useRef, useState } from "react";
-import { DependenciesCard } from "../../components/settings/dependencies-card";
 import {
   Field,
   type Form,
@@ -42,7 +40,6 @@ import {
 import { dependenciesQuery, settingsQuery } from "../../queries/settings";
 
 const MENU = [
-  { id: "status", label: "Status", icon: Activity },
   { id: "identification", label: "Identification", icon: Sparkles },
   { id: "seerr", label: "Seerr", icon: Library },
   { id: "auto-add", label: "Auto add", icon: Zap },
@@ -67,11 +64,11 @@ const MCP_TOOLS = [
 ];
 
 export const Route = createFileRoute("/_app/settings")({
-  // ?section=seerr shows that section only; Status without it, so that its tab
-  // reads as the current one.
+  // ?section=seerr shows that section only; Identification without it, so
+  // that its tab reads as the current one.
   validateSearch: (search: Record<string, unknown>): { section?: SectionId } => {
     const item = MENU.find((m) => m.id === search.section);
-    return { section: item?.id ?? "status" };
+    return { section: item?.id ?? "identification" };
   },
   component: SettingsPage,
 });
@@ -130,7 +127,7 @@ function SectionTabs({ current, marked }: { current: SectionId; marked: Set<stri
 }
 
 function SettingsForm({ saved }: { saved: Values }) {
-  const { section = "status" } = Route.useSearch();
+  const { section = "identification" } = Route.useSearch();
   const queryClient = useQueryClient();
   const toast = useToast();
   const [values, setValues] = useState(saved);
@@ -177,8 +174,6 @@ function SettingsForm({ saved }: { saved: Values }) {
     >
       <SectionTabs current={section} marked={marked} />
       <div className="flex min-w-0 flex-col gap-6">
-        {section === "status" && <DependenciesCard />}
-
         {section === "identification" && (
           <Section
             id="identification"

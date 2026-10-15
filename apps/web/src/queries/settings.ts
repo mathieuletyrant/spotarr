@@ -8,11 +8,14 @@ export function settingsQuery() {
 }
 
 // Calls every Dependency, which takes a second or two and pings the LLM: checked
-// when the page opens and on demand, never when the window gets the focus back.
+// when the app opens, then every 10 minutes and on demand, never when the
+// window gets the focus back.
 export function dependenciesQuery() {
   return queryOptions({
     ...createQueryOptions(SpotarrService.method.checkDependencies, {}, { transport }),
     refetchOnWindowFocus: false,
+    staleTime: 5 * 60_000,
+    refetchInterval: 10 * 60_000,
   });
 }
 
