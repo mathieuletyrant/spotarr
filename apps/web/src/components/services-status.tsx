@@ -90,10 +90,8 @@ export function ServicesStatus() {
         {!data && <p className="px-4 py-3 text-sm text-text-muted">Checking…</p>}
         <ul className="flex flex-col py-1">
           {dependencies.map((dependency) => (
-            <li key={dependency.name} className="flex items-baseline gap-3 px-4 py-2 text-sm">
-              <span
-                className={`size-2 shrink-0 self-center rounded-full ${DOTS[dependency.state]}`}
-              />
+            <li key={dependency.name} className="flex items-start gap-3 px-4 py-2 text-sm">
+              <span className={`mt-1.5 size-2 shrink-0 rounded-full ${DOTS[dependency.state]}`} />
               <span className="w-14 shrink-0 font-medium">{dependency.name}</span>
               {/* An error is what to read: it wraps, where a version is cut. */}
               {dependency.state === DependencyState.OK ? (
