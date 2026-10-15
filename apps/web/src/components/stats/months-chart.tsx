@@ -6,18 +6,19 @@ import { Card } from "../share/card";
 // The last 12 months, empty ones included, so the chart reads as a timeline.
 const MONTHS_SHOWN = 12;
 
-// One bar per month, as tall as its Shares, split by how they ended.
+// One bar per month, as tall as its Shares, split by how they ended, with
+// what the LLM cost that month under its name (from sm up: too narrow on a phone).
 export function MonthsChart({ months }: { months: MonthStats[] }) {
   const shown = lastMonths(months);
   const highest = Math.max(...shown.map((month) => month.shares), 1);
 
   return (
     <Card icon={<ChartColumn aria-hidden className="size-4" />} title="Shares per month">
-      <div className="relative h-44">
+      <div className="relative h-44 sm:h-48">
         {/* Three faint lines: the top, the middle and the bottom of the scale. */}
         <div
           aria-hidden
-          className="absolute inset-x-0 top-5 bottom-6 flex flex-col justify-between"
+          className="absolute inset-x-0 top-5 bottom-6 flex flex-col justify-between sm:bottom-10"
         >
           <GridLine value={highest} />
           <GridLine value={Math.round(highest / 2)} />
@@ -46,6 +47,9 @@ export function MonthsChart({ months }: { months: MonthStats[] }) {
               <span className="h-6 pt-1.5 text-[11px] text-text-muted">
                 {monthName(month.month)}
               </span>
+              <span className="hidden h-4 text-[10px] tabular-nums text-text-muted sm:block">
+                {month.llmCostUsd > 0 && cost(month.llmCostUsd)}
+              </span>
             </div>
           ))}
         </div>
@@ -54,6 +58,7 @@ export function MonthsChart({ months }: { months: MonthStats[] }) {
         <Legend className="bg-accent">Identified</Legend>
         <Legend className="bg-status-no-match">No match</Legend>
         <Legend className="bg-status-error">Failed</Legend>
+        <span className="hidden sm:inline">Under each month: its LLM cost</span>
       </div>
     </Card>
   );
@@ -87,7 +92,13 @@ function emptyMonth(month: string): MonthStats {
 }
 
 function describe(month: MonthStats): string {
-  return `${monthName(month.month)}: ${month.shares} shares, ${month.identified} identified, ${month.noMatch} no match, ${month.failed} failed`;
+  return `${monthName(month.month)}: ${month.shares} shares, ${month.identified} identified, ${month.noMatch} no match, ${month.failed} failed, ${cost(month.llmCostUsd)} of LLM`;
+}
+
+// "$0.06"; "<$0.01" rather than a $0.00 that hides a real cost.
+function cost(usd: number): string {
+  if (usd > 0 && usd < 0.01) return "<$0.01";
+  return `$${usd.toFixed(2)}`;
 }
 
 // Zero height: the line sits exactly where a bar of that value ends.
