@@ -27,7 +27,7 @@ export function CluesCard({ share }: { share: Share }) {
   if (share.summary === Summary.IN_PROGRESS) {
     return (
       <Card icon={<ScanSearch aria-hidden className="size-4" />} title="Clues">
-        <p className="text-text-muted">Reading the video…</p>
+        <p className="text-text-muted">Reading the link…</p>
       </Card>
     );
   }

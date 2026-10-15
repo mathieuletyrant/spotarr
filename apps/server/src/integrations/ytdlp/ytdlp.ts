@@ -44,6 +44,13 @@ export function isNoVideoError(error: unknown): boolean {
   return error instanceof SpotarrError && error.message.includes("There is no video in this post");
 }
 
+// yt-dlp has no extractor for the site (an article, a film's page): it says
+// "Unsupported URL", or its generic extractor fails on the page.
+export function isUnknownSiteError(error: unknown): boolean {
+  if (!(error instanceof SpotarrError)) return false;
+  return error.message.includes("Unsupported URL") || error.message.includes("[generic]");
+}
+
 // Downloads a low quality, which is enough for a few frames, into `dir`.
 // Returns the file's path.
 // `worst` is the smallest file with sound and picture (Instagram, TikTok).

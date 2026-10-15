@@ -28,18 +28,18 @@ export function EmptyHistory({ filtered, onClear }: { filtered: boolean; onClear
     <Empty
       icon={<ScanSearch aria-hidden className="size-7" />}
       title="No shares yet"
-      text="Spotarr finds the films and shows a reel is about, and adds them to your library."
+      text="Spotarr finds the films and shows a link is about, and adds them to your library."
     >
       <ol className="grid w-full max-w-2xl grid-cols-1 gap-3 text-left sm:grid-cols-3">
         <Step
           icon={<Share aria-hidden className="size-4" />}
           number={1}
-          text="Share a reel, a TikTok or a Short, or paste a link"
+          text="Share a link from any app, or paste it here"
         />
         <Step
           icon={<ScanSearch aria-hidden className="size-4" />}
           number={2}
-          text="Spotarr watches it and finds the titles"
+          text="Spotarr reads it and finds the titles"
         />
         <Step
           icon={<SquarePlus aria-hidden className="size-4" />}

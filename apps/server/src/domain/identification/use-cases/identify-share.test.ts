@@ -127,6 +127,67 @@ test("a photo post: the LLM gets its picture alone, without sound, and no frames
   expect(parts).toEqual(["text", "image_url"]);
 });
 
+test("a web page linking to IMDb and TMDB gives its work once, without the LLM", async () => {
+  fakeFetch({
+    "/3/find/tt15239678": getFindByIdResponseMock({ movie_results: [dune] }),
+    "/3/movie/693134": dune,
+  });
+  const letterboxd: Link = {
+    extractor: "web",
+    caption: "Dune: Part Two (2024)",
+    author: "letterboxd.com",
+    text: "Follow the mythic journey of Paul Atreides",
+    images: [],
+    directIds: [
+      { source: "imdb", id: "tt15239678" },
+      { source: "tmdb", type: "MOVIE", id: 693134 },
+    ],
+  };
+
+  const result = await identifyShare(
+    "shr_test",
+    { url: "https://letterboxd.com/film/dune-part-two/" },
+    { tmdb, readLink: async () => letterboxd, llm: notCalled, libraryState: available },
+  );
+
+  expect(result).toMatchObject({
+    status: "READY",
+    method: "DIRECT_ID",
+    extractors: ["web"],
+    clues: { caption: "Dune: Part Two (2024)", author: "letterboxd.com" },
+  });
+  expect(result.candidates.map((c) => c.tmdbId)).toEqual([693134]);
+});
+
+test("a web page without IDs: the LLM reads its text and sees its picture", async () => {
+  const article: Link = {
+    extractor: "web",
+    caption: "Antonio Banderas tourne dans un film sur Cortés",
+    author: "Ecran Large",
+    text: "Nicholas Kazan fait mieux avec Cortés, son scénario de film.",
+    images: [new Uint8Array([7])],
+  };
+  let sent: ChatMessage[] = [];
+  const llm: Llm = async (messages) => {
+    sent = messages;
+    return { answer: { reasoning: "L'article parle de Cortés.", guesses: [] } };
+  };
+
+  const result = await identifyShare(
+    "shr_test",
+    { url: "https://www.ecranlarge.com/films/news/x" },
+    { tmdb, readLink: async () => article, llm, libraryState: available },
+  );
+
+  expect(result).toMatchObject({ method: "LLM", extractors: ["web"] });
+  const content = sent[1]?.content;
+  const parts = Array.isArray(content) ? content : [];
+  expect(parts.map((part) => part.type)).toEqual(["text", "image_url"]);
+  expect(parts[0]?.type === "text" && parts[0].text).toContain(
+    "Page text:\nNicholas Kazan fait mieux avec Cortés",
+  );
+});
+
 test("the LLM's guesses, confirmed on TMDB, become Candidates with their Library state", async () => {
   // Real TMDB answers recorded on 2026-10-12, keyed "query|year".
   const recorded: Record<string, object> = await Bun.file(
@@ -204,6 +265,6 @@ test("every step of an Identification logs one line with the Share's id", async 
   const lines = printed.mock.calls.map(([line]) => JSON.parse(String(line)));
   expect(lines.map((line) => line.step)).toEqual(["read", "llm", "tmdb", "library-check"]);
   expect(lines.every((line) => line.shareId === "shr_42")).toBe(true);
-  expect(lines[0]).toMatchObject({ extractor: "video", images: 1, audio: false });
+  expect(lines[0]).toMatchObject({ extractor: "video", images: 1, audio: false, directIds: 0 });
   expect(lines[1]).toMatchObject({ guesses: 0, costUsd: 0.0012 });
 });

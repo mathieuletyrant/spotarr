@@ -15,9 +15,10 @@ export type IdentifyDeps = {
   libraryState: (type: Candidate["type"], tmdbId: number) => Promise<Candidate["libraryState"]>;
 };
 
-// An IMDb/TMDB link is enough. Otherwise the shared video (or photo post) is
-// read, the LLM names the works it shows, and TMDB confirms them. Each step
-// logs one line with the Share's id. `hint`, given with a Retry, goes to the LLM.
+// An IMDb/TMDB link is enough. Otherwise the shared link is read (a video, a
+// photo post, a web page), the LLM names the works it shows, and TMDB confirms
+// them. Each step logs one line with the Share's id. `hint`, given with a
+// Retry, goes to the LLM.
 export async function identifyShare(
   shareId: string,
   input: ShareInput,
@@ -28,13 +29,7 @@ export async function identifyShare(
   // page: certain, no LLM.
   const ids = findDirectIds(`${input.url ?? ""}\n${input.text ?? ""}`);
   if (ids.length > 0) {
-    const found = await step(
-      shareId,
-      "direct-id",
-      () => lookUpAll(ids, tmdb),
-      (titles) => ({ candidates: titles.length }),
-    );
-    const candidates = await checkLibrary(shareId, found, libraryState);
+    const candidates = await identifyByIds(shareId, ids, tmdb, libraryState);
     if (candidates.length > 0) {
       return {
         status: "READY",
@@ -46,8 +41,8 @@ export async function identifyShare(
     }
   }
 
-  // 2. Otherwise it is a video (a reel), or an Instagram photo post. If it
-  // cannot be read, the Identification fails with the reason.
+  // 2. Otherwise the link is read: a video, an Instagram photo post or any web page.
+  // If it cannot be read, the Identification fails with the reason.
   const url = input.url;
   if (!url) {
     return { status: "NO_MATCH", extractors: [], clues: {}, candidates: [] };
@@ -56,16 +51,37 @@ export async function identifyShare(
     shareId,
     "read",
     () => readLink(url),
-    (link) => ({ extractor: link.extractor, images: link.images.length, audio: !!link.audio }),
+    (link) => ({
+      extractor: link.extractor,
+      images: link.images.length,
+      audio: !!link.audio,
+      directIds: link.directIds?.length ?? 0,
+    }),
   );
   const clues: Clues = { caption: read.caption, author: read.author };
 
-  // 3. The LLM reads the caption, looks at the images and listens to the sound;
-  // TMDB confirms its guesses.
+  // 3. A web page linking to IMDb or TMDB (Letterboxd, Wikipedia) names its work:
+  // certain, no LLM.
+  if (read.directIds && read.directIds.length > 0) {
+    const candidates = await identifyByIds(shareId, read.directIds, tmdb, libraryState);
+    if (candidates.length > 0) {
+      return {
+        status: "READY",
+        method: "DIRECT_ID",
+        extractors: [read.extractor],
+        clues,
+        candidates,
+      };
+    }
+  }
+
+  // 4. The LLM reads the caption (and a page's text), looks at the images and
+  // listens to the sound; TMDB confirms its guesses.
   const { answer, costUsd } = await step(
     shareId,
     "llm",
-    () => guessTitles({ clues, hint, images: read.images, audio: read.audio }, llm),
+    () =>
+      guessTitles({ clues, hint, text: read.text, images: read.images, audio: read.audio }, llm),
     (reply) => ({ guesses: reply.answer.guesses.length, costUsd: reply.costUsd }),
   );
   const confirmed = await step(
@@ -111,12 +127,29 @@ async function checkLibrary(
   }
 }
 
+async function identifyByIds(
+  shareId: string,
+  ids: DirectId[],
+  tmdb: Tmdb,
+  libraryState: IdentifyDeps["libraryState"],
+): Promise<Candidate[]> {
+  const found = await step(
+    shareId,
+    "direct-id",
+    () => lookUpAll(ids, tmdb),
+    (titles) => ({ candidates: titles.length }),
+  );
+  return checkLibrary(shareId, found, libraryState);
+}
+
 async function lookUpAll(ids: DirectId[], tmdb: Tmdb): Promise<Candidate[]> {
   const candidates: Candidate[] = [];
   for (const id of ids) {
     const title = await lookUp(id, tmdb);
+    // The IMDb and TMDB links of one work (a Wikipedia page has both) give it once.
+    const seen = candidates.some((c) => c.type === title?.type && c.tmdbId === title?.tmdbId);
     // A direct ID is certain: no confidence.
-    if (title) candidates.push({ ...title, libraryState: "ABSENT" });
+    if (title && !seen) candidates.push({ ...title, libraryState: "ABSENT" });
   }
   return candidates;
 }
