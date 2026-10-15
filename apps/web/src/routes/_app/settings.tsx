@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Activity,
+  Bot,
   Film,
   KeyRound,
   Library,
@@ -13,7 +14,7 @@ import {
   Webhook,
   Zap,
 } from "lucide-react";
-import { type SubmitEvent, useState } from "react";
+import { type SubmitEvent, useEffect, useRef, useState } from "react";
 import { DependenciesCard } from "../../components/settings/dependencies-card";
 import {
   Field,
@@ -47,9 +48,23 @@ const MENU = [
   { id: "auto-add", label: "Auto add", icon: Zap },
   { id: "extraction", label: "Extraction", icon: Film },
   { id: "webhooks", label: "Webhooks", icon: Webhook },
-  { id: "access", label: "Access", icon: KeyRound },
+  { id: "access", label: "API", icon: KeyRound },
+  { id: "mcp", label: "MCP", icon: Bot },
 ] as const satisfies { id: string; label: string; icon: LucideIcon }[];
 type SectionId = (typeof MENU)[number]["id"];
+
+// The MCP server's tools (apps/server/src/api/mcp/), as the MCP tab lists them.
+const MCP_TOOLS = [
+  {
+    name: "list_shares",
+    description:
+      "The history, newest first, with each Share's candidates and where they stand. Filters by status, genre and text.",
+  },
+  {
+    name: "list_genres",
+    description: "Every genre of the history, most Shares first: the names list_shares filters by.",
+  },
+];
 
 export const Route = createFileRoute("/_app/settings")({
   // ?section=seerr shows that section only; Status without it, so that its tab
@@ -80,9 +95,20 @@ function SettingsPage() {
 // left from md up. A dot marks a section with unsaved changes or an error,
 // since the Save bar counts the changes of every section.
 // The Link marks the current tab itself, with aria-current="page".
-function SectionTabs({ marked }: { marked: Set<string> }) {
+function SectionTabs({ current, marked }: { current: SectionId; marked: Set<string> }) {
+  const nav = useRef<HTMLElement>(null);
+  // On a phone the row is wider than the screen: bring the current tab into view.
+  useEffect(() => {
+    nav.current
+      ?.querySelector(`[href*="section=${current}"]`)
+      ?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  }, [current]);
+
   return (
-    <nav className="-mx-4 flex gap-1 overflow-x-auto px-4 text-sm md:sticky md:top-6 md:mx-0 md:flex-col md:gap-0.5 md:px-0">
+    <nav
+      ref={nav}
+      className="-mx-4 flex gap-1 overflow-x-auto px-4 text-sm md:sticky md:top-6 md:mx-0 md:flex-col md:gap-0.5 md:px-0"
+    >
       {MENU.map(({ id, label, icon: Icon }) => (
         <Link
           key={id}
@@ -149,7 +175,7 @@ function SettingsForm({ saved }: { saved: Values }) {
       onSubmit={submit}
       className="grid grid-cols-1 gap-6 pb-24 md:grid-cols-[12rem_minmax(0,1fr)] md:items-start"
     >
-      <SectionTabs marked={marked} />
+      <SectionTabs current={section} marked={marked} />
       <div className="flex min-w-0 flex-col gap-6">
         {section === "status" && <DependenciesCard />}
 
@@ -315,16 +341,37 @@ function SettingsForm({ saved }: { saved: Values }) {
           <Section
             id="access"
             icon={<KeyRound aria-hidden className="size-5" />}
-            title="Access"
-            description="What lets the iPhone, scripts and MCP clients call Spotarr."
+            title="API"
+            description="What lets the iPhone and scripts call Spotarr, with every right."
           >
             <TokenField
               id="api-token"
               label="API token"
               value={values["access.apiToken"] ?? ""}
-              hint="Sent by the iPhone and scripts in the Authorization header."
+              hint="Sent by the iPhone and scripts in the Authorization header. It also signs in to this page."
             />
+          </Section>
+        )}
+
+        {section === "mcp" && (
+          <Section
+            id="mcp"
+            icon={<Bot aria-hidden className="size-5" />}
+            title="MCP"
+            description="Lets an AI assistant like Claude read the history: read-only, it changes nothing."
+          >
             <McpUrlField form={form} />
+            <SubHeading title="Tools" description="What the assistant can call. Both only read." />
+            <ul className="flex flex-col gap-3 md:col-span-2">
+              {MCP_TOOLS.map((tool) => (
+                <li key={tool.name} className="flex flex-col gap-0.5 text-sm">
+                  <code className="w-fit rounded bg-text/8 px-1.5 py-0.5 font-mono text-xs">
+                    {tool.name}
+                  </code>
+                  <span className="text-text-muted">{tool.description}</span>
+                </li>
+              ))}
+            </ul>
           </Section>
         )}
       </div>
