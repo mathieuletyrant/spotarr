@@ -3,7 +3,7 @@
 // `shortcuts` and `plutil` commands). Run: bun shortcuts/build.ts
 //
 // A Shortcut is a property list of actions. It holds no secret: once imported,
-// paste the API token into its second action, and the Cloudflare Access
+// paste the API token into its second Text action, and the Cloudflare Access
 // service token into the third and fourth when going through Cloudflare (iOS "import questions" left the
 // Set Up button doing nothing on the iPhone, so there are none).
 import { $ } from "bun";
@@ -13,6 +13,7 @@ const TOKEN = "token";
 const CF_ID = "cf-id";
 const CF_SECRET = "cf-secret";
 const SEND = "send";
+const SHARE = "share";
 
 // A text made of plain parts and the outputs of earlier actions.
 // Shortcuts marks each output with U+FFFC and says, by position, which one it is.
@@ -63,36 +64,65 @@ function action(identifier: string, parameters: object) {
   };
 }
 
+function comment(text: string) {
+  return action("comment", { WFCommentActionText: text });
+}
+
 const actions = [
-  // 0 to 3: edited once after import. The Cloudflare Access service token
+  // 0 to 7: edited once after import. The Cloudflare Access service token
   // (client id and secret) is only needed when the address goes through
   // Cloudflare; empty, the headers are sent empty and Spotarr ignores them.
-  action("gettext", { UUID: ADDRESS, WFTextActionText: text("http://umbrel.local:3838") }),
-  action("gettext", { UUID: TOKEN, WFTextActionText: text("PASTE-YOUR-API-TOKEN-HERE") }),
-  action("gettext", { UUID: CF_ID, WFTextActionText: text("") }),
-  action("gettext", { UUID: CF_SECRET, WFTextActionText: text("") }),
-  // 4: CreateShare, as plain JSON over HTTP.
+  // Each Text action's title stays "Text": iOS cannot rename it. A comment
+  // above says what to paste, and the output is named, so the actions below
+  // read "Address", not "Text".
+  comment("Spotarr's address"),
+  action("gettext", {
+    UUID: ADDRESS,
+    CustomOutputName: "Address",
+    WFTextActionText: text("http://umbrel.local:3838"),
+  }),
+  comment("API token (Spotarr → Settings → Access → Copy)"),
+  action("gettext", {
+    UUID: TOKEN,
+    CustomOutputName: "API token",
+    WFTextActionText: text("PASTE-YOUR-API-TOKEN-HERE"),
+  }),
+  comment("Cloudflare Access Client Id (empty at home)"),
+  action("gettext", { UUID: CF_ID, CustomOutputName: "CF Client Id", WFTextActionText: text("") }),
+  comment("Cloudflare Access Client Secret (empty at home)"),
+  action("gettext", {
+    UUID: CF_SECRET,
+    CustomOutputName: "CF Client Secret",
+    WFTextActionText: text(""),
+  }),
+  // 8: CreateShare, as plain JSON over HTTP.
   action("downloadurl", {
     UUID: SEND,
-    WFURL: text({ output: ADDRESS, name: "Text" }, "/api/spotarr.v1.SpotarrService/CreateShare"),
+    WFURL: text({ output: ADDRESS, name: "Address" }, "/api/spotarr.v1.SpotarrService/CreateShare"),
     WFHTTPMethod: "POST",
     ShowHeaders: true,
     WFHTTPHeaders: dictionary([
-      ["Authorization", text("Bearer ", { output: TOKEN, name: "Text" })],
-      ["CF-Access-Client-Id", text({ output: CF_ID, name: "Text" })],
-      ["CF-Access-Client-Secret", text({ output: CF_SECRET, name: "Text" })],
+      ["Authorization", text("Bearer ", { output: TOKEN, name: "API token" })],
+      ["CF-Access-Client-Id", text({ output: CF_ID, name: "CF Client Id" })],
+      ["CF-Access-Client-Secret", text({ output: CF_SECRET, name: "CF Client Secret" })],
     ]),
     WFHTTPBodyType: "JSON",
     WFJSONValues: dictionary([["url", text("input")]]),
   }),
-  // 5 to 9: a created Share comes back as {"share": …}. Anything else is
+  // 9 to 14: a created Share comes back as {"share": …}. Anything else is
   // Spotarr's error ({"code", "message"}) or Cloudflare's page: show it.
+  // "has any value" rather than "contains": iOS dropped the text of a
+  // "contains" condition on import, leaving the If unfinished.
+  action("getvalueforkey", {
+    UUID: SHARE,
+    WFDictionaryKey: "share",
+    WFInput: { Type: "Variable", Variable: output(SEND, "Contents of URL") },
+  }),
   action("conditional", {
     GroupingIdentifier: "ifSent",
     WFControlFlowMode: 0,
-    WFCondition: 99, // "contains"
-    WFConditionalActionString: text('"share"'),
-    WFInput: { Type: "Variable", Variable: output(SEND, "Contents of URL") },
+    WFCondition: 100, // "has any value"
+    WFInput: { Type: "Variable", Variable: output(SHARE, "Dictionary Value") },
   }),
   action("notification", {
     WFNotificationActionTitle: "Sent to Spotarr",

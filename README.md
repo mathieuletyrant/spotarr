@@ -75,8 +75,9 @@ New Shortcut, ⓘ → Show in Share Sheet, receiving URLs. Then these actions:
 1. **Get Contents of URL**: `http://umbrel.local:3838/api/spotarr.v1.SpotarrService/CreateShare`, method POST.
    - Headers: `Authorization` = `Bearer <your API token>`. Through Cloudflare, also `CF-Access-Client-Id` and `CF-Access-Client-Secret`.
    - Request body: JSON, with one text field `url` = Shortcut Input.
-2. **If** Contents of URL contains `"share"`: **Show Notification** "Sent to Spotarr".
-3. **Otherwise**: **Show Notification** "Not sent to Spotarr", with Contents of URL as its body.
+2. **Get Dictionary Value** `share` in Contents of URL.
+3. **If** Dictionary Value has any value: **Show Notification** "Sent to Spotarr".
+4. **Otherwise**: **Show Notification** "Not sent to Spotarr", with Contents of URL as its body.
 
 </details>
 
