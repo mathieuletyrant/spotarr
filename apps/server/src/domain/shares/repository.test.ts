@@ -226,13 +226,13 @@ test("the LLM cost adds up the Identifications whose cost is known", async () =>
   await shares.finish(b, { ...result, llmCostUsd: 0.002 }, 10);
   await shares.finish(c, result, 10);
 
-  const cost = await shares.llmCostLast30Days();
-  expect(cost.identifications).toBe(2);
-  expect(cost.totalUsd).toBeCloseTo(0.003);
+  const costOf = async () =>
+    (await shares.stats()).months.reduce((sum, m) => sum + m.llmCostUsd, 0);
+  expect(await costOf()).toBeCloseTo(0.003);
 
   // A retry clears the cost of the run it replaces.
   await shares.requeue(a);
-  expect((await shares.llmCostLast30Days()).identifications).toBe(1);
+  expect(await costOf()).toBeCloseTo(0.002);
 });
 
 test("stats count Shares and Additions by month, and Shares by source", async () => {

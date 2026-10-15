@@ -14,10 +14,8 @@ export function statusRpcs(
 
     checkDependencies: async () => {
       const dependencies = await checkDependencies(await settings.get());
-      const llmCost = await shares.llmCostLast30Days();
       return {
         dependencies: dependencies.map((d) => ({ ...d, state: DependencyState[d.state] })),
-        llmCost: llmCost.identifications > 0 ? llmCost : undefined,
       };
     },
 

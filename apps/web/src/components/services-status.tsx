@@ -28,15 +28,21 @@ function summaryOf(dependencies: Dependency[]): string {
   return failing === 1 ? "1 issue" : `${failing} issues`;
 }
 
+// The Settings tab where a service is set up. yt-dlp and ffmpeg have none:
+// they come with Spotarr.
+const SECTIONS: Record<string, "identification" | "seerr"> = {
+  LLM: "identification",
+  TMDB: "identification",
+  Seerr: "seerr",
+};
+
+const closePanel = () => document.getElementById("services-status")?.hidePopover();
+
 // The header's dot: whether every service Spotarr needs answers, on every
-// page. A click opens the list. Shares the Status tab's check, which pings the
-// LLM: checked when the app opens, then every 10 minutes while it stays open.
+// page. A click opens the list; a service that does not work links to its
+// Settings tab. The check pings the LLM: see dependenciesQuery for when it runs.
 export function ServicesStatus() {
-  const { data, isFetching, refetch } = useQuery({
-    ...dependenciesQuery(),
-    staleTime: 5 * 60_000,
-    refetchInterval: 10 * 60_000,
-  });
+  const { data, isFetching, refetch } = useQuery(dependenciesQuery());
   const dependencies = data?.dependencies ?? [];
   const state = data ? overallState(dependencies) : DependencyState.UNSPECIFIED;
   const summary = data ? summaryOf(dependencies) : "Checking…";
@@ -97,17 +103,19 @@ export function ServicesStatus() {
               ) : (
                 <span className="min-w-0 flex-1 text-status-error">{dependency.detail}</span>
               )}
+              {dependency.state !== DependencyState.OK && SECTIONS[dependency.name] && (
+                <Link
+                  to="/settings"
+                  search={{ section: SECTIONS[dependency.name] }}
+                  onClick={closePanel}
+                  className="shrink-0 font-medium text-text-muted hover:text-text"
+                >
+                  Fix →
+                </Link>
+              )}
             </li>
           ))}
         </ul>
-        <Link
-          to="/settings"
-          search={{ section: "status" }}
-          onClick={() => document.getElementById("services-status")?.hidePopover()}
-          className="block border-t border-divider px-4 py-3 text-sm font-medium text-text-muted hover:text-text"
-        >
-          Open Status →
-        </Link>
       </div>
     </>
   );

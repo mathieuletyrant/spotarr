@@ -63,9 +63,8 @@ message CheckDependenciesRequest {}
 
 message CheckDependenciesResponse {
   repeated Dependency dependencies = 1;
-  // What the LLM cost over the last 30 days, as its provider reports it
-  // (OpenRouter does). Absent when no Identification recorded a cost.
-  optional LlmCost llm_cost = 2;
+  // No longer sent: GetStats gives the LLM cost month by month.
+  optional LlmCost llm_cost = 2 [deprecated = true];
 }
 
 message Dependency {
