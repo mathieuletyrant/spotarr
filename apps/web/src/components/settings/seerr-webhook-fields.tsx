@@ -2,7 +2,7 @@ import { useMutation } from "@connectrpc/connect-query";
 import { SpotarrService } from "@spotarr/contract";
 import { useQueryClient } from "@tanstack/react-query";
 import { RefreshCw } from "lucide-react";
-import { useRef } from "react";
+import { type ReactNode, useRef } from "react";
 import { settingsQuery } from "../../queries/settings";
 import { useToast } from "../toast";
 import type { Form } from "./fields";
@@ -11,6 +11,17 @@ import { TokenField } from "./token-field";
 // What Seerr sends: the title that changed. The server reads these two fields
 // (api/seerr-webhook.ts) and asks Seerr where the title stands now.
 const PAYLOAD = '{"type": "{{media_type}}", "tmdbId": "{{media_tmdbid}}"}';
+
+// Seerr's request notifications, as its English UI names them. The Issue ones
+// say nothing about the library.
+const NOTIFICATION_TYPES = [
+  "Request Pending Approval",
+  "Request Automatically Approved",
+  "Request Approved",
+  "Request Declined",
+  "Request Available",
+  "Request Processing Failed",
+];
 
 // What to copy into Seerr's Webhook agent (Settings → Notifications → Webhook),
 // so Seerr tells Spotarr when a request is approved, declined or available.
@@ -33,59 +44,53 @@ export function SeerrWebhookFields({ form }: { form: Form }) {
 
   return (
     <>
-      <div className="flex flex-col gap-2 text-sm md:col-span-2">
-        <p className="font-medium">Keep the history in step with Seerr</p>
-        <p className="text-text-muted">
-          Seerr then tells Spotarr when a request is approved, declined or downloaded.
-        </p>
-        <ol className="flex list-decimal flex-col gap-1.5 pl-5 text-text-muted">
-          <li>In Seerr, open Settings → Notifications → Webhook and tick Enable Agent.</li>
-          <li>
-            Copy the Webhook URL, the Authorization header and the JSON payload below into it.
-          </li>
-          <li>
-            Tick these notification types, and leave the Issue ones:
-            <ul className="mt-1 list-disc pl-5">
-              <li>Request Pending Approval</li>
-              <li>Request Automatically Approved</li>
-              <li>Request Approved</li>
-              <li>Request Declined</li>
-              <li>Request Available</li>
-              <li>Request Processing Failed</li>
-            </ul>
-          </li>
-          <li>Press Test: Seerr shows it passed. Then Save.</li>
-        </ol>
-      </div>
-      <TokenField
-        id="seerr-webhook-url"
-        label="Webhook URL"
-        value={`${window.location.origin}/seerr/webhook`}
-        secret={false}
-        hint="It uses this page's address; change it if Seerr reaches Spotarr at another one."
-      />
-      <TokenField
-        id="seerr-token"
-        label="Authorization header"
-        value={token}
-        hint="The Seerr token: it only lets Seerr report changes."
-      >
-        <button
-          type="button"
-          onClick={() => dialog.current?.showModal()}
-          className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium hover:bg-surface"
-        >
-          <RefreshCw aria-hidden className="size-4" />
-          Regenerate
-        </button>
-      </TokenField>
-      <TokenField
-        id="seerr-payload"
-        label="JSON payload"
-        value={PAYLOAD}
-        secret={false}
-        hint="Replaces Seerr's default payload: Spotarr only needs the title."
-      />
+      <ol className="flex flex-col gap-6 md:col-span-2">
+        <Step
+          n={1}
+          title="In Seerr, open Settings → Notifications → Webhook and tick Enable Agent."
+        />
+        <Step n={2} title="Copy these three values into it.">
+          <TokenField
+            id="seerr-webhook-url"
+            label="Webhook URL"
+            value={`${window.location.origin}/seerr/webhook`}
+            secret={false}
+            hint="It uses this page's address; change it if Seerr reaches Spotarr at another one."
+          />
+          <TokenField
+            id="seerr-token"
+            label="Authorization header"
+            value={token}
+            hint="The Seerr token: it only lets Seerr report changes."
+          >
+            <button
+              type="button"
+              onClick={() => dialog.current?.showModal()}
+              className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium hover:bg-surface"
+            >
+              <RefreshCw aria-hidden className="size-4" />
+              Regenerate
+            </button>
+          </TokenField>
+          <TokenField
+            id="seerr-payload"
+            label="JSON payload"
+            value={PAYLOAD}
+            secret={false}
+            hint="Replaces Seerr's default payload: Spotarr only needs the title."
+          />
+        </Step>
+        <Step n={3} title="Tick these notification types, and leave the Issue ones.">
+          <ul className="flex flex-wrap gap-1.5">
+            {NOTIFICATION_TYPES.map((type) => (
+              <li key={type} className="rounded-full bg-text/8 px-2.5 py-1 text-xs font-medium">
+                {type}
+              </li>
+            ))}
+          </ul>
+        </Step>
+        <Step n={4} title="Press Test: Seerr shows it passed. Then Save." />
+      </ol>
 
       <dialog
         ref={dialog}
@@ -123,5 +128,21 @@ export function SeerrWebhookFields({ form }: { form: Form }) {
         </div>
       </dialog>
     </>
+  );
+}
+
+// One step of the setup: its number in an amber circle, what to do, then
+// what it needs (the values to copy, the types to tick).
+function Step({ n, title, children }: { n: number; title: string; children?: ReactNode }) {
+  return (
+    <li className="flex gap-3">
+      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-semibold text-accent">
+        {n}
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-4 pt-0.5">
+        <p className="text-sm font-medium">{title}</p>
+        {children}
+      </div>
+    </li>
   );
 }

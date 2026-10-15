@@ -9,7 +9,7 @@ export type Form = {
   change: (name: string, value: string) => void;
 };
 
-// One block of the page, reachable from the menu by its id: an amber icon, the
+// One section of the page, shown by its tab: an amber icon, the
 // title and what it is for, an optional ⓘ with more details, an optional
 // button on the right, then the fields.
 export function Section({
@@ -30,10 +30,7 @@ export function Section({
   children: ReactNode;
 }) {
   return (
-    <section
-      id={id}
-      className="scroll-mt-6 overflow-hidden rounded-xl border border-border bg-surface-raised"
-    >
+    <section id={id} className="overflow-hidden rounded-xl border border-border bg-surface-raised">
       <div className="flex items-start gap-4 border-b border-divider p-5">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
           {icon}
@@ -49,6 +46,17 @@ export function Section({
       </div>
       <div className="grid grid-cols-1 gap-5 p-5 md:grid-cols-2">{children}</div>
     </section>
+  );
+}
+
+// A title over a group of fields in a Section, across its width. Every group
+// but the first is set apart by a line above it.
+export function SubHeading({ title, description }: { title: string; description?: string }) {
+  return (
+    <div className="border-divider not-first:border-t not-first:pt-5 md:col-span-2">
+      <h3 className="text-sm font-semibold">{title}</h3>
+      {description && <p className="mt-0.5 text-sm text-text-muted">{description}</p>}
+    </div>
   );
 }
 

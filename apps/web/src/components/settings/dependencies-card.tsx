@@ -1,5 +1,6 @@
 import { DependencyState } from "@spotarr/contract";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { Activity, RefreshCw } from "lucide-react";
 import { dependenciesQuery } from "../../queries/settings";
 import { Section } from "./fields";
@@ -18,6 +19,14 @@ const PILLS: Record<DependencyState, string> = {
   [DependencyState.OK]: "bg-status-ok/12 text-status-ok",
   [DependencyState.NOT_CONFIGURED]: "bg-status-ready/12 text-status-ready",
   [DependencyState.ERROR]: "bg-status-error/12 text-status-error",
+};
+
+// The tab where a Dependency's settings are. yt-dlp and ffmpeg have none:
+// they come with Spotarr.
+const SECTIONS: Record<string, "identification" | "seerr"> = {
+  LLM: "identification",
+  TMDB: "identification",
+  Seerr: "seerr",
 };
 
 // Whether each Dependency works, checked when the page opens, and what the LLM cost.
@@ -53,11 +62,7 @@ export function DependenciesCard() {
                 <span className="min-w-0 flex-1 truncate text-sm text-text-muted">
                   {dependency.detail}
                 </span>
-                <span
-                  className={`shrink-0 rounded-full px-2.5 py-0.5 text-sm font-medium ${PILLS[dependency.state]}`}
-                >
-                  {LABELS[dependency.state]}
-                </span>
+                <DependencyPill name={dependency.name} state={dependency.state} />
               </li>
             ))}
           </ul>
@@ -71,5 +76,23 @@ export function DependenciesCard() {
         )}
       </div>
     </Section>
+  );
+}
+
+// Its state; one that does not work links to the tab that sets it up.
+function DependencyPill({ name, state }: { name: string; state: DependencyState }) {
+  const className = `shrink-0 rounded-full px-2.5 py-0.5 text-sm font-medium ${PILLS[state]}`;
+  const section = SECTIONS[name];
+  if (state === DependencyState.OK || !section) {
+    return <span className={className}>{LABELS[state]}</span>;
+  }
+  return (
+    <Link
+      to="/settings"
+      search={{ section }}
+      className={`${className} underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-accent`}
+    >
+      {LABELS[state]} →
+    </Link>
   );
 }
