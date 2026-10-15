@@ -98,7 +98,7 @@ struct SettingsView: View {
       }
 
       Section("How to share") {
-        Label("In Instagram, TikTok or YouTube, tap Share on a video.", systemImage: "square.and.arrow.up")
+        Label("In any app (Instagram, TikTok, Safari…), tap Share on a link.", systemImage: "square.and.arrow.up")
         Label("Choose Spotarr in the list (More… the first time).", systemImage: "scope")
         Label("Follow it in History, and add the film from its page.", systemImage: "film")
       }

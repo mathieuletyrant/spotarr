@@ -132,7 +132,7 @@ struct HistoryView: View {
     } else {
       ContentUnavailableView(
         "No shares yet", systemImage: "square.and.arrow.up",
-        description: Text("Share a reel to Spotarr from Instagram, TikTok or YouTube."))
+        description: Text("Share a link to Spotarr from any app: a reel, a TikTok, an article."))
     }
   }
 

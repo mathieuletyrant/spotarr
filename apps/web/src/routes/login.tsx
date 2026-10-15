@@ -30,17 +30,18 @@ function Showcase() {
         <span className="text-3xl font-semibold lg:text-4xl">Spotarr</span>
       </div>
       <div className="flex flex-col gap-3">
-        <p className="text-2xl font-semibold lg:text-3xl">Share a reel. Get the film.</p>
+        <p className="text-2xl font-semibold lg:text-3xl">Share a link. Get the film.</p>
         <p className="max-w-md text-text-muted">
-          Spotarr finds the movies and shows a video is about, and adds them to your library.
+          Spotarr finds the movies and shows a link is about, and adds them to your library.
         </p>
       </div>
       <ul className="hidden flex-col gap-4 sm:flex">
         <Point icon={<Share aria-hidden className="size-4" />}>
-          Share an Instagram reel, a TikTok or a YouTube Short from your iPhone, or paste a link.
+          Share any link from your iPhone: a reel, a TikTok, an article, a film's page. Or paste it
+          here.
         </Point>
         <Point icon={<ScanSearch aria-hidden className="size-4" />}>
-          An LLM watches the frames and hears the sound; TMDB confirms the titles.
+          An LLM watches the video or reads the page; TMDB confirms the titles.
         </Point>
         <Point icon={<LibraryBig aria-hidden className="size-4" />}>
           Pick the right one, and Seerr adds it to your library.

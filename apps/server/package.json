@@ -17,6 +17,7 @@
     "@hono/mcp": "0.3.2",
     "@modelcontextprotocol/sdk": "1.32.1",
     "@spotarr/contract": "workspace:*",
+    "cheerio": "1.2.0",
     "hono": "4.13.13",
     "kysely": "0.29.6",
     "openai": "7.32.0",

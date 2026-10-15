@@ -154,7 +154,7 @@ function SettingsForm({ saved }: { saved: Values }) {
           name="identification.model"
           label="Model"
           placeholder="provider/model"
-          hint="It gets the video's frames and sound: it must read images and hear audio."
+          hint="It gets a video's frames and sound, or a page's text and pictures: it must read images and hear audio."
           wide
         />
         <Field
@@ -214,7 +214,7 @@ function SettingsForm({ saved }: { saved: Values }) {
         id="extraction"
         icon={<Film aria-hidden className="size-5" />}
         title="Extraction"
-        description="What Spotarr reads from shared videos."
+        description="How Spotarr reads shared videos."
       >
         <Field
           form={form}
