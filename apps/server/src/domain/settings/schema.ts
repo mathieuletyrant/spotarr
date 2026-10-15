@@ -53,6 +53,9 @@ export const SettingsSchema = z.object({
       // Read-only access for MCP clients, at /mcp?token=…; the API refuses it.
       // Generated at first start, changed by regenerateMcpToken() only.
       mcpToken: z.string().default(""),
+      // What Seerr gives when it reports a change, at /seerr/webhook; refused
+      // anywhere else. Generated at first start, changed by regenerateSeerrToken() only.
+      seerrToken: z.string().default(""),
     })
     .prefault({}),
 });

@@ -1,7 +1,7 @@
 import { SpotarrService } from "@spotarr/contract";
 import { Hono, type MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { requireMcpToken, requireToken } from "./api/auth";
+import { requireMcpToken, requireSeerrToken, requireToken } from "./api/auth";
 import { connectHandler } from "./api/connect";
 import { serveFrame } from "./api/frames";
 import { mcpHandler } from "./api/mcp/server";
@@ -12,6 +12,7 @@ import { settingsRpcs } from "./api/rpc/settings";
 import { shareRpcs } from "./api/rpc/shares";
 import { statusRpcs } from "./api/rpc/status";
 import { webhookRpcs } from "./api/rpc/webhooks";
+import { seerrWebhook } from "./api/seerr-webhook";
 import type { WebhookSender } from "./api/webhooks/sender";
 import type { RuleRepository } from "./domain/auto-add/repository";
 import type { SettingsRepository } from "./domain/settings/repository";
@@ -30,7 +31,8 @@ export type AppDeps = {
 
 // Routes: GET /health (open), POST /api/* (Connect RPCs, token required but
 // for Login), GET /frames/* (video thumbnails, token required), /mcp (the MCP
-// server, MCP token required). index.ts adds the web UI after them.
+// server, MCP token required), POST /seerr/webhook (Seerr reporting a change,
+// Seerr token required). index.ts adds the web UI after them.
 // Each file in api/rpc/ implements the RPCs of one domain.
 export function createApp({ apiToken, settings, shares, webhooks, rules, sender }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
@@ -68,6 +70,12 @@ export function createApp({ apiToken, settings, shares, webhooks, rules, sender 
   app.post("/mcp", mcpHandler(shares));
   // Stateless: no stream to open (GET), no session to end (DELETE).
   app.on(["GET", "DELETE"], "/mcp", (c) => c.body(null, 405, { Allow: "POST" }));
+  app.use("/seerr/*", logRequest);
+  app.use(
+    "/seerr/*",
+    requireSeerrToken(async () => (await settings.get()).access.seerrToken),
+  );
+  app.post("/seerr/webhook", seerrWebhook(shares, settings));
 
   return app;
 }

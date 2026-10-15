@@ -9,6 +9,7 @@ import { tmdbFrom } from "./domain/settings/adapters";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import { ensureMcpToken } from "./domain/settings/use-cases/ensure-mcp-token";
+import { ensureSeerrToken } from "./domain/settings/use-cases/ensure-seerr-token";
 import type { Event } from "./domain/shares/events";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
@@ -36,6 +37,7 @@ const { token, created } = await ensureApiToken(settings, process.env.API_TOKEN)
 console.log(`API token${created ? " (new)" : ""}: ${token}`);
 // Shown in the Settings page only, never printed.
 await ensureMcpToken(settings);
+await ensureSeerrToken(settings);
 
 // ── 3. Background: the Webhooks listen to Events, workers identify ──
 const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
@@ -47,7 +49,7 @@ fillMissingDetails(shares, tmdbFrom(await settings.get()), today)
   .then((filled) => log({ step: "tmdb details", filled }))
   .catch((error) => log({ step: "tmdb details", error: String(error) }));
 
-// ── 4. API: /health, the RPCs under /api, the frames, /mcp ──────────
+// ── 4. API: /health, the RPCs under /api, the frames, /mcp, /seerr ──
 const app = createApp({ apiToken: () => token, settings, shares, webhooks, rules, sender });
 
 // ── 5. Web UI: the built front (pnpm build), on every other GET ─────

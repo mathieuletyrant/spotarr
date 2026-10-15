@@ -25,14 +25,14 @@ extension Spotarr_V1_Summary {
     .inProgress, .added, .requested, .alreadyPresent, .toChoose, .noMatch, .failed,
   ]
 
-  /// As the history shows it, e.g. "Already present".
+  /// As the history shows it, e.g. "Available".
   public var label: String {
     switch self {
     case .inProgress: "In progress"
     case .toChoose: "To choose"
     case .added: "Added"
     case .requested: "Requested"
-    case .alreadyPresent: "Already present"
+    case .alreadyPresent: "Available"
     case .noMatch: "No match"
     case .failed: "Failed"
     case .unspecified, .UNRECOGNIZED: ""

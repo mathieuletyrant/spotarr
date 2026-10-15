@@ -8,8 +8,18 @@ export function summaryOf(
 ): Summary {
   if (status === "QUEUED" || status === "PROCESSING") return "IN_PROGRESS";
 
+  // The Candidate last added decides, as its own status: Seerr keeps its
+  // Library state current. One a Retry no longer found keeps its Addition's.
   const latestAddition = additions.at(-1);
-  if (latestAddition) return latestAddition.status;
+  if (latestAddition?.status === "FAILED") return "FAILED";
+  if (latestAddition) {
+    const added = candidates.find(
+      (c) => c.tmdbId === latestAddition.tmdbId && c.type === latestAddition.type,
+    );
+    if (!added) return latestAddition.status;
+    const { status } = candidateStatusOf(added, additions);
+    return status === "CAN_ADD" ? "TO_CHOOSE" : status;
+  }
 
   if (status === "FAILED") return "FAILED";
   if (status === "NO_MATCH") return "NO_MATCH";
@@ -30,32 +40,35 @@ export type CandidateStatus = {
   failure?: string;
 };
 
-// Where a Candidate stands, for the Share's page. Its latest Addition decides
-// first, then its Library state.
+// Where a Candidate stands, for the Share's page. Its Library state decides,
+// whatever path led there: one requested through Spotarr and now downloaded
+// reads ALREADY_PRESENT ("Available"), one Seerr declined reads CAN_ADD again.
+// Its latest Addition only says whether auto add requested it, or why adding failed.
 export function candidateStatusOf(candidate: Candidate, additions: Addition[]): CandidateStatus {
   const addition = latestAdditionOf(candidate, additions);
+  let by: Pick<CandidateStatus, "automatic" | "rule"> = { automatic: false };
   if (addition?.status === "REQUESTED" || addition?.status === "ADDED") {
-    return { status: addition.status, automatic: addition.automatic, rule: addition.rule };
+    by = { automatic: addition.automatic, rule: addition.rule };
   }
-  if (addition?.status === "ALREADY_PRESENT")
-    return { status: "ALREADY_PRESENT", automatic: false };
+
   if (candidate.libraryState === "AVAILABLE" || candidate.libraryState === "PARTIAL") {
-    return { status: "ALREADY_PRESENT", automatic: false };
+    return { status: "ALREADY_PRESENT", ...by };
   }
-  if (candidate.libraryState === "REQUESTED") return { status: "REQUESTED", automatic: false };
+  if (candidate.libraryState === "REQUESTED") return { status: "REQUESTED", ...by };
   if (addition?.status === "FAILED") {
     return { status: "CAN_ADD", automatic: false, failure: addition.error };
   }
   return { status: "CAN_ADD", automatic: false };
 }
 
-// Candidates whose latest Addition put them in the library or found them
-// there already: the "2/3" of the history. Counted per Candidate, so a retry
-// that kept old Additions never makes it "3/2".
+// Candidates Spotarr added that are requested or in the library: the "2/3"
+// of the history. Counted per Candidate, so a retry that kept old Additions
+// never makes it "3/2". One Seerr declined no longer counts.
 export function addedCountOf(candidates: Candidate[], additions: Addition[]): number {
   return candidates.filter((candidate) => {
     const addition = latestAdditionOf(candidate, additions);
-    return addition !== undefined && addition.status !== "FAILED";
+    if (addition === undefined || addition.status === "FAILED") return false;
+    return candidateStatusOf(candidate, additions).status !== "CAN_ADD";
   }).length;
 }
 

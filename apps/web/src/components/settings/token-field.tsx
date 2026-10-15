@@ -3,22 +3,25 @@ import { type ReactNode, useState } from "react";
 import { inputClass } from "./fields";
 
 // A secret Spotarr made, read-only here: hidden until asked, copied in one
-// click. `children` adds buttons after Copy (Regenerate).
+// click. `children` adds buttons after Copy (Regenerate). With `secret` false,
+// a value to copy that hides nothing: always shown, no eye.
 export function TokenField({
   id,
   label,
   value,
   hint,
+  secret = true,
   children,
 }: {
   id: string;
   label: string;
   value: string;
   hint: string;
+  secret?: boolean;
   children?: ReactNode;
 }) {
   const [copied, setCopied] = useState(false);
-  const [shown, setShown] = useState(false);
+  const [shown, setShown] = useState(!secret);
 
   async function copy() {
     await navigator.clipboard.writeText(value);
@@ -38,20 +41,22 @@ export function TokenField({
             readOnly
             type={shown ? "text" : "password"}
             value={value}
-            className={`${inputClass} pr-10 font-mono`}
+            className={`${inputClass} font-mono ${secret ? "pr-10" : ""}`}
           />
-          <button
-            type="button"
-            onClick={() => setShown(!shown)}
-            aria-label={shown ? `Hide the ${label}` : `Show the ${label}`}
-            className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-text-muted hover:text-text"
-          >
-            {shown ? (
-              <EyeOff aria-hidden className="size-4" />
-            ) : (
-              <Eye aria-hidden className="size-4" />
-            )}
-          </button>
+          {secret && (
+            <button
+              type="button"
+              onClick={() => setShown(!shown)}
+              aria-label={shown ? `Hide the ${label}` : `Show the ${label}`}
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-text-muted hover:text-text"
+            >
+              {shown ? (
+                <EyeOff aria-hidden className="size-4" />
+              ) : (
+                <Eye aria-hidden className="size-4" />
+              )}
+            </button>
+          )}
         </span>
         <button
           type="button"

@@ -331,13 +331,17 @@ public nonisolated enum Spotarr_V1_AdditionStatus: SwiftProtobuf.Enum, Swift.Cas
 
 }
 
-/// Its latest Addition's status when one exists, else its Library state.
+/// From its Library state, whatever path led there. Seerr keeps it current.
 public nonisolated enum Spotarr_V1_CandidateStatus: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
   case canAdd // = 1
   case requested // = 2
+
+  /// Not used: a title in the library is ALREADY_PRESENT, however it got there.
   case added // = 3
+
+  /// In the library ("Available"), whether it was there before or came through Spotarr.
   case alreadyPresent // = 4
   case UNRECOGNIZED(Int)
 
@@ -383,8 +387,12 @@ public nonisolated enum Spotarr_V1_Summary: SwiftProtobuf.Enum, Swift.CaseIterab
   case unspecified // = 0
   case inProgress // = 1
   case toChoose // = 2
+
+  /// Not used, see CANDIDATE_STATUS_ADDED.
   case added // = 3
   case requested // = 4
+
+  /// In the library ("Available").
   case alreadyPresent // = 5
   case noMatch // = 6
   case failed // = 7
@@ -1078,6 +1086,18 @@ public nonisolated struct Spotarr_V1_AccessSettings: Sendable {
   /// Clears the value of `mcpToken`. Subsequent reads from it will return its default value.
   public mutating func clearMcpToken() {self._mcpToken = nil}
 
+  /// What Seerr sends in the Authorization header when it reports a change, at
+  /// /seerr/webhook. Generated at first start, changed by RegenerateSeerrToken
+  /// only: ignored by UpdateSettings. Refused anywhere else.
+  public var seerrToken: String {
+    get {_seerrToken ?? String()}
+    set {_seerrToken = newValue}
+  }
+  /// Returns true if `seerrToken` has been explicitly set.
+  public var hasSeerrToken: Bool {self._seerrToken != nil}
+  /// Clears the value of `seerrToken`. Subsequent reads from it will return its default value.
+  public mutating func clearSeerrToken() {self._seerrToken = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -1087,6 +1107,7 @@ public nonisolated struct Spotarr_V1_AccessSettings: Sendable {
   fileprivate var _teamDomain: String? = nil
   fileprivate var _aud: String? = nil
   fileprivate var _mcpToken: String? = nil
+  fileprivate var _seerrToken: String? = nil
 }
 
 public nonisolated struct Spotarr_V1_GetSettingsRequest: Sendable {
@@ -1178,6 +1199,28 @@ public nonisolated struct Spotarr_V1_RegenerateMcpTokenResponse: Sendable {
   // methods supported on all messages.
 
   public var mcpToken: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_RegenerateSeerrTokenRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_RegenerateSeerrTokenResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var seerrToken: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3339,7 +3382,7 @@ nonisolated extension Spotarr_V1_ExtractionSettings: SwiftProtobuf.Message, Swif
 
 nonisolated extension Spotarr_V1_AccessSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AccessSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}api_token\0\u{3}public_hostname\0\u{3}team_domain\0\u{1}aud\0\u{3}mcp_token\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}api_token\0\u{3}public_hostname\0\u{3}team_domain\0\u{1}aud\0\u{3}mcp_token\0\u{3}seerr_token\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -3352,6 +3395,7 @@ nonisolated extension Spotarr_V1_AccessSettings: SwiftProtobuf.Message, SwiftPro
       case 3: try { try decoder.decodeSingularStringField(value: &self._teamDomain) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._aud) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._mcpToken) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self._seerrToken) }()
       default: break
       }
     }
@@ -3377,6 +3421,9 @@ nonisolated extension Spotarr_V1_AccessSettings: SwiftProtobuf.Message, SwiftPro
     try { if let v = self._mcpToken {
       try visitor.visitSingularStringField(value: v, fieldNumber: 5)
     } }()
+    try { if let v = self._seerrToken {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3386,6 +3433,7 @@ nonisolated extension Spotarr_V1_AccessSettings: SwiftProtobuf.Message, SwiftPro
     if lhs._teamDomain != rhs._teamDomain {return false}
     if lhs._aud != rhs._aud {return false}
     if lhs._mcpToken != rhs._mcpToken {return false}
+    if lhs._seerrToken != rhs._seerrToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3556,6 +3604,55 @@ nonisolated extension Spotarr_V1_RegenerateMcpTokenResponse: SwiftProtobuf.Messa
 
   public static func ==(lhs: Spotarr_V1_RegenerateMcpTokenResponse, rhs: Spotarr_V1_RegenerateMcpTokenResponse) -> Bool {
     if lhs.mcpToken != rhs.mcpToken {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_RegenerateSeerrTokenRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".RegenerateSeerrTokenRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_RegenerateSeerrTokenRequest, rhs: Spotarr_V1_RegenerateSeerrTokenRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_RegenerateSeerrTokenResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".RegenerateSeerrTokenResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}seerr_token\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.seerrToken) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.seerrToken.isEmpty {
+      try visitor.visitSingularStringField(value: self.seerrToken, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_RegenerateSeerrTokenResponse, rhs: Spotarr_V1_RegenerateSeerrTokenResponse) -> Bool {
+    if lhs.seerrToken != rhs.seerrToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

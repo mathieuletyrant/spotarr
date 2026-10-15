@@ -239,6 +239,21 @@ export class ShareRepository {
       .execute();
   }
 
+  // Writes a title's Library state on its Candidates, in every finished Share.
+  // ponytail: reads every Share; a JSON query if the history grows past a few thousand.
+  async setLibraryState(
+    type: Candidate["type"],
+    tmdbId: number,
+    libraryState: Candidate["libraryState"],
+  ): Promise<void> {
+    for (const share of await this.all()) {
+      const isTitle = (c: Candidate) => c.tmdbId === tmdbId && c.type === type;
+      if (!share.candidates.some((c) => isTitle(c) && c.libraryState !== libraryState)) continue;
+      const candidates = share.candidates.map((c) => (isTitle(c) ? { ...c, libraryState } : c));
+      await this.setCandidates(share.id, candidates);
+    }
+  }
+
   // What Retry asked for this Share's Identification: an effort, a hint.
   async retryRequest(id: string): Promise<RetryRequest> {
     const row = await this.db

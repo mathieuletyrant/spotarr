@@ -61,10 +61,13 @@ export async function addToLibrary(
     const state = await seerr.libraryState(type, request.tmdbId);
     if (state !== "ABSENT") {
       await shares.addAddition(shareId, { ...addition, status: "ALREADY_PRESENT" });
+      await shares.setLibraryState(type, request.tmdbId, state);
       return;
     }
     await seerr.request(type, request.tmdbId);
     await shares.addAddition(shareId, { ...addition, status: "REQUESTED" });
+    // Shown at once, without waiting for Seerr to report the request.
+    await shares.setLibraryState(type, request.tmdbId, "REQUESTED");
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     await shares.addAddition(shareId, { ...addition, status: "FAILED", error: reason });

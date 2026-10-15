@@ -64,6 +64,7 @@ test("an absent Candidate is requested from Seerr", async () => {
   expect(share?.additions).toMatchObject([
     { tmdbId: 41733, target: "SEERR", status: "REQUESTED", automatic: false },
   ]);
+  expect(share?.candidates[0]?.libraryState).toBe("REQUESTED"); // without waiting for Seerr
   expect(share?.summary).toBe("REQUESTED");
   expect(paths(fetch)).toEqual(["/api/v1/movie/41733", "/api/v1/request"]);
   expect(emitted).toMatchObject([{ name: "media.added", added: { title: "Date limite" } }]);
@@ -77,7 +78,10 @@ test("a Candidate already in the library is not requested again", async () => {
 
   await addToLibrary(id, dueDate, deps);
 
-  expect((await shares.get(id))?.additions.map((a) => a.status)).toEqual(["ALREADY_PRESENT"]);
+  const share = await shares.get(id);
+  expect(share?.additions.map((a) => a.status)).toEqual(["ALREADY_PRESENT"]);
+  expect(share?.candidates[0]?.libraryState).toBe("AVAILABLE");
+  expect(share?.summary).toBe("ALREADY_PRESENT");
   expect(paths(fetch)).toEqual(["/api/v1/movie/41733"]); // no request
   expect(emitted).toEqual([]); // no media.added
 });
