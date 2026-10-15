@@ -1,6 +1,7 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
+import { ServicesStatus } from "../components/services-status";
 import { ShareDialog } from "../components/share-dialog";
 import { ThemeButton } from "../components/theme-button";
 import { ToastProvider } from "../components/toast";
@@ -63,6 +64,7 @@ function AppLayout() {
           </nav>
           {/* The page's main action, on every page: share a link from the computer. */}
           <div className="ml-auto flex items-center gap-1">
+            <ServicesStatus />
             <ThemeButton />
             <Link
               to="."
