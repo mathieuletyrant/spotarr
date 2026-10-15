@@ -2,10 +2,10 @@ import { Copy, Eye, EyeOff } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { inputClass } from "./fields";
 
-// A secret Spotarr made, read-only here: hidden until asked, copied in one
-// click. `children` adds buttons after Copy (Regenerate). With `secret` false,
-// a value to copy that hides nothing: always shown, no eye.
-export function TokenField({
+// A value Spotarr made, read-only here, copied in one click. A secret (a
+// token) stays hidden until the eye shows it; `secret={false}` for a URL or a
+// payload. `children` adds buttons after Copy (Regenerate).
+export function CopyField({
   id,
   label,
   value,

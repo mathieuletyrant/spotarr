@@ -145,6 +145,37 @@ export function TextField({
   );
 }
 
+// A choice among a few values, each with its label.
+export function SelectField({
+  form,
+  name,
+  label,
+  hint,
+  options,
+}: {
+  form: Form;
+  name: string;
+  label: string;
+  hint?: string;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <Field form={form} name={name} label={label} hint={hint}>
+      <select
+        value={form.values[name] ?? ""}
+        onChange={(e) => form.change(name, e.target.value)}
+        className={inputClass}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </Field>
+  );
+}
+
 // A key or token: hidden by default, shown with the eye. Still plain text
 // underneath, as decided: the UI shows and copies secrets.
 export function SecretField({
