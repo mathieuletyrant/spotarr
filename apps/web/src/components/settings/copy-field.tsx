@@ -1,10 +1,11 @@
 import { Copy, Eye, EyeOff } from "lucide-react";
 import { type ReactNode, useState } from "react";
+import { useToast } from "../toast";
 import { inputClass } from "./fields";
 
 // A value Spotarr made, read-only here, copied in one click. A secret (a
 // token) stays hidden until the eye shows it; `secret={false}` for a URL or a
-// payload. `children` adds buttons after Copy (Regenerate).
+// payload. A toast says it was copied. `children` adds buttons after Copy (Regenerate).
 export function CopyField({
   id,
   label,
@@ -20,13 +21,12 @@ export function CopyField({
   secret?: boolean;
   children?: ReactNode;
 }) {
-  const [copied, setCopied] = useState(false);
+  const toast = useToast();
   const [shown, setShown] = useState(!secret);
 
   async function copy() {
     await navigator.clipboard.writeText(value);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    toast(`${label} copied`);
   }
 
   return (
@@ -64,7 +64,7 @@ export function CopyField({
           className="flex h-10 shrink-0 items-center gap-2 rounded-md border border-border px-3 text-sm font-medium hover:bg-surface"
         >
           <Copy aria-hidden className="size-4" />
-          {copied ? "Copied" : "Copy"}
+          Copy
         </button>
         {children}
       </div>
