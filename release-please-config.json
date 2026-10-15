@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "include-component-in-tag": false,
+  "bump-minor-pre-major": true,
+  "pull-request-title-pattern": "chore: release ${version}",
+  "packages": {
+    ".": {
+      "extra-files": [
+        { "type": "json", "path": "apps/server/package.json", "jsonpath": "$.version" },
+        { "type": "generic", "path": "apps/ios/Version.xcconfig" }
+      ]
+    }
+  }
+}

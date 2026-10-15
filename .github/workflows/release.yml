@@ -1,7 +1,8 @@
 name: Release
 
-# Pushing a tag vX.Y.Z publishes ghcr.io/mathieuletyrant/spotarr:X.Y.Z (and
-# :latest), for amd64 and arm64. The tag must match apps/server/package.json.
+# A tag vX.Y.Z, made by merging release-please's PR (release-please.yml),
+# publishes ghcr.io/mathieuletyrant/spotarr:X.Y.Z (and :latest), for amd64
+# and arm64. The tag must match apps/server/package.json.
 on:
   push:
     tags: ["v*"]
