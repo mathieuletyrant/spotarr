@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.0](https://github.com/mathieuletyrant/spotarr/compare/v0.9.0...v0.10.0) (2026-10-15)
+
+
+### Features
+
+* **server:** keep Library states current from Seerr's notifications ([#155](https://github.com/mathieuletyrant/spotarr/issues/155)) ([0c33cb9](https://github.com/mathieuletyrant/spotarr/commit/0c33cb9f651ab410122bb0fb56ace475846cde51))
+* **web:** each month's LLM cost under its bar in the Stats chart ([#162](https://github.com/mathieuletyrant/spotarr/issues/162)) ([923b1c2](https://github.com/mathieuletyrant/spotarr/commit/923b1c213c6cf1a76b5819939bedacf1d70a8f25)), closes [#161](https://github.com/mathieuletyrant/spotarr/issues/161)
+* **web:** services status in the header, replacing Settings' Status tab ([#160](https://github.com/mathieuletyrant/spotarr/issues/160)) ([645d4ef](https://github.com/mathieuletyrant/spotarr/commit/645d4ef877f390282f99a8bede1dd083574f0ae8))
+* **web:** Settings in tabs, with the Seerr setup as steps ([#158](https://github.com/mathieuletyrant/spotarr/issues/158)) ([f3af579](https://github.com/mathieuletyrant/spotarr/commit/f3af579718d36557874eb3f7ca882f4299d14f8f))
+
 ## [0.9.0](https://github.com/mathieuletyrant/spotarr/compare/v0.8.0...v0.9.0) (2026-10-15)
 
 
