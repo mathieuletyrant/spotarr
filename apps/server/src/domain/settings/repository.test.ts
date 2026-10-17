@@ -12,6 +12,7 @@ test("an empty database gives the defaults", async () => {
   expect(s.identification.language).toBe("fr-FR");
   expect(s.identification.effort).toBe("low");
   expect(s.seerr).toEqual({ url: "", apiKey: "" });
+  expect(s.jellyfin).toEqual({ url: "", apiKey: "", user: "", collection: "Spotted" });
   expect(s.extraction).toEqual({
     framesPerVideo: 6,
     maxVideoMb: 200,
@@ -37,6 +38,7 @@ test("an invalid value is refused and nothing is saved", async () => {
   await expect(bad).rejects.toThrow();
   expect((await settings.get()).extraction.concurrency).toBe(2);
   await expect(settings.update({ identification: { effort: "extreme" } })).rejects.toThrow();
+  await expect(settings.update({ jellyfin: { collection: "  " } })).rejects.toThrow();
 });
 
 test("the API token is read-only for update, set only by setApiToken", async () => {

@@ -1,5 +1,6 @@
 import type { Handler } from "hono";
 import { z } from "zod";
+import { syncCollectionInBackground } from "../domain/collection/use-cases/sync-collection";
 import type { SettingsRepository } from "../domain/settings/repository";
 import type { ShareRepository } from "../domain/shares/repository";
 import { updateLibraryState } from "../domain/shares/use-cases/update-library-state";
@@ -14,14 +15,19 @@ const TitleChanged = z.object({
 
 // POST /seerr/webhook: Seerr says a title changed in the library. Behind the
 // Seerr token. A payload naming no title (Seerr's Test button, or an issue
-// notification) answers 200 too, so Seerr shows the test as passed.
+// notification) answers 200 too, so Seerr shows the test as passed. A title
+// now in the library may join the Jellyfin Collection: synced in the
+// background, Seerr does not wait for it.
 export function seerrWebhook(shares: ShareRepository, settings: SettingsRepository): Handler {
   return async (c) => {
     const title = TitleChanged.safeParse(await c.req.json().catch(() => undefined));
     if (!title.success) return c.json({ ok: true, updated: false });
 
     const type = title.data.type === "movie" ? "MOVIE" : "TV";
-    await updateLibraryState(type, title.data.tmdbId, { shares, settings });
+    const state = await updateLibraryState(type, title.data.tmdbId, { shares, settings });
+    if (state === "AVAILABLE" || state === "PARTIAL") {
+      syncCollectionInBackground({ shares, settings }, "seerr");
+    }
     return c.json({ ok: true, updated: true });
   };
 }

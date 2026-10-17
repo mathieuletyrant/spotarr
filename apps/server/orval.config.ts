@@ -12,6 +12,16 @@ const TMDB_ROUTES = [
   "/3/genre/movie/list",
   "/3/genre/tv/list",
 ];
+// Jellyfin's routes carry several methods each (DELETE /Items deletes media):
+// only the operations Spotarr calls are kept, as "<method> <route>".
+const JELLYFIN_OPERATIONS = [
+  "get /System/Info",
+  "get /Users",
+  "get /Items",
+  "post /Collections",
+  "post /Collections/{collectionId}/Items",
+  "delete /Collections/{collectionId}/Items",
+];
 
 function onlyRoutes(routes: string[]): InputTransformerFn {
   return (spec) => ({
@@ -20,6 +30,46 @@ function onlyRoutes(routes: string[]): InputTransformerFn {
       Object.entries(spec.paths ?? {}).filter(([route]) => routes.includes(route)),
     ),
   });
+}
+
+function onlyOperations(operations: string[]): InputTransformerFn {
+  return (spec) => {
+    const paths = Object.fromEntries(
+      Object.entries(spec.paths ?? {})
+        .map(([route, item]) => [
+          route,
+          Object.fromEntries(
+            Object.entries(item ?? {}).filter(([method]) =>
+              operations.includes(`${method} ${route}`),
+            ),
+          ),
+        ])
+        .filter(([, item]) => Object.keys(item as object).length > 0),
+    );
+    // Jellyfin describes hundreds of types: only those the kept operations
+    // reach are generated.
+    const all = spec.components?.schemas ?? {};
+    const used = new Set<string>();
+    collectRefs(paths, all, used);
+    const schemas = Object.fromEntries(Object.entries(all).filter(([name]) => used.has(name)));
+    return { ...spec, paths, components: { ...spec.components, schemas } };
+  };
+}
+
+// Adds to `used` the name of every schema `value` refers to ("$ref":
+// "#/components/schemas/BaseItemDto"), and of every schema those refer to.
+function collectRefs(value: unknown, all: Record<string, unknown>, used: Set<string>): void {
+  if (typeof value !== "object" || value === null) return;
+  for (const [key, inner] of Object.entries(value)) {
+    if (key === "$ref" && typeof inner === "string") {
+      const name = inner.replace("#/components/schemas/", "");
+      if (!used.has(name)) {
+        used.add(name);
+        collectRefs(all[name], all, used);
+      }
+    }
+    collectRefs(inner, all, used);
+  }
 }
 
 export default defineConfig({
@@ -53,6 +103,24 @@ export default defineConfig({
       mock: { generators: [{ type: "faker" }] },
       override: {
         mutator: { path: "src/integrations/seerr/seerr-fetch.ts", name: "seerrFetch" },
+      },
+    },
+  },
+
+  // Jellyfin's spec, pinned to the version on the Umbrel (12.2). Its address
+  // being a setting, every call goes through jellyfin-fetch.ts, like Seerr's.
+  jellyfin: {
+    input: {
+      target: "https://api.jellyfin.org/openapi/stable/jellyfin-openapi-12.2.json",
+      override: { transformer: onlyOperations(JELLYFIN_OPERATIONS) },
+    },
+    output: {
+      target: "src/integrations/jellyfin/gen/jellyfin.ts",
+      client: "fetch",
+      baseUrl: "",
+      mock: { generators: [{ type: "faker" }] },
+      override: {
+        mutator: { path: "src/integrations/jellyfin/jellyfin-fetch.ts", name: "jellyfinFetch" },
       },
     },
   },

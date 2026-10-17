@@ -10,6 +10,7 @@ import {
   Library,
   type LucideIcon,
   Sparkles,
+  Tv,
   Webhook,
   Zap,
 } from "lucide-react";
@@ -19,6 +20,7 @@ import { AutoAddSection } from "../../components/settings/auto-add-section";
 import { ExtractionSection } from "../../components/settings/extraction-section";
 import type { Form } from "../../components/settings/fields";
 import { IdentificationSection } from "../../components/settings/identification-section";
+import { JellyfinSection } from "../../components/settings/jellyfin-section";
 import { McpSection } from "../../components/settings/mcp-section";
 import { SaveBar } from "../../components/settings/save-bar";
 import { SeerrSection } from "../../components/settings/seerr-section";
@@ -38,6 +40,7 @@ import { dependenciesQuery, settingsQuery } from "../../queries/settings";
 const MENU = [
   { id: "identification", label: "Identification", icon: Sparkles },
   { id: "seerr", label: "Seerr", icon: Library },
+  { id: "jellyfin", label: "Jellyfin", icon: Tv },
   { id: "auto-add", label: "Auto add", icon: Zap },
   { id: "extraction", label: "Extraction", icon: Film },
   { id: "webhooks", label: "Webhooks", icon: Webhook },
@@ -119,6 +122,12 @@ function SettingsForm({ saved }: { saved: Values }) {
       <div className="min-w-0">
         {section === "identification" && <IdentificationSection form={form} />}
         {section === "seerr" && <SeerrSection form={form} />}
+        {section === "jellyfin" && (
+          <JellyfinSection
+            form={form}
+            unsaved={changed.some((name) => name.startsWith("jellyfin."))}
+          />
+        )}
         {section === "auto-add" && <AutoAddSection />}
         {section === "extraction" && <ExtractionSection form={form} />}
         {section === "webhooks" && <WebhooksSection form={form} />}

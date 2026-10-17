@@ -1,24 +1,27 @@
 import { ffmpegVersion } from "../../../integrations/ffmpeg/version";
 import { ping } from "../../../integrations/llm/client";
 import { ytDlpVersion } from "../../../integrations/ytdlp/ytdlp";
-import { llmConfigFrom, seerrFrom, tmdbFrom } from "../adapters";
+import { jellyfinFrom, llmConfigFrom, seerrFrom, tmdbFrom } from "../adapters";
 import type { Settings } from "../schema";
 
 export type Dependency = {
-  name: "LLM" | "TMDB" | "Seerr" | "yt-dlp" | "ffmpeg";
+  name: "LLM" | "TMDB" | "Seerr" | "yt-dlp" | "ffmpeg" | "Jellyfin";
   state: "OK" | "NOT_CONFIGURED" | "ERROR";
   detail: string;
 };
 
 // Calls every Dependency at once; one failing never hides the others.
+// Jellyfin is optional: listed only once its URL is set.
 export async function checkDependencies(settings: Settings): Promise<Dependency[]> {
-  return Promise.all([
+  const checks = [
     checkLlm(settings),
     checkTmdb(settings),
     checkSeerr(settings),
     checkYtDlp(),
     checkFfmpeg(),
-  ]);
+  ];
+  if (settings.jellyfin.url) checks.push(checkJellyfin(settings));
+  return Promise.all(checks);
 }
 
 async function checkLlm(settings: Settings): Promise<Dependency> {
@@ -59,6 +62,22 @@ async function checkSeerr(settings: Settings): Promise<Dependency> {
     return { name: "Seerr", state: "OK", detail: seerr.url };
   } catch (error) {
     return { name: "Seerr", state: "ERROR", detail: reason(error) };
+  }
+}
+
+async function checkJellyfin(settings: Settings): Promise<Dependency> {
+  const { jellyfin } = settings;
+  if (!jellyfin.apiKey || !jellyfin.user) {
+    return { name: "Jellyfin", state: "NOT_CONFIGURED", detail: "API key or user missing" };
+  }
+  try {
+    // The version proves the key works; the user must exist for "watched".
+    const client = jellyfinFrom(settings);
+    const version = await client.version();
+    await client.userId(jellyfin.user);
+    return { name: "Jellyfin", state: "OK", detail: `${version}, ${jellyfin.user}` };
+  } catch (error) {
+    return { name: "Jellyfin", state: "ERROR", detail: reason(error) };
   }
 }
 

@@ -5,6 +5,7 @@ import { WebhookSender } from "./api/webhooks/sender";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { RuleRepository } from "./domain/auto-add/repository";
+import { syncCollectionInBackground } from "./domain/collection/use-cases/sync-collection";
 import { tmdbFrom } from "./domain/settings/adapters";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
@@ -48,6 +49,10 @@ const today = new Date().toISOString().slice(0, 10);
 fillMissingDetails(shares, tmdbFrom(await settings.get()), today)
   .then((filled) => log({ step: "tmdb details", filled }))
   .catch((error) => log({ step: "tmdb details", error: String(error) }));
+// The Jellyfin Collection, at start then every 15 minutes: Jellyfin does not
+// tell Spotarr when a title is watched. Nothing while Jellyfin is off.
+syncCollectionInBackground({ shares, settings }, "start");
+setInterval(() => syncCollectionInBackground({ shares, settings }, "timer"), 15 * 60_000);
 
 // ── 4. API: /health, the RPCs under /api, the frames, /mcp, /seerr ──
 const app = createApp({ apiToken: () => token, settings, shares, webhooks, rules, sender });

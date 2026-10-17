@@ -21,6 +21,7 @@ export class SettingsRepository {
       const next = SettingsSchema.parse({
         identification: { ...current.identification, ...present(patch.identification) },
         seerr: { ...current.seerr, ...present(patch.seerr) },
+        jellyfin: { ...current.jellyfin, ...present(patch.jellyfin) },
         extraction: { ...current.extraction, ...present(patch.extraction) },
         webhooks: { ...current.webhooks, ...present(patch.webhooks) },
         access: {
