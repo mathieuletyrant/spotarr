@@ -1,4 +1,4 @@
-import { MediaType, type Rule as RuleMessage } from "@spotarr/contract";
+import { MediaType, RuleAction, type Rule as RuleMessage } from "@spotarr/contract";
 import type { RuleRepository } from "../../domain/auto-add/repository";
 import type { Rule } from "../../domain/auto-add/types";
 import { previewRules } from "../../domain/auto-add/use-cases/preview-rules";
@@ -40,6 +40,7 @@ export function ruleRpcs(
           type: MediaType[candidate.type],
           posterUrl: candidate.posterUrl,
           rule: rule.name,
+          action: RuleAction[rule.action],
         })),
       };
     },
@@ -47,7 +48,11 @@ export function ruleRpcs(
 }
 
 function toMessage(rule: Rule) {
-  return { ...rule, type: rule.type ? MediaType[rule.type] : MediaType.UNSPECIFIED };
+  return {
+    ...rule,
+    type: rule.type ? MediaType[rule.type] : MediaType.UNSPECIFIED,
+    action: RuleAction[rule.action],
+  };
 }
 
 // The contract's UNSPECIFIED type means both; an absent number, no condition.
@@ -62,7 +67,14 @@ function fromMessage(rule: RuleMessage | undefined): Rule {
     minRating: rule?.minRating,
     minVotes: rule?.minVotes,
     unreleasedSkipsRating: rule?.unreleasedSkipsRating ?? false,
+    action: actionOf(rule?.action),
   };
+}
+
+// UNSPECIFIED, as an older client sends it, means requesting.
+function actionOf(action: RuleAction | undefined): Rule["action"] {
+  if (action === RuleAction.WATCHLIST) return "WATCHLIST";
+  return "REQUEST";
 }
 
 function typeOf(type: MediaType | undefined): Rule["type"] {

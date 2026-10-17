@@ -48,8 +48,10 @@ service SpotarrService {
   // Sends a sample "test" event to one Webhook; returns it with that delivery.
   rpc TestWebhook(TestWebhookRequest) returns (TestWebhookResponse);
 
-  // Auto add's Rules, oldest first. A Candidate is requested without a click
-  // when one enabled Rule holds for it; the first such Rule is credited.
+  // Auto add's Rules, oldest first. A Candidate is requested, or put in Seerr's
+  // watchlist, without a click when one enabled Rule holds for it. A Rule that
+  // requests wins over one that puts in the watchlist; among the same action,
+  // the first Rule that holds is credited.
   rpc ListRules(ListRulesRequest) returns (ListRulesResponse);
   // Creates the Rule when its id is empty, else replaces it.
   rpc SaveRule(SaveRuleRequest) returns (SaveRuleResponse);
@@ -611,8 +613,8 @@ message TestWebhookResponse {
   Webhook webhook = 1;
 }
 
-// When auto add requests a Candidate without a click. All its conditions must
-// hold; an absent condition is no condition.
+// When auto add requests a Candidate, or puts it in Seerr's watchlist, without
+// a click. All its conditions must hold; an absent condition is no condition.
 message Rule {
   // Empty in SaveRule to create one.
   string id = 1;
@@ -633,6 +635,17 @@ message Rule {
   // A title not out yet (released after today, or with no date on TMDB) has
   // no rating to judge: it skips min_rating and min_votes, not the others.
   bool unreleased_skips_rating = 9;
+  // What it does with the Candidates it holds for. UNSPECIFIED: REQUEST.
+  RuleAction action = 10;
+}
+
+enum RuleAction {
+  RULE_ACTION_UNSPECIFIED = 0;
+  // Through Seerr, which sends it to Radarr or Sonarr.
+  RULE_ACTION_REQUEST = 1;
+  // In the watchlist of Seerr's owner: nothing is requested, and JellyTV shows
+  // it. It leaves the watchlist once available.
+  RULE_ACTION_WATCHLIST = 2;
 }
 
 message ListRulesRequest {}
@@ -673,6 +686,7 @@ message PreviewedAddition {
   optional int32 year = 3;
   MediaType type = 4;
   optional string poster_url = 5;
-  // The name of the first Rule that holds for it.
+  // The name of the Rule credited for it.
   string rule = 6;
+  RuleAction action = 7;
 }

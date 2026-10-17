@@ -89,8 +89,10 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `testWebhook`(request: Spotarr_V1_TestWebhookRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_TestWebhookResponse>
 
-    /// Auto add's Rules, oldest first. A Candidate is requested without a click
-    /// when one enabled Rule holds for it; the first such Rule is credited.
+    /// Auto add's Rules, oldest first. A Candidate is requested, or put in Seerr's
+    /// watchlist, without a click when one enabled Rule holds for it. A Rule that
+    /// requests wins over one that puts in the watchlist; among the same action,
+    /// the first Rule that holds is credited.
     @available(iOS 13, *)
     func `listRules`(request: Spotarr_V1_ListRulesRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_ListRulesResponse>
 
