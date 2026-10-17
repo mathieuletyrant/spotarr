@@ -11,6 +11,7 @@ Share any link from your iPhone (a reel, a TikTok, a YouTube video, an article, 
 - 🎯 **Confirms on TMDB.** It keeps the titles that exist on TMDB, with a poster and a confidence. A video or an article naming three films gives three candidates.
 - 📚 **Knows your library.** Seerr tells what is already there.
 - ➕ **Adds in one click**, or on its own: auto add requests a candidate on its own when one of your rules holds (movies or TV shows, a single candidate, confidence, TMDB rating), with a preview of what each rule would have added. A TV show gets season 1 only.
+- 📺 **Waits for you on the TV.** With Jellyfin, a collection keeps what you spotted, once downloaded and until watched: a row of Jellyfin's Home, on the Apple TV too.
 - 🔔 **Tells other services** through webhooks.
 - 🖥️ **A web UI** for the history, the candidates and the settings, in light and dark.
 
@@ -36,7 +37,8 @@ Run `docker compose up -d`, then open http://localhost:3000. The API token is pr
 **Then, in Settings**:
 1. Paste an [OpenRouter](https://openrouter.ai) API key (or any OpenAI-compatible API) and a [TMDB](https://www.themoviedb.org/settings/api) read access token.
 2. Set Seerr's URL and API key.
-3. Check that the Status at the top shows everything as Working.
+3. Optional: in the Jellyfin tab, set Jellyfin's URL, an API key (Dashboard → API Keys) and your user. Spotarr keeps a collection, "Spotted", of the titles added from a Share that Jellyfin has and you have not watched; the tab says how to show it as a Home row, in the browser and in JellyTV.
+4. Check that the Status at the top shows everything as Working.
 
 An identification costs about $0.01 with the default model. Settings shows the cost of the last 30 days.
 

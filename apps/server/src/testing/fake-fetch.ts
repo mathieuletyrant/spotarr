@@ -12,6 +12,8 @@ export function fakeFetch(answers: Record<string, Answer | ((url: URL) => Answer
     const entry = answers[url.pathname];
     if (entry === undefined) throw new Error(`unexpected fetch: ${url.pathname}`);
     const answer = typeof entry === "function" ? entry(url) : entry;
+    // 204 No Content cannot carry a body.
+    if (answer === 204) return new Response(null, { status: 204 });
     if (typeof answer === "number") return new Response("{}", { status: answer });
     return Response.json(answer);
   };

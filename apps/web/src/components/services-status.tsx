@@ -30,10 +30,11 @@ function summaryOf(dependencies: Dependency[]): string {
 
 // The Settings tab where a service is set up. yt-dlp and ffmpeg have none:
 // they come with Spotarr.
-const SECTIONS: Record<string, "identification" | "seerr"> = {
+const SECTIONS: Record<string, "identification" | "seerr" | "jellyfin"> = {
   LLM: "identification",
   TMDB: "identification",
   Seerr: "seerr",
+  Jellyfin: "jellyfin",
 };
 
 const closePanel = () => document.getElementById("services-status")?.hidePopover();

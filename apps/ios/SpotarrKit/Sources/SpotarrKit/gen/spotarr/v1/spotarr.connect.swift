@@ -24,8 +24,9 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `getStatus`(request: Spotarr_V1_GetStatusRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_GetStatusResponse>
 
-    /// Calls each Dependency (LLM, TMDB, Seerr, yt-dlp, ffmpeg) and says whether it
-    /// works, with the reason when it does not. Takes a few seconds.
+    /// Calls each Dependency (LLM, TMDB, Seerr, yt-dlp, ffmpeg, and Jellyfin when
+    /// its URL is set) and says whether it works, with the reason when it does
+    /// not. Takes a few seconds.
     @available(iOS 13, *)
     func `checkDependencies`(request: Spotarr_V1_CheckDependenciesRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_CheckDependenciesResponse>
 
@@ -48,6 +49,11 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     /// Replaces the Seerr token with a new one: Seerr is refused until it gets it.
     @available(iOS 13, *)
     func `regenerateSeerrToken`(request: Spotarr_V1_RegenerateSeerrTokenRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_RegenerateSeerrTokenResponse>
+
+    /// Brings the Jellyfin Collection in line now, rather than at the next
+    /// 15-minute sync, and says what it did. Creates the Collection if missing.
+    @available(iOS 13, *)
+    func `syncCollection`(request: Spotarr_V1_SyncCollectionRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_SyncCollectionResponse>
 
     /// Records a Share and queues its Identification. Answers at once, status QUEUED.
     @available(iOS 13, *)
@@ -161,6 +167,11 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
     }
 
     @available(iOS 13, *)
+    public func `syncCollection`(request: Spotarr_V1_SyncCollectionRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_SyncCollectionResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/SyncCollection", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
     public func `createShare`(request: Spotarr_V1_CreateShareRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_CreateShareResponse> {
         return await self.client.unary(path: "/spotarr.v1.SpotarrService/CreateShare", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -241,6 +252,7 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
             public static let updateSettings = Connect.MethodSpec(name: "UpdateSettings", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let regenerateMcpToken = Connect.MethodSpec(name: "RegenerateMcpToken", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let regenerateSeerrToken = Connect.MethodSpec(name: "RegenerateSeerrToken", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let syncCollection = Connect.MethodSpec(name: "SyncCollection", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let createShare = Connect.MethodSpec(name: "CreateShare", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let getShare = Connect.MethodSpec(name: "GetShare", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let listShares = Connect.MethodSpec(name: "ListShares", service: "spotarr.v1.SpotarrService", type: .unary)

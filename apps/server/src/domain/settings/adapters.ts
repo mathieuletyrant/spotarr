@@ -1,3 +1,4 @@
+import { Jellyfin } from "../../integrations/jellyfin/client";
 import type { LlmConfig } from "../../integrations/llm/client";
 import { Seerr } from "../../integrations/seerr/client";
 import { Tmdb } from "../../integrations/tmdb/client";
@@ -12,6 +13,10 @@ export function tmdbFrom({ identification }: Settings): Tmdb {
 
 export function seerrFrom({ seerr }: Settings): Seerr {
   return new Seerr({ url: seerr.url, apiKey: seerr.apiKey });
+}
+
+export function jellyfinFrom({ jellyfin }: Settings): Jellyfin {
+  return new Jellyfin({ url: jellyfin.url, apiKey: jellyfin.apiKey });
 }
 
 export function llmConfigFrom({ identification }: Settings): LlmConfig {

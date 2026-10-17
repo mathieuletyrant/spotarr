@@ -1,12 +1,12 @@
 import { useMutation } from "@connectrpc/connect-query";
 import { SpotarrService } from "@spotarr/contract";
 import { useQueryClient } from "@tanstack/react-query";
-import type { ReactNode } from "react";
 import { settingsQuery } from "../../queries/settings";
 import { useToast } from "../toast";
 import { CopyField } from "./copy-field";
 import type { Form } from "./fields";
 import { RegenerateButton } from "./regenerate-button";
+import { Step } from "./step";
 
 // What Seerr sends: the title that changed. The server reads these two fields
 // (api/seerr-webhook.ts) and asks Seerr where the title stands now.
@@ -85,21 +85,5 @@ export function SeerrWebhookFields({ form }: { form: Form }) {
       </Step>
       <Step n={4} title="Press Test: Seerr shows it passed. Then Save." />
     </ol>
-  );
-}
-
-// One step of the setup: its number in an amber circle, what to do, then
-// what it needs (the values to copy, the types to tick).
-function Step({ n, title, children }: { n: number; title: string; children?: ReactNode }) {
-  return (
-    <li className="flex gap-3">
-      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-accent/15 text-xs font-semibold text-accent">
-        {n}
-      </span>
-      <div className="flex min-w-0 flex-1 flex-col gap-4 pt-0.5">
-        <p className="text-sm font-medium">{title}</p>
-        {children}
-      </div>
-    </li>
   );
 }
