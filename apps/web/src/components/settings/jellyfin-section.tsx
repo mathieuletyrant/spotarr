@@ -3,12 +3,7 @@ import { useMutation } from "@connectrpc/connect-query";
 import { SpotarrService } from "@spotarr/contract";
 import { RefreshCw, Tv } from "lucide-react";
 import { describeSync } from "../../lib/collection";
-import { CopyField } from "./copy-field";
 import { type Form, SecretField, Section, SubHeading, TextField } from "./fields";
-import { Step } from "./step";
-
-// Where the Home Screen Sections and Collection Sections plugins are published.
-const PLUGIN_REPOSITORY = "https://www.iamparadox.dev/jellyfin/plugins/manifest.json";
 
 // `unsaved`: a Jellyfin field changed and is not saved yet. The sync reads
 // the saved settings, so Sync now waits for Save.
@@ -52,31 +47,8 @@ export function JellyfinSection({ form, unsaved }: { form: Form; unsaved: boolea
 
       <SubHeading
         title="On the TV"
-        description="To see the Collection as a row of Jellyfin's Home, on the web and in JellyTV."
+        description="A Jellyfin collection like any other: it shows under Collections, on the web and in JellyTV."
       />
-      <ol className="flex flex-col gap-6 md:col-span-2">
-        <Step n={1} title="In Jellyfin's Dashboard, under Plugins, add this repository.">
-          <CopyField
-            id="jellyfin-plugin-repository"
-            label="Repository URL"
-            value={PLUGIN_REPOSITORY}
-            secret={false}
-            hint="Third-party plugins, by IAmParadox. They follow Jellyfin's versions closely."
-          />
-        </Step>
-        <Step
-          n={2}
-          title="Install Home Screen Sections, then Collection Sections, and restart Jellyfin."
-        />
-        <Step
-          n={3}
-          title="In Collection Sections' settings, add a section showing the Collection."
-        />
-        <Step
-          n={4}
-          title="In JellyTV, turn the section on in the Home settings (part of JellyTV+)."
-        />
-      </ol>
     </Section>
   );
 }
