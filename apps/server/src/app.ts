@@ -6,6 +6,7 @@ import { connectHandler } from "./api/connect";
 import { serveFrame } from "./api/frames";
 import { mcpHandler } from "./api/mcp/server";
 import { authRpcs } from "./api/rpc/auth";
+import { collectionRpcs } from "./api/rpc/collection";
 import { errorsToConnect } from "./api/rpc/errors";
 import { ruleRpcs } from "./api/rpc/rules";
 import { settingsRpcs } from "./api/rpc/settings";
@@ -39,6 +40,7 @@ export function createApp({ apiToken, settings, shares, rules }: AppDeps): Hono 
       ...shareRpcs(shares, settings),
       ...ruleRpcs(rules, shares),
       ...streamingRpcs(settings),
+      ...collectionRpcs(shares, settings),
     }),
   );
 

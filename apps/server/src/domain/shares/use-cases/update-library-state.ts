@@ -7,7 +7,8 @@ import type { Candidate } from "../types";
 // available…): asks Seerr where the title stands now and writes it on every
 // Candidate of that title, in every Share. Asking rather than reading the
 // notification keeps one source of truth: libraryState(). A title in no Share
-// changes nothing. Returns the state, for what follows (the watchlist).
+// changes nothing. Returns the state, for what follows (the watchlist, the
+// Jellyfin Collection).
 export async function updateLibraryState(
   type: Candidate["type"],
   tmdbId: number,

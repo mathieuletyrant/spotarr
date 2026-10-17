@@ -1,5 +1,6 @@
 import type { Handler } from "hono";
 import { z } from "zod";
+import { syncCollectionInBackground } from "../domain/collection/use-cases/sync-collection";
 import type { SettingsRepository } from "../domain/settings/repository";
 import type { ShareRepository } from "../domain/shares/repository";
 import { updateLibraryState } from "../domain/shares/use-cases/update-library-state";
@@ -17,7 +18,8 @@ const TitleChanged = z.object({
 // POST /seerr/webhook: Seerr says a title changed in the library. Behind the
 // Seerr token. A payload naming no title (Seerr's Test button, or an issue
 // notification) answers 200 too, so Seerr shows the test as passed. A title
-// now in the library leaves the watchlist, without Seerr waiting for it.
+// now in the library leaves the watchlist and may join the Jellyfin
+// Collection: both in the background, Seerr does not wait for them.
 export function seerrWebhook(shares: ShareRepository, settings: SettingsRepository): Handler {
   return async (c) => {
     const title = TitleChanged.safeParse(await c.req.json().catch(() => undefined));
@@ -29,6 +31,7 @@ export function seerrWebhook(shares: ShareRepository, settings: SettingsReposito
       unwatchTitle(type, title.data.tmdbId, settings).catch((error) =>
         log({ step: "watchlist", tmdbId: title.data.tmdbId, error: String(error) }),
       );
+      syncCollectionInBackground({ shares, settings }, "seerr");
     }
     return c.json({ ok: true, updated: true });
   };

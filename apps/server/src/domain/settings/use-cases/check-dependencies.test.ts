@@ -61,3 +61,33 @@ test("Seerr answering fine is OK", async () => {
     detail: "http://seerr.test",
   });
 });
+
+test("Jellyfin is listed only once its URL is set, and needs its user", async () => {
+  fakeFetch({
+    "/api/v1/chat/completions": llmAnswer,
+    "/3/movie/550": getMovieDetailsResponseMock({ id: 550 }),
+    "/api/v1/movie/550": getGetMovieMovieIdResponseMock({ mediaInfo: undefined }),
+    "/System/Info": { Version: "12.2.0" },
+    "/Users": [{ Name: "Mathieu", Id: "u1" }],
+  });
+  const jellyfinOf = async (jellyfin: object) => {
+    const dependencies = await checkDependencies(SettingsSchema.parse({ ...settings, jellyfin }));
+    return dependencies.find((d) => d.name === "Jellyfin");
+  };
+  const connection = { url: "http://jellyfin.test", apiKey: "key" };
+
+  expect(await jellyfinOf({})).toBeUndefined();
+  expect(await jellyfinOf({ url: "http://jellyfin.test" })).toMatchObject({
+    state: "NOT_CONFIGURED",
+  });
+  expect(await jellyfinOf({ ...connection, user: "mathieu" })).toEqual({
+    name: "Jellyfin",
+    state: "OK",
+    detail: "12.2.0, mathieu",
+  });
+  expect(await jellyfinOf({ ...connection, user: "paul" })).toEqual({
+    name: "Jellyfin",
+    state: "ERROR",
+    detail: 'Jellyfin has no user named "paul"',
+  });
+});

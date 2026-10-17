@@ -31,6 +31,17 @@ export const SettingsSchema = z.object({
       apiKey: z.string().default(""),
     })
     .prefault({}),
+  jellyfin: z
+    .object({
+      // Empty: Jellyfin is off, no collection is kept.
+      url: optionalUrl.default(""),
+      apiKey: z.string().default(""),
+      // Whose "watched" takes a title out of the collection.
+      user: z.string().default(""),
+      // Spotarr owns it: renamed here, a new one is made and the old one stays.
+      collection: z.string().trim().min(1, "a collection needs a name").default("Spotted"),
+    })
+    .prefault({}),
   extraction: z
     .object({
       // 15 images at most reach the LLM per Identification: each one costs tokens.

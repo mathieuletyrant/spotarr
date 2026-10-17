@@ -9,6 +9,7 @@ import { ApiSection } from "../../components/settings/api-section";
 import { ExtractionSection } from "../../components/settings/extraction-section";
 import type { Form } from "../../components/settings/fields";
 import { IdentificationSection } from "../../components/settings/identification-section";
+import { JellyfinSection } from "../../components/settings/jellyfin-section";
 import { McpSection } from "../../components/settings/mcp-section";
 import { RulesSection } from "../../components/settings/rules-section";
 import { SaveBar } from "../../components/settings/save-bar";
@@ -41,7 +42,7 @@ function tabOf(field: string): SectionId | undefined {
   if (field === "access.seerrToken") return "connections";
   const prefix = field.split(".")[0] ?? "";
   if (prefix === "identification" || prefix === "extraction") return "identification";
-  if (prefix === "seerr") return "connections";
+  if (prefix === "seerr" || prefix === "jellyfin") return "connections";
   if (prefix === "access") return "access";
   return undefined;
 }
@@ -118,7 +119,15 @@ function SettingsForm({ saved }: { saved: Values }) {
       <SectionTabs current={section} marked={marked} />
       {/* A tab is a column of cards: a connection, or a group of settings. */}
       <div className="flex min-w-0 flex-col gap-6">
-        {section === "connections" && <SeerrSection form={form} />}
+        {section === "connections" && (
+          <>
+            <SeerrSection form={form} />
+            <JellyfinSection
+              form={form}
+              unsaved={changed.some((name) => name.startsWith("jellyfin."))}
+            />
+          </>
+        )}
         {section === "automation" && <RulesSection />}
         {section === "identification" && (
           <>

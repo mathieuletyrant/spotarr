@@ -34,6 +34,7 @@ const SECTIONS: Record<string, "identification" | "connections"> = {
   LLM: "identification",
   TMDB: "identification",
   Seerr: "connections",
+  Jellyfin: "connections",
 };
 
 const closePanel = () => document.getElementById("services-status")?.hidePopover();
