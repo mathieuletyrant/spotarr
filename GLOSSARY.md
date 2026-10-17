@@ -65,11 +65,11 @@ When auto add handles a Candidate without a click: a name, an on/off switch, an 
 _Avoid_: filter, automation, policy
 
 **Action**:
-What a Rule does with a Candidate: `REQUEST` it through Seerr (an Addition), or put it in the `WATCHLIST`.
+What a Rule does with a Candidate. Each Action belongs to one connection: `SEERR_REQUEST` (an Addition through Seerr) or `SEERR_WATCHLIST`. Radarr and Sonarr have no watchlist: they will bring their own Actions.
 _Avoid_: mode, outcome
 
 **Watchlist**:
-The watchlist of Seerr's owner, which JellyTV shows: titles spotted but not downloaded. A Rule with the `WATCHLIST` Action puts Candidates in it, without requesting them; a title leaves it once Seerr reports it available. Not an Addition: Spotarr keeps no trace of it.
+The watchlist of Seerr's owner, which JellyTV shows: titles spotted but not downloaded. A Rule with the `SEERR_WATCHLIST` Action puts Candidates in it, without requesting them; a title leaves it once Seerr reports it available. Not an Addition: Spotarr keeps no trace of it.
 _Avoid_: favourites, wishlist, list
 
 **Library state**:

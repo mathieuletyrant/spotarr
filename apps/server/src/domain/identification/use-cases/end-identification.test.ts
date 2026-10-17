@@ -67,7 +67,7 @@ test("a Rule with the watchlist action puts its Candidates in Seerr's watchlist,
     emitted.push(event.name);
   };
   await settings.update({ seerr: { url: "http://seerr.test", apiKey: "key" } });
-  await rules.save("", { name: "Spotted", enabled: true, action: "WATCHLIST" });
+  await rules.save("", { name: "Spotted", enabled: true, action: "SEERR_WATCHLIST" });
   await rules.save("", { name: "Sure", enabled: true, minConfidence: 95 });
   const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
   const movie = (tmdbId: number, confidence: number) => ({

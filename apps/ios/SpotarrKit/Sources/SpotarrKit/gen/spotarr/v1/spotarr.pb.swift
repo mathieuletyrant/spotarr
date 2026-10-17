@@ -444,16 +444,18 @@ public nonisolated enum Spotarr_V1_Summary: SwiftProtobuf.Enum, Swift.CaseIterab
 
 }
 
+/// Each Action belongs to one connection: Radarr and Sonarr, when they come,
+/// bring their own (they have no watchlist).
 public nonisolated enum Spotarr_V1_RuleAction: SwiftProtobuf.Enum, Swift.CaseIterable {
   public typealias RawValue = Int
   case unspecified // = 0
 
   /// Through Seerr, which sends it to Radarr or Sonarr.
-  case request // = 1
+  case seerrRequest // = 1
 
   /// In the watchlist of Seerr's owner: nothing is requested, and JellyTV shows
   /// it. It leaves the watchlist once available.
-  case watchlist // = 2
+  case seerrWatchlist // = 2
   case UNRECOGNIZED(Int)
 
   public init() {
@@ -463,8 +465,8 @@ public nonisolated enum Spotarr_V1_RuleAction: SwiftProtobuf.Enum, Swift.CaseIte
   public init?(rawValue: Int) {
     switch rawValue {
     case 0: self = .unspecified
-    case 1: self = .request
-    case 2: self = .watchlist
+    case 1: self = .seerrRequest
+    case 2: self = .seerrWatchlist
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -472,8 +474,8 @@ public nonisolated enum Spotarr_V1_RuleAction: SwiftProtobuf.Enum, Swift.CaseIte
   public var rawValue: Int {
     switch self {
     case .unspecified: return 0
-    case .request: return 1
-    case .watchlist: return 2
+    case .seerrRequest: return 1
+    case .seerrWatchlist: return 2
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -481,8 +483,8 @@ public nonisolated enum Spotarr_V1_RuleAction: SwiftProtobuf.Enum, Swift.CaseIte
   // The compiler won't synthesize support with the UNRECOGNIZED case.
   public static let allCases: [Spotarr_V1_RuleAction] = [
     .unspecified,
-    .request,
-    .watchlist,
+    .seerrRequest,
+    .seerrWatchlist,
   ]
 
 }
@@ -2582,7 +2584,7 @@ public nonisolated struct Spotarr_V1_Rule: Sendable {
   /// no rating to judge: it skips min_rating and min_votes, not the others.
   public var unreleasedSkipsRating: Bool = false
 
-  /// What it does with the Candidates it holds for. UNSPECIFIED: REQUEST.
+  /// What it does with the Candidates it holds for. UNSPECIFIED: SEERR_REQUEST.
   public var action: Spotarr_V1_RuleAction = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -2792,7 +2794,7 @@ nonisolated extension Spotarr_V1_Summary: SwiftProtobuf._ProtoNameProviding {
 }
 
 nonisolated extension Spotarr_V1_RuleAction: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0RULE_ACTION_UNSPECIFIED\0\u{1}RULE_ACTION_REQUEST\0\u{1}RULE_ACTION_WATCHLIST\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0RULE_ACTION_UNSPECIFIED\0\u{1}RULE_ACTION_SEERR_REQUEST\0\u{1}RULE_ACTION_SEERR_WATCHLIST\0")
 }
 
 nonisolated extension Spotarr_V1_CheckDependenciesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

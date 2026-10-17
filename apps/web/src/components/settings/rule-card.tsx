@@ -31,7 +31,7 @@ function draftOf(rule?: Rule): Draft {
   return {
     name: rule?.name ?? "",
     enabled: rule?.enabled ?? true,
-    action: rule?.action ?? RuleAction.REQUEST,
+    action: rule?.action ?? RuleAction.SEERR_REQUEST,
     type: rule?.type ?? MediaType.UNSPECIFIED,
     onlyOne: rule?.onlyOne ?? false,
     minConfidence: rule?.minConfidence?.toString() ?? "",
@@ -118,7 +118,7 @@ export function RuleCard({ rule, onDone }: { rule?: Rule; onDone?: () => void })
 // What a Rule does, as its sentence ends. UNSPECIFIED is how an older Rule
 // reads: it requests.
 function actionText(action: RuleAction): string {
-  if (action === RuleAction.WATCHLIST) return "add to Seerr's watchlist";
+  if (action === RuleAction.SEERR_WATCHLIST) return "add to Seerr's watchlist";
   return "add to the library";
 }
 
@@ -192,13 +192,17 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
           <select
             id={`${id}-action`}
             value={
-              draft.action === RuleAction.WATCHLIST ? RuleAction.WATCHLIST : RuleAction.REQUEST
+              draft.action === RuleAction.SEERR_WATCHLIST
+                ? RuleAction.SEERR_WATCHLIST
+                : RuleAction.SEERR_REQUEST
             }
             onChange={(e) => change({ action: Number(e.target.value) as RuleAction })}
             className={inputClass}
           >
-            <option value={RuleAction.REQUEST}>Add to the library (request it in Seerr)</option>
-            <option value={RuleAction.WATCHLIST}>
+            <option value={RuleAction.SEERR_REQUEST}>
+              Add to the library (request it in Seerr)
+            </option>
+            <option value={RuleAction.SEERR_WATCHLIST}>
               Add to Seerr's watchlist (nothing is downloaded)
             </option>
           </select>
@@ -342,11 +346,11 @@ function Preview(props: {
     <div className="flex flex-col gap-2 rounded-md bg-surface p-3">
       <p className="text-sm">
         Over your last {props.shares} identified shares, this rule would have{" "}
-        {props.action === RuleAction.WATCHLIST ? "put " : "added "}
+        {props.action === RuleAction.SEERR_WATCHLIST ? "put " : "added "}
         <span className="font-semibold">
           {count} {count === 1 ? "title" : "titles"}
         </span>
-        {props.action === RuleAction.WATCHLIST ? " in the watchlist." : "."}
+        {props.action === RuleAction.SEERR_WATCHLIST ? " in the watchlist." : "."}
       </p>
       {count > 0 && (
         <ul className="flex flex-wrap gap-3">
