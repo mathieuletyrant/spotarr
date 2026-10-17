@@ -61,8 +61,16 @@ The token Seerr gives when it notifies Spotarr that a title changed in the libra
 _Avoid_: webhook secret, Seerr key
 
 **Rule**:
-When auto add requests a Candidate without a click: a name, an on/off switch, and conditions that must all hold (type, a single Candidate, minimum confidence, minimum TMDB rating and votes). A title not out yet has no rating: a Rule may let it skip the rating and votes. A Candidate is added when one enabled Rule holds for it, credited to the first one; the Addition keeps the Rule's name.
+When auto add handles a Candidate without a click: a name, an on/off switch, an Action, and conditions that must all hold (type, a single Candidate, minimum confidence, minimum TMDB rating and votes). A title not out yet has no rating: a Rule may let it skip the rating and votes. A Candidate is handled when one enabled Rule holds for it: a Rule that requests wins over one that adds to the Watchlist, then the first one is credited; an Addition keeps the Rule's name.
 _Avoid_: filter, automation, policy
+
+**Action**:
+What a Rule does with a Candidate. Each Action belongs to one connection: `SEERR_REQUEST` (an Addition through Seerr) or `SEERR_WATCHLIST`. Radarr and Sonarr have no watchlist: they will bring their own Actions.
+_Avoid_: mode, outcome
+
+**Watchlist**:
+The watchlist of Seerr's owner, which JellyTV shows: titles spotted but not downloaded. A Rule with the `SEERR_WATCHLIST` Action puts Candidates in it, without requesting them; a title leaves it once Seerr reports it available. Not an Addition: Spotarr keeps no trace of it.
+_Avoid_: favourites, wishlist, list
 
 **Library state**:
 What the library knows of a Candidate: `ABSENT`, `REQUESTED`, `PARTIAL` (some seasons) or `AVAILABLE`. Checked at the Identification, then kept current as Seerr reports changes. Only an `ABSENT` Candidate can be added.

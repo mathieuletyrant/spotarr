@@ -5,6 +5,7 @@ import type { ShareRepository } from "../../shares/repository";
 import { candidatesToAutoAdd } from "../../shares/rules/candidates-to-auto-add";
 import type { Share } from "../../shares/types";
 import { addToLibrary } from "../../shares/use-cases/add-to-library";
+import { watchTitle } from "../../watchlist/use-cases/watch-title";
 
 type EndIdentificationDeps = {
   shares: ShareRepository;
@@ -14,7 +15,8 @@ type EndIdentificationDeps = {
 };
 
 // When an Identification ends, its Event is emitted, then auto add requests
-// the Candidates its Rules allow (each one emits media.added).
+// the Candidates its Rules allow (each one emits media.added), or puts them in
+// Seerr's watchlist when the Rule says so.
 export async function endIdentification(
   shareId: string,
   { shares, settings, rules, emit }: EndIdentificationDeps,
@@ -28,6 +30,10 @@ export async function endIdentification(
   const today = new Date().toISOString().slice(0, 10);
   const additions = candidatesToAutoAdd(share.candidates, await rules.list(), today);
   for (const { candidate, rule } of additions) {
+    if (rule.action === "SEERR_WATCHLIST") {
+      await watchTitle(share.id, candidate, rule.name, settings);
+      continue;
+    }
     const request = {
       tmdbId: candidate.tmdbId,
       type: candidate.type,
