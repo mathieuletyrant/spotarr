@@ -30,7 +30,7 @@ export async function endIdentification(
   const today = new Date().toISOString().slice(0, 10);
   const additions = candidatesToAutoAdd(share.candidates, await rules.list(), today);
   for (const { candidate, rule } of additions) {
-    if (rule.action === "WATCHLIST") {
+    if (rule.action === "SEERR_WATCHLIST") {
       await watchTitle(share.id, candidate, rule.name, settings);
       continue;
     }

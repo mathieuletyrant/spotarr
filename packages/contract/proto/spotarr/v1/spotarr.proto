@@ -635,17 +635,19 @@ message Rule {
   // A title not out yet (released after today, or with no date on TMDB) has
   // no rating to judge: it skips min_rating and min_votes, not the others.
   bool unreleased_skips_rating = 9;
-  // What it does with the Candidates it holds for. UNSPECIFIED: REQUEST.
+  // What it does with the Candidates it holds for. UNSPECIFIED: SEERR_REQUEST.
   RuleAction action = 10;
 }
 
+// Each Action belongs to one connection: Radarr and Sonarr, when they come,
+// bring their own (they have no watchlist).
 enum RuleAction {
   RULE_ACTION_UNSPECIFIED = 0;
   // Through Seerr, which sends it to Radarr or Sonarr.
-  RULE_ACTION_REQUEST = 1;
+  RULE_ACTION_SEERR_REQUEST = 1;
   // In the watchlist of Seerr's owner: nothing is requested, and JellyTV shows
   // it. It leaves the watchlist once available.
-  RULE_ACTION_WATCHLIST = 2;
+  RULE_ACTION_SEERR_WATCHLIST = 2;
 }
 
 message ListRulesRequest {}

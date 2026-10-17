@@ -60,7 +60,7 @@ function toRule(row: RuleRow): Rule {
     id: row.id,
     name: row.name,
     enabled: row.enabled === 1,
-    action: row.action === "WATCHLIST" ? "WATCHLIST" : "REQUEST",
+    action: row.action === "SEERR_WATCHLIST" ? "SEERR_WATCHLIST" : "SEERR_REQUEST",
     ...ConditionsSchema.parse(JSON.parse(row.conditions)),
   };
 }

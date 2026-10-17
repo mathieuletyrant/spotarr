@@ -18,7 +18,8 @@ export function candidatesToAutoAdd(
   for (const candidate of candidates) {
     if (candidate.libraryState !== "ABSENT") continue;
     const holding = rules.filter((r) => holds(r, candidate, candidates.length, today));
-    const rule = holding.find((r) => r.action === "REQUEST") ?? holding[0];
+    // An Action that downloads wins over one that keeps the title for later.
+    const rule = holding.find((r) => r.action === "SEERR_REQUEST") ?? holding[0];
     if (rule) additions.push({ candidate, rule });
   }
   return additions;

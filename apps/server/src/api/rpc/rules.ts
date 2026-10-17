@@ -73,8 +73,8 @@ function fromMessage(rule: RuleMessage | undefined): Rule {
 
 // UNSPECIFIED, as an older client sends it, means requesting.
 function actionOf(action: RuleAction | undefined): Rule["action"] {
-  if (action === RuleAction.WATCHLIST) return "WATCHLIST";
-  return "REQUEST";
+  if (action === RuleAction.SEERR_WATCHLIST) return "SEERR_WATCHLIST";
+  return "SEERR_REQUEST";
 }
 
 function typeOf(type: MediaType | undefined): Rule["type"] {

@@ -46,7 +46,7 @@ test("SaveRule creates, lists, replaces, and DeleteRule removes", async () => {
       minRating: 6.5,
       unreleasedSkipsRating: true,
       // Not sent by the client: a Rule requests unless told otherwise.
-      action: "RULE_ACTION_REQUEST",
+      action: "RULE_ACTION_SEERR_REQUEST",
     },
   ]);
 
@@ -104,7 +104,7 @@ test("PreviewRules says what unsaved Rules would have added, adding nothing", as
       year: 1979,
       type: "MEDIA_TYPE_MOVIE",
       rule: "Good movies",
-      action: "RULE_ACTION_REQUEST",
+      action: "RULE_ACTION_SEERR_REQUEST",
     },
   ]);
   expect((await shares.get(id))?.additions).toEqual([]);
