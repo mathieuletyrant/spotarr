@@ -1,12 +1,14 @@
 import type { Rule } from "../../auto-add/types";
 import type { Candidate } from "../types";
 
-// A Candidate auto add requests, and the Rule credited for it.
+// A Candidate auto add requests or puts in the watchlist, and the Rule credited for it.
 export type AutoAddition = { candidate: Candidate; rule: Rule };
 
-// The Candidates auto add requests on its own: each one not in the library yet
-// for which an enabled Rule holds, credited to the first such Rule. `today` is
-// "2026-10-14": a title released after it is not out yet.
+// The Candidates auto add handles on its own: each one not in the library yet
+// for which an enabled Rule holds. A Rule that requests wins over one that only
+// puts in the watchlist, whatever their order; among Rules with the same
+// action, the first one is credited. `today` is "2026-10-14": a title released
+// after it is not out yet.
 export function candidatesToAutoAdd(
   candidates: Candidate[],
   rules: Rule[],
@@ -15,7 +17,8 @@ export function candidatesToAutoAdd(
   const additions: AutoAddition[] = [];
   for (const candidate of candidates) {
     if (candidate.libraryState !== "ABSENT") continue;
-    const rule = rules.find((r) => holds(r, candidate, candidates.length, today));
+    const holding = rules.filter((r) => holds(r, candidate, candidates.length, today));
+    const rule = holding.find((r) => r.action === "REQUEST") ?? holding[0];
     if (rule) additions.push({ candidate, rule });
   }
   return additions;

@@ -40,7 +40,14 @@ test("SaveRule creates, lists, replaces, and DeleteRule removes", async () => {
   });
   const { body } = await call("ListRules", {});
   expect(body.rules).toEqual([
-    { id, name: "Safe movies", minRating: 6.5, unreleasedSkipsRating: true },
+    {
+      id,
+      name: "Safe movies",
+      minRating: 6.5,
+      unreleasedSkipsRating: true,
+      // Not sent by the client: a Rule requests unless told otherwise.
+      action: "RULE_ACTION_REQUEST",
+    },
   ]);
 
   await call("DeleteRule", { id });
@@ -91,7 +98,14 @@ test("PreviewRules says what unsaved Rules would have added, adding nothing", as
   });
   expect(body.shares).toBe(1);
   expect(body.additions).toEqual([
-    { shareId: id, title: "Alien", year: 1979, type: "MEDIA_TYPE_MOVIE", rule: "Good movies" },
+    {
+      shareId: id,
+      title: "Alien",
+      year: 1979,
+      type: "MEDIA_TYPE_MOVIE",
+      rule: "Good movies",
+      action: "RULE_ACTION_REQUEST",
+    },
   ]);
   expect((await shares.get(id))?.additions).toEqual([]);
 });

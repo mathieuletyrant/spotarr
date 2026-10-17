@@ -13,10 +13,12 @@ test("Rules come back oldest first, conditions included", async () => {
     minVotes: 100,
   });
   await rules.save("", { name: "Anything sure", enabled: false, onlyOne: true, minConfidence: 95 });
+  await rules.save("", { name: "Spotted", enabled: true, action: "WATCHLIST" });
 
   expect(await rules.list()).toMatchObject([
     { name: "Movies", enabled: true, type: "MOVIE", onlyOne: false, minRating: 7, minVotes: 100 },
-    { name: "Anything sure", enabled: false, onlyOne: true, minConfidence: 95 },
+    { name: "Anything sure", enabled: false, onlyOne: true, minConfidence: 95, action: "REQUEST" },
+    { name: "Spotted", enabled: true, action: "WATCHLIST" },
   ]);
 });
 

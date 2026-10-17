@@ -8,6 +8,7 @@ const sure: Rule = {
   id: "rul_1",
   name: "Sure",
   enabled: true,
+  action: "REQUEST",
   onlyOne: true,
   unreleasedSkipsRating: false,
   minConfidence: 95,
@@ -64,6 +65,7 @@ describe("which Candidates auto add requests, and by which Rule", () => {
       id: "rul_2",
       name: "Movies",
       enabled: true,
+      action: "REQUEST",
       onlyOne: false,
       unreleasedSkipsRating: false,
       type: "MOVIE",
@@ -77,6 +79,7 @@ describe("which Candidates auto add requests, and by which Rule", () => {
       id: "rul_3",
       name: "Rated",
       enabled: true,
+      action: "REQUEST",
       onlyOne: false,
       unreleasedSkipsRating: false,
       minRating: 7,
@@ -95,6 +98,7 @@ describe("which Candidates auto add requests, and by which Rule", () => {
       id: "rul_6",
       name: "Rated",
       enabled: true,
+      action: "REQUEST",
       onlyOne: false,
       minConfidence: 90,
       minRating: 7,
@@ -124,6 +128,7 @@ describe("which Candidates auto add requests, and by which Rule", () => {
       id: "rul_2",
       name: "Movies",
       enabled: true,
+      action: "REQUEST",
       onlyOne: false,
       unreleasedSkipsRating: false,
       type: "MOVIE",
@@ -132,6 +137,7 @@ describe("which Candidates auto add requests, and by which Rule", () => {
       id: "rul_4",
       name: "Shows",
       enabled: true,
+      action: "REQUEST",
       onlyOne: false,
       type: "TV",
       unreleasedSkipsRating: false,
@@ -140,6 +146,7 @@ describe("which Candidates auto add requests, and by which Rule", () => {
       id: "rul_5",
       name: "Anything",
       enabled: true,
+      action: "REQUEST",
       onlyOne: false,
       unreleasedSkipsRating: false,
     };
@@ -147,6 +154,22 @@ describe("which Candidates auto add requests, and by which Rule", () => {
     expect(added(reel, [movies, shows, anything])).toEqual([
       "Alien by Movies",
       "Severance by Shows",
+    ]);
+  });
+
+  test("a Rule that requests wins over one that puts in the watchlist, whatever their order", () => {
+    const spotted: Rule = {
+      ...sure,
+      id: "rul_6",
+      name: "Spotted",
+      onlyOne: false,
+      minConfidence: undefined,
+      action: "WATCHLIST",
+    };
+    const reel = [candidate("Kraken"), candidate("Alien", { confidence: 0.5 })];
+    expect(added(reel, [spotted, { ...sure, onlyOne: false }])).toEqual([
+      "Kraken by Sure",
+      "Alien by Spotted",
     ]);
   });
 });

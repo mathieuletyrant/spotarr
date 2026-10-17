@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { ConnectError } from "@connectrpc/connect";
 import { createQueryOptions, useMutation } from "@connectrpc/connect-query";
-import { MediaType, type Rule, RuleSchema, SpotarrService } from "@spotarr/contract";
+import { MediaType, type Rule, RuleAction, RuleSchema, SpotarrService } from "@spotarr/contract";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
@@ -18,6 +18,7 @@ const buttonClass = "h-9 rounded-md border border-border px-3 text-sm font-mediu
 type Draft = {
   name: string;
   enabled: boolean;
+  action: RuleAction;
   type: MediaType;
   onlyOne: boolean;
   minConfidence: string;
@@ -30,6 +31,7 @@ function draftOf(rule?: Rule): Draft {
   return {
     name: rule?.name ?? "",
     enabled: rule?.enabled ?? true,
+    action: rule?.action ?? RuleAction.REQUEST,
     type: rule?.type ?? MediaType.UNSPECIFIED,
     onlyOne: rule?.onlyOne ?? false,
     minConfidence: rule?.minConfidence?.toString() ?? "",
@@ -44,6 +46,7 @@ function ruleOf(draft: Draft, id = ""): Rule {
     id,
     name: draft.name,
     enabled: draft.enabled,
+    action: draft.action,
     type: draft.type,
     onlyOne: draft.onlyOne,
     minConfidence: numberOf(draft.minConfidence),
@@ -112,6 +115,13 @@ export function RuleCard({ rule, onDone }: { rule?: Rule; onDone?: () => void })
   );
 }
 
+// What a Rule does, as its sentence ends. UNSPECIFIED is how an older Rule
+// reads: it requests.
+function actionText(action: RuleAction): string {
+  if (action === RuleAction.WATCHLIST) return "add to Seerr's watchlist";
+  return "add to the library";
+}
+
 // "If a movie and a single candidate → add to the library", the conditions as
 // chips: all of them must hold.
 function RuleSentence({ rule }: { rule: Rule }) {
@@ -133,7 +143,7 @@ function RuleSentence({ rule }: { rule: Rule }) {
         </Fragment>
       ))}
       <ArrowRight aria-hidden className="size-3.5 text-text-muted" />
-      <span className="text-text-muted">add to the library</span>
+      <span className="text-text-muted">{actionText(rule.action)}</span>
     </p>
   );
 }
@@ -176,6 +186,26 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
             maxLength={60}
             className={inputClass}
           />
+        </label>
+        <label htmlFor={`${id}-action`} className="flex flex-col gap-1.5 md:col-span-2">
+          <span className="text-sm font-medium">Then</span>
+          <select
+            id={`${id}-action`}
+            value={
+              draft.action === RuleAction.WATCHLIST ? RuleAction.WATCHLIST : RuleAction.REQUEST
+            }
+            onChange={(e) => change({ action: Number(e.target.value) as RuleAction })}
+            className={inputClass}
+          >
+            <option value={RuleAction.REQUEST}>Add to the library (request it in Seerr)</option>
+            <option value={RuleAction.WATCHLIST}>
+              Add to Seerr's watchlist (nothing is downloaded)
+            </option>
+          </select>
+          <span className="text-sm text-text-muted">
+            A candidate both kinds of rules hold for is added to the library. The watchlist shows in
+            JellyTV, and a title leaves it once available.
+          </span>
         </label>
         <label htmlFor={`${id}-type`} className="flex flex-col gap-1.5">
           <span className="text-sm font-medium">Type</span>
@@ -262,6 +292,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
 
       <RuleSentence rule={ruleOf(draft)} />
       <Preview
+        action={draft.action}
         shares={preview.data?.shares}
         additions={preview.data?.additions ?? []}
         error={preview.error ? ConnectError.from(preview.error).rawMessage : undefined}
@@ -299,6 +330,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
 const PREVIEWED = 6;
 
 function Preview(props: {
+  action: RuleAction;
   shares?: number;
   additions: { shareId: string; title: string; year?: number; posterUrl?: string }[];
   error?: string;
@@ -309,11 +341,12 @@ function Preview(props: {
   return (
     <div className="flex flex-col gap-2 rounded-md bg-surface p-3">
       <p className="text-sm">
-        Over your last {props.shares} identified shares, this rule would have added{" "}
+        Over your last {props.shares} identified shares, this rule would have{" "}
+        {props.action === RuleAction.WATCHLIST ? "put " : "added "}
         <span className="font-semibold">
           {count} {count === 1 ? "title" : "titles"}
         </span>
-        .
+        {props.action === RuleAction.WATCHLIST ? " in the watchlist." : "."}
       </p>
       {count > 0 && (
         <ul className="flex flex-wrap gap-3">

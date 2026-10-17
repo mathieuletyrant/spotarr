@@ -80,3 +80,29 @@ test("a title in the library links to its page on the media server", async () =>
   });
   expect(await seerr.libraryLink("TV", 4)).toEqual({ server: "Emby", url: emby });
 });
+
+test("a title goes in and out of the watchlist, already there or not there being fine", async () => {
+  const fetch = fakeFetch({
+    "/api/v1/watchlist": 409, // already in it
+    "/api/v1/watchlist/95396": 404, // not in it
+    "/api/v1/watchlist/41733": 204,
+  });
+  await seerr.addToWatchlist("MOVIE", 41733);
+  await seerr.removeFromWatchlist("TV", 95396);
+  await seerr.removeFromWatchlist("MOVIE", 41733);
+
+  const [, added] = fetch.mock.calls[0] ?? [];
+  expect(added?.method).toBe("POST");
+  // Seerr's server reads mediaType, whatever its spec says.
+  expect(JSON.parse(String(added?.body))).toEqual({ tmdbId: 41733, mediaType: "movie" });
+  const removed = fetch.mock.calls.slice(1).map(([url, init]) => `${init?.method} ${url}`);
+  expect(removed).toEqual([
+    "DELETE http://umbrel.local:5056/api/v1/watchlist/95396?mediaType=tv",
+    "DELETE http://umbrel.local:5056/api/v1/watchlist/41733?mediaType=movie",
+  ]);
+});
+
+test("a watchlist error other than already there fails", async () => {
+  fakeFetch({ "/api/v1/watchlist": 500 });
+  await expect(seerr.addToWatchlist("MOVIE", 1)).rejects.toMatchObject({ code: "unavailable" });
+});
