@@ -4,7 +4,7 @@ import { Menu, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { ServicesStatus } from "../components/services-status";
 import { ShareDialog } from "../components/share-dialog";
-import { ThemeButton } from "../components/theme-button";
+import { ThemeSwitch } from "../components/theme-switch";
 import { ToastProvider } from "../components/toast";
 import { queryClient } from "../lib/api";
 import { statusQuery } from "../queries/status";
@@ -45,7 +45,7 @@ function AppLayout() {
 
   return (
     <ToastProvider>
-      <div className="min-h-screen">
+      <div className="flex min-h-screen flex-col">
         <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
           <Link to="/" className="flex shrink-0 items-center gap-2 font-semibold">
             <img src="/favicon.svg" alt="" className="size-6 shrink-0" />
@@ -66,7 +66,6 @@ function AppLayout() {
           {/* The page's main action, on every page: share a link from the computer. */}
           <div className="ml-auto flex shrink-0 items-center gap-1">
             <ServicesStatus />
-            <ThemeButton />
             <Link
               to="."
               search={(previous) => ({ ...previous, share: true })}
@@ -109,9 +108,14 @@ function AppLayout() {
             ))}
           </nav>
         )}
-        <main className="mx-auto max-w-7xl p-4 md:p-6">
+        <main className="mx-auto w-full max-w-7xl flex-1 p-4 md:p-6">
           <Outlet />
         </main>
+        <footer className="border-t border-border">
+          <div className="mx-auto flex max-w-7xl justify-end p-4 md:px-6">
+            <ThemeSwitch />
+          </div>
+        </footer>
         <ShareDialog
           open={share === true}
           onClose={() =>

@@ -42,7 +42,7 @@ Tailwind v4 syntax: the `tailwind-best-practices` skill (`.agents/skills/`, link
 
 - **Colors, fonts, radii and spacing come from the design tokens only**: `bg-surface`, `text-text-muted`, `border-border`, `text-status-added`, `rounded-md`. Never Tailwind's palette (`gray-900`, `blue-500`) and never arbitrary colors (`bg-[#…]`). A missing color is added to `packages/design-tokens/tokens.json`, then `pnpm generate`.
 - **No `dark:` variants**: the tokens switch every color in dark mode on their own (`.dark` block).
-- **Theme**: `index.html` sets `.dark` on `<html>` before the page draws, from the header button's choice (`localStorage.theme`: system, light or dark) or the system's, and follows the system while on "system". The button (`components/theme-button.tsx`) saves a choice, then calls `window.applyTheme`.
+- **Theme**: `index.html` sets `.dark` on `<html>` before the page draws, from the footer's choice (`localStorage.theme`: system, light or dark) or the system's, and follows the system while on "system". The switch (`components/theme-switch.tsx`) saves a choice, then calls `window.applyTheme`.
 - **Repeated class lists become a React component** (`<StatusBadge>`, `<Poster>`), not an `@apply` class. `@apply` is for `styles.css` base rules only.
 - **Mobile first**: base classes for a phone, `md:` and up for wider screens. The History table becomes cards on a phone.
 - **Accessible by default**: real `<button>` and `<a>`, a label on every field, visible focus (`focus-visible:`), no `autoFocus`.
