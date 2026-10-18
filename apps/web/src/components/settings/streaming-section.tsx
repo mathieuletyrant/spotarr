@@ -152,9 +152,9 @@ function YourPlatforms({
       {platforms.map((platform) => (
         <li
           key={platform.id}
-          className="flex h-11 items-center gap-2.5 rounded-full border border-accent bg-accent/10 pr-1 pl-1.5"
+          className="flex h-11 items-center gap-2.5 rounded-full border border-accent bg-accent/10 pr-1 pl-1"
         >
-          <PlatformLogo platform={platform} />
+          <PlatformLogo platform={platform} round />
           <span className="text-sm font-medium">{platform.name}</span>
           <button
             type="button"
@@ -237,14 +237,16 @@ function OtherPlatforms({
 }
 
 // TMDB's logo, else the name's first letter on a tile of the same size.
-function PlatformLogo({ platform }: { platform: Platform }) {
+// Round inside a round chip: a square logo's corners would almost touch its border.
+function PlatformLogo({ platform, round = false }: { platform: Platform; round?: boolean }) {
+  const shape = round ? "rounded-full" : "rounded-md";
   if (platform.logoUrl) {
-    return <img src={platform.logoUrl} alt="" className="size-8 shrink-0 rounded-md" />;
+    return <img src={platform.logoUrl} alt="" className={`size-8 shrink-0 ${shape}`} />;
   }
   return (
     <span
       aria-hidden
-      className="flex size-8 shrink-0 items-center justify-center rounded-md bg-text/8 text-sm font-semibold text-text-muted"
+      className={`flex size-8 shrink-0 items-center justify-center bg-text/8 text-sm font-semibold text-text-muted ${shape}`}
     >
       {platform.name.slice(0, 1)}
     </span>
