@@ -55,7 +55,7 @@ function BestMatch({ share, candidate }: { share: Share; candidate: Candidate })
         Best match · {confidenceText(candidate.confidence)}
       </p>
       <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4">
-        <div className="md:row-span-2">
+        <div className={links.length > 0 ? "md:row-span-2" : "row-span-2"}>
           <Poster title={candidate.title} url={candidate.posterUrl} size="hero" />
         </div>
         <div className="flex flex-col gap-1.5">
@@ -76,7 +76,10 @@ function BestMatch({ share, candidate }: { share: Share; candidate: Candidate })
             </p>
           )}
         </div>
-        <div className="col-span-2 md:col-span-1 md:col-start-2">
+        {/* A big Watch button takes a phone's width; a lone Add stays beside the poster. */}
+        <div
+          className={links.length > 0 ? "col-span-2 md:col-span-1 md:col-start-2" : "col-start-2"}
+        >
           <BestMatchActions share={share} candidate={candidate} links={links} />
         </div>
       </div>
@@ -133,10 +136,10 @@ function BestMatchActions({
             type="button"
             onClick={add.start}
             disabled={add.isPending}
-            className={`${BIG_BUTTON} flex-1 bg-accent text-accent-text md:flex-none`}
+            className="flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
           >
-            <Plus aria-hidden className="size-5" />
-            {add.isPending ? "Adding…" : failure ? "Try again" : "Add to the library"}
+            <Plus aria-hidden className="size-4" />
+            {add.isPending ? "Adding…" : failure ? "Try again" : "Add"}
           </button>
         )}
         {!canAdd && <Status candidate={candidate} />}
