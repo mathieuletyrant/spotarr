@@ -2170,6 +2170,9 @@ public nonisolated struct Spotarr_V1_AddRequest: Sendable {
   /// Seerr when unspecified; V1 supports Seerr only.
   public var target: Spotarr_V1_Target = .unspecified
 
+  /// The same choice as a Rule's Action. UNSPECIFIED: SEERR_REQUEST.
+  public var action: Spotarr_V1_RuleAction = .unspecified
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -5093,7 +5096,7 @@ nonisolated extension Spotarr_V1_RetryIdentificationResponse: SwiftProtobuf.Mess
 
 nonisolated extension Spotarr_V1_AddRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AddRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}share_id\0\u{3}tmdb_id\0\u{1}type\0\u{1}target\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}share_id\0\u{3}tmdb_id\0\u{1}type\0\u{1}target\0\u{1}action\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5105,6 +5108,7 @@ nonisolated extension Spotarr_V1_AddRequest: SwiftProtobuf.Message, SwiftProtobu
       case 2: try { try decoder.decodeSingularInt32Field(value: &self.tmdbID) }()
       case 3: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       case 4: try { try decoder.decodeSingularEnumField(value: &self.target) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.action) }()
       default: break
       }
     }
@@ -5123,6 +5127,9 @@ nonisolated extension Spotarr_V1_AddRequest: SwiftProtobuf.Message, SwiftProtobu
     if self.target != .unspecified {
       try visitor.visitSingularEnumField(value: self.target, fieldNumber: 4)
     }
+    if self.action != .unspecified {
+      try visitor.visitSingularEnumField(value: self.action, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5131,6 +5138,7 @@ nonisolated extension Spotarr_V1_AddRequest: SwiftProtobuf.Message, SwiftProtobu
     if lhs.tmdbID != rhs.tmdbID {return false}
     if lhs.type != rhs.type {return false}
     if lhs.target != rhs.target {return false}
+    if lhs.action != rhs.action {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

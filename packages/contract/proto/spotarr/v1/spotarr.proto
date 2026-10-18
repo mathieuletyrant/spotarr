@@ -586,6 +586,8 @@ message AddRequest {
   MediaType type = 3;
   // Seerr when unspecified; V1 supports Seerr only.
   Target target = 4;
+  // The same choice as a Rule's Action. UNSPECIFIED: SEERR_REQUEST.
+  RuleAction action = 5;
 }
 
 message AddResponse {
