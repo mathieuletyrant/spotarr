@@ -37,33 +37,34 @@ function AppLayout() {
   return (
     <ToastProvider>
       <div className="min-h-screen">
-        <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
-          <Link to="/" className="flex items-center gap-2 font-semibold">
-            <img src="/favicon.svg" alt="Spotarr" className="size-6" />
+        <header className="flex items-center gap-2 border-b border-border bg-surface px-4 py-3 sm:gap-4 md:gap-6 md:px-6">
+          {/* shrink-0: on a phone the row is full, and flex would squeeze the logo to a dot. */}
+          <Link to="/" className="flex shrink-0 items-center gap-2 font-semibold">
+            <img src="/favicon.svg" alt="Spotarr" className="size-6 shrink-0" />
             <span className="hidden sm:inline">Spotarr</span>
           </Link>
-          <nav className="flex gap-1 text-sm">
+          <nav className="flex min-w-0 gap-0.5 overflow-x-auto text-sm sm:gap-1">
             <Link
               to="/"
-              className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
+              className="rounded-md px-2 py-1.5 text-text-muted sm:px-3 [&.active]:bg-text/8 [&.active]:text-text"
             >
               History
             </Link>
             <Link
               to="/stats"
-              className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
+              className="rounded-md px-2 py-1.5 text-text-muted sm:px-3 [&.active]:bg-text/8 [&.active]:text-text"
             >
               Stats
             </Link>
             <Link
               to="/settings"
-              className="rounded-md px-3 py-1.5 text-text-muted [&.active]:bg-text/8 [&.active]:text-text"
+              className="rounded-md px-2 py-1.5 text-text-muted sm:px-3 [&.active]:bg-text/8 [&.active]:text-text"
             >
               Settings
             </Link>
           </nav>
           {/* The page's main action, on every page: share a link from the computer. */}
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex shrink-0 items-center gap-1">
             <ServicesStatus />
             <ThemeButton />
             <Link
