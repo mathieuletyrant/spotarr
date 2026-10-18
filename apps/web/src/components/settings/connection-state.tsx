@@ -15,7 +15,9 @@ const LABELS: Record<DependencyState, string> = {
 export function ConnectionState({ name }: { name: string }) {
   const { data } = useQuery(dependenciesQuery());
   const dependency = data?.dependencies.find((d) => d.name === name);
-  const state = dependency?.state ?? DependencyState.UNSPECIFIED;
+  // Checked, and not in the list: an optional connection with no URL.
+  let state = dependency?.state ?? DependencyState.UNSPECIFIED;
+  if (data && !dependency) state = DependencyState.NOT_CONFIGURED;
   return (
     <span
       title={dependency?.detail}

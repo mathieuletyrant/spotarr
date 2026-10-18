@@ -1,22 +1,22 @@
 import { ConnectError } from "@connectrpc/connect";
 import { useMutation } from "@connectrpc/connect-query";
 import { SpotarrService } from "@spotarr/contract";
-import { RefreshCw, Tv } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { FolderHeart, RefreshCw, Tv } from "lucide-react";
 import { describeSync } from "../../lib/collection";
-import { type Form, SecretField, Section, SubHeading, TextField } from "./fields";
+import { ConnectionState } from "./connection-state";
+import { type Form, SecretField, Section, TextField } from "./fields";
 
-// `unsaved`: a Jellyfin field changed and is not saved yet. The sync reads
-// the saved settings, so Sync now waits for Save.
-export function JellyfinSection({ form, unsaved }: { form: Form; unsaved: boolean }) {
+// The Jellyfin connection: where it answers, and whose watched titles count.
+export function JellyfinSection({ form }: { form: Form }) {
   return (
     <Section
       id="jellyfin"
       icon={<Tv aria-hidden className="size-5" />}
       title="Jellyfin"
-      description="A collection of what you spotted, to find it on the TV. Optional."
-      info="The Collection holds the titles added from a Share that Jellyfin has and you have not watched yet. Spotarr syncs it every 15 minutes, and when Seerr says a title is available."
+      description="Where the Collection of what you spotted is kept. Optional: leave the URL empty to turn it off."
+      action={<ConnectionState name="Jellyfin" />}
     >
-      <SubHeading title="Connection" description="Leave the URL empty to turn Jellyfin off." />
       <TextField form={form} name="jellyfin.url" label="URL" placeholder="http://jellyfin:8096" />
       <SecretField
         form={form}
@@ -31,24 +31,46 @@ export function JellyfinSection({ form, unsaved }: { form: Form; unsaved: boolea
         placeholder="Your Jellyfin user name"
         hint="What this user watched leaves the Collection."
       />
+    </Section>
+  );
+}
 
-      <SubHeading
-        title="Collection"
-        description="Spotarr owns it: a title put in it by hand goes at the next sync."
-      />
-      <TextField
-        form={form}
-        name="jellyfin.collection"
-        label="Name"
-        placeholder="Spotted"
-        hint="Renamed, a new collection is made; delete the old one in Jellyfin."
-      />
-      <SyncNow disabled={unsaved || !form.values["jellyfin.url"]} unsaved={unsaved} />
-
-      <SubHeading
-        title="On the TV"
-        description="A Jellyfin collection like any other: it shows under Collections, on the web and in JellyTV."
-      />
+// The Collection Spotarr keeps in Jellyfin, in Automation: it runs on its
+// own. `unsaved`: a Jellyfin field changed and is not saved yet. The sync
+// reads the saved settings, so Sync now waits for Save.
+export function CollectionSection({ form, unsaved }: { form: Form; unsaved: boolean }) {
+  return (
+    <Section
+      id="collection"
+      icon={<FolderHeart aria-hidden className="size-5" />}
+      title="Jellyfin collection"
+      description="What you spotted, once downloaded and until watched: under Collections, on the web and in JellyTV."
+      info="The Collection holds the titles added from a Share that Jellyfin has and you have not watched yet. Spotarr owns it: a title put in it by hand goes at the next sync. It syncs every 15 minutes, and when Seerr says a title is available."
+    >
+      {form.values["jellyfin.url"] ? (
+        <>
+          <TextField
+            form={form}
+            name="jellyfin.collection"
+            label="Name"
+            placeholder="Spotted"
+            hint="Renamed, a new collection is made; delete the old one in Jellyfin."
+          />
+          <SyncNow disabled={unsaved} unsaved={unsaved} />
+        </>
+      ) : (
+        <p className="text-sm text-text-muted md:col-span-2">
+          Set up Jellyfin in{" "}
+          <Link
+            to="/settings"
+            search={{ section: "connections" }}
+            className="font-medium text-text underline"
+          >
+            Connections
+          </Link>{" "}
+          to keep it.
+        </p>
+      )}
     </Section>
   );
 }

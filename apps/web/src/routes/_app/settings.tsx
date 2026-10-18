@@ -9,7 +9,7 @@ import { ApiSection } from "../../components/settings/api-section";
 import { ExtractionSection } from "../../components/settings/extraction-section";
 import type { Form } from "../../components/settings/fields";
 import { IdentificationSection } from "../../components/settings/identification-section";
-import { JellyfinSection } from "../../components/settings/jellyfin-section";
+import { CollectionSection, JellyfinSection } from "../../components/settings/jellyfin-section";
 import { McpSection } from "../../components/settings/mcp-section";
 import { RulesSection } from "../../components/settings/rules-section";
 import { SaveBar } from "../../components/settings/save-bar";
@@ -37,9 +37,11 @@ const MENU = [
 type SectionId = (typeof MENU)[number]["id"];
 
 // The tab of a field, from the first part of its name: "seerr.url" is in
-// Connections. Seerr's token sits with Seerr, though saved under access.
+// Connections. Seerr's token sits with Seerr, though saved under access;
+// the Collection's name in Automation, though saved under jellyfin.
 function tabOf(field: string): SectionId | undefined {
   if (field === "access.seerrToken") return "connections";
+  if (field === "jellyfin.collection") return "automation";
   const prefix = field.split(".")[0] ?? "";
   if (prefix === "identification" || prefix === "extraction") return "identification";
   if (prefix === "seerr" || prefix === "jellyfin") return "connections";
@@ -122,13 +124,18 @@ function SettingsForm({ saved }: { saved: Values }) {
         {section === "connections" && (
           <>
             <SeerrSection form={form} />
-            <JellyfinSection
+            <JellyfinSection form={form} />
+          </>
+        )}
+        {section === "automation" && (
+          <>
+            <RulesSection />
+            <CollectionSection
               form={form}
               unsaved={changed.some((name) => name.startsWith("jellyfin."))}
             />
           </>
         )}
-        {section === "automation" && <RulesSection />}
         {section === "identification" && (
           <>
             <IdentificationSection form={form} />
