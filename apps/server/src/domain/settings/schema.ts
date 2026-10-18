@@ -50,6 +50,10 @@ export const SettingsSchema = z.object({
     .object({
       // TMDB ids of the Platforms subscribed to: Crunchyroll is 283.
       platformIds: z.array(z.int().positive()).default([]),
+      // The country whose catalogues count: "FR". Empty: the TMDB language's.
+      country: z
+        .union([z.literal(""), z.string().regex(/^[A-Z]{2}$/, "expected a country code like FR")])
+        .default(""),
     })
     .prefault({}),
   access: z

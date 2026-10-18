@@ -181,7 +181,7 @@ test("platforms are the country's, movies and TV shows together, in TMDB's order
     },
   });
 
-  expect(await tmdb().platforms()).toEqual([
+  expect(await tmdb().platforms("FR")).toEqual([
     { id: 8, name: "Netflix", logoUrl: "https://image.tmdb.org/t/p/w92/n.jpg" },
     { id: 283, name: "Crunchyroll", logoUrl: undefined },
     { id: 337, name: "Disney Plus", logoUrl: undefined },
@@ -208,13 +208,30 @@ test("a title's watch offers are its country's streams, without rent or buy", as
     "/3/movie/2/watch/providers": 404,
   });
 
-  expect(await tmdb().watchOffers("TV", 123)).toEqual({
+  expect(await tmdb().watchOffers("TV", 123, "FR")).toEqual({
     link: "https://www.themoviedb.org/tv/123/watch?locale=FR",
     platforms: [
       { id: 283, name: "Crunchyroll", logoUrl: undefined },
       { id: 300, name: "Pluto TV", logoUrl: undefined },
     ],
   });
-  expect(await tmdb().watchOffers("MOVIE", 1)).toEqual({ platforms: [] });
-  expect(await tmdb().watchOffers("MOVIE", 2)).toEqual({ platforms: [] });
+  expect(await tmdb().watchOffers("MOVIE", 1, "FR")).toEqual({ platforms: [] });
+  expect(await tmdb().watchOffers("MOVIE", 2, "FR")).toEqual({ platforms: [] });
+});
+
+test("countries are named in the language asked, sorted by name", async () => {
+  fakeFetch({
+    "/3/watch/providers/regions": {
+      results: [
+        { iso_3166_1: "JP", english_name: "Japan", native_name: "Japon" },
+        { iso_3166_1: "FR", english_name: "France", native_name: "France" },
+        { iso_3166_1: "DE", english_name: "Germany" },
+      ],
+    },
+  });
+  expect(await tmdb().countries()).toEqual([
+    { code: "FR", name: "France" },
+    { code: "DE", name: "Germany" },
+    { code: "JP", name: "Japon" },
+  ]);
 });

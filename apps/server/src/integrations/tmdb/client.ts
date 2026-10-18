@@ -14,6 +14,7 @@ import {
   type TvSeriesDetails200,
   tvSeriesDetails,
   tvSeriesWatchProviders,
+  watchProvidersAvailableRegions,
   watchProvidersMovieList,
   watchProviderTvList,
 } from "./gen/tmdb";
@@ -48,6 +49,9 @@ type Genres = Map<number, string>;
 
 // A streaming service: TMDB calls it a watch provider.
 export type TmdbPlatform = { id: number; name: string; logoUrl?: string };
+
+// A country TMDB knows Platforms in: "FR", "France".
+export type TmdbCountry = { code: string; name: string };
 
 // Where a title streams in a country: TMDB's page listing it, and the Platforms.
 export type TmdbWatchOffers = { link?: string; platforms: TmdbPlatform[] };
@@ -133,11 +137,24 @@ export class Tmdb {
     return (res.data.results ?? []).map((s) => showTitle(s, genres)).filter((t) => t !== undefined);
   }
 
-  // Every Platform TMDB knows in the language's country ("FR" for fr-FR), movies
-  // and TV shows together, in TMDB's order for that country.
-  async platforms(): Promise<TmdbPlatform[]> {
+  // The countries TMDB knows Platforms in, named in the language asked.
+  async countries(): Promise<TmdbCountry[]> {
     const { language, options } = this.request();
-    const params = { language, watch_region: regionOf(language) };
+    const res = await watchProvidersAvailableRegions({ language }, options).catch(unreachable);
+    checkStatus(res.status);
+    const countries: TmdbCountry[] = [];
+    for (const item of res.data.results ?? []) {
+      const name = item.native_name || item.english_name;
+      if (item.iso_3166_1 && name) countries.push({ code: item.iso_3166_1, name });
+    }
+    return countries.sort((a, b) => a.name.localeCompare(b.name, language));
+  }
+
+  // Every Platform TMDB knows in a country ("FR"), movies and TV shows
+  // together, in TMDB's order for that country.
+  async platforms(country: string): Promise<TmdbPlatform[]> {
+    const { language, options } = this.request();
+    const params = { language, watch_region: country };
     const [movies, shows] = await Promise.all([
       watchProvidersMovieList(params, options).catch(unreachable),
       watchProviderTvList(params, options).catch(unreachable),
@@ -155,10 +172,14 @@ export class Tmdb {
     return [...platforms.values()];
   }
 
-  // Where a title streams in the language's country: by subscription, free or
-  // with ads. Renting and buying are left out.
-  async watchOffers(type: TmdbTitle["type"], id: number): Promise<TmdbWatchOffers> {
-    const { language, options } = this.request();
+  // Where a title streams in a country ("FR"): by subscription, free or with
+  // ads. Renting and buying are left out.
+  async watchOffers(
+    type: TmdbTitle["type"],
+    id: number,
+    country: string,
+  ): Promise<TmdbWatchOffers> {
+    const { options } = this.request();
     const res =
       type === "MOVIE"
         ? await movieWatchProviders(id, options).catch(unreachable)
@@ -168,15 +189,15 @@ export class Tmdb {
 
     // The spec names each country as its own type: read the one asked by its code.
     const results = res.data.results as Record<string, CountryOffers> | undefined;
-    const country = results?.[regionOf(language)];
-    if (!country) return { platforms: [] };
-    const items = [...(country.flatrate ?? []), ...(country.free ?? []), ...(country.ads ?? [])];
+    const offers = results?.[country];
+    if (!offers) return { platforms: [] };
+    const items = [...(offers.flatrate ?? []), ...(offers.free ?? []), ...(offers.ads ?? [])];
     const platforms = new Map<number, TmdbPlatform>();
     for (const item of items) {
       const platform = platformOf(item);
       if (platform && !platforms.has(platform.id)) platforms.set(platform.id, platform);
     }
-    return { link: country.link, platforms: [...platforms.values()] };
+    return { link: offers.link, platforms: [...platforms.values()] };
   }
 
   // TMDB's names of the movie or TV genres, by id, in the language asked. A
@@ -300,11 +321,6 @@ function platformOf(item: ProviderItem): TmdbPlatform | undefined {
     name: item.provider_name,
     logoUrl: item.logo_path ? LOGOS + item.logo_path : undefined,
   };
-}
-
-// "fr-FR" → "FR": the settings' language also says the country.
-function regionOf(language: string): string {
-  return language.slice(3);
 }
 
 // TMDB sends "" when it has no overview in the language asked.

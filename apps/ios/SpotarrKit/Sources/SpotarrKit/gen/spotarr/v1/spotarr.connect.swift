@@ -106,8 +106,8 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `previewRules`(request: Spotarr_V1_PreviewRulesRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_PreviewRulesResponse>
 
-    /// The streaming Platforms TMDB knows in the settings' country, to choose
-    /// the ones subscribed to (Settings → streaming).
+    /// The streaming Platforms TMDB knows in the chosen country, to choose the
+    /// ones subscribed to, and the countries to choose from (Settings → streaming).
     @available(iOS 13, *)
     func `listPlatforms`(request: Spotarr_V1_ListPlatformsRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_ListPlatformsResponse>
 

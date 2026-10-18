@@ -9,12 +9,12 @@ afterEach(() => mock.restore());
 const TMDB_PAGE = "https://www.themoviedb.org/tv/123/watch?locale=FR";
 const JELLYFIN = "http://jellyfin.local/web/index.html#!/details?id=abc";
 
-async function settingsWith(platformIds: number[]) {
+async function settingsWith(platformIds: number[], country = "") {
   const settings = new SettingsRepository(await openDatabase(":memory:"));
   await settings.update({
     identification: { tmdbToken: "tmdb" },
     seerr: { url: "http://seerr.test", apiKey: "key" },
-    streaming: { platformIds },
+    streaming: { platformIds, country },
   });
   return settings;
 }
@@ -50,4 +50,9 @@ test("only the chosen Platforms that stream the title, after the library", async
 test("no Platform chosen asks TMDB nothing, and a failing Seerr costs only its link", async () => {
   fakeFetch({ "/api/v1/tv/123": 500 });
   expect(await listWatchLinks(await settingsWith([]), "TV", 123)).toEqual([]);
+});
+
+test("a chosen country replaces the TMDB language's", async () => {
+  fakeFetch({ ...offers, "/api/v1/tv/123": { mediaInfo: { status: 1 } } });
+  expect(await listWatchLinks(await settingsWith([283], "JP"), "TV", 123)).toEqual([]);
 });

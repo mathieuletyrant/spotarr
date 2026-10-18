@@ -3693,6 +3693,20 @@ export type TvSeriesWatchProviders200 = {
   results?: TvSeriesWatchProviders200Results;
 };
 
+export type WatchProvidersAvailableRegionsParams = {
+language?: string;
+};
+
+export type WatchProvidersAvailableRegions200ResultsItem = {
+  iso_3166_1?: string;
+  english_name?: string;
+  native_name?: string;
+};
+
+export type WatchProvidersAvailableRegions200 = {
+  results?: WatchProvidersAvailableRegions200ResultsItem[];
+};
+
 export type WatchProvidersMovieListParams = {
 language?: string;
 watch_region?: string;
@@ -4306,6 +4320,57 @@ export const tvSeriesWatchProviders = async (seriesId: number, options?: Request
 
   const data: tvSeriesWatchProvidersResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as tvSeriesWatchProvidersResponse
+}
+
+
+
+export type watchProvidersAvailableRegionsResponse200 = {
+  data: WatchProvidersAvailableRegions200
+  status: 200
+}
+
+export type watchProvidersAvailableRegionsResponseSuccess = (watchProvidersAvailableRegionsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type watchProvidersAvailableRegionsResponse = (watchProvidersAvailableRegionsResponseSuccess)
+
+export const getWatchProvidersAvailableRegionsUrl = (params?: WatchProvidersAvailableRegionsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `https://api.themoviedb.org/3/watch/providers/regions?${stringifiedParams}` : `https://api.themoviedb.org/3/watch/providers/regions`
+}
+
+/**
+ * Get the list of the countries we have watch provider (OTT/streaming) data for.
+ * @summary Available Regions
+ */
+export const watchProvidersAvailableRegions = async (params?: WatchProvidersAvailableRegionsParams, options?: RequestInit): Promise<watchProvidersAvailableRegionsResponse> => {
+
+  const res = await fetch(getWatchProvidersAvailableRegionsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: watchProvidersAvailableRegionsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as watchProvidersAvailableRegionsResponse
 }
 
 

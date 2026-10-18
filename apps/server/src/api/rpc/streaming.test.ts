@@ -30,11 +30,11 @@ test("the chosen Platforms are saved, kept when absent, and cleared by an empty 
   await call("UpdateSettings", { settings: { streaming: { platformIds: [283, 8] } } });
   await call("UpdateSettings", { settings: { seerr: { url: "http://seerr.test" } } });
   const kept = await call("GetSettings", {});
-  expect(kept.body.settings.streaming).toEqual({ platformIds: [283, 8] });
+  expect(kept.body.settings.streaming).toEqual({ platformIds: [283, 8], country: "" });
 
   await call("UpdateSettings", { settings: { streaming: {} } });
   const cleared = await call("GetSettings", {});
-  expect(cleared.body.settings.streaming).toEqual({});
+  expect(cleared.body.settings.streaming).toEqual({ country: "" });
 });
 
 test("ListWatchLinks refuses a request without a type", async () => {

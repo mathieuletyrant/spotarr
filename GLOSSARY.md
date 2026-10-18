@@ -73,7 +73,7 @@ Where a Candidate stands. Derived, never stored, from its Library state whatever
 _Avoid_: candidate state, action
 
 **Platform**:
-A streaming service, as TMDB knows it from JustWatch ("Crunchyroll", "Netflix"). The ones subscribed to are chosen in Settings, among those of the country of the settings' language. A Candidate streaming on one of them, by subscription, free or with ads, gets a link on its Share's page; renting and buying do not count. Asked live, never stored.
+A streaming service, as TMDB knows it from JustWatch ("Crunchyroll", "Netflix"). The ones subscribed to are chosen in Settings, among those of one country: catalogues differ from one country to the next. The country is chosen there too, else it is the TMDB language's (fr-FR → FR). A Candidate streaming on one of them, by subscription, free or with ads, gets a link on its Share's page; renting and buying do not count. Asked live, never stored.
 _Avoid_: provider, service, channel
 
 **Watch link**:

@@ -19,7 +19,7 @@ export function StreamingSection() {
       icon={<Tv aria-hidden className="size-5" />}
       title="Streaming"
       description="The platforms you subscribe to. A candidate streaming on one of them links to it on its share's page."
-      info={`TMDB's list of streaming platforms in your country${region ? ` (${region})` : ""}, from JustWatch. The country follows the TMDB language, in Identification. The library (Jellyfin, Plex) is always linked when the title is in it.`}
+      info={`TMDB's list of streaming platforms in the country chosen${region ? ` (${region})` : ""}, from JustWatch: catalogues differ from one country to the next. The library (Jellyfin, Plex) is always linked when the title is in it.`}
     >
       <PlatformList />
     </Section>
@@ -47,20 +47,48 @@ function PlatformList() {
   }
 
   const chosen = settings.data.settings?.streaming?.platformIds ?? [];
+  const country = settings.data.settings?.streaming?.country ?? "";
   const all = platforms.data.platforms;
   const yours = all.filter((p) => chosen.includes(p.id));
   const others = all.filter(
     (p) => !chosen.includes(p.id) && p.name.toLowerCase().includes(search.trim().toLowerCase()),
   );
 
+  // A present `streaming` replaces the whole list: both fields go every time.
   function toggle(id: number) {
     const next = chosen.includes(id) ? chosen.filter((c) => c !== id) : [...chosen, id];
-    save.mutate({ settings: { streaming: { platformIds: next } } });
+    save.mutate({ settings: { streaming: { platformIds: next, country } } });
+  }
+
+  async function chooseCountry(next: string) {
+    await save.mutateAsync({ settings: { streaming: { platformIds: chosen, country: next } } });
+    // Another country, other Platforms.
+    await queryClient.invalidateQueries({ queryKey: platformsQuery().queryKey });
   }
 
   return (
     <div className="flex flex-col gap-4 md:col-span-2">
-      <div className="flex flex-col gap-2">
+      <label className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium">Country</span>
+        <select
+          value={country}
+          disabled={save.isPending}
+          onChange={(e) => chooseCountry(e.target.value)}
+          className={inputClass}
+        >
+          <option value="">The TMDB language's ({platforms.data.region})</option>
+          {platforms.data.countries.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+        <span className="text-sm text-text-muted">
+          Whose catalogues count: the same title streams on different platforms from one country to
+          the next.
+        </span>
+      </label>
+      <div className="flex flex-col gap-2 border-t border-divider pt-4">
         <h3 className="text-sm font-semibold">Yours</h3>
         {yours.length === 0 ? (
           <p className="text-sm text-text-muted">None yet: tick the ones you subscribe to below.</p>

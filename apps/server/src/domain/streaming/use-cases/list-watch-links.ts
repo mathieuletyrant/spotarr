@@ -1,4 +1,4 @@
-import { seerrFrom, tmdbFrom } from "../../settings/adapters";
+import { countryFrom, seerrFrom, tmdbFrom } from "../../settings/adapters";
 import type { SettingsRepository } from "../../settings/repository";
 
 type MediaType = "MOVIE" | "TV";
@@ -21,7 +21,9 @@ export async function listWatchLinks(
     seerrFrom(current)
       .libraryLink(type, tmdbId)
       .catch(() => undefined),
-    chosen.length > 0 ? tmdbFrom(current).watchOffers(type, tmdbId) : undefined,
+    chosen.length > 0
+      ? tmdbFrom(current).watchOffers(type, tmdbId, countryFrom(current))
+      : undefined,
   ]);
 
   const links: WatchLink[] = [];
