@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spotarr</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <!-- Added to an iPhone's Home Screen: its icon (iOS ignores SVG and rounds
+         the corners itself), and full screen without Safari's bars. -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-title" content="Spotarr" />
+    <!-- The bar above the page, on a phone: the header's color, set by applyTheme. -->
+    <meta name="theme-color" content="#F6F7F9" />
     <script>
       // The theme: the one chosen with the header's button (saved in this
       // browser), or the system's. Applied before the page draws, so it never
@@ -18,6 +25,11 @@
         } catch {}
         const dark = choice === "dark" || (choice === "system" && systemDark.matches);
         document.documentElement.classList.toggle("dark", dark);
+        // The header's surface token, light or dark (packages/design-tokens):
+        // the CSS that holds it may not be loaded yet.
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute("content", dark ? "#15181C" : "#F6F7F9");
       };
       window.applyTheme();
       systemDark.addEventListener("change", window.applyTheme);

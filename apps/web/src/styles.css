@@ -22,3 +22,13 @@ body {
     opacity: 0.5;
   }
 }
+
+/* iPhone Safari zooms into any field under 16 px when it gets the focus.
+   Outside the layers on purpose: it wins over a field's text-sm, on a phone only. */
+@media (width < 48rem) {
+  input,
+  select,
+  textarea {
+    @apply text-base;
+  }
+}
