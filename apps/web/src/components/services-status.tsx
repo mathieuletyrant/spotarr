@@ -5,7 +5,7 @@ import { RefreshCw } from "lucide-react";
 import { dependenciesQuery } from "../queries/settings";
 
 // One complete class string per state: Tailwind only generates classes written out in full.
-const DOTS: Record<DependencyState, string> = {
+export const DOTS: Record<DependencyState, string> = {
   [DependencyState.UNSPECIFIED]: "bg-text-muted",
   [DependencyState.OK]: "bg-status-ok",
   [DependencyState.NOT_CONFIGURED]: "bg-status-ready",
@@ -30,10 +30,10 @@ function summaryOf(dependencies: Dependency[]): string {
 
 // The Settings tab where a service is set up. yt-dlp and ffmpeg have none:
 // they come with Spotarr.
-const SECTIONS: Record<string, "identification" | "seerr"> = {
+const SECTIONS: Record<string, "identification" | "connections"> = {
   LLM: "identification",
   TMDB: "identification",
-  Seerr: "seerr",
+  Seerr: "connections",
 };
 
 const closePanel = () => document.getElementById("services-status")?.hidePopover();

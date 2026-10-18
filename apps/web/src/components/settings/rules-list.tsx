@@ -1,19 +1,36 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { rulesQuery } from "../../queries/settings";
+import { actionsSetUp } from "../../lib/rules";
+import { rulesQuery, settingsQuery } from "../../queries/settings";
 import { RuleCard } from "./rule-card";
 
-// Auto add's Rules, oldest first, then a new one being written, or the button
-// to write one.
+// The Rules, oldest first, then a new one being written, or the button to
+// write one. A Rule needs an Action: without a connection set up, none.
 export function RulesList() {
   const { data } = useQuery(rulesQuery());
+  const settings = useQuery(settingsQuery());
   const [adding, setAdding] = useState(false);
   const rules = data?.rules ?? [];
+  const canAct = actionsSetUp(settings.data?.settings).length > 0;
 
   return (
     <div className="flex flex-col gap-3 md:col-span-2">
-      {rules.length === 0 && !adding && (
+      {!canAct && (
+        <p className="text-sm text-text-muted">
+          A rule needs somewhere to send candidates: set up Seerr in{" "}
+          <Link
+            to="/settings"
+            search={{ section: "connections" }}
+            className="font-medium text-text underline"
+          >
+            Connections
+          </Link>
+          .
+        </p>
+      )}
+      {canAct && rules.length === 0 && !adding && (
         <p className="text-sm text-text-muted">
           No rule yet: you choose every candidate yourself, in the History.
         </p>
@@ -21,9 +38,8 @@ export function RulesList() {
       {rules.map((rule) => (
         <RuleCard key={rule.id} rule={rule} />
       ))}
-      {adding ? (
-        <RuleCard onDone={() => setAdding(false)} />
-      ) : (
+      {adding && <RuleCard onDone={() => setAdding(false)} />}
+      {canAct && !adding && (
         <button
           type="button"
           onClick={() => setAdding(true)}

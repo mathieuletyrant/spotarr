@@ -7,10 +7,17 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Fragment, useDeferredValue, useId, useState } from "react";
 import { transport } from "../../lib/api";
-import { conditionsOf } from "../../lib/rules";
-import { rulesQuery } from "../../queries/settings";
+import { actionsSetUp, conditionsOf } from "../../lib/rules";
+import { rulesQuery, settingsQuery } from "../../queries/settings";
 import { Poster } from "../poster";
 import { inputClass } from "./fields";
+
+// What each Action reads as in the form.
+const ACTION_LABELS: Record<RuleAction, string> = {
+  [RuleAction.UNSPECIFIED]: "Add to the library (request it in Seerr)",
+  [RuleAction.SEERR_REQUEST]: "Add to the library (request it in Seerr)",
+  [RuleAction.SEERR_WATCHLIST]: "Add to Seerr's watchlist (nothing is downloaded)",
+};
 
 const buttonClass = "h-9 rounded-md border border-border px-3 text-sm font-medium";
 
@@ -154,6 +161,12 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
   const [draft, setDraft] = useState(draftOf(rule));
   const change = (fields: Partial<Draft>) => setDraft({ ...draft, ...fields });
   const asksRating = draft.minRating.trim() !== "" || draft.minVotes.trim() !== "";
+  const settings = useQuery(settingsQuery());
+  // The Actions of the connections set up, and the Rule's own even when its
+  // connection was removed since: it is shown as it is.
+  const current = draft.action === RuleAction.UNSPECIFIED ? RuleAction.SEERR_REQUEST : draft.action;
+  const offered = actionsSetUp(settings.data?.settings);
+  const actions = offered.includes(current) ? offered : [current, ...offered];
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: rulesQuery().queryKey });
   const save = useMutation(SpotarrService.method.saveRule, {
@@ -191,20 +204,15 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
           <span className="text-sm font-medium">Then</span>
           <select
             id={`${id}-action`}
-            value={
-              draft.action === RuleAction.SEERR_WATCHLIST
-                ? RuleAction.SEERR_WATCHLIST
-                : RuleAction.SEERR_REQUEST
-            }
+            value={current}
             onChange={(e) => change({ action: Number(e.target.value) as RuleAction })}
             className={inputClass}
           >
-            <option value={RuleAction.SEERR_REQUEST}>
-              Add to the library (request it in Seerr)
-            </option>
-            <option value={RuleAction.SEERR_WATCHLIST}>
-              Add to Seerr's watchlist (nothing is downloaded)
-            </option>
+            {actions.map((action) => (
+              <option key={action} value={action}>
+                {ACTION_LABELS[action]}
+              </option>
+            ))}
           </select>
           <span className="text-sm text-text-muted">
             A candidate both kinds of rules hold for is added to the library. The watchlist shows in
