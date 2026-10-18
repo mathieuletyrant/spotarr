@@ -1,4 +1,5 @@
 import { Library } from "lucide-react";
+import { ConnectionState } from "./connection-state";
 import { type Form, SecretField, Section, SubHeading, TextField } from "./fields";
 import { SeerrWebhookFields } from "./seerr-webhook-fields";
 
@@ -9,6 +10,7 @@ export function SeerrSection({ form }: { form: Form }) {
       icon={<Library aria-hidden className="size-5" />}
       title="Seerr"
       description="The library: where requests go, and what tells Spotarr when it changes."
+      action={<ConnectionState name="Seerr" />}
     >
       <SubHeading
         title="Connection"

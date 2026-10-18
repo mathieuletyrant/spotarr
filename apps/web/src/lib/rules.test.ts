@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { create } from "@bufbuild/protobuf";
-import { MediaType, RuleSchema } from "@spotarr/contract";
-import { conditionsOf } from "./rules";
+import { MediaType, RuleAction, RuleSchema, SettingsSchema } from "@spotarr/contract";
+import { actionsSetUp, conditionsOf } from "./rules";
 
 test("a Rule's conditions read in the form's order", () => {
   const rule = create(RuleSchema, {
@@ -28,4 +28,12 @@ test("a title not out yet skipping the rating joins the rating's chip, and only 
   expect(conditionsOf(rated)).toEqual(["TMDB ≥ 7.5 or not out yet"]);
   const unrated = create(RuleSchema, { minConfidence: 90, unreleasedSkipsRating: true });
   expect(conditionsOf(unrated)).toEqual(["confidence ≥ 90%"]);
+});
+
+test("a Rule offers Seerr's Actions only once Seerr is set up", () => {
+  expect(actionsSetUp(undefined)).toEqual([]);
+  const urlOnly = create(SettingsSchema, { seerr: { url: "http://seerr:5055" } });
+  expect(actionsSetUp(urlOnly)).toEqual([]);
+  const seerr = create(SettingsSchema, { seerr: { url: "http://seerr:5055", apiKey: "k" } });
+  expect(actionsSetUp(seerr)).toEqual([RuleAction.SEERR_REQUEST, RuleAction.SEERR_WATCHLIST]);
 });
