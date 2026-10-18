@@ -23,8 +23,9 @@ function savedTheme(): Theme {
   return "system";
 }
 
-// Cycles System → Light → Dark. The icon shows the current choice.
-export function ThemeButton() {
+// Cycles System → Light → Dark. The icon shows the current choice; in the
+// phone's menu, its name too.
+export function ThemeButton(props: { withLabel?: boolean }) {
   const [theme, setTheme] = useState(savedTheme);
 
   function next() {
@@ -39,17 +40,18 @@ export function ThemeButton() {
   }
 
   const label = `Theme: ${LABELS[theme]}`;
+  let className =
+    "flex size-9 items-center justify-center rounded-md text-text-muted hover:bg-text/8 hover:text-text";
+  if (props.withLabel) {
+    className =
+      "flex items-center gap-2 rounded-md px-3 py-2.5 text-left text-text-muted hover:bg-text/8 hover:text-text";
+  }
   return (
-    <button
-      type="button"
-      onClick={next}
-      title={label}
-      aria-label={label}
-      className="flex size-9 items-center justify-center rounded-md text-text-muted hover:bg-text/8 hover:text-text"
-    >
+    <button type="button" onClick={next} title={label} aria-label={label} className={className}>
       {theme === "system" && <Monitor aria-hidden className="size-4" />}
       {theme === "light" && <Sun aria-hidden className="size-4" />}
       {theme === "dark" && <Moon aria-hidden className="size-4" />}
+      {props.withLabel && label}
     </button>
   );
 }
