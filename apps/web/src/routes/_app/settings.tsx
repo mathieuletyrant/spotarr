@@ -10,6 +10,7 @@ import {
   Library,
   type LucideIcon,
   Sparkles,
+  Tv,
   Webhook,
   Zap,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import { IdentificationSection } from "../../components/settings/identification-
 import { McpSection } from "../../components/settings/mcp-section";
 import { SaveBar } from "../../components/settings/save-bar";
 import { SeerrSection } from "../../components/settings/seerr-section";
+import { StreamingSection } from "../../components/settings/streaming-section";
 import { WebhooksSection } from "../../components/settings/webhooks-section";
 import { useToast } from "../../components/toast";
 import {
@@ -39,6 +41,7 @@ const MENU = [
   { id: "identification", label: "Identification", icon: Sparkles },
   { id: "seerr", label: "Seerr", icon: Library },
   { id: "auto-add", label: "Auto add", icon: Zap },
+  { id: "streaming", label: "Streaming", icon: Tv },
   { id: "extraction", label: "Extraction", icon: Film },
   { id: "webhooks", label: "Webhooks", icon: Webhook },
   { id: "access", label: "API", icon: KeyRound },
@@ -120,6 +123,7 @@ function SettingsForm({ saved }: { saved: Values }) {
         {section === "identification" && <IdentificationSection form={form} />}
         {section === "seerr" && <SeerrSection form={form} />}
         {section === "auto-add" && <AutoAddSection />}
+        {section === "streaming" && <StreamingSection />}
         {section === "extraction" && <ExtractionSection form={form} />}
         {section === "webhooks" && <WebhooksSection form={form} />}
         {section === "access" && <ApiSection form={form} />}

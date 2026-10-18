@@ -105,6 +105,16 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     /// the Rule being edited is checked before it is saved.
     @available(iOS 13, *)
     func `previewRules`(request: Spotarr_V1_PreviewRulesRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_PreviewRulesResponse>
+
+    /// The streaming Platforms TMDB knows in the chosen country, to choose the
+    /// ones subscribed to, and the countries to choose from (Settings → streaming).
+    @available(iOS 13, *)
+    func `listPlatforms`(request: Spotarr_V1_ListPlatformsRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_ListPlatformsResponse>
+
+    /// Where a title can be watched now: each chosen Platform that streams it,
+    /// and the library when the title is there. Asked live, never stored.
+    @available(iOS 13, *)
+    func `listWatchLinks`(request: Spotarr_V1_ListWatchLinksRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_ListWatchLinksResponse>
 }
 
 /// Concrete implementation of `Spotarr_V1_SpotarrServiceClientInterface`.
@@ -230,6 +240,16 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
         return await self.client.unary(path: "/spotarr.v1.SpotarrService/PreviewRules", idempotencyLevel: .unknown, request: request, headers: headers)
     }
 
+    @available(iOS 13, *)
+    public func `listPlatforms`(request: Spotarr_V1_ListPlatformsRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_ListPlatformsResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/ListPlatforms", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
+    @available(iOS 13, *)
+    public func `listWatchLinks`(request: Spotarr_V1_ListWatchLinksRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_ListWatchLinksResponse> {
+        return await self.client.unary(path: "/spotarr.v1.SpotarrService/ListWatchLinks", idempotencyLevel: .unknown, request: request, headers: headers)
+    }
+
     public enum Metadata {
         public enum Methods {
             public static let login = Connect.MethodSpec(name: "Login", service: "spotarr.v1.SpotarrService", type: .unary)
@@ -255,6 +275,8 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
             public static let saveRule = Connect.MethodSpec(name: "SaveRule", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let deleteRule = Connect.MethodSpec(name: "DeleteRule", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let previewRules = Connect.MethodSpec(name: "PreviewRules", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let listPlatforms = Connect.MethodSpec(name: "ListPlatforms", service: "spotarr.v1.SpotarrService", type: .unary)
+            public static let listWatchLinks = Connect.MethodSpec(name: "ListWatchLinks", service: "spotarr.v1.SpotarrService", type: .unary)
         }
     }
 }

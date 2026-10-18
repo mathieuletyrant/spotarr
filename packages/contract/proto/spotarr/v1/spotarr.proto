@@ -57,6 +57,13 @@ service SpotarrService {
   // What these Rules would have added over the recent history. Adds nothing:
   // the Rule being edited is checked before it is saved.
   rpc PreviewRules(PreviewRulesRequest) returns (PreviewRulesResponse);
+
+  // The streaming Platforms TMDB knows in the chosen country, to choose the
+  // ones subscribed to, and the countries to choose from (Settings → streaming).
+  rpc ListPlatforms(ListPlatformsRequest) returns (ListPlatformsResponse);
+  // Where a title can be watched now: each chosen Platform that streams it,
+  // and the library when the title is there. Asked live, never stored.
+  rpc ListWatchLinks(ListWatchLinksRequest) returns (ListWatchLinksResponse);
 }
 
 message CheckDependenciesRequest {}
@@ -165,6 +172,17 @@ message Settings {
   WebhookSettings webhooks = 5;
   // Replaced by the Rules (ListRules, SaveRule): the old settings became the first Rule.
   AutoAddSettings auto_add = 6 [deprecated = true];
+  StreamingSettings streaming = 7;
+}
+
+message StreamingSettings {
+  // TMDB ids of the Platforms subscribed to (Crunchyroll is 283). In
+  // UpdateSettings, a `streaming` present replaces the whole list: empty
+  // clears it. Send it again with `country`.
+  repeated int32 platform_ids = 1;
+  // The country whose catalogues count, e.g. "FR". Empty: the country of the
+  // TMDB language (fr-FR → FR).
+  optional string country = 2;
 }
 
 // Replaced by the Rules.
@@ -263,6 +281,54 @@ message RegenerateSeerrTokenRequest {}
 
 message RegenerateSeerrTokenResponse {
   string seerr_token = 1;
+}
+
+message ListPlatformsRequest {}
+
+message ListPlatformsResponse {
+  // In the order TMDB shows them in that country, most watched first.
+  repeated Platform platforms = 1;
+  // The country they are from: the chosen one, else the TMDB language's
+  // ("FR" for fr-FR).
+  string region = 2;
+  // Every country TMDB knows Platforms in, by name.
+  repeated Country countries = 3;
+}
+
+message Country {
+  // ISO 3166-1: "FR".
+  string code = 1;
+  // In the TMDB language: "Japon".
+  string name = 2;
+}
+
+// A streaming service, as TMDB (with JustWatch's data) knows it.
+message Platform {
+  // TMDB's provider id.
+  int32 id = 1;
+  string name = 2;
+  optional string logo_url = 3;
+}
+
+message ListWatchLinksRequest {
+  int32 tmdb_id = 1;
+  MediaType type = 2;
+}
+
+message ListWatchLinksResponse {
+  // The library first, then the Platforms in TMDB's order. Empty when the
+  // title is on none of them.
+  repeated WatchLink links = 1;
+}
+
+message WatchLink {
+  // "Crunchyroll", or the library's server: "Jellyfin", "Plex".
+  string name = 1;
+  // A Platform's link is TMDB's page of where to watch the title, in the
+  // settings' country: TMDB gives no link to the Platform itself. The
+  // library's is the title's page on its server, from Seerr.
+  string url = 2;
+  optional string logo_url = 3;
 }
 
 // A piece of content sent to Spotarr and everything that follows from it.

@@ -1,9 +1,11 @@
 // Poster sizes, all 2:3 like TMDB's: small in stacks, large in the History's
-// phone cards, whose four lines (title, source, genres, status) need the height.
+// phone cards, whose four lines (title, source, genres, status) need the height,
+// hero for a Share's best match.
 const SIZES = {
   small: "h-12 w-8 text-sm",
   medium: "h-21 w-14 text-lg",
   large: "h-27 w-18 text-xl",
+  hero: "h-36 w-24 text-3xl md:h-48 md:w-32",
 };
 
 // A TMDB poster, or the title's first letter while there is none.

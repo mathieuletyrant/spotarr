@@ -22,3 +22,9 @@ export function llmConfigFrom({ identification }: Settings): LlmConfig {
     effort: identification.effort,
   };
 }
+
+// The country whose streaming catalogues count: the one chosen, else the TMDB
+// language's ("fr-FR" → "FR").
+export function countryFrom({ streaming, identification }: Settings): string {
+  return streaming.country || identification.language.slice(3);
+}

@@ -47,8 +47,9 @@ export function CluesCard({ share }: { share: Share }) {
           <p className="mb-2 text-sm text-text-muted">
             {share.frames.length} frames taken from the video
           </p>
-          {/* One line: six frames in view, the others a horizontal scroll away. */}
-          <ul className="grid snap-x auto-cols-[calc((100%-2.5rem)/6)] grid-flow-col gap-2 overflow-x-auto pb-1">
+          {/* One line: six frames in view on a phone, three in the narrow column
+              from md up, the others a horizontal scroll away. */}
+          <ul className="grid snap-x auto-cols-[calc((100%-2.5rem)/6)] grid-flow-col gap-2 overflow-x-auto pb-1 md:auto-cols-[calc((100%-1rem)/3)]">
             {share.frames.map((frame) => (
               <li
                 key={frame.url}

@@ -11,6 +11,7 @@ import { ruleRpcs } from "./api/rpc/rules";
 import { settingsRpcs } from "./api/rpc/settings";
 import { shareRpcs } from "./api/rpc/shares";
 import { statusRpcs } from "./api/rpc/status";
+import { streamingRpcs } from "./api/rpc/streaming";
 import { webhookRpcs } from "./api/rpc/webhooks";
 import { seerrWebhook } from "./api/seerr-webhook";
 import type { WebhookSender } from "./api/webhooks/sender";
@@ -43,6 +44,7 @@ export function createApp({ apiToken, settings, shares, webhooks, rules, sender 
       ...shareRpcs(shares, settings, sender),
       ...webhookRpcs(webhooks, sender),
       ...ruleRpcs(rules, shares),
+      ...streamingRpcs(settings),
     }),
   );
 

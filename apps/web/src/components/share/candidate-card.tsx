@@ -6,107 +6,291 @@ import {
   type Share,
   SpotarrService,
   Summary,
+  type WatchLink,
 } from "@spotarr/contract";
-import { useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, Plus } from "lucide-react";
-import { Genres } from "../genres";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Play, Plus } from "lucide-react";
+import { watchLinksQuery } from "../../queries/shares";
 import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
 import { TmdbRating } from "../tmdb-rating";
 
-// One Candidate: poster, titles, TMDB rating, confidence, and what can be done with it.
-export function CandidateCard({ share, candidate }: { share: Share; candidate: Candidate }) {
+// The Candidates of a Share. The first, the most likely (the Identification
+// sorts them by confidence), takes the stage with one big action: watch it
+// where it already is, else add it. The others get one line each.
+export function Candidates({ share }: { share: Share }) {
+  const [best, ...others] = share.candidates;
+  if (!best) return null;
   return (
-    <li className="flex gap-4 py-4 first:pt-0 last:pb-0">
-      <Poster title={candidate.title} url={candidate.posterUrl} />
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="flex flex-wrap items-baseline gap-x-2">
-          <a
-            href={tmdbUrl(candidate)}
-            target="_blank"
-            rel="noreferrer"
-            className="group inline-flex items-center gap-1.5 text-lg font-semibold hover:underline"
-          >
-            {candidate.title}
-            <ExternalLink aria-hidden className="size-3.5 text-text-muted group-hover:text-text" />
-            <span className="sr-only">(on TMDB, opens a new tab)</span>
-          </a>
-          <span className="text-text-muted">{candidate.year}</span>
-          <span className="rounded-sm border border-border px-1.5 text-xs text-text-muted">
-            {candidate.type === MediaType.TV ? "TV show" : "Movie"}
-          </span>
-        </p>
-        {candidate.originalTitle && candidate.originalTitle !== candidate.title && (
-          <p className="text-sm text-text-muted">{candidate.originalTitle}</p>
-        )}
-        <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} />
-        <Genres genres={candidate.genres} />
-        <Confidence value={candidate.confidence} />
-      </div>
-      <div className="shrink-0">
-        <CandidateAction share={share} candidate={candidate} />
-      </div>
-    </li>
-  );
-}
-
-// A bar and a percentage; a direct IMDb or TMDB link is certain.
-function Confidence({ value }: { value?: number }) {
-  if (value === undefined)
-    return <p className="mt-2 text-sm text-text-muted">Certain: direct link</p>;
-  const percent = Math.round(value * 100);
-  return (
-    <div className="mt-2 flex items-center gap-3 text-sm">
-      <div className="h-1.5 w-20 shrink-0 overflow-hidden rounded-full bg-border sm:w-32">
-        <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
-      </div>
-      <span className="whitespace-nowrap">Confidence {percent} %</span>
+    <div className="flex flex-col gap-6">
+      <BestMatch share={share} candidate={best} />
+      {others.length > 0 && (
+        <div className="border-t border-divider pt-4">
+          <h3 className="text-xs font-semibold tracking-wide text-text-muted uppercase">
+            Other candidates
+          </h3>
+          <ul className="mt-1 divide-y divide-divider">
+            {others.map((candidate) => (
+              <OtherCandidate
+                key={`${candidate.type}-${candidate.tmdbId}`}
+                share={share}
+                candidate={candidate}
+              />
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
 
-// "Add", or where the title stands: requested, available, failed.
-function CandidateAction({ share, candidate }: { share: Share; candidate: Candidate }) {
-  const queryClient = useQueryClient();
-  const add = useMutation(SpotarrService.method.add, {
-    onSuccess: () => queryClient.invalidateQueries(),
-  });
+// The poster beside the title and what it is; the actions under them on a
+// phone, under the text from md up.
+function BestMatch({ share, candidate }: { share: Share; candidate: Candidate }) {
+  const { data } = useQuery(watchLinksQuery(candidate.tmdbId, candidate.type));
+  const links = data?.links ?? [];
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-xs font-semibold tracking-wide text-accent uppercase">
+        Best match · {confidenceText(candidate.confidence)}
+      </p>
+      <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-4">
+        <div className={links.length > 0 ? "md:row-span-2" : "row-span-2"}>
+          <Poster title={candidate.title} url={candidate.posterUrl} size="hero" />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <a
+            href={tmdbUrl(candidate)}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xl leading-tight font-semibold hover:underline md:text-2xl"
+          >
+            {candidate.title}
+            <span className="sr-only"> (on TMDB, opens a new tab)</span>
+          </a>
+          <p className="text-sm text-text-muted">{whatItIs(candidate)}</p>
+          <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} />
+          {candidate.overview && (
+            <p className="mt-1 hidden text-sm leading-relaxed md:line-clamp-3">
+              {candidate.overview}
+            </p>
+          )}
+        </div>
+        {/* A big Watch button takes a phone's width; a lone Add stays beside the poster. */}
+        <div
+          className={links.length > 0 ? "col-span-2 md:col-span-1 md:col-start-2" : "col-start-2"}
+        >
+          <BestMatchActions share={share} candidate={candidate} links={links} />
+        </div>
+      </div>
+    </div>
+  );
+}
 
+// Watch it where it already is, else add it. Adding stays possible, quieter,
+// when it can be watched.
+function BestMatchActions({
+  share,
+  candidate,
+  links,
+}: {
+  share: Share;
+  candidate: Candidate;
+  links: WatchLink[];
+}) {
+  const add = useAdd(share, candidate);
+  const [first, ...more] = links;
+  const canAdd = candidate.status === CandidateStatus.CAN_ADD;
+  const failure = candidate.failure ?? add.error?.message;
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        {first && (
+          <a
+            href={first.url}
+            target="_blank"
+            rel="noreferrer"
+            className={`${BIG_BUTTON} flex-1 bg-accent text-accent-text md:flex-none`}
+          >
+            <LinkLogo link={first} />
+            Watch on {first.name}
+            <span className="sr-only">(opens a new tab)</span>
+          </a>
+        )}
+        {more.map((link) => (
+          <a
+            key={link.name}
+            href={link.url}
+            target="_blank"
+            rel="noreferrer"
+            className={`${BIG_BUTTON} border border-border hover:bg-text/8`}
+          >
+            <LinkLogo link={link} />
+            {link.name}
+            <span className="sr-only">(watch there, opens a new tab)</span>
+          </a>
+        ))}
+        {canAdd && !first && (
+          <button
+            type="button"
+            onClick={add.start}
+            disabled={add.isPending}
+            className="flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            <Plus aria-hidden className="size-4" />
+            {add.isPending ? "Adding…" : failure ? "Try again" : "Add"}
+          </button>
+        )}
+        {!canAdd && <Status candidate={candidate} />}
+      </div>
+      {canAdd && first && (
+        <button
+          type="button"
+          onClick={add.start}
+          disabled={add.isPending}
+          className="w-fit self-center text-sm text-text-muted underline hover:text-text md:self-start"
+        >
+          {add.isPending ? "Adding…" : failure ? "Try adding again" : "Add to the library anyway"}
+        </button>
+      )}
+      {failure && <p className="text-sm text-status-error">{failure}</p>}
+    </div>
+  );
+}
+
+const BIG_BUTTON =
+  "flex h-11 items-center justify-center gap-2 rounded-md px-4 font-medium whitespace-nowrap focus-visible:outline-2 focus-visible:outline-accent";
+
+// One line: a small poster, the title, what it is and how sure; where to
+// watch it by logo, then Add or where it stands.
+function OtherCandidate({ share, candidate }: { share: Share; candidate: Candidate }) {
+  const { data } = useQuery(watchLinksQuery(candidate.tmdbId, candidate.type));
+  const links = data?.links ?? [];
+  return (
+    <li className="flex items-center gap-3 py-3">
+      <Poster title={candidate.title} url={candidate.posterUrl} size="small" />
+      <div className="min-w-0 flex-1">
+        <a
+          href={tmdbUrl(candidate)}
+          target="_blank"
+          rel="noreferrer"
+          className="block truncate font-medium hover:underline"
+        >
+          {candidate.title}
+          <span className="sr-only"> (on TMDB, opens a new tab)</span>
+        </a>
+        <p className="text-sm text-text-muted">
+          {[candidate.year, typeName(candidate), confidenceText(candidate.confidence)]
+            .filter(Boolean)
+            .join(" · ")}
+        </p>
+      </div>
+      {links.map((link) => (
+        <a
+          key={link.name}
+          href={link.url}
+          target="_blank"
+          rel="noreferrer"
+          title={`Watch on ${link.name}`}
+          className="flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-border pr-2 pl-1 text-sm hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          <LinkLogo link={link} />
+          <span className="sr-only">Watch on</span>
+          {/* A logo says enough on a phone; the library has none, so its name shows. */}
+          <span className={link.logoUrl ? "sr-only md:not-sr-only" : ""}>{link.name}</span>
+          <span className="sr-only">(opens a new tab)</span>
+        </a>
+      ))}
+      {/* A link to watch it already says it is in the library. */}
+      {!(candidate.status === CandidateStatus.ALREADY_PRESENT && links.length > 0) && (
+        <div className="shrink-0">
+          <SmallAction share={share} candidate={candidate} />
+        </div>
+      )}
+    </li>
+  );
+}
+
+function SmallAction({ share, candidate }: { share: Share; candidate: Candidate }) {
+  const add = useAdd(share, candidate);
+  if (candidate.status !== CandidateStatus.CAN_ADD) return <Status candidate={candidate} />;
+  const failure = candidate.failure ?? add.error?.message;
+  return (
+    <button
+      type="button"
+      onClick={add.start}
+      disabled={add.isPending}
+      title={failure}
+      className="flex h-9 items-center gap-1 rounded-md bg-accent px-3 text-sm font-medium text-accent-text"
+    >
+      <Plus aria-hidden className="size-4" />
+      {add.isPending ? "Adding…" : failure ? "Retry" : "Add"}
+    </button>
+  );
+}
+
+// Where a Candidate stands once it is no longer to add, and who added it.
+function Status({ candidate }: { candidate: Candidate }) {
   if (candidate.status === CandidateStatus.REQUESTED) {
     return (
-      <div className="flex flex-col items-end gap-1">
+      <span className="flex items-center gap-2">
         <StatusBadge summary={Summary.REQUESTED} />
         {candidate.automatic && (
           <span className="text-xs text-text-muted">
             {candidate.rule ? `by ${candidate.rule}` : "automatically"}
           </span>
         )}
-      </div>
+      </span>
     );
   }
   if (candidate.status === CandidateStatus.ADDED) return <StatusBadge summary={Summary.ADDED} />;
-  if (candidate.status === CandidateStatus.ALREADY_PRESENT) {
-    return <StatusBadge summary={Summary.ALREADY_PRESENT} />;
-  }
+  return <StatusBadge summary={Summary.ALREADY_PRESENT} />;
+}
 
-  // The last failed Addition, else the click that just failed.
-  const failure = candidate.failure ?? add.error?.message;
+// The platform's logo, else a play sign: the library has none.
+function LinkLogo({ link }: { link: WatchLink }) {
+  if (link.logoUrl) return <img src={link.logoUrl} alt="" className="size-7 rounded-sm" />;
   return (
-    <div className="flex flex-col items-end gap-1">
-      <button
-        type="button"
-        onClick={() =>
-          add.mutate({ shareId: share.id, tmdbId: candidate.tmdbId, type: candidate.type })
-        }
-        disabled={add.isPending}
-        className="flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 font-medium text-accent-text"
-      >
-        <Plus aria-hidden className="size-4" />
-        {add.isPending ? "Adding…" : failure ? "Try again" : "Add"}
-      </button>
-      {failure && <p className="max-w-48 text-right text-xs text-status-error">{failure}</p>}
-    </div>
+    <span className="flex size-7 items-center justify-center rounded-sm bg-accent/15 text-accent">
+      <Play aria-hidden className="size-3.5" />
+    </span>
   );
+}
+
+// Adds the Candidate through Seerr, then refreshes the Share.
+function useAdd(share: Share, candidate: Candidate) {
+  const queryClient = useQueryClient();
+  const add = useMutation(SpotarrService.method.add, {
+    onSuccess: () => queryClient.invalidateQueries(),
+  });
+  return {
+    start: () => add.mutate({ shareId: share.id, tmdbId: candidate.tmdbId, type: candidate.type }),
+    isPending: add.isPending,
+    error: add.error,
+  };
+}
+
+// "2001 · Movie · Animation, Fantastique", the original title first when it differs.
+function whatItIs(candidate: Candidate): string {
+  const parts: string[] = [];
+  if (candidate.originalTitle && candidate.originalTitle !== candidate.title) {
+    parts.push(candidate.originalTitle);
+  }
+  if (candidate.year) parts.push(String(candidate.year));
+  parts.push(typeName(candidate));
+  if (candidate.genres.length > 0) parts.push(candidate.genres.join(", "));
+  return parts.join(" · ");
+}
+
+function typeName(candidate: Candidate): string {
+  return candidate.type === MediaType.TV ? "TV show" : "Movie";
+}
+
+// "92 % sure"; a direct IMDb or TMDB link is certain.
+function confidenceText(value?: number): string {
+  if (value === undefined) return "certain";
+  return `${Math.round(value * 100)} % sure`;
 }
 
 // The Candidate's page on TMDB.
