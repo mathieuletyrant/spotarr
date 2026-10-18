@@ -10,67 +10,58 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExternalLink, Play, Plus } from "lucide-react";
 import { watchLinksQuery } from "../../queries/shares";
-import { Genres } from "../genres";
 import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
 import { TmdbRating } from "../tmdb-rating";
 
-// One Candidate: poster, titles, TMDB rating, confidence, and what can be done
-// with it; under them, across the card's width, where to watch it already.
+// One Candidate beside its poster: the title, what it is, how sure Spotarr is,
+// then where to watch it already and the action.
 export function CandidateCard({ share, candidate }: { share: Share; candidate: Candidate }) {
   return (
-    <li className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
-      <div className="flex gap-4">
-        <Poster title={candidate.title} url={candidate.posterUrl} />
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <p className="flex flex-wrap items-baseline gap-x-2">
-            <a
-              href={tmdbUrl(candidate)}
-              target="_blank"
-              rel="noreferrer"
-              className="group inline-flex items-center gap-1.5 text-lg font-semibold hover:underline"
-            >
-              {candidate.title}
-              <ExternalLink
-                aria-hidden
-                className="size-3.5 text-text-muted group-hover:text-text"
-              />
-              <span className="sr-only">(on TMDB, opens a new tab)</span>
-            </a>
-            <span className="text-text-muted">{candidate.year}</span>
-            <span className="rounded-sm border border-border px-1.5 text-xs text-text-muted">
-              {candidate.type === MediaType.TV ? "TV show" : "Movie"}
-            </span>
-          </p>
-          {candidate.originalTitle && candidate.originalTitle !== candidate.title && (
-            <p className="text-sm text-text-muted">{candidate.originalTitle}</p>
-          )}
-          <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} />
-          <Genres genres={candidate.genres} />
+    <li className="flex gap-3 py-4 first:pt-0 last:pb-0">
+      <Poster title={candidate.title} url={candidate.posterUrl} />
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <a
+          href={tmdbUrl(candidate)}
+          target="_blank"
+          rel="noreferrer"
+          className="font-semibold leading-snug hover:underline md:text-lg"
+        >
+          {candidate.title}
+          <span className="sr-only"> (on TMDB, opens a new tab)</span>
+        </a>
+        <p className="text-sm text-text-muted">{whatItIs(candidate)}</p>
+        <p className="flex flex-wrap items-center gap-x-2 text-sm text-text-muted">
+          <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} compact />
           <Confidence value={candidate.confidence} />
-        </div>
-        <div className="shrink-0">
-          <CandidateAction share={share} candidate={candidate} />
+        </p>
+        <div className="mt-2 flex flex-wrap items-start justify-between gap-2">
+          <WatchLinks candidate={candidate} />
+          <div className="ml-auto">
+            <CandidateAction share={share} candidate={candidate} />
+          </div>
         </div>
       </div>
-      <WatchLinks candidate={candidate} />
     </li>
   );
 }
 
-// A bar and a percentage; a direct IMDb or TMDB link is certain.
+// "2024 · TV show · Animation, Drame", with the original title first when it differs.
+function whatItIs(candidate: Candidate): string {
+  const parts: string[] = [];
+  if (candidate.originalTitle && candidate.originalTitle !== candidate.title) {
+    parts.push(candidate.originalTitle);
+  }
+  if (candidate.year) parts.push(String(candidate.year));
+  parts.push(candidate.type === MediaType.TV ? "TV show" : "Movie");
+  if (candidate.genres.length > 0) parts.push(candidate.genres.join(", "));
+  return parts.join(" · ");
+}
+
+// How sure the Identification is; a direct IMDb or TMDB link is certain.
 function Confidence({ value }: { value?: number }) {
-  if (value === undefined)
-    return <p className="mt-2 text-sm text-text-muted">Certain: direct link</p>;
-  const percent = Math.round(value * 100);
-  return (
-    <div className="mt-2 flex items-center gap-3 text-sm">
-      <div className="h-1.5 w-20 shrink-0 overflow-hidden rounded-full bg-border sm:w-32">
-        <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
-      </div>
-      <span className="whitespace-nowrap">Confidence {percent} %</span>
-    </div>
-  );
+  if (value === undefined) return <span>Direct link</span>;
+  return <span>{Math.round(value * 100)} % sure</span>;
 }
 
 // Where the title can be watched already: the library, the Platforms subscribed
@@ -144,7 +135,7 @@ function CandidateAction({ share, candidate }: { share: Share; candidate: Candid
           add.mutate({ shareId: share.id, tmdbId: candidate.tmdbId, type: candidate.type })
         }
         disabled={add.isPending}
-        className="flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 font-medium text-accent-text"
+        className="flex h-8 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text"
       >
         <Plus aria-hidden className="size-4" />
         {add.isPending ? "Adding…" : failure ? "Try again" : "Add"}
