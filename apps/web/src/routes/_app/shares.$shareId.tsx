@@ -24,18 +24,9 @@ function SharePage() {
     <div className="flex flex-col gap-6">
       <ShareHeader share={share} />
       {/* grid-cols-1 keeps the column to the screen's width on a phone: an implicit
-          column would grow to fit the frames. */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] md:items-start">
-        <div className="flex flex-col gap-6">
-          <CluesCard share={share} />
-          {share.identification?.reasoning && (
-            <Card icon={<Sparkles aria-hidden className="size-4" />} title="LLM reasoning">
-              <p className="rounded-lg bg-accent/10 p-4 leading-relaxed">
-                {share.identification.reasoning}
-              </p>
-            </Card>
-          )}
-        </div>
+          column would grow to fit the frames. The Candidates come first and wider:
+          that is where the choice is made; the Clues explain it beside them. */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] md:items-start">
         <Card icon={<Film aria-hidden className="size-4" />} title="Candidates">
           {share.summary === Summary.IN_PROGRESS ? (
             <p className="text-text-muted">
@@ -47,6 +38,16 @@ function SharePage() {
             <Candidates share={share} />
           )}
         </Card>
+        <div className="flex flex-col gap-6">
+          <CluesCard share={share} />
+          {share.identification?.reasoning && (
+            <Card icon={<Sparkles aria-hidden className="size-4" />} title="LLM reasoning">
+              <p className="rounded-lg bg-accent/10 p-4 leading-relaxed">
+                {share.identification.reasoning}
+              </p>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );
