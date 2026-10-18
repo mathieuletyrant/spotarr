@@ -2,7 +2,7 @@ import { type Share, Summary } from "@spotarr/contract";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Film, Sparkles } from "lucide-react";
-import { CandidateCard } from "../../components/share/candidate-card";
+import { Candidates } from "../../components/share/candidate-card";
 import { Card } from "../../components/share/card";
 import { CluesCard } from "../../components/share/clues-card";
 import { ShareHeader } from "../../components/share/share-header";
@@ -44,15 +44,7 @@ function SharePage() {
           ) : share.candidates.length === 0 ? (
             <NoCandidates share={share} />
           ) : (
-            <ul className="divide-y divide-divider">
-              {share.candidates.map((candidate) => (
-                <CandidateCard
-                  key={`${candidate.type}-${candidate.tmdbId}`}
-                  share={share}
-                  candidate={candidate}
-                />
-              ))}
-            </ul>
+            <Candidates share={share} />
           )}
         </Card>
       </div>
