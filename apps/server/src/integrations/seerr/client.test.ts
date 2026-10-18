@@ -60,3 +60,23 @@ test("errors carry a code", async () => {
     code: "not_configured",
   });
 });
+
+test("a title in the library links to its page on the media server", async () => {
+  const jellyfin = "http://jellyfin.local/web/index.html#!/details?id=abc&context=home&serverId=s";
+  const emby = "http://emby.local/web/index.html#!/item?id=abc&context=home&serverId=s";
+  // Seerr's answers carry mediaUrl and ratingKey; its spec does not.
+  const withLinks = (links: object) => ({ ...movie(5), mediaInfo: { status: 5, ...links } });
+  fakeFetch({
+    "/api/v1/movie/1": movie(),
+    "/api/v1/movie/2": withLinks({ mediaUrl: jellyfin }),
+    "/api/v1/movie/3": withLinks({ mediaUrl: "http://plex.local/web", ratingKey: "42" }),
+    "/api/v1/tv/4": { ...getGetTvTvIdResponseMock(), mediaInfo: { status: 5, mediaUrl: emby } },
+  });
+  expect(await seerr.libraryLink("MOVIE", 1)).toBeUndefined();
+  expect(await seerr.libraryLink("MOVIE", 2)).toEqual({ server: "Jellyfin", url: jellyfin });
+  expect(await seerr.libraryLink("MOVIE", 3)).toEqual({
+    server: "Plex",
+    url: "http://plex.local/web",
+  });
+  expect(await seerr.libraryLink("TV", 4)).toEqual({ server: "Emby", url: emby });
+});

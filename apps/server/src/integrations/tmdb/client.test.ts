@@ -164,3 +164,57 @@ test("a title keeps TMDB's overview; an empty one is no overview", async () => {
   );
   expect((await client.movie(1))?.overview).toBeUndefined();
 });
+
+test("platforms are the country's, movies and TV shows together, in TMDB's order", async () => {
+  const fetch = fakeFetch({
+    "/3/watch/providers/movie": {
+      results: [
+        { provider_id: 8, provider_name: "Netflix", logo_path: "/n.jpg", display_priority: 1 },
+        { provider_id: 337, provider_name: "Disney Plus", display_priority: 3 },
+      ],
+    },
+    "/3/watch/providers/tv": {
+      results: [
+        { provider_id: 283, provider_name: "Crunchyroll", display_priority: 2 },
+        { provider_id: 8, provider_name: "Netflix", logo_path: "/n.jpg", display_priority: 1 },
+      ],
+    },
+  });
+
+  expect(await tmdb().platforms()).toEqual([
+    { id: 8, name: "Netflix", logoUrl: "https://image.tmdb.org/t/p/w92/n.jpg" },
+    { id: 283, name: "Crunchyroll", logoUrl: undefined },
+    { id: 337, name: "Disney Plus", logoUrl: undefined },
+  ]);
+  const [url] = fetch.mock.calls[0] ?? [];
+  expect(new URL(String(url)).searchParams.get("watch_region")).toBe("FR");
+});
+
+test("a title's watch offers are its country's streams, without rent or buy", async () => {
+  fakeFetch({
+    "/3/tv/123/watch/providers": {
+      id: 123,
+      results: {
+        FR: {
+          link: "https://www.themoviedb.org/tv/123/watch?locale=FR",
+          flatrate: [{ provider_id: 283, provider_name: "Crunchyroll" }],
+          ads: [{ provider_id: 300, provider_name: "Pluto TV" }],
+          buy: [{ provider_id: 2, provider_name: "Apple TV" }],
+        },
+        US: { flatrate: [{ provider_id: 8, provider_name: "Netflix" }] },
+      },
+    },
+    "/3/movie/1/watch/providers": { id: 1, results: { US: {} } },
+    "/3/movie/2/watch/providers": 404,
+  });
+
+  expect(await tmdb().watchOffers("TV", 123)).toEqual({
+    link: "https://www.themoviedb.org/tv/123/watch?locale=FR",
+    platforms: [
+      { id: 283, name: "Crunchyroll", logoUrl: undefined },
+      { id: 300, name: "Pluto TV", logoUrl: undefined },
+    ],
+  });
+  expect(await tmdb().watchOffers("MOVIE", 1)).toEqual({ platforms: [] });
+  expect(await tmdb().watchOffers("MOVIE", 2)).toEqual({ platforms: [] });
+});

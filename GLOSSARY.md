@@ -72,6 +72,14 @@ _Avoid_: in_library, present, exists
 Where a Candidate stands. Derived, never stored, from its Library state whatever path led there: "available" when `AVAILABLE` or `PARTIAL`, "requested" when `REQUESTED`, else "can add" (with the latest failed Addition's error, if any). A request Seerr declined, or a title deleted from the library, reads "can add" again.
 _Avoid_: candidate state, action
 
+**Platform**:
+A streaming service, as TMDB knows it from JustWatch ("Crunchyroll", "Netflix"). The ones subscribed to are chosen in Settings, among those of the country of the settings' language. A Candidate streaming on one of them, by subscription, free or with ads, gets a link on its Share's page; renting and buying do not count. Asked live, never stored.
+_Avoid_: provider, service, channel
+
+**Watch link**:
+Where a Candidate can be watched now: on a chosen Platform (TMDB's page of where to watch it, TMDB giving no link to the Platform itself), or on the library's media server (Jellyfin, Plex, Emby) when Seerr has it.
+_Avoid_: stream, offer
+
 **Addition**:
 The request to add a Candidate to the library through a Target. A Share can have several Additions, one per chosen Candidate.
 _Avoid_: request, download, order

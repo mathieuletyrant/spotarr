@@ -745,11 +745,34 @@ public nonisolated struct Spotarr_V1_Settings: @unchecked Sendable {
   /// Clears the value of `autoAdd`. Subsequent reads from it will return its default value.
   public mutating func clearAutoAdd() {_uniqueStorage()._autoAdd = nil}
 
+  public var streaming: Spotarr_V1_StreamingSettings {
+    get {_storage._streaming ?? Spotarr_V1_StreamingSettings()}
+    set {_uniqueStorage()._streaming = newValue}
+  }
+  /// Returns true if `streaming` has been explicitly set.
+  public var hasStreaming: Bool {_storage._streaming != nil}
+  /// Clears the value of `streaming`. Subsequent reads from it will return its default value.
+  public mutating func clearStreaming() {_uniqueStorage()._streaming = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
+}
+
+public nonisolated struct Spotarr_V1_StreamingSettings: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// TMDB ids of the Platforms subscribed to (Crunchyroll is 283). In
+  /// UpdateSettings, a `streaming` present replaces the whole list: empty clears it.
+  public var platformIds: [Int32] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
 }
 
 /// Replaced by the Rules.
@@ -1226,6 +1249,116 @@ public nonisolated struct Spotarr_V1_RegenerateSeerrTokenResponse: Sendable {
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
+}
+
+public nonisolated struct Spotarr_V1_ListPlatformsRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_ListPlatformsResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// In the order TMDB shows them in that country, most watched first.
+  public var platforms: [Spotarr_V1_Platform] = []
+
+  /// The country, from the settings' language: "FR" for fr-FR.
+  public var region: String = String()
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+/// A streaming service, as TMDB (with JustWatch's data) knows it.
+public nonisolated struct Spotarr_V1_Platform: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// TMDB's provider id.
+  public var id: Int32 = 0
+
+  public var name: String = String()
+
+  public var logoURL: String {
+    get {_logoURL ?? String()}
+    set {_logoURL = newValue}
+  }
+  /// Returns true if `logoURL` has been explicitly set.
+  public var hasLogoURL: Bool {self._logoURL != nil}
+  /// Clears the value of `logoURL`. Subsequent reads from it will return its default value.
+  public mutating func clearLogoURL() {self._logoURL = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _logoURL: String? = nil
+}
+
+public nonisolated struct Spotarr_V1_ListWatchLinksRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var tmdbID: Int32 = 0
+
+  public var type: Spotarr_V1_MediaType = .unspecified
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_ListWatchLinksResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// The library first, then the Platforms in TMDB's order. Empty when the
+  /// title is on none of them.
+  public var links: [Spotarr_V1_WatchLink] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_WatchLink: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// "Crunchyroll", or the library's server: "Jellyfin", "Plex".
+  public var name: String = String()
+
+  /// A Platform's link is TMDB's page of where to watch the title, in the
+  /// settings' country: TMDB gives no link to the Platform itself. The
+  /// library's is the title's page on its server, from Seerr.
+  public var url: String = String()
+
+  public var logoURL: String {
+    get {_logoURL ?? String()}
+    set {_logoURL = newValue}
+  }
+  /// Returns true if `logoURL` has been explicitly set.
+  public var hasLogoURL: Bool {self._logoURL != nil}
+  /// Clears the value of `logoURL`. Subsequent reads from it will return its default value.
+  public mutating func clearLogoURL() {self._logoURL = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _logoURL: String? = nil
 }
 
 /// A piece of content sent to Spotarr and everything that follows from it.
@@ -3038,7 +3171,7 @@ nonisolated extension Spotarr_V1_GetStatusResponse: SwiftProtobuf.Message, Swift
 
 nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Settings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}identification\0\u{1}seerr\0\u{1}extraction\0\u{1}access\0\u{1}webhooks\0\u{3}auto_add\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}identification\0\u{1}seerr\0\u{1}extraction\0\u{1}access\0\u{1}webhooks\0\u{3}auto_add\0\u{1}streaming\0")
 
   fileprivate class _StorageClass {
     var _identification: Spotarr_V1_IdentificationSettings? = nil
@@ -3047,6 +3180,7 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
     var _access: Spotarr_V1_AccessSettings? = nil
     var _webhooks: Spotarr_V1_WebhookSettings? = nil
     var _autoAdd: Spotarr_V1_AutoAddSettings? = nil
+    var _streaming: Spotarr_V1_StreamingSettings? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -3063,6 +3197,7 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
       _access = source._access
       _webhooks = source._webhooks
       _autoAdd = source._autoAdd
+      _streaming = source._streaming
     }
   }
 
@@ -3087,6 +3222,7 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._access) }()
         case 5: try { try decoder.decodeSingularMessageField(value: &_storage._webhooks) }()
         case 6: try { try decoder.decodeSingularMessageField(value: &_storage._autoAdd) }()
+        case 7: try { try decoder.decodeSingularMessageField(value: &_storage._streaming) }()
         default: break
         }
       }
@@ -3117,6 +3253,9 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._autoAdd {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 6)
       } }()
+      try { if let v = _storage._streaming {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -3132,10 +3271,41 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._access != rhs_storage._access {return false}
         if _storage._webhooks != rhs_storage._webhooks {return false}
         if _storage._autoAdd != rhs_storage._autoAdd {return false}
+        if _storage._streaming != rhs_storage._streaming {return false}
         return true
       }
       if !storagesAreEqual {return false}
     }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_StreamingSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".StreamingSettings"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}platform_ids\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedInt32Field(value: &self.platformIds) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.platformIds.isEmpty {
+      try visitor.visitPackedInt32Field(value: self.platformIds, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_StreamingSettings, rhs: Spotarr_V1_StreamingSettings) -> Bool {
+    if lhs.platformIds != rhs.platformIds {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3654,6 +3824,213 @@ nonisolated extension Spotarr_V1_RegenerateSeerrTokenResponse: SwiftProtobuf.Mes
 
   public static func ==(lhs: Spotarr_V1_RegenerateSeerrTokenResponse, rhs: Spotarr_V1_RegenerateSeerrTokenResponse) -> Bool {
     if lhs.seerrToken != rhs.seerrToken {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_ListPlatformsRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ListPlatformsRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_ListPlatformsRequest, rhs: Spotarr_V1_ListPlatformsRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_ListPlatformsResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ListPlatformsResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}platforms\0\u{1}region\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.platforms) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.region) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.platforms.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.platforms, fieldNumber: 1)
+    }
+    if !self.region.isEmpty {
+      try visitor.visitSingularStringField(value: self.region, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_ListPlatformsResponse, rhs: Spotarr_V1_ListPlatformsResponse) -> Bool {
+    if lhs.platforms != rhs.platforms {return false}
+    if lhs.region != rhs.region {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_Platform: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".Platform"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{3}logo_url\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt32Field(value: &self.id) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._logoURL) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if self.id != 0 {
+      try visitor.visitSingularInt32Field(value: self.id, fieldNumber: 1)
+    }
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 2)
+    }
+    try { if let v = self._logoURL {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_Platform, rhs: Spotarr_V1_Platform) -> Bool {
+    if lhs.id != rhs.id {return false}
+    if lhs.name != rhs.name {return false}
+    if lhs._logoURL != rhs._logoURL {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_ListWatchLinksRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ListWatchLinksRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularInt32Field(value: &self.tmdbID) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.type) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.tmdbID != 0 {
+      try visitor.visitSingularInt32Field(value: self.tmdbID, fieldNumber: 1)
+    }
+    if self.type != .unspecified {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_ListWatchLinksRequest, rhs: Spotarr_V1_ListWatchLinksRequest) -> Bool {
+    if lhs.tmdbID != rhs.tmdbID {return false}
+    if lhs.type != rhs.type {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_ListWatchLinksResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".ListWatchLinksResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}links\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.links) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.links.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.links, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_ListWatchLinksResponse, rhs: Spotarr_V1_ListWatchLinksResponse) -> Bool {
+    if lhs.links != rhs.links {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_WatchLink: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".WatchLink"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}name\0\u{1}url\0\u{3}logo_url\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.name) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.url) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._logoURL) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    if !self.name.isEmpty {
+      try visitor.visitSingularStringField(value: self.name, fieldNumber: 1)
+    }
+    if !self.url.isEmpty {
+      try visitor.visitSingularStringField(value: self.url, fieldNumber: 2)
+    }
+    try { if let v = self._logoURL {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_WatchLink, rhs: Spotarr_V1_WatchLink) -> Bool {
+    if lhs.name != rhs.name {return false}
+    if lhs.url != rhs.url {return false}
+    if lhs._logoURL != rhs._logoURL {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

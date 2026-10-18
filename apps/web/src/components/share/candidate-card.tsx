@@ -7,8 +7,9 @@ import {
   SpotarrService,
   Summary,
 } from "@spotarr/contract";
-import { useQueryClient } from "@tanstack/react-query";
-import { ExternalLink, Plus } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ExternalLink, Play, Plus } from "lucide-react";
+import { watchLinksQuery } from "../../queries/shares";
 import { Genres } from "../genres";
 import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
@@ -42,6 +43,7 @@ export function CandidateCard({ share, candidate }: { share: Share; candidate: C
         <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} />
         <Genres genres={candidate.genres} />
         <Confidence value={candidate.confidence} />
+        <WatchLinks candidate={candidate} />
       </div>
       <div className="shrink-0">
         <CandidateAction share={share} candidate={candidate} />
@@ -62,6 +64,38 @@ function Confidence({ value }: { value?: number }) {
       </div>
       <span className="whitespace-nowrap">Confidence {percent} %</span>
     </div>
+  );
+}
+
+// Where the title can be watched already: the library, the Platforms subscribed
+// to. Nothing while asking, nor when TMDB or Seerr cannot say.
+function WatchLinks({ candidate }: { candidate: Candidate }) {
+  const { data } = useQuery(watchLinksQuery(candidate.tmdbId, candidate.type));
+  const links = data?.links ?? [];
+  if (links.length === 0) return null;
+  return (
+    <ul aria-label="Watch on" className="mt-2 flex flex-wrap gap-2">
+      {links.map((link) => (
+        <li key={link.name}>
+          <a
+            href={link.url}
+            target="_blank"
+            rel="noreferrer"
+            className="flex h-8 items-center gap-2 rounded-full border border-border pr-3 pl-1 text-sm hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
+          >
+            {link.logoUrl ? (
+              <img src={link.logoUrl} alt="" className="size-6 rounded-full" />
+            ) : (
+              <span className="flex size-6 items-center justify-center rounded-full bg-accent/15 text-accent">
+                <Play aria-hidden className="size-3" />
+              </span>
+            )}
+            Watch on {link.name}
+            <span className="sr-only">(opens a new tab)</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 }
 

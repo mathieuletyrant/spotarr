@@ -1,5 +1,5 @@
 import { createInfiniteQueryOptions, createQueryOptions } from "@connectrpc/connect-query";
-import { SpotarrService, Summary } from "@spotarr/contract";
+import { type MediaType, SpotarrService, Summary } from "@spotarr/contract";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 import { transport } from "../lib/api";
 
@@ -40,5 +40,14 @@ export function shareQuery(id: string) {
   return queryOptions({
     ...createQueryOptions(SpotarrService.method.getShare, { id }, { transport }),
     refetchInterval: (q) => (q.state.data?.share?.summary === Summary.IN_PROGRESS ? 2000 : false),
+  });
+}
+
+// Where a Candidate can be watched now, asked when its Share's page opens.
+export function watchLinksQuery(tmdbId: number, type: MediaType) {
+  return queryOptions({
+    ...createQueryOptions(SpotarrService.method.listWatchLinks, { tmdbId, type }, { transport }),
+    staleTime: 10 * 60_000,
+    retry: false,
   });
 }

@@ -142,6 +142,2073 @@ export type MovieDetails200 = {
   vote_count?: number;
 };
 
+export type MovieWatchProviders200ResultsAEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsAERentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsAEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsAE = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsAEFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsAERentItem[];
+  buy?: MovieWatchProviders200ResultsAEBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsALBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsAL = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsALBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsARBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsARFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsARRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsAR = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsARBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsARFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsARRentItem[];
+};
+
+export type MovieWatchProviders200ResultsATFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsATBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsATRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsAT = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsATFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsATBuyItem[];
+  rent?: MovieWatchProviders200ResultsATRentItem[];
+};
+
+export type MovieWatchProviders200ResultsAUFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsAUBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsAU = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsAUFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsAUBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsBABuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBA = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsBABuyItem[];
+  flatrate?: MovieWatchProviders200ResultsBAFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsBBFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBB = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsBBFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsBERentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBE = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsBERentItem[];
+  flatrate?: MovieWatchProviders200ResultsBEFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsBEBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsBGRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBGBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBGFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBG = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsBGRentItem[];
+  buy?: MovieWatchProviders200ResultsBGBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsBGFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsBHBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBH = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsBHBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsBOFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBO = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsBOFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsBRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBR = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsBRFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsBSFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsBS = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsBSFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsCARentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCABuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCA = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsCARentItem[];
+  buy?: MovieWatchProviders200ResultsCABuyItem[];
+  flatrate?: MovieWatchProviders200ResultsCAFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsCHFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCHBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCHRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCH = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsCHFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsCHBuyItem[];
+  rent?: MovieWatchProviders200ResultsCHRentItem[];
+};
+
+export type MovieWatchProviders200ResultsCLBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCLFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCLRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCL = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsCLBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsCLFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsCLRentItem[];
+};
+
+export type MovieWatchProviders200ResultsCOBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCOFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCORentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCO = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsCOBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsCOFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsCORentItem[];
+};
+
+export type MovieWatchProviders200ResultsCRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCR = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsCRFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsCVBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCVRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCV = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsCVBuyItem[];
+  rent?: MovieWatchProviders200ResultsCVRentItem[];
+};
+
+export type MovieWatchProviders200ResultsCZFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCZRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCZBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsCZ = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsCZFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsCZRentItem[];
+  buy?: MovieWatchProviders200ResultsCZBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsDEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsDEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsDERentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsDE = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsDEFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsDEBuyItem[];
+  rent?: MovieWatchProviders200ResultsDERentItem[];
+};
+
+export type MovieWatchProviders200ResultsDKRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsDKFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsDKBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsDK = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsDKRentItem[];
+  flatrate?: MovieWatchProviders200ResultsDKFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsDKBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsDOFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsDO = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsDOFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsECBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsECFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsECRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsEC = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsECBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsECFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsECRentItem[];
+};
+
+export type MovieWatchProviders200ResultsEEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsEEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsEERentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsEE = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsEEBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsEEFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsEERentItem[];
+};
+
+export type MovieWatchProviders200ResultsEGRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsEGBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsEG = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsEGRentItem[];
+  buy?: MovieWatchProviders200ResultsEGBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsESRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsESAdsItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsESFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsESBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsES = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsESRentItem[];
+  ads?: MovieWatchProviders200ResultsESAdsItem[];
+  flatrate?: MovieWatchProviders200ResultsESFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsESBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsFIFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsFIBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsFIRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsFI = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsFIFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsFIBuyItem[];
+  rent?: MovieWatchProviders200ResultsFIRentItem[];
+};
+
+export type MovieWatchProviders200ResultsFJBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsFJ = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsFJBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsFRRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsFRBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsFRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsFR = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsFRRentItem[];
+  buy?: MovieWatchProviders200ResultsFRBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsFRFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsGBFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsGBBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsGBRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsGB = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsGBFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsGBBuyItem[];
+  rent?: MovieWatchProviders200ResultsGBRentItem[];
+};
+
+export type MovieWatchProviders200ResultsGFFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsGF = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsGFFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsGIFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsGI = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsGIFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsGRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsGRRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsGRBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsGR = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsGRFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsGRRentItem[];
+  buy?: MovieWatchProviders200ResultsGRBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsGTFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsGT = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsGTFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsHKFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsHK = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsHKFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsHNFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsHN = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsHNFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsHRBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsHRAdsItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsHRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsHR = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsHRBuyItem[];
+  ads?: MovieWatchProviders200ResultsHRAdsItem[];
+  flatrate?: MovieWatchProviders200ResultsHRFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsHUFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsHUBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsHURentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsHU = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsHUFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsHUBuyItem[];
+  rent?: MovieWatchProviders200ResultsHURentItem[];
+};
+
+export type MovieWatchProviders200ResultsIDFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsID = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsIDFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsIERentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsIEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsIEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsIE = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsIERentItem[];
+  flatrate?: MovieWatchProviders200ResultsIEFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsIEBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsILBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsILFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsIL = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsILBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsILFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsINFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsINRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsINBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsIN = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsINFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsINRentItem[];
+  buy?: MovieWatchProviders200ResultsINBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsIQFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsIQ = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsIQFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsISBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsISFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsIS = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsISBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsISFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsITBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsITRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsITFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsIT = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsITBuyItem[];
+  rent?: MovieWatchProviders200ResultsITRentItem[];
+  flatrate?: MovieWatchProviders200ResultsITFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsJMFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsJM = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsJMFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsJOFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsJOBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsJO = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsJOFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsJOBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsJPFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsJPRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsJPBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsJP = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsJPFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsJPRentItem[];
+  buy?: MovieWatchProviders200ResultsJPBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsKRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsKRBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsKR = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsKRFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsKRBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsKWBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsKWFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsKW = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsKWBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsKWFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsLBFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsLBBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsLB = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsLBFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsLBBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsLIFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsLI = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsLIFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsLTRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsLTBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsLTFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsLT = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsLTRentItem[];
+  buy?: MovieWatchProviders200ResultsLTBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsLTFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsLVFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsLVBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsLV = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsLVFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsLVBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsMDBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMDFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMD = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsMDBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsMDFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsMKFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMKBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMK = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsMKFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsMKBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsMTFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMTBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMTRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMT = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsMTFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsMTBuyItem[];
+  rent?: MovieWatchProviders200ResultsMTRentItem[];
+};
+
+export type MovieWatchProviders200ResultsMUBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMURentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMU = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsMUBuyItem[];
+  rent?: MovieWatchProviders200ResultsMURentItem[];
+};
+
+export type MovieWatchProviders200ResultsMXFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMX = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsMXFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsMYFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMY = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsMYFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsMZRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMZBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsMZ = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsMZRentItem[];
+  buy?: MovieWatchProviders200ResultsMZBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsNLBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsNLRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsNLFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsNL = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsNLBuyItem[];
+  rent?: MovieWatchProviders200ResultsNLRentItem[];
+  flatrate?: MovieWatchProviders200ResultsNLFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsNORentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsNOBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsNOFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsNO = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsNORentItem[];
+  buy?: MovieWatchProviders200ResultsNOBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsNOFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsNZFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsNZBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsNZ = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsNZFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsNZBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsOMBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsOMRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsOMFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsOM = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsOMBuyItem[];
+  rent?: MovieWatchProviders200ResultsOMRentItem[];
+  flatrate?: MovieWatchProviders200ResultsOMFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsPAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPA = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsPAFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsPERentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPE = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsPERentItem[];
+  buy?: MovieWatchProviders200ResultsPEBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsPEFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsPHFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPH = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsPHFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsPKFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPK = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsPKFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsPLBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPLFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPLRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPL = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsPLBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsPLFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsPLRentItem[];
+};
+
+export type MovieWatchProviders200ResultsPSFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPS = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsPSFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsPTBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPTRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPTFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPT = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsPTBuyItem[];
+  rent?: MovieWatchProviders200ResultsPTRentItem[];
+  flatrate?: MovieWatchProviders200ResultsPTFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsPYFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsPY = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsPYFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsQAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsQABuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsQA = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsQAFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsQABuyItem[];
+};
+
+export type MovieWatchProviders200ResultsROFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsRO = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsROFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsRSFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsRSBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsRS = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsRSFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsRSBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsRURentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsRUBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsRUFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsRU = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsRURentItem[];
+  buy?: MovieWatchProviders200ResultsRUBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsRUFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsSAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSARentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSABuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSA = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsSAFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsSARentItem[];
+  buy?: MovieWatchProviders200ResultsSABuyItem[];
+};
+
+export type MovieWatchProviders200ResultsSEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSERentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSE = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsSEBuyItem[];
+  rent?: MovieWatchProviders200ResultsSERentItem[];
+  flatrate?: MovieWatchProviders200ResultsSEFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsSGFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSG = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsSGFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsSIBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSIFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSI = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsSIBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsSIFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsSKBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSKFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSKRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSK = {
+  link?: string;
+  buy?: MovieWatchProviders200ResultsSKBuyItem[];
+  flatrate?: MovieWatchProviders200ResultsSKFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsSKRentItem[];
+};
+
+export type MovieWatchProviders200ResultsSMFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSM = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsSMFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsSVFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsSV = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsSVFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsTHFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsTH = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsTHFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsTRRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsTRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsTRBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsTR = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsTRRentItem[];
+  flatrate?: MovieWatchProviders200ResultsTRFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsTRBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsTTFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsTT = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsTTFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsTWFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsTW = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsTWFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsUGRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsUGBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsUG = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsUGRentItem[];
+  buy?: MovieWatchProviders200ResultsUGBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsUSRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsUSFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsUSBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsUS = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsUSRentItem[];
+  flatrate?: MovieWatchProviders200ResultsUSFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsUSBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsUYFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsUY = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsUYFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsVERentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsVEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsVEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsVE = {
+  link?: string;
+  rent?: MovieWatchProviders200ResultsVERentItem[];
+  flatrate?: MovieWatchProviders200ResultsVEFlatrateItem[];
+  buy?: MovieWatchProviders200ResultsVEBuyItem[];
+};
+
+export type MovieWatchProviders200ResultsYEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsYE = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsYEFlatrateItem[];
+};
+
+export type MovieWatchProviders200ResultsZAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsZARentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsZABuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type MovieWatchProviders200ResultsZA = {
+  link?: string;
+  flatrate?: MovieWatchProviders200ResultsZAFlatrateItem[];
+  rent?: MovieWatchProviders200ResultsZARentItem[];
+  buy?: MovieWatchProviders200ResultsZABuyItem[];
+};
+
+export type MovieWatchProviders200Results = {
+  AE?: MovieWatchProviders200ResultsAE;
+  AL?: MovieWatchProviders200ResultsAL;
+  AR?: MovieWatchProviders200ResultsAR;
+  AT?: MovieWatchProviders200ResultsAT;
+  AU?: MovieWatchProviders200ResultsAU;
+  BA?: MovieWatchProviders200ResultsBA;
+  BB?: MovieWatchProviders200ResultsBB;
+  BE?: MovieWatchProviders200ResultsBE;
+  BG?: MovieWatchProviders200ResultsBG;
+  BH?: MovieWatchProviders200ResultsBH;
+  BO?: MovieWatchProviders200ResultsBO;
+  BR?: MovieWatchProviders200ResultsBR;
+  BS?: MovieWatchProviders200ResultsBS;
+  CA?: MovieWatchProviders200ResultsCA;
+  CH?: MovieWatchProviders200ResultsCH;
+  CL?: MovieWatchProviders200ResultsCL;
+  CO?: MovieWatchProviders200ResultsCO;
+  CR?: MovieWatchProviders200ResultsCR;
+  CV?: MovieWatchProviders200ResultsCV;
+  CZ?: MovieWatchProviders200ResultsCZ;
+  DE?: MovieWatchProviders200ResultsDE;
+  DK?: MovieWatchProviders200ResultsDK;
+  DO?: MovieWatchProviders200ResultsDO;
+  EC?: MovieWatchProviders200ResultsEC;
+  EE?: MovieWatchProviders200ResultsEE;
+  EG?: MovieWatchProviders200ResultsEG;
+  ES?: MovieWatchProviders200ResultsES;
+  FI?: MovieWatchProviders200ResultsFI;
+  FJ?: MovieWatchProviders200ResultsFJ;
+  FR?: MovieWatchProviders200ResultsFR;
+  GB?: MovieWatchProviders200ResultsGB;
+  GF?: MovieWatchProviders200ResultsGF;
+  GI?: MovieWatchProviders200ResultsGI;
+  GR?: MovieWatchProviders200ResultsGR;
+  GT?: MovieWatchProviders200ResultsGT;
+  HK?: MovieWatchProviders200ResultsHK;
+  HN?: MovieWatchProviders200ResultsHN;
+  HR?: MovieWatchProviders200ResultsHR;
+  HU?: MovieWatchProviders200ResultsHU;
+  ID?: MovieWatchProviders200ResultsID;
+  IE?: MovieWatchProviders200ResultsIE;
+  IL?: MovieWatchProviders200ResultsIL;
+  IN?: MovieWatchProviders200ResultsIN;
+  IQ?: MovieWatchProviders200ResultsIQ;
+  IS?: MovieWatchProviders200ResultsIS;
+  IT?: MovieWatchProviders200ResultsIT;
+  JM?: MovieWatchProviders200ResultsJM;
+  JO?: MovieWatchProviders200ResultsJO;
+  JP?: MovieWatchProviders200ResultsJP;
+  KR?: MovieWatchProviders200ResultsKR;
+  KW?: MovieWatchProviders200ResultsKW;
+  LB?: MovieWatchProviders200ResultsLB;
+  LI?: MovieWatchProviders200ResultsLI;
+  LT?: MovieWatchProviders200ResultsLT;
+  LV?: MovieWatchProviders200ResultsLV;
+  MD?: MovieWatchProviders200ResultsMD;
+  MK?: MovieWatchProviders200ResultsMK;
+  MT?: MovieWatchProviders200ResultsMT;
+  MU?: MovieWatchProviders200ResultsMU;
+  MX?: MovieWatchProviders200ResultsMX;
+  MY?: MovieWatchProviders200ResultsMY;
+  MZ?: MovieWatchProviders200ResultsMZ;
+  NL?: MovieWatchProviders200ResultsNL;
+  NO?: MovieWatchProviders200ResultsNO;
+  NZ?: MovieWatchProviders200ResultsNZ;
+  OM?: MovieWatchProviders200ResultsOM;
+  PA?: MovieWatchProviders200ResultsPA;
+  PE?: MovieWatchProviders200ResultsPE;
+  PH?: MovieWatchProviders200ResultsPH;
+  PK?: MovieWatchProviders200ResultsPK;
+  PL?: MovieWatchProviders200ResultsPL;
+  PS?: MovieWatchProviders200ResultsPS;
+  PT?: MovieWatchProviders200ResultsPT;
+  PY?: MovieWatchProviders200ResultsPY;
+  QA?: MovieWatchProviders200ResultsQA;
+  RO?: MovieWatchProviders200ResultsRO;
+  RS?: MovieWatchProviders200ResultsRS;
+  RU?: MovieWatchProviders200ResultsRU;
+  SA?: MovieWatchProviders200ResultsSA;
+  SE?: MovieWatchProviders200ResultsSE;
+  SG?: MovieWatchProviders200ResultsSG;
+  SI?: MovieWatchProviders200ResultsSI;
+  SK?: MovieWatchProviders200ResultsSK;
+  SM?: MovieWatchProviders200ResultsSM;
+  SV?: MovieWatchProviders200ResultsSV;
+  TH?: MovieWatchProviders200ResultsTH;
+  TR?: MovieWatchProviders200ResultsTR;
+  TT?: MovieWatchProviders200ResultsTT;
+  TW?: MovieWatchProviders200ResultsTW;
+  UG?: MovieWatchProviders200ResultsUG;
+  US?: MovieWatchProviders200ResultsUS;
+  UY?: MovieWatchProviders200ResultsUY;
+  VE?: MovieWatchProviders200ResultsVE;
+  YE?: MovieWatchProviders200ResultsYE;
+  ZA?: MovieWatchProviders200ResultsZA;
+};
+
+export type MovieWatchProviders200 = {
+  id?: number;
+  results?: MovieWatchProviders200Results;
+};
+
 export type SearchMovieParams = {
 query: string;
 include_adult?: boolean;
@@ -320,6 +2387,1476 @@ export type TvSeriesDetails200 = {
   type?: string;
   vote_average?: number;
   vote_count?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsAEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsAE = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsAEFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsARFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsAR = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsARFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsATBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsATFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsAT = {
+  link?: string;
+  buy?: TvSeriesWatchProviders200ResultsATBuyItem[];
+  flatrate?: TvSeriesWatchProviders200ResultsATFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsAUFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsAUBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsAU = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsAUFlatrateItem[];
+  buy?: TvSeriesWatchProviders200ResultsAUBuyItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsBAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsBA = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsBAFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsBBFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsBB = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsBBFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsBEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsBE = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsBEFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsBGFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsBG = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsBGFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsBOFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsBO = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsBOFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsBRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsBR = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsBRFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsBSFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsBS = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsBSFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsCABuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsCAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsCA = {
+  link?: string;
+  buy?: TvSeriesWatchProviders200ResultsCABuyItem[];
+  flatrate?: TvSeriesWatchProviders200ResultsCAFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsCHFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsCHBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsCH = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsCHFlatrateItem[];
+  buy?: TvSeriesWatchProviders200ResultsCHBuyItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsCIFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsCI = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsCIFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsCLFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsCL = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsCLFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsCOFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsCO = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsCOFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsCRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsCR = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsCRFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsCZFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsCZ = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsCZFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsDEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsDEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsDE = {
+  link?: string;
+  buy?: TvSeriesWatchProviders200ResultsDEBuyItem[];
+  flatrate?: TvSeriesWatchProviders200ResultsDEFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsDKFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsDK = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsDKFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsDOFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsDO = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsDOFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsDZFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsDZ = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsDZFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsECFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsEC = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsECFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsEGFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsEG = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsEGFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsESFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsES = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsESFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsFIBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsFIFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsFI = {
+  link?: string;
+  buy?: TvSeriesWatchProviders200ResultsFIBuyItem[];
+  flatrate?: TvSeriesWatchProviders200ResultsFIFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsFRBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsFRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsFR = {
+  link?: string;
+  buy?: TvSeriesWatchProviders200ResultsFRBuyItem[];
+  flatrate?: TvSeriesWatchProviders200ResultsFRFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsGBFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsGBBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsGB = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsGBFlatrateItem[];
+  buy?: TvSeriesWatchProviders200ResultsGBBuyItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsGFFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsGF = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsGFFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsGHFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsGH = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsGHFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsGQFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsGQ = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsGQFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsGTFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsGT = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsGTFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsHKFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsHK = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsHKFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsHNFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsHN = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsHNFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsHRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsHR = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsHRFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsHUFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsHU = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsHUFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsIDFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsID = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsIDFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsIEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsIEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsIE = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsIEFlatrateItem[];
+  buy?: TvSeriesWatchProviders200ResultsIEBuyItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsILFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsIL = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsILFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsIQFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsIQ = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsIQFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsITBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsITFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsIT = {
+  link?: string;
+  buy?: TvSeriesWatchProviders200ResultsITBuyItem[];
+  flatrate?: TvSeriesWatchProviders200ResultsITFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsJMFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsJM = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsJMFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsJPFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsJPBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsJPRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsJP = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsJPFlatrateItem[];
+  buy?: TvSeriesWatchProviders200ResultsJPBuyItem[];
+  rent?: TvSeriesWatchProviders200ResultsJPRentItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsKEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsKE = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsKEFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsKRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsKR = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsKRFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsLBFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsLB = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsLBFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsLTFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsLT = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsLTFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsLYFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsLY = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsLYFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsMDFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsMD = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsMDFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsMKFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsMK = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsMKFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsMUFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsMU = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsMUFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsMXFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsMX = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsMXFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsMYFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsMY = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsMYFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsMZFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsMZ = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsMZFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsNEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsNE = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsNEFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsNGFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsNG = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsNGFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsNLFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsNLBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsNL = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsNLFlatrateItem[];
+  buy?: TvSeriesWatchProviders200ResultsNLBuyItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsNOFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsNOBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsNO = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsNOFlatrateItem[];
+  buy?: TvSeriesWatchProviders200ResultsNOBuyItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsNZFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsNZ = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsNZFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsPAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsPA = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsPAFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsPEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsPE = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsPEFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsPHFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsPH = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsPHFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsPLFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsPLRentItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsPL = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsPLFlatrateItem[];
+  rent?: TvSeriesWatchProviders200ResultsPLRentItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsPSFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsPS = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsPSFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsPTFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsPT = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsPTFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsPYFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsPY = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsPYFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsROFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsRO = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsROFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsRSFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsRS = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsRSFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsRUFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsRUAdsItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsRU = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsRUFlatrateItem[];
+  ads?: TvSeriesWatchProviders200ResultsRUAdsItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsSAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsSA = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsSAFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsSCFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsSC = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsSCFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsSEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsSEBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsSE = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsSEFlatrateItem[];
+  buy?: TvSeriesWatchProviders200ResultsSEBuyItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsSGFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsSG = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsSGFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsSIFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsSI = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsSIFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsSKFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsSK = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsSKFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsSNFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsSN = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsSNFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsSVFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsSV = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsSVFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsTHFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsTH = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsTHFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsTRFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsTR = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsTRFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsTTFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsTT = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsTTFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsTWFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsTW = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsTWFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsTZFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsTZ = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsTZFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsUGFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsUG = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsUGFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsUSFreeItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsUSBuyItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsUSFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsUS = {
+  link?: string;
+  free?: TvSeriesWatchProviders200ResultsUSFreeItem[];
+  buy?: TvSeriesWatchProviders200ResultsUSBuyItem[];
+  flatrate?: TvSeriesWatchProviders200ResultsUSFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsUYFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsUY = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsUYFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsVEFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsVE = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsVEFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsZAFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsZA = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsZAFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200ResultsZMFlatrateItem = {
+  logo_path?: string;
+  provider_id?: number;
+  provider_name?: string;
+  display_priority?: number;
+};
+
+export type TvSeriesWatchProviders200ResultsZM = {
+  link?: string;
+  flatrate?: TvSeriesWatchProviders200ResultsZMFlatrateItem[];
+};
+
+export type TvSeriesWatchProviders200Results = {
+  AE?: TvSeriesWatchProviders200ResultsAE;
+  AR?: TvSeriesWatchProviders200ResultsAR;
+  AT?: TvSeriesWatchProviders200ResultsAT;
+  AU?: TvSeriesWatchProviders200ResultsAU;
+  BA?: TvSeriesWatchProviders200ResultsBA;
+  BB?: TvSeriesWatchProviders200ResultsBB;
+  BE?: TvSeriesWatchProviders200ResultsBE;
+  BG?: TvSeriesWatchProviders200ResultsBG;
+  BO?: TvSeriesWatchProviders200ResultsBO;
+  BR?: TvSeriesWatchProviders200ResultsBR;
+  BS?: TvSeriesWatchProviders200ResultsBS;
+  CA?: TvSeriesWatchProviders200ResultsCA;
+  CH?: TvSeriesWatchProviders200ResultsCH;
+  CI?: TvSeriesWatchProviders200ResultsCI;
+  CL?: TvSeriesWatchProviders200ResultsCL;
+  CO?: TvSeriesWatchProviders200ResultsCO;
+  CR?: TvSeriesWatchProviders200ResultsCR;
+  CZ?: TvSeriesWatchProviders200ResultsCZ;
+  DE?: TvSeriesWatchProviders200ResultsDE;
+  DK?: TvSeriesWatchProviders200ResultsDK;
+  DO?: TvSeriesWatchProviders200ResultsDO;
+  DZ?: TvSeriesWatchProviders200ResultsDZ;
+  EC?: TvSeriesWatchProviders200ResultsEC;
+  EG?: TvSeriesWatchProviders200ResultsEG;
+  ES?: TvSeriesWatchProviders200ResultsES;
+  FI?: TvSeriesWatchProviders200ResultsFI;
+  FR?: TvSeriesWatchProviders200ResultsFR;
+  GB?: TvSeriesWatchProviders200ResultsGB;
+  GF?: TvSeriesWatchProviders200ResultsGF;
+  GH?: TvSeriesWatchProviders200ResultsGH;
+  GQ?: TvSeriesWatchProviders200ResultsGQ;
+  GT?: TvSeriesWatchProviders200ResultsGT;
+  HK?: TvSeriesWatchProviders200ResultsHK;
+  HN?: TvSeriesWatchProviders200ResultsHN;
+  HR?: TvSeriesWatchProviders200ResultsHR;
+  HU?: TvSeriesWatchProviders200ResultsHU;
+  ID?: TvSeriesWatchProviders200ResultsID;
+  IE?: TvSeriesWatchProviders200ResultsIE;
+  IL?: TvSeriesWatchProviders200ResultsIL;
+  IQ?: TvSeriesWatchProviders200ResultsIQ;
+  IT?: TvSeriesWatchProviders200ResultsIT;
+  JM?: TvSeriesWatchProviders200ResultsJM;
+  JP?: TvSeriesWatchProviders200ResultsJP;
+  KE?: TvSeriesWatchProviders200ResultsKE;
+  KR?: TvSeriesWatchProviders200ResultsKR;
+  LB?: TvSeriesWatchProviders200ResultsLB;
+  LT?: TvSeriesWatchProviders200ResultsLT;
+  LY?: TvSeriesWatchProviders200ResultsLY;
+  MD?: TvSeriesWatchProviders200ResultsMD;
+  MK?: TvSeriesWatchProviders200ResultsMK;
+  MU?: TvSeriesWatchProviders200ResultsMU;
+  MX?: TvSeriesWatchProviders200ResultsMX;
+  MY?: TvSeriesWatchProviders200ResultsMY;
+  MZ?: TvSeriesWatchProviders200ResultsMZ;
+  NE?: TvSeriesWatchProviders200ResultsNE;
+  NG?: TvSeriesWatchProviders200ResultsNG;
+  NL?: TvSeriesWatchProviders200ResultsNL;
+  NO?: TvSeriesWatchProviders200ResultsNO;
+  NZ?: TvSeriesWatchProviders200ResultsNZ;
+  PA?: TvSeriesWatchProviders200ResultsPA;
+  PE?: TvSeriesWatchProviders200ResultsPE;
+  PH?: TvSeriesWatchProviders200ResultsPH;
+  PL?: TvSeriesWatchProviders200ResultsPL;
+  PS?: TvSeriesWatchProviders200ResultsPS;
+  PT?: TvSeriesWatchProviders200ResultsPT;
+  PY?: TvSeriesWatchProviders200ResultsPY;
+  RO?: TvSeriesWatchProviders200ResultsRO;
+  RS?: TvSeriesWatchProviders200ResultsRS;
+  RU?: TvSeriesWatchProviders200ResultsRU;
+  SA?: TvSeriesWatchProviders200ResultsSA;
+  SC?: TvSeriesWatchProviders200ResultsSC;
+  SE?: TvSeriesWatchProviders200ResultsSE;
+  SG?: TvSeriesWatchProviders200ResultsSG;
+  SI?: TvSeriesWatchProviders200ResultsSI;
+  SK?: TvSeriesWatchProviders200ResultsSK;
+  SN?: TvSeriesWatchProviders200ResultsSN;
+  SV?: TvSeriesWatchProviders200ResultsSV;
+  TH?: TvSeriesWatchProviders200ResultsTH;
+  TR?: TvSeriesWatchProviders200ResultsTR;
+  TT?: TvSeriesWatchProviders200ResultsTT;
+  TW?: TvSeriesWatchProviders200ResultsTW;
+  TZ?: TvSeriesWatchProviders200ResultsTZ;
+  UG?: TvSeriesWatchProviders200ResultsUG;
+  US?: TvSeriesWatchProviders200ResultsUS;
+  UY?: TvSeriesWatchProviders200ResultsUY;
+  VE?: TvSeriesWatchProviders200ResultsVE;
+  ZA?: TvSeriesWatchProviders200ResultsZA;
+  ZM?: TvSeriesWatchProviders200ResultsZM;
+};
+
+export type TvSeriesWatchProviders200 = {
+  id?: number;
+  results?: TvSeriesWatchProviders200Results;
+};
+
+export type WatchProvidersMovieListParams = {
+language?: string;
+watch_region?: string;
+};
+
+export type WatchProvidersMovieList200ResultsItemDisplayPriorities = {
+  CA?: number;
+  AE?: number;
+  AR?: number;
+  AT?: number;
+  AU?: number;
+  BE?: number;
+  BO?: number;
+  BR?: number;
+  BG?: number;
+  CH?: number;
+  CL?: number;
+  CO?: number;
+  CR?: number;
+  CZ?: number;
+  DE?: number;
+  DK?: number;
+  EC?: number;
+  EE?: number;
+  EG?: number;
+  ES?: number;
+  FI?: number;
+  FR?: number;
+  GB?: number;
+  GR?: number;
+  GT?: number;
+  HK?: number;
+  HN?: number;
+  HU?: number;
+  ID?: number;
+  IE?: number;
+  IN?: number;
+  IT?: number;
+  JP?: number;
+  LT?: number;
+  LV?: number;
+  MX?: number;
+  MY?: number;
+  NL?: number;
+  NO?: number;
+  NZ?: number;
+  PE?: number;
+  PH?: number;
+  PL?: number;
+  PT?: number;
+  PY?: number;
+  RU?: number;
+  SA?: number;
+  SE?: number;
+  SG?: number;
+  SK?: number;
+  TH?: number;
+  TR?: number;
+  TW?: number;
+  US?: number;
+  VE?: number;
+  ZA?: number;
+  SI?: number;
+  CV?: number;
+  GH?: number;
+  MU?: number;
+  MZ?: number;
+  UG?: number;
+  IL?: number;
+};
+
+export type WatchProvidersMovieList200ResultsItem = {
+  display_priorities?: WatchProvidersMovieList200ResultsItemDisplayPriorities;
+  display_priority?: number;
+  logo_path?: string;
+  provider_name?: string;
+  provider_id?: number;
+};
+
+export type WatchProvidersMovieList200 = {
+  results?: WatchProvidersMovieList200ResultsItem[];
+};
+
+export type WatchProviderTvListParams = {
+language?: string;
+watch_region?: string;
+};
+
+export type WatchProviderTvList200ResultsItemDisplayPriorities = {
+  CA?: number;
+  AE?: number;
+  AR?: number;
+  AT?: number;
+  AU?: number;
+  BE?: number;
+  BO?: number;
+  BR?: number;
+  BG?: number;
+  CH?: number;
+  CL?: number;
+  CO?: number;
+  CR?: number;
+  CZ?: number;
+  DE?: number;
+  DK?: number;
+  EC?: number;
+  EE?: number;
+  EG?: number;
+  ES?: number;
+  FI?: number;
+  FR?: number;
+  GB?: number;
+  GR?: number;
+  GT?: number;
+  HK?: number;
+  HN?: number;
+  HU?: number;
+  ID?: number;
+  IE?: number;
+  IN?: number;
+  IT?: number;
+  JP?: number;
+  LT?: number;
+  LV?: number;
+  MX?: number;
+  MY?: number;
+  NL?: number;
+  NO?: number;
+  NZ?: number;
+  PE?: number;
+  PH?: number;
+  PL?: number;
+  PT?: number;
+  PY?: number;
+  RU?: number;
+  SA?: number;
+  SE?: number;
+  SG?: number;
+  SK?: number;
+  TH?: number;
+  TR?: number;
+  TW?: number;
+  US?: number;
+  VE?: number;
+  ZA?: number;
+  SI?: number;
+  CV?: number;
+  GH?: number;
+  MU?: number;
+  MZ?: number;
+  UG?: number;
+  IL?: number;
+};
+
+export type WatchProviderTvList200ResultsItem = {
+  display_priorities?: WatchProviderTvList200ResultsItemDisplayPriorities;
+  display_priority?: number;
+  logo_path?: string;
+  provider_name?: string;
+  provider_id?: number;
+};
+
+export type WatchProviderTvList200 = {
+  results?: WatchProviderTvList200ResultsItem[];
 };
 
 export type findByIdResponse200 = {
@@ -530,6 +4067,50 @@ export const movieDetails = async (movieId: number,
 
 
 
+export type movieWatchProvidersResponse200 = {
+  data: MovieWatchProviders200
+  status: 200
+}
+
+export type movieWatchProvidersResponseSuccess = (movieWatchProvidersResponse200) & {
+  headers: Headers;
+};
+;
+
+export type movieWatchProvidersResponse = (movieWatchProvidersResponseSuccess)
+
+export const getMovieWatchProvidersUrl = (movieId: number,) => {
+
+
+
+
+  return `https://api.themoviedb.org/3/movie/${movieId}/watch/providers`
+}
+
+/**
+ * Get the list of streaming providers we have for a movie.
+ * @summary Watch Providers
+ */
+export const movieWatchProviders = async (movieId: number, options?: RequestInit): Promise<movieWatchProvidersResponse> => {
+
+  const res = await fetch(getMovieWatchProvidersUrl(movieId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: movieWatchProvidersResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as movieWatchProvidersResponse
+}
+
+
+
 export type searchMovieResponse200 = {
   data: SearchMovie200
   status: 200
@@ -681,4 +4262,150 @@ export const tvSeriesDetails = async (seriesId: number,
 
   const data: tvSeriesDetailsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as tvSeriesDetailsResponse
+}
+
+
+
+export type tvSeriesWatchProvidersResponse200 = {
+  data: TvSeriesWatchProviders200
+  status: 200
+}
+
+export type tvSeriesWatchProvidersResponseSuccess = (tvSeriesWatchProvidersResponse200) & {
+  headers: Headers;
+};
+;
+
+export type tvSeriesWatchProvidersResponse = (tvSeriesWatchProvidersResponseSuccess)
+
+export const getTvSeriesWatchProvidersUrl = (seriesId: number,) => {
+
+
+
+
+  return `https://api.themoviedb.org/3/tv/${seriesId}/watch/providers`
+}
+
+/**
+ * Get the list of streaming providers we have for a TV show.
+ * @summary Watch Providers
+ */
+export const tvSeriesWatchProviders = async (seriesId: number, options?: RequestInit): Promise<tvSeriesWatchProvidersResponse> => {
+
+  const res = await fetch(getTvSeriesWatchProvidersUrl(seriesId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: tvSeriesWatchProvidersResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as tvSeriesWatchProvidersResponse
+}
+
+
+
+export type watchProvidersMovieListResponse200 = {
+  data: WatchProvidersMovieList200
+  status: 200
+}
+
+export type watchProvidersMovieListResponseSuccess = (watchProvidersMovieListResponse200) & {
+  headers: Headers;
+};
+;
+
+export type watchProvidersMovieListResponse = (watchProvidersMovieListResponseSuccess)
+
+export const getWatchProvidersMovieListUrl = (params?: WatchProvidersMovieListParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `https://api.themoviedb.org/3/watch/providers/movie?${stringifiedParams}` : `https://api.themoviedb.org/3/watch/providers/movie`
+}
+
+/**
+ * Get the list of streaming providers we have for movies.
+ * @summary Movie Providers
+ */
+export const watchProvidersMovieList = async (params?: WatchProvidersMovieListParams, options?: RequestInit): Promise<watchProvidersMovieListResponse> => {
+
+  const res = await fetch(getWatchProvidersMovieListUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: watchProvidersMovieListResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as watchProvidersMovieListResponse
+}
+
+
+
+export type watchProviderTvListResponse200 = {
+  data: WatchProviderTvList200
+  status: 200
+}
+
+export type watchProviderTvListResponseSuccess = (watchProviderTvListResponse200) & {
+  headers: Headers;
+};
+;
+
+export type watchProviderTvListResponse = (watchProviderTvListResponseSuccess)
+
+export const getWatchProviderTvListUrl = (params?: WatchProviderTvListParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `https://api.themoviedb.org/3/watch/providers/tv?${stringifiedParams}` : `https://api.themoviedb.org/3/watch/providers/tv`
+}
+
+/**
+ * Get the list of streaming providers we have for TV shows.
+ * @summary TV Providers
+ */
+export const watchProviderTvList = async (params?: WatchProviderTvListParams, options?: RequestInit): Promise<watchProviderTvListResponse> => {
+
+  const res = await fetch(getWatchProviderTvListUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: watchProviderTvListResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as watchProviderTvListResponse
 }
