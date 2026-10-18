@@ -15,39 +15,45 @@ import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
 import { TmdbRating } from "../tmdb-rating";
 
-// One Candidate: poster, titles, TMDB rating, confidence, and what can be done with it.
+// One Candidate: poster, titles, TMDB rating, confidence, and what can be done
+// with it; under them, across the card's width, where to watch it already.
 export function CandidateCard({ share, candidate }: { share: Share; candidate: Candidate }) {
   return (
-    <li className="flex gap-4 py-4 first:pt-0 last:pb-0">
-      <Poster title={candidate.title} url={candidate.posterUrl} />
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="flex flex-wrap items-baseline gap-x-2">
-          <a
-            href={tmdbUrl(candidate)}
-            target="_blank"
-            rel="noreferrer"
-            className="group inline-flex items-center gap-1.5 text-lg font-semibold hover:underline"
-          >
-            {candidate.title}
-            <ExternalLink aria-hidden className="size-3.5 text-text-muted group-hover:text-text" />
-            <span className="sr-only">(on TMDB, opens a new tab)</span>
-          </a>
-          <span className="text-text-muted">{candidate.year}</span>
-          <span className="rounded-sm border border-border px-1.5 text-xs text-text-muted">
-            {candidate.type === MediaType.TV ? "TV show" : "Movie"}
-          </span>
-        </p>
-        {candidate.originalTitle && candidate.originalTitle !== candidate.title && (
-          <p className="text-sm text-text-muted">{candidate.originalTitle}</p>
-        )}
-        <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} />
-        <Genres genres={candidate.genres} />
-        <Confidence value={candidate.confidence} />
-        <WatchLinks candidate={candidate} />
+    <li className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0">
+      <div className="flex gap-4">
+        <Poster title={candidate.title} url={candidate.posterUrl} />
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          <p className="flex flex-wrap items-baseline gap-x-2">
+            <a
+              href={tmdbUrl(candidate)}
+              target="_blank"
+              rel="noreferrer"
+              className="group inline-flex items-center gap-1.5 text-lg font-semibold hover:underline"
+            >
+              {candidate.title}
+              <ExternalLink
+                aria-hidden
+                className="size-3.5 text-text-muted group-hover:text-text"
+              />
+              <span className="sr-only">(on TMDB, opens a new tab)</span>
+            </a>
+            <span className="text-text-muted">{candidate.year}</span>
+            <span className="rounded-sm border border-border px-1.5 text-xs text-text-muted">
+              {candidate.type === MediaType.TV ? "TV show" : "Movie"}
+            </span>
+          </p>
+          {candidate.originalTitle && candidate.originalTitle !== candidate.title && (
+            <p className="text-sm text-text-muted">{candidate.originalTitle}</p>
+          )}
+          <TmdbRating rating={candidate.tmdbRating} votes={candidate.tmdbVotes} />
+          <Genres genres={candidate.genres} />
+          <Confidence value={candidate.confidence} />
+        </div>
+        <div className="shrink-0">
+          <CandidateAction share={share} candidate={candidate} />
+        </div>
       </div>
-      <div className="shrink-0">
-        <CandidateAction share={share} candidate={candidate} />
-      </div>
+      <WatchLinks candidate={candidate} />
     </li>
   );
 }
@@ -68,29 +74,34 @@ function Confidence({ value }: { value?: number }) {
 }
 
 // Where the title can be watched already: the library, the Platforms subscribed
-// to. Nothing while asking, nor when TMDB or Seerr cannot say.
+// to, by logo and name. Nothing while asking, nor when TMDB or Seerr cannot say.
 function WatchLinks({ candidate }: { candidate: Candidate }) {
   const { data } = useQuery(watchLinksQuery(candidate.tmdbId, candidate.type));
   const links = data?.links ?? [];
   if (links.length === 0) return null;
   return (
-    <ul aria-label="Watch on" className="mt-2 flex flex-wrap gap-2">
+    <ul aria-label="Watch on" className="flex flex-wrap gap-2">
       {links.map((link) => (
-        <li key={link.name}>
+        <li key={link.name} className="max-w-full">
           <a
             href={link.url}
             target="_blank"
             rel="noreferrer"
-            className="flex h-8 items-center gap-2 rounded-full border border-border pr-3 pl-1 text-sm whitespace-nowrap hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
+            className="group flex h-8 items-center gap-2 rounded-md border border-border pr-2 pl-1 text-sm hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
           >
             {link.logoUrl ? (
-              <img src={link.logoUrl} alt="" className="size-6 rounded-full" />
+              <img src={link.logoUrl} alt="" className="size-6 rounded-sm" />
             ) : (
-              <span className="flex size-6 items-center justify-center rounded-full bg-accent/15 text-accent">
+              <span className="flex size-6 items-center justify-center rounded-sm bg-accent/15 text-accent">
                 <Play aria-hidden className="size-3" />
               </span>
             )}
-            Watch on {link.name}
+            <span className="sr-only">Watch on</span>
+            <span className="min-w-0 truncate">{link.name}</span>
+            <ExternalLink
+              aria-hidden
+              className="size-3.5 shrink-0 text-text-muted group-hover:text-text"
+            />
             <span className="sr-only">(opens a new tab)</span>
           </a>
         </li>

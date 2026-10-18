@@ -152,16 +152,16 @@ function YourPlatforms({
       {platforms.map((platform) => (
         <li
           key={platform.id}
-          className="flex h-11 items-center gap-2.5 rounded-full border border-accent bg-accent/10 pr-1 pl-1"
+          className="flex h-11 items-center gap-2.5 rounded-lg border border-accent bg-accent/10 pr-1 pl-1.5"
         >
-          <PlatformLogo platform={platform} round />
+          <PlatformLogo platform={platform} />
           <span className="text-sm font-medium">{platform.name}</span>
           <button
             type="button"
             onClick={() => onRemove(platform.id)}
             disabled={disabled}
             aria-label={`Remove ${platform.name}`}
-            className="flex size-8 items-center justify-center rounded-full text-text-muted hover:bg-text/8 hover:text-text focus-visible:outline-2 focus-visible:outline-accent"
+            className="flex size-8 items-center justify-center rounded-md text-text-muted hover:bg-text/8 hover:text-text focus-visible:outline-2 focus-visible:outline-accent"
           >
             <X aria-hidden className="size-4" />
           </button>
@@ -237,16 +237,14 @@ function OtherPlatforms({
 }
 
 // TMDB's logo, else the name's first letter on a tile of the same size.
-// Round inside a round chip: a square logo's corners would almost touch its border.
-function PlatformLogo({ platform, round = false }: { platform: Platform; round?: boolean }) {
-  const shape = round ? "rounded-full" : "rounded-md";
+function PlatformLogo({ platform }: { platform: Platform }) {
   if (platform.logoUrl) {
-    return <img src={platform.logoUrl} alt="" className={`size-8 shrink-0 ${shape}`} />;
+    return <img src={platform.logoUrl} alt="" className="size-8 shrink-0 rounded-md" />;
   }
   return (
     <span
       aria-hidden
-      className={`flex size-8 shrink-0 items-center justify-center bg-text/8 text-sm font-semibold text-text-muted ${shape}`}
+      className="flex size-8 shrink-0 items-center justify-center rounded-md bg-text/8 text-sm font-semibold text-text-muted"
     >
       {platform.name.slice(0, 1)}
     </span>
