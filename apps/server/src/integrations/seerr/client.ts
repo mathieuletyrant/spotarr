@@ -1,4 +1,10 @@
-import { getMovieMovieId, getTvTvId, postRequest } from "./gen/seerr";
+import {
+  deleteWatchlistTmdbId,
+  getMovieMovieId,
+  getTvTvId,
+  postRequest,
+  postWatchlist,
+} from "./gen/seerr";
 import type { SeerrConfig } from "./seerr-fetch";
 
 export type LibraryState = "ABSENT" | "REQUESTED" | "PARTIAL" | "AVAILABLE";
@@ -57,6 +63,30 @@ export class Seerr {
       headers: { "Content-Type": "application/json" },
     });
   }
+
+  // Puts a title in the watchlist of the user the API key acts as: Seerr's
+  // owner. Nothing is requested. Already there (409) is fine.
+  async addToWatchlist(type: MediaType, tmdbId: number): Promise<void> {
+    await postWatchlist(
+      { tmdbId, mediaType: seerrMediaType(type) },
+      { seerr: this.config, alsoFine: [409] },
+    );
+  }
+
+  // Takes a title out of that watchlist. Not there (404) is fine.
+  async removeFromWatchlist(type: MediaType, tmdbId: number): Promise<void> {
+    await deleteWatchlistTmdbId(
+      String(tmdbId),
+      { mediaType: seerrMediaType(type) },
+      { seerr: this.config, alsoFine: [404] },
+    );
+  }
+}
+
+// Seerr's name for a media type.
+function seerrMediaType(type: MediaType): "movie" | "tv" {
+  if (type === "MOVIE") return "movie";
+  return "tv";
 }
 
 // Plex titles have a rating key. Jellyfin and Emby share Seerr's fields, but

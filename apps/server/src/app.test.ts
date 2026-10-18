@@ -6,6 +6,7 @@ import { openDatabase } from "./db";
 import { RuleRepository } from "./domain/auto-add/repository";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ShareRepository } from "./domain/shares/repository";
+import { until } from "./domain/shares/test-helpers";
 import { WebhookRepository } from "./domain/webhooks/repository";
 import {
   getGetMovieMovieIdResponseMock,
@@ -232,4 +233,24 @@ test("Seerr's Test button, naming no title, passes and changes nothing", async (
 test("the Seerr token is refused by the API", async () => {
   await settings.setSeerrToken("seerr-token");
   expect((await getStatus({ Authorization: "Bearer seerr-token" })).status).toBe(401);
+});
+
+test("Seerr reporting a title available takes it out of the watchlist", async () => {
+  await settings.update({ seerr: { url: "http://seerr.test", apiKey: "key" } });
+  await settings.setSeerrToken("seerr-token");
+  const fetch = fakeFetch({
+    "/api/v1/movie/496243": getGetMovieMovieIdResponseMock({ mediaInfo: { status: 5 } }),
+    "/api/v1/watchlist/496243": 204,
+  });
+  await app.request("/seerr/webhook", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "seerr-token" },
+    body: JSON.stringify({ type: "movie", tmdbId: "496243" }),
+  });
+  const removed = async () =>
+    fetch.mock.calls.some(
+      ([url, init]) =>
+        init?.method === "DELETE" && String(url).endsWith("/watchlist/496243?mediaType=movie"),
+    );
+  await until(removed);
 });

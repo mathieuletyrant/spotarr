@@ -5,12 +5,13 @@ export type SeerrConfig = { url: string; apiKey: string };
 // Seerr's address is a setting, so the client Orval generates (gen/seerr.ts)
 // calls this function with a path like "/movie/424", and the options each call
 // passes, which carry the address and the API key. It returns what the
-// generated code expects: { data, status, headers }.
+// generated code expects: { data, status, headers }. `alsoFine` lists error
+// statuses that are an answer for this call (409: already in the watchlist).
 export async function seerrFetch<T>(
   path: string,
-  options: RequestInit & { seerr?: SeerrConfig },
+  options: RequestInit & { seerr?: SeerrConfig; alsoFine?: number[] },
 ): Promise<T> {
-  const { seerr, ...init } = options;
+  const { seerr, alsoFine = [], ...init } = options;
   if (!seerr?.url || !seerr.apiKey) {
     throw new SpotarrError(
       "not_configured",
@@ -28,8 +29,13 @@ export async function seerrFetch<T>(
   if (res.status === 401 || res.status === 403) {
     throw new SpotarrError("unavailable", `Seerr refused the API key (${res.status})`);
   }
-  if (!res.ok) throw new SpotarrError("unavailable", `Seerr answered ${res.status}`);
-  return { data: await res.json(), status: res.status, headers: res.headers } as T;
+  if (!res.ok && !alsoFine.includes(res.status)) {
+    throw new SpotarrError("unavailable", `Seerr answered ${res.status}`);
+  }
+  // Removing from the watchlist answers 204, with no body.
+  const text = await res.text();
+  const data = text ? JSON.parse(text) : undefined;
+  return { data, status: res.status, headers: res.headers } as T;
 }
 
 // fetch itself failed: no network, or the 10 s timeout ran out.

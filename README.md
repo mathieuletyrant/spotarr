@@ -12,6 +12,7 @@ Share any link from your iPhone (a reel, a TikTok, a YouTube video, an article, 
 - 📚 **Knows your library.** Seerr tells what is already there.
 - ➕ **Adds in one click**, or on its own: auto add requests a candidate on its own when one of your rules holds (movies or TV shows, a single candidate, confidence, TMDB rating), with a preview of what each rule would have added. A TV show gets season 1 only.
 - 📺 **Says where to watch it already**: pick your country and the streaming platforms you subscribe to (Settings → Streaming), and a candidate streaming on one of them links to it, next to a link to your library (Jellyfin, Plex) when the title is there. No need to add what you can already watch.
+- ⭐ **Keeps the rest for later.** A rule can put candidates in Seerr's watchlist instead of requesting them: nothing is downloaded, JellyTV shows them, and a title leaves the watchlist once available. Seerr must use Jellyfin or Emby: it hides its own watchlist from Plex accounts.
 - 🔔 **Tells other services** through webhooks.
 - 🖥️ **A web UI** for the history, the candidates and the settings, in light and dark.
 

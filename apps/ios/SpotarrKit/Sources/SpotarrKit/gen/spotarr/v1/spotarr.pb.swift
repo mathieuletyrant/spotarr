@@ -444,6 +444,51 @@ public nonisolated enum Spotarr_V1_Summary: SwiftProtobuf.Enum, Swift.CaseIterab
 
 }
 
+/// Each Action belongs to one connection: Radarr and Sonarr, when they come,
+/// bring their own (they have no watchlist).
+public nonisolated enum Spotarr_V1_RuleAction: SwiftProtobuf.Enum, Swift.CaseIterable {
+  public typealias RawValue = Int
+  case unspecified // = 0
+
+  /// Through Seerr, which sends it to Radarr or Sonarr.
+  case seerrRequest // = 1
+
+  /// In the watchlist of Seerr's owner: nothing is requested, and JellyTV shows
+  /// it. It leaves the watchlist once available.
+  case seerrWatchlist // = 2
+  case UNRECOGNIZED(Int)
+
+  public init() {
+    self = .unspecified
+  }
+
+  public init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .seerrRequest
+    case 2: self = .seerrWatchlist
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  public var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .seerrRequest: return 1
+    case .seerrWatchlist: return 2
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Spotarr_V1_RuleAction] = [
+    .unspecified,
+    .seerrRequest,
+    .seerrWatchlist,
+  ]
+
+}
+
 public nonisolated struct Spotarr_V1_CheckDependenciesRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2125,6 +2170,9 @@ public nonisolated struct Spotarr_V1_AddRequest: Sendable {
   /// Seerr when unspecified; V1 supports Seerr only.
   public var target: Spotarr_V1_Target = .unspecified
 
+  /// The same choice as a Rule's Action. UNSPECIFIED: SEERR_REQUEST.
+  public var action: Spotarr_V1_RuleAction = .unspecified
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -2483,8 +2531,8 @@ public nonisolated struct Spotarr_V1_TestWebhookResponse: Sendable {
   fileprivate var _webhook: Spotarr_V1_Webhook? = nil
 }
 
-/// When auto add requests a Candidate without a click. All its conditions must
-/// hold; an absent condition is no condition.
+/// When auto add requests a Candidate, or puts it in Seerr's watchlist, without
+/// a click. All its conditions must hold; an absent condition is no condition.
 public nonisolated struct Spotarr_V1_Rule: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -2538,6 +2586,9 @@ public nonisolated struct Spotarr_V1_Rule: Sendable {
   /// A title not out yet (released after today, or with no date on TMDB) has
   /// no rating to judge: it skips min_rating and min_votes, not the others.
   public var unreleasedSkipsRating: Bool = false
+
+  /// What it does with the Candidates it holds for. UNSPECIFIED: SEERR_REQUEST.
+  public var action: Spotarr_V1_RuleAction = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2692,8 +2743,10 @@ public nonisolated struct Spotarr_V1_PreviewedAddition: Sendable {
   /// Clears the value of `posterURL`. Subsequent reads from it will return its default value.
   public mutating func clearPosterURL() {self._posterURL = nil}
 
-  /// The name of the first Rule that holds for it.
+  /// The name of the Rule credited for it.
   public var rule: String = String()
+
+  public var action: Spotarr_V1_RuleAction = .unspecified
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2741,6 +2794,10 @@ nonisolated extension Spotarr_V1_CandidateStatus: SwiftProtobuf._ProtoNameProvid
 
 nonisolated extension Spotarr_V1_Summary: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0SUMMARY_UNSPECIFIED\0\u{1}SUMMARY_IN_PROGRESS\0\u{1}SUMMARY_TO_CHOOSE\0\u{1}SUMMARY_ADDED\0\u{1}SUMMARY_REQUESTED\0\u{1}SUMMARY_ALREADY_PRESENT\0\u{1}SUMMARY_NO_MATCH\0\u{1}SUMMARY_FAILED\0")
+}
+
+nonisolated extension Spotarr_V1_RuleAction: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{2}\0RULE_ACTION_UNSPECIFIED\0\u{1}RULE_ACTION_SEERR_REQUEST\0\u{1}RULE_ACTION_SEERR_WATCHLIST\0")
 }
 
 nonisolated extension Spotarr_V1_CheckDependenciesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -5039,7 +5096,7 @@ nonisolated extension Spotarr_V1_RetryIdentificationResponse: SwiftProtobuf.Mess
 
 nonisolated extension Spotarr_V1_AddRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".AddRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}share_id\0\u{3}tmdb_id\0\u{1}type\0\u{1}target\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}share_id\0\u{3}tmdb_id\0\u{1}type\0\u{1}target\0\u{1}action\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5051,6 +5108,7 @@ nonisolated extension Spotarr_V1_AddRequest: SwiftProtobuf.Message, SwiftProtobu
       case 2: try { try decoder.decodeSingularInt32Field(value: &self.tmdbID) }()
       case 3: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       case 4: try { try decoder.decodeSingularEnumField(value: &self.target) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.action) }()
       default: break
       }
     }
@@ -5069,6 +5127,9 @@ nonisolated extension Spotarr_V1_AddRequest: SwiftProtobuf.Message, SwiftProtobu
     if self.target != .unspecified {
       try visitor.visitSingularEnumField(value: self.target, fieldNumber: 4)
     }
+    if self.action != .unspecified {
+      try visitor.visitSingularEnumField(value: self.action, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5077,6 +5138,7 @@ nonisolated extension Spotarr_V1_AddRequest: SwiftProtobuf.Message, SwiftProtobu
     if lhs.tmdbID != rhs.tmdbID {return false}
     if lhs.type != rhs.type {return false}
     if lhs.target != rhs.target {return false}
+    if lhs.action != rhs.action {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -5713,7 +5775,7 @@ nonisolated extension Spotarr_V1_TestWebhookResponse: SwiftProtobuf.Message, Swi
 
 nonisolated extension Spotarr_V1_Rule: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Rule"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{1}enabled\0\u{1}type\0\u{3}only_one\0\u{3}min_confidence\0\u{3}min_rating\0\u{3}min_votes\0\u{3}unreleased_skips_rating\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}id\0\u{1}name\0\u{1}enabled\0\u{1}type\0\u{3}only_one\0\u{3}min_confidence\0\u{3}min_rating\0\u{3}min_votes\0\u{3}unreleased_skips_rating\0\u{1}action\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -5730,6 +5792,7 @@ nonisolated extension Spotarr_V1_Rule: SwiftProtobuf.Message, SwiftProtobuf._Mes
       case 7: try { try decoder.decodeSingularFloatField(value: &self._minRating) }()
       case 8: try { try decoder.decodeSingularInt32Field(value: &self._minVotes) }()
       case 9: try { try decoder.decodeSingularBoolField(value: &self.unreleasedSkipsRating) }()
+      case 10: try { try decoder.decodeSingularEnumField(value: &self.action) }()
       default: break
       }
     }
@@ -5767,6 +5830,9 @@ nonisolated extension Spotarr_V1_Rule: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if self.unreleasedSkipsRating != false {
       try visitor.visitSingularBoolField(value: self.unreleasedSkipsRating, fieldNumber: 9)
     }
+    if self.action != .unspecified {
+      try visitor.visitSingularEnumField(value: self.action, fieldNumber: 10)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5780,6 +5846,7 @@ nonisolated extension Spotarr_V1_Rule: SwiftProtobuf.Message, SwiftProtobuf._Mes
     if lhs._minRating != rhs._minRating {return false}
     if lhs._minVotes != rhs._minVotes {return false}
     if lhs.unreleasedSkipsRating != rhs.unreleasedSkipsRating {return false}
+    if lhs.action != rhs.action {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -6018,7 +6085,7 @@ nonisolated extension Spotarr_V1_PreviewRulesResponse: SwiftProtobuf.Message, Sw
 
 nonisolated extension Spotarr_V1_PreviewedAddition: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".PreviewedAddition"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}share_id\0\u{1}title\0\u{1}year\0\u{1}type\0\u{3}poster_url\0\u{1}rule\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}share_id\0\u{1}title\0\u{1}year\0\u{1}type\0\u{3}poster_url\0\u{1}rule\0\u{1}action\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -6032,6 +6099,7 @@ nonisolated extension Spotarr_V1_PreviewedAddition: SwiftProtobuf.Message, Swift
       case 4: try { try decoder.decodeSingularEnumField(value: &self.type) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self._posterURL) }()
       case 6: try { try decoder.decodeSingularStringField(value: &self.rule) }()
+      case 7: try { try decoder.decodeSingularEnumField(value: &self.action) }()
       default: break
       }
     }
@@ -6060,6 +6128,9 @@ nonisolated extension Spotarr_V1_PreviewedAddition: SwiftProtobuf.Message, Swift
     if !self.rule.isEmpty {
       try visitor.visitSingularStringField(value: self.rule, fieldNumber: 6)
     }
+    if self.action != .unspecified {
+      try visitor.visitSingularEnumField(value: self.action, fieldNumber: 7)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -6070,6 +6141,7 @@ nonisolated extension Spotarr_V1_PreviewedAddition: SwiftProtobuf.Message, Swift
     if lhs.type != rhs.type {return false}
     if lhs._posterURL != rhs._posterURL {return false}
     if lhs.rule != rhs.rule {return false}
+    if lhs.action != rhs.action {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

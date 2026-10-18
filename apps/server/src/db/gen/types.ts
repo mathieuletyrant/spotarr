@@ -23,6 +23,7 @@ export interface Additions {
 }
 
 export interface AutoAddRules {
+  action: Generated<string>;
   conditions: Generated<string>;
   created_at: Generated<string>;
   enabled: Generated<number>;

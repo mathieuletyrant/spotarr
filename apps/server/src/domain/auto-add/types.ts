@@ -15,11 +15,17 @@ export const ConditionsSchema = z.object({
   unreleasedSkipsRating: z.boolean().default(false),
 });
 
+// What a Rule does with a Candidate: request it through Seerr, or put it in
+// Seerr's watchlist, which requests nothing. Each Action names the connection
+// it belongs to: Radarr and Sonarr have no watchlist, they will bring their own.
+const ACTIONS = ["SEERR_REQUEST", "SEERR_WATCHLIST"] as const;
+
 // What SaveRule accepts.
 export const RuleSchema = ConditionsSchema.extend({
   name: z.string().trim().min(1, "give the rule a name").max(60),
   enabled: z.boolean(),
+  action: z.enum(ACTIONS).default("SEERR_REQUEST"),
 });
 
-// When auto add requests a Candidate without a click.
+// When auto add requests a Candidate, or puts it in the watchlist, without a click.
 export type Rule = z.infer<typeof RuleSchema> & { id: string };

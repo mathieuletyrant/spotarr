@@ -1,4 +1,4 @@
-import { MediaType, Summary, Target } from "@spotarr/contract";
+import { MediaType, RuleAction, Summary, Target } from "@spotarr/contract";
 import { retryIdentification } from "../../domain/identification/use-cases/retry-identification";
 import type { SettingsRepository } from "../../domain/settings/repository";
 import type { ShareRepository } from "../../domain/shares/repository";
@@ -7,6 +7,7 @@ import { addToLibrary } from "../../domain/shares/use-cases/add-to-library";
 import { createShare } from "../../domain/shares/use-cases/create-share";
 import { deleteShare } from "../../domain/shares/use-cases/delete-share";
 import { listHistory } from "../../domain/shares/use-cases/list-history";
+import { watchCandidate } from "../../domain/watchlist/use-cases/watch-candidate";
 import { SpotarrError } from "../../errors";
 import { shareMessage } from "../messages";
 import type { WebhookSender } from "../webhooks/sender";
@@ -60,6 +61,10 @@ export function shareRpcs(
     },
 
     async add(req) {
+      if (req.action === RuleAction.SEERR_WATCHLIST) {
+        await watchCandidate(req.shareId, req.tmdbId, mediaTypeOf(req.type), { shares, settings });
+        return shareAnswer(req.shareId);
+      }
       await addToLibrary(
         req.shareId,
         {

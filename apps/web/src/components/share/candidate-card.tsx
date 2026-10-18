@@ -3,13 +3,14 @@ import {
   type Candidate,
   CandidateStatus,
   MediaType,
+  RuleAction,
   type Share,
   SpotarrService,
   Summary,
   type WatchLink,
 } from "@spotarr/contract";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Play, Plus } from "lucide-react";
+import { Bookmark, BookmarkCheck, Play, Plus } from "lucide-react";
 import { watchLinksQuery } from "../../queries/shares";
 import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
@@ -17,7 +18,8 @@ import { TmdbRating } from "../tmdb-rating";
 
 // The Candidates of a Share. The first, the most likely (the Identification
 // sorts them by confidence), takes the stage with one big action: watch it
-// where it already is, else add it. The others get one line each.
+// where it already is, else add it to the library or to Seerr's watchlist, the
+// same two Actions as a Rule's. The others get one line each.
 export function Candidates({ share }: { share: Share }) {
   const [best, ...others] = share.candidates;
   if (!best) return null;
@@ -87,8 +89,8 @@ function BestMatch({ share, candidate }: { share: Share; candidate: Candidate })
   );
 }
 
-// Watch it where it already is, else add it. Adding stays possible, quieter,
-// when it can be watched.
+// Watch it where it already is, else add it to the library or the watchlist.
+// Adding stays possible, quieter, when it can be watched.
 function BestMatchActions({
   share,
   candidate,
@@ -98,7 +100,8 @@ function BestMatchActions({
   candidate: Candidate;
   links: WatchLink[];
 }) {
-  const add = useAdd(share, candidate);
+  const add = useAdd(share, candidate, RuleAction.SEERR_REQUEST);
+  const watch = useAdd(share, candidate, RuleAction.SEERR_WATCHLIST);
   const [first, ...more] = links;
   const canAdd = candidate.status === CandidateStatus.CAN_ADD;
   const failure = candidate.failure ?? add.error?.message;
@@ -139,23 +142,65 @@ function BestMatchActions({
             className="flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
           >
             <Plus aria-hidden className="size-4" />
-            {add.isPending ? "Adding…" : failure ? "Try again" : "Add"}
+            {add.isPending ? "Adding…" : failure ? "Try again" : "Add to the library"}
           </button>
         )}
+        {canAdd && !first && <WatchButton watch={watch} />}
         {!canAdd && <Status candidate={candidate} />}
       </div>
       {canAdd && first && (
-        <button
-          type="button"
-          onClick={add.start}
-          disabled={add.isPending}
-          className="w-fit self-center text-sm text-text-muted underline hover:text-text md:self-start"
-        >
-          {add.isPending ? "Adding…" : failure ? "Try adding again" : "Add to the library anyway"}
-        </button>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 self-center md:self-start">
+          <button
+            type="button"
+            onClick={add.start}
+            disabled={add.isPending}
+            className="text-sm text-text-muted underline hover:text-text"
+          >
+            {add.isPending ? "Adding…" : failure ? "Try adding again" : "Add to the library anyway"}
+          </button>
+          {watch.isDone ? (
+            <InWatchlist />
+          ) : (
+            <button
+              type="button"
+              onClick={watch.start}
+              disabled={watch.isPending}
+              className="text-sm text-text-muted underline hover:text-text"
+            >
+              {watch.isPending ? "Adding…" : "Add to Seerr's watchlist"}
+            </button>
+          )}
+        </div>
       )}
       {failure && <p className="text-sm text-status-error">{failure}</p>}
+      {watch.error && <p className="text-sm text-status-error">{watch.error.message}</p>}
     </div>
+  );
+}
+
+// "Add to Seerr's watchlist", then "In watchlist" once Seerr took it.
+function WatchButton({ watch }: { watch: ReturnType<typeof useAdd> }) {
+  if (watch.isDone) return <InWatchlist />;
+  return (
+    <button
+      type="button"
+      onClick={watch.start}
+      disabled={watch.isPending}
+      className="flex h-10 items-center gap-1.5 rounded-md border border-border px-4 text-sm font-medium hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
+    >
+      <Bookmark aria-hidden className="size-4" />
+      {watch.isPending ? "Adding…" : "Add to Seerr's watchlist"}
+    </button>
+  );
+}
+
+// Spotarr keeps no trace of the watchlist: this shows only until the page reloads.
+function InWatchlist() {
+  return (
+    <span className="flex items-center gap-1.5 text-sm text-text-muted">
+      <BookmarkCheck aria-hidden className="size-4" />
+      In watchlist
+    </span>
   );
 }
 
@@ -212,21 +257,49 @@ function OtherCandidate({ share, candidate }: { share: Share; candidate: Candida
   );
 }
 
+// Add to the library or to the watchlist: icons alone on a phone, a word
+// beside them from md up.
 function SmallAction({ share, candidate }: { share: Share; candidate: Candidate }) {
-  const add = useAdd(share, candidate);
+  const add = useAdd(share, candidate, RuleAction.SEERR_REQUEST);
+  const watch = useAdd(share, candidate, RuleAction.SEERR_WATCHLIST);
   if (candidate.status !== CandidateStatus.CAN_ADD) return <Status candidate={candidate} />;
   const failure = candidate.failure ?? add.error?.message;
   return (
-    <button
-      type="button"
-      onClick={add.start}
-      disabled={add.isPending}
-      title={failure}
-      className="flex h-9 items-center gap-1 rounded-md bg-accent px-3 text-sm font-medium text-accent-text"
-    >
-      <Plus aria-hidden className="size-4" />
-      {add.isPending ? "Adding…" : failure ? "Retry" : "Add"}
-    </button>
+    <div className="flex gap-1.5">
+      <button
+        type="button"
+        onClick={add.start}
+        disabled={add.isPending}
+        title={failure ?? "Add to the library"}
+        className="flex h-9 items-center gap-1 rounded-md bg-accent px-2.5 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
+      >
+        <Plus aria-hidden className="size-4" />
+        <span className="sr-only md:not-sr-only">
+          {add.isPending ? "Adding…" : failure ? "Retry" : "Library"}
+        </span>
+        <span className="sr-only"> (add to the library)</span>
+      </button>
+      {watch.isDone ? (
+        <span title="In Seerr's watchlist" className="flex h-9 items-center px-2 text-text-muted">
+          <BookmarkCheck aria-hidden className="size-4" />
+          <span className="sr-only">In Seerr's watchlist</span>
+        </span>
+      ) : (
+        <button
+          type="button"
+          onClick={watch.start}
+          disabled={watch.isPending}
+          title={watch.error?.message ?? "Add to Seerr's watchlist"}
+          className="flex h-9 items-center gap-1 rounded-md border border-border px-2.5 text-sm font-medium hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          <Bookmark aria-hidden className="size-4" />
+          <span className="sr-only md:not-sr-only">
+            {watch.isPending ? "Adding…" : watch.error ? "Retry" : "Watchlist"}
+          </span>
+          <span className="sr-only"> (add to Seerr's watchlist)</span>
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -248,25 +321,29 @@ function Status({ candidate }: { candidate: Candidate }) {
   return <StatusBadge summary={Summary.ALREADY_PRESENT} />;
 }
 
-// The platform's logo, else a play sign: the library has none.
+// The platform's logo, else a filled play sign in a logo's space: the library
+// has none. The sign takes the button's text color, so it shows on any button.
 function LinkLogo({ link }: { link: WatchLink }) {
   if (link.logoUrl) return <img src={link.logoUrl} alt="" className="size-7 rounded-sm" />;
   return (
-    <span className="flex size-7 items-center justify-center rounded-sm bg-accent/15 text-accent">
-      <Play aria-hidden className="size-3.5" />
+    <span className="flex size-7 items-center justify-center">
+      <Play aria-hidden className="size-5" fill="currentColor" />
     </span>
   );
 }
 
-// Adds the Candidate through Seerr, then refreshes the Share.
-function useAdd(share: Share, candidate: Candidate) {
+// Adds the Candidate through Seerr, requested or in its watchlist, then
+// refreshes the Share.
+function useAdd(share: Share, candidate: Candidate, action: RuleAction) {
   const queryClient = useQueryClient();
   const add = useMutation(SpotarrService.method.add, {
     onSuccess: () => queryClient.invalidateQueries(),
   });
   return {
-    start: () => add.mutate({ shareId: share.id, tmdbId: candidate.tmdbId, type: candidate.type }),
+    start: () =>
+      add.mutate({ shareId: share.id, tmdbId: candidate.tmdbId, type: candidate.type, action }),
     isPending: add.isPending,
+    isDone: add.isSuccess,
     error: add.error,
   };
 }

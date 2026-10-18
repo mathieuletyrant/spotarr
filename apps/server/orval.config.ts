@@ -2,7 +2,13 @@ import { defineConfig, type InputTransformerFn } from "orval";
 
 // TMDB and Seerr publish an OpenAPI spec of their whole API; we generate a
 // typed client for the routes Spotarr uses only.
-const SEERR_ROUTES = ["/movie/{movieId}", "/tv/{tvId}", "/request"];
+const SEERR_ROUTES = [
+  "/movie/{movieId}",
+  "/tv/{tvId}",
+  "/request",
+  "/watchlist",
+  "/watchlist/{tmdbId}",
+];
 const TMDB_ROUTES = [
   "/3/find/{external_id}",
   "/3/movie/{movie_id}",
@@ -27,6 +33,32 @@ function onlyRoutes(routes: string[]): InputTransformerFn {
   });
 }
 
+// Seerr's spec names a watchlist entry's media type `type`; its server reads
+// `mediaType` ("movie" or "tv") and refuses the request without it. The spec
+// is corrected here, so the generated client sends what the server reads.
+function seerrSpec(routes: string[]): InputTransformerFn {
+  return (spec) => {
+    const paths = Object.fromEntries(
+      Object.entries(spec.paths ?? {}).filter(([route]) => routes.includes(route)),
+    );
+    const schemas = spec.components?.schemas ?? {};
+    const watchlist = schemas.Watchlist as { properties?: Record<string, unknown> };
+    const { type: _type, ...properties } = watchlist.properties ?? {};
+    const mediaType = { type: "string" as const, enum: ["movie", "tv"] };
+    return {
+      ...spec,
+      paths,
+      components: {
+        ...spec.components,
+        schemas: {
+          ...schemas,
+          Watchlist: { ...watchlist, properties: { ...properties, mediaType } },
+        },
+      },
+    };
+  };
+}
+
 export default defineConfig({
   // A typed client, and typed fake answers for tests.
   tmdb: {
@@ -49,7 +81,7 @@ export default defineConfig({
   seerr: {
     input: {
       target: "https://raw.githubusercontent.com/seerr-team/seerr/v3.5.0/seerr-api.yml",
-      override: { transformer: onlyRoutes(SEERR_ROUTES) },
+      override: { transformer: seerrSpec(SEERR_ROUTES) },
     },
     output: {
       target: "src/integrations/seerr/gen/seerr.ts",

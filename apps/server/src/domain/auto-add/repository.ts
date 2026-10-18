@@ -29,8 +29,13 @@ export class RuleRepository {
   // Validates the Rule (throws a ZodError) and saves it. An empty id creates a
   // new one. Returns its id.
   async save(id: string, fields: unknown): Promise<string> {
-    const { name, enabled, ...conditions } = RuleSchema.parse(fields);
-    const values = { name, enabled: enabled ? 1 : 0, conditions: JSON.stringify(conditions) };
+    const { name, enabled, action, ...conditions } = RuleSchema.parse(fields);
+    const values = {
+      name,
+      enabled: enabled ? 1 : 0,
+      action,
+      conditions: JSON.stringify(conditions),
+    };
     if (id) {
       await this.db.updateTable("auto_add_rules").set(values).where("id", "=", id).execute();
       return id;
@@ -48,13 +53,14 @@ export class RuleRepository {
   }
 }
 
-type RuleRow = { id: string; name: string; enabled: number; conditions: string };
+type RuleRow = { id: string; name: string; enabled: number; action: string; conditions: string };
 
 function toRule(row: RuleRow): Rule {
   return {
     id: row.id,
     name: row.name,
     enabled: row.enabled === 1,
+    action: row.action === "SEERR_WATCHLIST" ? "SEERR_WATCHLIST" : "SEERR_REQUEST",
     ...ConditionsSchema.parse(JSON.parse(row.conditions)),
   };
 }

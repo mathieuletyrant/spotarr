@@ -10,8 +10,8 @@ export function AutoAddSection() {
       id="auto-add"
       icon={<Zap aria-hidden className="size-5" />}
       title="Auto add"
-      description="Rules that request a candidate without a click."
-      info="A candidate is requested through Seerr when one enabled rule holds for it, and credited to the first one. A title already in the library is never requested again; a TV show gets season 1."
+      description="Rules that request a candidate, or put it in Seerr's watchlist, without a click."
+      info="A candidate is requested through Seerr when one enabled rule holds for it, and credited to the first one; a rule that requests wins over one that adds to the watchlist. A title already in the library is never requested again; a TV show gets season 1."
     >
       <RulesList />
     </Section>
