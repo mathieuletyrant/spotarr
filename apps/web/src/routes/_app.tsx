@@ -4,7 +4,7 @@ import { Menu, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { ServicesStatus } from "../components/services-status";
 import { ShareDialog } from "../components/share-dialog";
-import { ThemeSwitch } from "../components/theme-switch";
+import { ThemeButton } from "../components/theme-button";
 import { ToastProvider } from "../components/toast";
 import { queryClient } from "../lib/api";
 import { statusQuery } from "../queries/status";
@@ -45,7 +45,7 @@ function AppLayout() {
 
   return (
     <ToastProvider>
-      <div className="flex min-h-screen flex-col">
+      <div className="min-h-screen">
         <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
           <Link to="/" className="flex shrink-0 items-center gap-2 font-semibold">
             <img src="/favicon.svg" alt="" className="size-6 shrink-0" />
@@ -63,18 +63,21 @@ function AppLayout() {
               </Link>
             ))}
           </nav>
-          {/* The page's main action, on every page: share a link from the computer. */}
+          {/* The page's main action, on every page: share a link from the computer.
+              On a phone, the theme and Share go in the menu with the pages. */}
           <div className="ml-auto flex shrink-0 items-center gap-1">
             <ServicesStatus />
-            <Link
-              to="."
-              search={(previous) => ({ ...previous, share: true })}
-              aria-label="Share a link"
-              className="flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text"
-            >
-              <Plus aria-hidden className="size-4" />
-              <span className="hidden sm:inline">Share</span>
-            </Link>
+            <div className="hidden items-center gap-1 sm:flex">
+              <ThemeButton />
+              <Link
+                to="."
+                search={(previous) => ({ ...previous, share: true })}
+                className="flex h-9 items-center gap-1.5 rounded-md bg-accent px-3 text-sm font-medium text-accent-text"
+              >
+                <Plus aria-hidden className="size-4" />
+                Share
+              </Link>
+            </div>
             <button
               type="button"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -106,16 +109,21 @@ function AppLayout() {
                 {page.label}
               </Link>
             ))}
+            <ThemeButton withLabel />
+            <Link
+              to="."
+              search={(previous) => ({ ...previous, share: true })}
+              onClick={() => setMenuOpen(false)}
+              className="mt-1 mb-1 flex h-10 items-center justify-center gap-1.5 rounded-md bg-accent px-3 font-medium text-accent-text"
+            >
+              <Plus aria-hidden className="size-4" />
+              Share a link
+            </Link>
           </nav>
         )}
-        <main className="mx-auto w-full max-w-7xl flex-1 p-4 md:p-6">
+        <main className="mx-auto max-w-7xl p-4 md:p-6">
           <Outlet />
         </main>
-        <footer className="border-t border-border">
-          <div className="mx-auto flex max-w-7xl justify-end p-4 md:px-6">
-            <ThemeSwitch />
-          </div>
-        </footer>
         <ShareDialog
           open={share === true}
           onClose={() =>
