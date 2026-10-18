@@ -36,15 +36,6 @@ const MENU = [
 ] as const satisfies { id: string; label: string; icon: LucideIcon }[];
 type SectionId = (typeof MENU)[number]["id"];
 
-// The tabs of before 2026-10-18, so that an old ?section= link still lands.
-const OLD_SECTIONS: Record<string, SectionId> = {
-  seerr: "connections",
-  "auto-add": "automation",
-  webhooks: "automation",
-  extraction: "identification",
-  mcp: "access",
-};
-
 // The tab of a field, from the first part of its name: "seerr.url" is in
 // Connections. Seerr's token sits with Seerr, though saved under access.
 function tabOf(field: string): SectionId | undefined {
@@ -62,8 +53,7 @@ export const Route = createFileRoute("/_app/settings")({
   // that its tab reads as the current one.
   validateSearch: (search: Record<string, unknown>): { section?: SectionId } => {
     const item = MENU.find((m) => m.id === search.section);
-    if (item) return { section: item.id };
-    return { section: OLD_SECTIONS[String(search.section)] ?? "connections" };
+    return { section: item?.id ?? "connections" };
   },
   component: SettingsPage,
 });
