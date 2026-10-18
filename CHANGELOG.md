@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/mathieuletyrant/spotarr/compare/v0.11.0...v0.12.0) (2026-10-18)
+
+
+### Features
+
+* **web:** install as an app on the iPhone's Home Screen ([#183](https://github.com/mathieuletyrant/spotarr/issues/183)) ([6d5466c](https://github.com/mathieuletyrant/spotarr/commit/6d5466cdc29ce9bac671e5348c60de8013f4c56d))
+
 ## [0.11.0](https://github.com/mathieuletyrant/spotarr/compare/v0.10.0...v0.11.0) (2026-10-18)
 
 
