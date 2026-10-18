@@ -81,7 +81,7 @@ function WatchLinks({ candidate }: { candidate: Candidate }) {
             href={link.url}
             target="_blank"
             rel="noreferrer"
-            className="flex h-8 items-center gap-2 rounded-full border border-border pr-3 pl-1 text-sm hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
+            className="flex h-8 items-center gap-2 rounded-full border border-border pr-3 pl-1 text-sm whitespace-nowrap hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
           >
             {link.logoUrl ? (
               <img src={link.logoUrl} alt="" className="size-6 rounded-full" />
