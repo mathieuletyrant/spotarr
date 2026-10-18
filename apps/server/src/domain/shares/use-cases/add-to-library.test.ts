@@ -6,23 +6,17 @@ import {
 } from "../../../integrations/seerr/gen/seerr.faker";
 import { fakeFetch } from "../../../testing/fake-fetch";
 import { SettingsRepository } from "../../settings/repository";
-import type { Event } from "../events";
 import { ShareRepository } from "../repository";
 import { addToLibrary } from "./add-to-library";
 
 afterEach(() => mock.restore());
 
 // A finished Share with one Candidate, Due Date; Seerr set in the Settings.
-// `emitted` collects the Events the use case emits.
 async function shareWithDueDate() {
   const db = await openDatabase(":memory:");
   const shares = new ShareRepository(db);
   const settings = new SettingsRepository(db);
   await settings.update({ seerr: { url: "http://seerr.test", apiKey: "key" } });
-  const emitted: Event[] = [];
-  const emit = async (event: Event) => {
-    emitted.push(event);
-  };
   const id = await shares.create({ url: "https://www.instagram.com/reel/x/" }, "instagram.com");
   await shares.finish(
     id,
@@ -43,7 +37,7 @@ async function shareWithDueDate() {
     },
     10,
   );
-  return { shares, id, emitted, deps: { shares, settings, emit } };
+  return { shares, id, deps: { shares, settings } };
 }
 const dueDate = { tmdbId: 41733, type: "MOVIE" as const };
 
@@ -52,7 +46,7 @@ const paths = (fetch: { mock: { calls: unknown[][] } }) =>
   fetch.mock.calls.map(([url]) => new URL(String(url)).pathname);
 
 test("an absent Candidate is requested from Seerr", async () => {
-  const { shares, id, emitted, deps } = await shareWithDueDate();
+  const { shares, id, deps } = await shareWithDueDate();
   const fetch = fakeFetch({
     "/api/v1/movie/41733": getGetMovieMovieIdResponseMock({ mediaInfo: undefined }),
     "/api/v1/request": getPostRequestResponseMock(),
@@ -67,11 +61,10 @@ test("an absent Candidate is requested from Seerr", async () => {
   expect(share?.candidates[0]?.libraryState).toBe("REQUESTED"); // without waiting for Seerr
   expect(share?.summary).toBe("REQUESTED");
   expect(paths(fetch)).toEqual(["/api/v1/movie/41733", "/api/v1/request"]);
-  expect(emitted).toMatchObject([{ name: "media.added", added: { title: "Date limite" } }]);
 });
 
 test("a Candidate already in the library is not requested again", async () => {
-  const { shares, id, emitted, deps } = await shareWithDueDate();
+  const { shares, id, deps } = await shareWithDueDate();
   const fetch = fakeFetch({
     "/api/v1/movie/41733": getGetMovieMovieIdResponseMock({ mediaInfo: { status: 5 } }),
   });
@@ -83,7 +76,6 @@ test("a Candidate already in the library is not requested again", async () => {
   expect(share?.candidates[0]?.libraryState).toBe("AVAILABLE");
   expect(share?.summary).toBe("ALREADY_PRESENT");
   expect(paths(fetch)).toEqual(["/api/v1/movie/41733"]); // no request
-  expect(emitted).toEqual([]); // no media.added
 });
 
 test("Seerr failing is recorded as a failed Addition, with the reason", async () => {

@@ -12,22 +12,17 @@ import { settingsRpcs } from "./api/rpc/settings";
 import { shareRpcs } from "./api/rpc/shares";
 import { statusRpcs } from "./api/rpc/status";
 import { streamingRpcs } from "./api/rpc/streaming";
-import { webhookRpcs } from "./api/rpc/webhooks";
 import { seerrWebhook } from "./api/seerr-webhook";
-import type { WebhookSender } from "./api/webhooks/sender";
 import type { RuleRepository } from "./domain/auto-add/repository";
 import type { SettingsRepository } from "./domain/settings/repository";
 import type { ShareRepository } from "./domain/shares/repository";
-import type { WebhookRepository } from "./domain/webhooks/repository";
 import { log } from "./log";
 
 export type AppDeps = {
   apiToken: () => string;
   settings: SettingsRepository;
   shares: ShareRepository;
-  webhooks: WebhookRepository;
   rules: RuleRepository;
-  sender: WebhookSender;
 };
 
 // Routes: GET /health (open), POST /api/* (Connect RPCs, token required but
@@ -35,14 +30,13 @@ export type AppDeps = {
 // server, MCP token required), POST /seerr/webhook (Seerr reporting a change,
 // Seerr token required). index.ts adds the web UI after them.
 // Each file in api/rpc/ implements the RPCs of one domain.
-export function createApp({ apiToken, settings, shares, webhooks, rules, sender }: AppDeps): Hono {
+export function createApp({ apiToken, settings, shares, rules }: AppDeps): Hono {
   const rpc = connectHandler({ interceptors: [errorsToConnect] }, (router) =>
     router.service(SpotarrService, {
       ...authRpcs(apiToken),
       ...statusRpcs(settings, shares),
       ...settingsRpcs(settings),
-      ...shareRpcs(shares, settings, sender),
-      ...webhookRpcs(webhooks, sender),
+      ...shareRpcs(shares, settings),
       ...ruleRpcs(rules, shares),
       ...streamingRpcs(settings),
     }),

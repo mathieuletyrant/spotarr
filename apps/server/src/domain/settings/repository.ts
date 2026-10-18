@@ -22,7 +22,6 @@ export class SettingsRepository {
         identification: { ...current.identification, ...present(patch.identification) },
         seerr: { ...current.seerr, ...present(patch.seerr) },
         extraction: { ...current.extraction, ...present(patch.extraction) },
-        webhooks: { ...current.webhooks, ...present(patch.webhooks) },
         streaming: { ...current.streaming, ...present(patch.streaming) },
         access: {
           ...current.access,

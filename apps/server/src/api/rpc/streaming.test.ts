@@ -4,18 +4,13 @@ import { openDatabase } from "../../db";
 import { RuleRepository } from "../../domain/auto-add/repository";
 import { SettingsRepository } from "../../domain/settings/repository";
 import { ShareRepository } from "../../domain/shares/repository";
-import { WebhookRepository } from "../../domain/webhooks/repository";
-import { WebhookSender } from "../webhooks/sender";
 
 const db = await openDatabase(":memory:");
-const webhooks = new WebhookRepository(db);
 const app = createApp({
   apiToken: () => "t",
   settings: new SettingsRepository(db),
   shares: new ShareRepository(db),
-  webhooks,
   rules: new RuleRepository(db),
-  sender: new WebhookSender(webhooks, async () => ""),
 });
 const call = async (method: string, body: unknown) => {
   const res = await app.request(`/api/spotarr.v1.SpotarrService/${method}`, {

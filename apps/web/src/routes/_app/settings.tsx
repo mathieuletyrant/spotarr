@@ -14,7 +14,6 @@ import { RulesSection } from "../../components/settings/rules-section";
 import { SaveBar } from "../../components/settings/save-bar";
 import { SeerrSection } from "../../components/settings/seerr-section";
 import { StreamingSection } from "../../components/settings/streaming-section";
-import { WebhooksSection } from "../../components/settings/webhooks-section";
 import { useToast } from "../../components/toast";
 import {
   changedFields,
@@ -43,7 +42,6 @@ function tabOf(field: string): SectionId | undefined {
   const prefix = field.split(".")[0] ?? "";
   if (prefix === "identification" || prefix === "extraction") return "identification";
   if (prefix === "seerr") return "connections";
-  if (prefix === "webhooks") return "automation";
   if (prefix === "access") return "access";
   return undefined;
 }
@@ -121,12 +119,7 @@ function SettingsForm({ saved }: { saved: Values }) {
       {/* A tab is a column of cards: a connection, or a group of settings. */}
       <div className="flex min-w-0 flex-col gap-6">
         {section === "connections" && <SeerrSection form={form} />}
-        {section === "automation" && (
-          <>
-            <RulesSection />
-            <WebhooksSection form={form} />
-          </>
-        )}
+        {section === "automation" && <RulesSection />}
         {section === "identification" && (
           <>
             <IdentificationSection form={form} />

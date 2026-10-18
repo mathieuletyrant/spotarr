@@ -1,13 +1,11 @@
 import { afterEach, expect, mock, test } from "bun:test";
 import pkg from "../package.json";
-import { WebhookSender } from "./api/webhooks/sender";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { RuleRepository } from "./domain/auto-add/repository";
 import { SettingsRepository } from "./domain/settings/repository";
 import { ShareRepository } from "./domain/shares/repository";
 import { until } from "./domain/shares/test-helpers";
-import { WebhookRepository } from "./domain/webhooks/repository";
 import {
   getGetMovieMovieIdResponseMock,
   getPostRequestResponseMock,
@@ -20,15 +18,11 @@ const db = await openDatabase(":memory:");
 const settings = new SettingsRepository(db);
 await settings.setApiToken("secret-token");
 const shares = new ShareRepository(db);
-const webhooks = new WebhookRepository(db);
-const sender = new WebhookSender(webhooks, async () => "");
 const app = createApp({
   rules: new RuleRepository(db),
   apiToken: () => "secret-token",
   settings,
   shares,
-  webhooks,
-  sender,
 });
 const call = (method: string, body: unknown = {}, headers: Record<string, string> = {}) =>
   app.request(`/api/spotarr.v1.SpotarrService/${method}`, {

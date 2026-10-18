@@ -12,8 +12,7 @@ import {
 import { addedCountOf, candidateStatusOf, failureReasonOf } from "../domain/shares/rules/summary";
 import type { Addition, Candidate, Share } from "../domain/shares/types";
 
-// The one place that turns the domain's Shares into the contract's messages,
-// for the RPCs and for the Webhooks alike: a field added here reaches both.
+// The one place that turns the domain's Shares into the contract's messages.
 // The domain writes enum values as names ("READY"), the contract as numbers.
 // Each enum of the contract maps a name to its number: IdentificationStatus["READY"] is 3.
 
@@ -47,7 +46,7 @@ export function shareMessage(share: Share) {
 }
 
 // A Candidate, with its Candidate status: `additions` are its Share's.
-export function candidateMessage(candidate: Candidate, additions: Addition[]) {
+function candidateMessage(candidate: Candidate, additions: Addition[]) {
   const { status, automatic, rule, failure } = candidateStatusOf(candidate, additions);
   return {
     ...candidate,

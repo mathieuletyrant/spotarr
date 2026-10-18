@@ -13,7 +13,6 @@ Share any link from your iPhone (a reel, a TikTok, a YouTube video, an article, 
 - ➕ **Adds in one click**, or on its own: auto add requests a candidate on its own when one of your rules holds (movies or TV shows, a single candidate, confidence, TMDB rating), with a preview of what each rule would have added. A TV show gets season 1 only.
 - 📺 **Says where to watch it already**: pick your country and the streaming platforms you subscribe to (Settings → Streaming), and a candidate streaming on one of them links to it, next to a link to your library (Jellyfin, Plex) when the title is there. No need to add what you can already watch.
 - ⭐ **Keeps the rest for later.** A rule can put candidates in Seerr's watchlist instead of requesting them: nothing is downloaded, JellyTV shows them, and a title leaves the watchlist once available. Seerr must use Jellyfin or Emby: it hides its own watchlist from Plex accounts.
-- 🔔 **Tells other services** through webhooks.
 - 🖥️ **A web UI** for the history, the candidates and the settings, in light and dark.
 
 ## 🏠 Install
@@ -82,24 +81,6 @@ New Shortcut, ⓘ → Show in Share Sheet, receiving URLs. Then these actions:
 4. **Otherwise**: **Show Notification** "Not sent to Spotarr", with Contents of URL as its body.
 
 </details>
-
-## 🔔 Webhooks
-
-In Settings → Webhooks, add a URL and pick its events: `identification.ready`, `identification.no_match`, `identification.failed`, `media.added`. Spotarr POSTs one JSON body per event, described by `WebhookEvent` in [the contract](packages/contract/proto/spotarr/v1/spotarr.proto). One try, 10 s; the last call's result shows in Settings. With a secret, the `X-Spotarr-Signature` header is the body's HMAC-SHA256 in hex. Set the web UI address so events link to the share's page.
-
-```json
-{
-  "event": "identification.ready",
-  "shareId": "shr_01a1…",
-  "createdAt": "2026-10-12T12:53:20Z",
-  "shareUrl": "https://spotarr.example.com/shares/shr_01a1…",
-  "source": "instagram.com",
-  "sharedUrl": "https://www.instagram.com/reel/…/",
-  "candidates": [
-    { "tmdbId": 977942, "type": "MEDIA_TYPE_MOVIE", "title": "The Uprising", "year": 2026, "confidence": 0.95, "libraryState": "LIBRARY_STATE_ABSENT" }
-  ]
-}
-```
 
 ## 🤖 Ask an AI assistant
 

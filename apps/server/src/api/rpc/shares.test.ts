@@ -6,19 +6,14 @@ import { SettingsRepository } from "../../domain/settings/repository";
 import { ShareQueue } from "../../domain/shares/queue";
 import { ShareRepository } from "../../domain/shares/repository";
 import { identifyNothing, until } from "../../domain/shares/test-helpers";
-import { WebhookRepository } from "../../domain/webhooks/repository";
-import { WebhookSender } from "../webhooks/sender";
 
 const db = await openDatabase(":memory:");
 const shares = new ShareRepository(db);
 const settings = new SettingsRepository(db);
-const webhooks = new WebhookRepository(db);
-const sender = new WebhookSender(webhooks, async () => "");
 await new ShareQueue({
   shares,
   settings,
   rules: new RuleRepository(db),
-  emit: (event) => sender.emit(event),
   identify: identifyNothing,
   idleMs: 5,
 }).start();
@@ -27,8 +22,6 @@ const app = createApp({
   apiToken: () => "t",
   settings,
   shares,
-  webhooks,
-  sender,
 });
 const call = async (method: string, body: unknown) => {
   const res = await app.request(`/api/spotarr.v1.SpotarrService/${method}`, {

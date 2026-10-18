@@ -41,13 +41,6 @@ service SpotarrService {
   // was requested in Seerr stays there. Refused (busy) while its Identification runs.
   rpc DeleteShare(DeleteShareRequest) returns (DeleteShareResponse);
 
-  rpc ListWebhooks(ListWebhooksRequest) returns (ListWebhooksResponse);
-  // Creates the Webhook when its id is empty, else replaces it.
-  rpc SaveWebhook(SaveWebhookRequest) returns (SaveWebhookResponse);
-  rpc DeleteWebhook(DeleteWebhookRequest) returns (DeleteWebhookResponse);
-  // Sends a sample "test" event to one Webhook; returns it with that delivery.
-  rpc TestWebhook(TestWebhookRequest) returns (TestWebhookResponse);
-
   // Auto add's Rules, oldest first. A Candidate is requested, or put in Seerr's
   // watchlist, without a click when one enabled Rule holds for it. A Rule that
   // requests wins over one that puts in the watchlist; among the same action,
@@ -171,7 +164,9 @@ message Settings {
   SeerrSettings seerr = 2;
   ExtractionSettings extraction = 3;
   AccessSettings access = 4;
-  WebhookSettings webhooks = 5;
+  // The outgoing Webhooks' settings, removed on 2026-10-18.
+  reserved 5;
+  reserved "webhooks";
   // Replaced by the Rules (ListRules, SaveRule): the old settings became the first Rule.
   AutoAddSettings auto_add = 6 [deprecated = true];
   StreamingSettings streaming = 7;
@@ -195,12 +190,6 @@ message AutoAddSettings {
   // True: only when the Identification found a single Candidate, and it reaches
   // min_confidence. False: every Candidate that reaches it.
   optional bool only_one = 3;
-}
-
-message WebhookSettings {
-  // Where the web UI answers, e.g. "https://spotarr.example.com": events then
-  // link to the Share's page. Empty: no link.
-  optional string web_ui_url = 1;
 }
 
 message IdentificationSettings {
@@ -609,77 +598,6 @@ message LoginResponse {}
 message LogoutRequest {}
 
 message LogoutResponse {}
-
-// Spotarr POSTs this, as JSON, to every Webhook that chose the event.
-message WebhookEvent {
-  // "identification.ready", "identification.no_match", "identification.failed",
-  // "media.added", or "test" for TestWebhook.
-  string event = 1;
-  string share_id = 2;
-  // When the Share was received.
-  google.protobuf.Timestamp created_at = 3;
-  // The Share's page in the web UI. Absent without a web UI address in the settings.
-  optional string share_url = 4;
-  // e.g. "instagram.com"
-  string source = 5;
-  // What was shared, when it was a link.
-  optional string shared_url = 6;
-  // Best first.
-  repeated Candidate candidates = 7;
-  // identification.failed: why.
-  optional string error = 8;
-  // media.added: the Candidate that was added.
-  optional Candidate added = 9;
-}
-
-message Webhook {
-  // Empty in SaveWebhook to create one.
-  string id = 1;
-  string url = 2;
-  // The events it receives, as in WebhookEvent.event (never "test").
-  repeated string events = 3;
-  // Optional. When set, the X-Spotarr-Signature header carries the body's
-  // HMAC-SHA256 with this secret, in hex.
-  string secret = 4;
-  // Read-only: the last time Spotarr called it.
-  optional WebhookDelivery last_delivery = 5;
-}
-
-message WebhookDelivery {
-  google.protobuf.Timestamp at = 1;
-  string event = 2;
-  bool ok = 3;
-  // "HTTP 200", or why it failed.
-  string detail = 4;
-}
-
-message ListWebhooksRequest {}
-
-message ListWebhooksResponse {
-  repeated Webhook webhooks = 1;
-}
-
-message SaveWebhookRequest {
-  Webhook webhook = 1;
-}
-
-message SaveWebhookResponse {
-  Webhook webhook = 1;
-}
-
-message DeleteWebhookRequest {
-  string id = 1;
-}
-
-message DeleteWebhookResponse {}
-
-message TestWebhookRequest {
-  string id = 1;
-}
-
-message TestWebhookResponse {
-  Webhook webhook = 1;
-}
 
 // When auto add requests a Candidate, or puts it in Seerr's watchlist, without
 // a click. All its conditions must hold; an absent condition is no condition.

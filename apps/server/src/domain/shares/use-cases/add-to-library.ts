@@ -1,15 +1,12 @@
 import { SpotarrError } from "../../../errors";
-import { log } from "../../../log";
 import { seerrFrom } from "../../settings/adapters";
 import type { SettingsRepository } from "../../settings/repository";
-import type { Emit } from "../events";
 import type { ShareRepository } from "../repository";
 import type { Candidate } from "../types";
 
 type AddToLibraryDeps = {
   shares: ShareRepository;
   settings: SettingsRepository;
-  emit: Emit;
 };
 
 // What a click on Add, or auto add, asks for.
@@ -25,12 +22,12 @@ export type AdditionRequest = {
 };
 
 // Adds one Candidate of a Share to the library through Seerr, records an
-// Addition saying what happened, and emits media.added once Seerr accepted.
+// Addition saying what happened.
 // Seerr failing is recorded too (FAILED, with the reason), so the history shows it.
 export async function addToLibrary(
   shareId: string,
   request: AdditionRequest,
-  { shares, settings, emit }: AddToLibraryDeps,
+  { shares, settings }: AddToLibraryDeps,
 ): Promise<void> {
   if (request.target === "ARR") {
     throw new SpotarrError(
@@ -71,10 +68,5 @@ export async function addToLibrary(
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     await shares.addAddition(shareId, { ...addition, status: "FAILED", error: reason });
-    return;
   }
-  // The Addition is recorded: a listener failing must not fail it.
-  await emit({ name: "media.added", share, added: known }).catch((error) =>
-    log({ shareId, step: "media-added", error: String(error) }),
-  );
 }

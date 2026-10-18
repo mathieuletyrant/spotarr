@@ -5,5 +5,8 @@ lint:
   use:
     - STANDARD
 breaking:
+  # What a client would see on the wire, in binary and JSON: a field's number
+  # or name reused breaks it. Deleting an RPC or a message that no client
+  # calls does not (FILE would refuse it).
   use:
-    - FILE
+    - WIRE_JSON

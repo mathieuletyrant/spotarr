@@ -1,7 +1,6 @@
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { serveWebApp } from "./api/web";
-import { WebhookSender } from "./api/webhooks/sender";
 import { createApp } from "./app";
 import { openDatabase } from "./db";
 import { RuleRepository } from "./domain/auto-add/repository";
@@ -10,11 +9,9 @@ import { SettingsRepository } from "./domain/settings/repository";
 import { ensureApiToken } from "./domain/settings/use-cases/ensure-api-token";
 import { ensureMcpToken } from "./domain/settings/use-cases/ensure-mcp-token";
 import { ensureSeerrToken } from "./domain/settings/use-cases/ensure-seerr-token";
-import type { Event } from "./domain/shares/events";
 import { ShareQueue } from "./domain/shares/queue";
 import { ShareRepository } from "./domain/shares/repository";
 import { fillMissingDetails } from "./domain/shares/use-cases/fill-missing-details";
-import { WebhookRepository } from "./domain/webhooks/repository";
 import { log } from "./log";
 
 // ── 1. Config ────────────────────────────────────────────────────────
@@ -28,7 +25,6 @@ mkdirSync(dataDir, { recursive: true });
 const db = await openDatabase(join(dataDir, "spotarr.db"));
 const settings = new SettingsRepository(db);
 const shares = new ShareRepository(db);
-const webhooks = new WebhookRepository(db);
 const rules = new RuleRepository(db);
 
 // Printed at every start: the logs are where the token is found again if
@@ -39,10 +35,8 @@ console.log(`API token${created ? " (new)" : ""}: ${token}`);
 await ensureMcpToken(settings);
 await ensureSeerrToken(settings);
 
-// ── 3. Background: the Webhooks listen to Events, workers identify ──
-const sender = new WebhookSender(webhooks, async () => (await settings.get()).webhooks.webUiUrl);
-const emit = (event: Event) => sender.emit(event);
-await new ShareQueue({ shares, settings, rules, emit }).start();
+// ── 3. Background: workers identify ─────────────────────────────────
+await new ShareQueue({ shares, settings, rules }).start();
 // Not awaited: Spotarr answers while older Shares get their TMDB details.
 const today = new Date().toISOString().slice(0, 10);
 fillMissingDetails(shares, tmdbFrom(await settings.get()), today)
@@ -50,7 +44,7 @@ fillMissingDetails(shares, tmdbFrom(await settings.get()), today)
   .catch((error) => log({ step: "tmdb details", error: String(error) }));
 
 // ── 4. API: /health, the RPCs under /api, the frames, /mcp, /seerr ──
-const app = createApp({ apiToken: () => token, settings, shares, webhooks, rules, sender });
+const app = createApp({ apiToken: () => token, settings, shares, rules });
 
 // ── 5. Web UI: the built front (pnpm build), on every other GET ─────
 // Added last, so it never catches an API route. In dev, Vite serves the

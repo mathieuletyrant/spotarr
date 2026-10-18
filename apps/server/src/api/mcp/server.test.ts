@@ -7,22 +7,17 @@ import { RuleRepository } from "../../domain/auto-add/repository";
 import { SettingsRepository } from "../../domain/settings/repository";
 import { ShareRepository } from "../../domain/shares/repository";
 import type { Candidate } from "../../domain/shares/types";
-import { WebhookRepository } from "../../domain/webhooks/repository";
-import { WebhookSender } from "../webhooks/sender";
 
 const db = await openDatabase(":memory:");
 const settings = new SettingsRepository(db);
 await settings.setApiToken("api-token");
 await settings.setMcpToken("mcp-token");
 const shares = new ShareRepository(db);
-const webhooks = new WebhookRepository(db);
 const app = createApp({
   rules: new RuleRepository(db),
   apiToken: () => "api-token",
   settings,
   shares,
-  webhooks,
-  sender: new WebhookSender(webhooks, async () => ""),
 });
 
 // One reel, two guesses: the comedy was added, the drama was not.
