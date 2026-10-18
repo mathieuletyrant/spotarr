@@ -12,8 +12,9 @@ service SpotarrService {
   rpc Logout(LogoutRequest) returns (LogoutResponse);
   // Spotarr's version. Cheap: the web UI also calls it to check the sign-in.
   rpc GetStatus(GetStatusRequest) returns (GetStatusResponse);
-  // Calls each Dependency (LLM, TMDB, Seerr, yt-dlp, ffmpeg) and says whether it
-  // works, with the reason when it does not. Takes a few seconds.
+  // Calls each Dependency (LLM, TMDB, Seerr, yt-dlp, ffmpeg, and Jellyfin when
+  // its URL is set) and says whether it works, with the reason when it does
+  // not. Takes a few seconds.
   rpc CheckDependencies(CheckDependenciesRequest) returns (CheckDependenciesResponse);
   // What Spotarr did, month by month, since the first Share.
   rpc GetStats(GetStatsRequest) returns (GetStatsResponse);
@@ -25,6 +26,9 @@ service SpotarrService {
   rpc RegenerateMcpToken(RegenerateMcpTokenRequest) returns (RegenerateMcpTokenResponse);
   // Replaces the Seerr token with a new one: Seerr is refused until it gets it.
   rpc RegenerateSeerrToken(RegenerateSeerrTokenRequest) returns (RegenerateSeerrTokenResponse);
+  // Brings the Jellyfin Collection in line now, rather than at the next
+  // 15-minute sync, and says what it did. Creates the Collection if missing.
+  rpc SyncCollection(SyncCollectionRequest) returns (SyncCollectionResponse);
 
   // Records a Share and queues its Identification. Answers at once, status QUEUED.
   rpc CreateShare(CreateShareRequest) returns (CreateShareResponse);
@@ -70,7 +74,7 @@ message CheckDependenciesResponse {
 }
 
 message Dependency {
-  // "LLM", "TMDB", "Seerr", "yt-dlp" or "ffmpeg".
+  // "LLM", "TMDB", "Seerr", "yt-dlp", "ffmpeg" or "Jellyfin".
   string name = 1;
   DependencyState state = 2;
   // What was checked, or why it failed: "google/gemini-3.8-flash", "Seerr answered 401".
@@ -170,6 +174,7 @@ message Settings {
   // Replaced by the Rules (ListRules, SaveRule): the old settings became the first Rule.
   AutoAddSettings auto_add = 6 [deprecated = true];
   StreamingSettings streaming = 7;
+  JellyfinSettings jellyfin = 8;
 }
 
 message StreamingSettings {
@@ -180,6 +185,20 @@ message StreamingSettings {
   // The country whose catalogues count, e.g. "FR". Empty: the country of the
   // TMDB language (fr-FR → FR).
   optional string country = 2;
+}
+
+// Where the Collection is kept: the titles added from a Share that Jellyfin
+// has and the user has not watched yet.
+message JellyfinSettings {
+  // e.g. "http://jellyfin:8096". Empty: Jellyfin is off, no Collection is kept.
+  optional string url = 1;
+  // Made in Jellyfin's Dashboard → API Keys.
+  optional string api_key = 2;
+  // The Jellyfin user whose watched titles leave the Collection.
+  optional string user = 3;
+  // The Collection's name, "Spotted" by default. Spotarr owns it: what is put
+  // in it by hand goes at the next sync. Renamed, a new one is made.
+  optional string collection = 4;
 }
 
 // Replaced by the Rules.
@@ -320,6 +339,23 @@ message WatchLink {
   // library's is the title's page on its server, from Seerr.
   string url = 2;
   optional string logo_url = 3;
+}
+
+message SyncCollectionRequest {}
+
+message SyncCollectionResponse {
+  // Its name in Jellyfin.
+  string collection = 1;
+  // Titles in it once synced.
+  int32 titles = 2;
+  // Jellyfin items added and removed by this sync (a title can be in two
+  // libraries, so two items).
+  int32 added = 3;
+  int32 removed = 4;
+  // Titles added from a Share that the user watched: kept out.
+  int32 watched = 5;
+  // Titles added from a Share that Jellyfin does not have yet.
+  int32 not_in_jellyfin = 6;
 }
 
 // A piece of content sent to Spotarr and everything that follows from it.

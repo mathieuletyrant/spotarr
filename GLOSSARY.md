@@ -108,7 +108,11 @@ _Avoid_: addition result
 The state of a Share as shown in the history. Derived, never stored: "failed" when its latest Addition failed; the Candidate status of its latest Addition's Candidate when one exists; otherwise the Identification status, where `READY` reads "available" if the best Candidate is `AVAILABLE` or `PARTIAL`, "to choose" otherwise.
 _Avoid_: status (alone), global status
 
+**Collection**:
+The Jellyfin collection Spotarr keeps of the titles added from a Share (an Addition that did not fail) that Jellyfin has and the user has not watched yet. Spotarr owns it: a title put in it by hand goes at the next sync. Synced every 15 minutes, when Seerr reports a title available, and on demand.
+_Avoid_: list, playlist, watchlist
+
 **Dependency**:
-A program or service Spotarr needs to identify and add: the LLM, TMDB, Seerr, yt-dlp, ffmpeg. Each one is OK, not configured, or in error with the reason.
+A program or service Spotarr needs to identify and add: the LLM, TMDB, Seerr, yt-dlp, ffmpeg; and Jellyfin, optional, once its URL is set. Each one is OK, not configured, or in error with the reason.
 _Avoid_: service, health, integration
 

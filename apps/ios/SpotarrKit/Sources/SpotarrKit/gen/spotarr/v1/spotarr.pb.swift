@@ -530,7 +530,7 @@ public nonisolated struct Spotarr_V1_Dependency: Sendable {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// "LLM", "TMDB", "Seerr", "yt-dlp" or "ffmpeg".
+  /// "LLM", "TMDB", "Seerr", "yt-dlp", "ffmpeg" or "Jellyfin".
   public var name: String = String()
 
   public var state: Spotarr_V1_DependencyState = .unspecified
@@ -790,6 +790,15 @@ public nonisolated struct Spotarr_V1_Settings: @unchecked Sendable {
   /// Clears the value of `streaming`. Subsequent reads from it will return its default value.
   public mutating func clearStreaming() {_uniqueStorage()._streaming = nil}
 
+  public var jellyfin: Spotarr_V1_JellyfinSettings {
+    get {_storage._jellyfin ?? Spotarr_V1_JellyfinSettings()}
+    set {_uniqueStorage()._jellyfin = newValue}
+  }
+  /// Returns true if `jellyfin` has been explicitly set.
+  public var hasJellyfin: Bool {_storage._jellyfin != nil}
+  /// Clears the value of `jellyfin`. Subsequent reads from it will return its default value.
+  public mutating func clearJellyfin() {_uniqueStorage()._jellyfin = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -823,6 +832,64 @@ public nonisolated struct Spotarr_V1_StreamingSettings: Sendable {
   public init() {}
 
   fileprivate var _country: String? = nil
+}
+
+/// Where the Collection is kept: the titles added from a Share that Jellyfin
+/// has and the user has not watched yet.
+public nonisolated struct Spotarr_V1_JellyfinSettings: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// e.g. "http://jellyfin:8096". Empty: Jellyfin is off, no Collection is kept.
+  public var url: String {
+    get {_url ?? String()}
+    set {_url = newValue}
+  }
+  /// Returns true if `url` has been explicitly set.
+  public var hasURL: Bool {self._url != nil}
+  /// Clears the value of `url`. Subsequent reads from it will return its default value.
+  public mutating func clearURL() {self._url = nil}
+
+  /// Made in Jellyfin's Dashboard → API Keys.
+  public var apiKey: String {
+    get {_apiKey ?? String()}
+    set {_apiKey = newValue}
+  }
+  /// Returns true if `apiKey` has been explicitly set.
+  public var hasApiKey: Bool {self._apiKey != nil}
+  /// Clears the value of `apiKey`. Subsequent reads from it will return its default value.
+  public mutating func clearApiKey() {self._apiKey = nil}
+
+  /// The Jellyfin user whose watched titles leave the Collection.
+  public var user: String {
+    get {_user ?? String()}
+    set {_user = newValue}
+  }
+  /// Returns true if `user` has been explicitly set.
+  public var hasUser: Bool {self._user != nil}
+  /// Clears the value of `user`. Subsequent reads from it will return its default value.
+  public mutating func clearUser() {self._user = nil}
+
+  /// The Collection's name, "Spotted" by default. Spotarr owns it: what is put
+  /// in it by hand goes at the next sync. Renamed, a new one is made.
+  public var collection: String {
+    get {_collection ?? String()}
+    set {_collection = newValue}
+  }
+  /// Returns true if `collection` has been explicitly set.
+  public var hasCollection: Bool {self._collection != nil}
+  /// Clears the value of `collection`. Subsequent reads from it will return its default value.
+  public mutating func clearCollection() {self._collection = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _url: String? = nil
+  fileprivate var _apiKey: String? = nil
+  fileprivate var _user: String? = nil
+  fileprivate var _collection: String? = nil
 }
 
 /// Replaced by the Rules.
@@ -1406,6 +1473,44 @@ public nonisolated struct Spotarr_V1_WatchLink: Sendable {
   public init() {}
 
   fileprivate var _logoURL: String? = nil
+}
+
+public nonisolated struct Spotarr_V1_SyncCollectionRequest: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public nonisolated struct Spotarr_V1_SyncCollectionResponse: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// Its name in Jellyfin.
+  public var collection: String = String()
+
+  /// Titles in it once synced.
+  public var titles: Int32 = 0
+
+  /// Jellyfin items added and removed by this sync (a title can be in two
+  /// libraries, so two items).
+  public var added: Int32 = 0
+
+  public var removed: Int32 = 0
+
+  /// Titles added from a Share that the user watched: kept out.
+  public var watched: Int32 = 0
+
+  /// Titles added from a Share that Jellyfin does not have yet.
+  public var notInJellyfin: Int32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
 }
 
 /// A piece of content sent to Spotarr and everything that follows from it.
@@ -2962,7 +3067,7 @@ nonisolated extension Spotarr_V1_GetStatusResponse: SwiftProtobuf.Message, Swift
 
 nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Settings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}identification\0\u{1}seerr\0\u{1}extraction\0\u{1}access\0\u{4}\u{2}auto_add\0\u{1}streaming\0\u{b}webhooks\0\u{c}\u{5}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}identification\0\u{1}seerr\0\u{1}extraction\0\u{1}access\0\u{4}\u{2}auto_add\0\u{1}streaming\0\u{1}jellyfin\0\u{b}webhooks\0\u{c}\u{5}\u{1}")
 
   fileprivate class _StorageClass {
     var _identification: Spotarr_V1_IdentificationSettings? = nil
@@ -2971,6 +3076,7 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
     var _access: Spotarr_V1_AccessSettings? = nil
     var _autoAdd: Spotarr_V1_AutoAddSettings? = nil
     var _streaming: Spotarr_V1_StreamingSettings? = nil
+    var _jellyfin: Spotarr_V1_JellyfinSettings? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -2987,6 +3093,7 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
       _access = source._access
       _autoAdd = source._autoAdd
       _streaming = source._streaming
+      _jellyfin = source._jellyfin
     }
   }
 
@@ -3011,6 +3118,7 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
         case 4: try { try decoder.decodeSingularMessageField(value: &_storage._access) }()
         case 6: try { try decoder.decodeSingularMessageField(value: &_storage._autoAdd) }()
         case 7: try { try decoder.decodeSingularMessageField(value: &_storage._streaming) }()
+        case 8: try { try decoder.decodeSingularMessageField(value: &_storage._jellyfin) }()
         default: break
         }
       }
@@ -3041,6 +3149,9 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._streaming {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
       } }()
+      try { if let v = _storage._jellyfin {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 8)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -3056,6 +3167,7 @@ nonisolated extension Spotarr_V1_Settings: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._access != rhs_storage._access {return false}
         if _storage._autoAdd != rhs_storage._autoAdd {return false}
         if _storage._streaming != rhs_storage._streaming {return false}
+        if _storage._jellyfin != rhs_storage._jellyfin {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -3099,6 +3211,55 @@ nonisolated extension Spotarr_V1_StreamingSettings: SwiftProtobuf.Message, Swift
   public static func ==(lhs: Spotarr_V1_StreamingSettings, rhs: Spotarr_V1_StreamingSettings) -> Bool {
     if lhs.platformIds != rhs.platformIds {return false}
     if lhs._country != rhs._country {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_JellyfinSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".JellyfinSettings"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}url\0\u{3}api_key\0\u{1}user\0\u{1}collection\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self._url) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self._apiKey) }()
+      case 3: try { try decoder.decodeSingularStringField(value: &self._user) }()
+      case 4: try { try decoder.decodeSingularStringField(value: &self._collection) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._url {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._apiKey {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._user {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._collection {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_JellyfinSettings, rhs: Spotarr_V1_JellyfinSettings) -> Bool {
+    if lhs._url != rhs._url {return false}
+    if lhs._apiKey != rhs._apiKey {return false}
+    if lhs._user != rhs._user {return false}
+    if lhs._collection != rhs._collection {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3830,6 +3991,80 @@ nonisolated extension Spotarr_V1_WatchLink: SwiftProtobuf.Message, SwiftProtobuf
     if lhs.name != rhs.name {return false}
     if lhs.url != rhs.url {return false}
     if lhs._logoURL != rhs._logoURL {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_SyncCollectionRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SyncCollectionRequest"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap()
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    // Load everything into unknown fields
+    while try decoder.nextFieldNumber() != nil {}
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_SyncCollectionRequest, rhs: Spotarr_V1_SyncCollectionRequest) -> Bool {
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+nonisolated extension Spotarr_V1_SyncCollectionResponse: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".SyncCollectionResponse"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}collection\0\u{1}titles\0\u{1}added\0\u{1}removed\0\u{1}watched\0\u{3}not_in_jellyfin\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularStringField(value: &self.collection) }()
+      case 2: try { try decoder.decodeSingularInt32Field(value: &self.titles) }()
+      case 3: try { try decoder.decodeSingularInt32Field(value: &self.added) }()
+      case 4: try { try decoder.decodeSingularInt32Field(value: &self.removed) }()
+      case 5: try { try decoder.decodeSingularInt32Field(value: &self.watched) }()
+      case 6: try { try decoder.decodeSingularInt32Field(value: &self.notInJellyfin) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.collection.isEmpty {
+      try visitor.visitSingularStringField(value: self.collection, fieldNumber: 1)
+    }
+    if self.titles != 0 {
+      try visitor.visitSingularInt32Field(value: self.titles, fieldNumber: 2)
+    }
+    if self.added != 0 {
+      try visitor.visitSingularInt32Field(value: self.added, fieldNumber: 3)
+    }
+    if self.removed != 0 {
+      try visitor.visitSingularInt32Field(value: self.removed, fieldNumber: 4)
+    }
+    if self.watched != 0 {
+      try visitor.visitSingularInt32Field(value: self.watched, fieldNumber: 5)
+    }
+    if self.notInJellyfin != 0 {
+      try visitor.visitSingularInt32Field(value: self.notInJellyfin, fieldNumber: 6)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Spotarr_V1_SyncCollectionResponse, rhs: Spotarr_V1_SyncCollectionResponse) -> Bool {
+    if lhs.collection != rhs.collection {return false}
+    if lhs.titles != rhs.titles {return false}
+    if lhs.added != rhs.added {return false}
+    if lhs.removed != rhs.removed {return false}
+    if lhs.watched != rhs.watched {return false}
+    if lhs.notInJellyfin != rhs.notInJellyfin {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

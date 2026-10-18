@@ -248,3 +248,51 @@ test("Seerr reporting a title available takes it out of the watchlist", async ()
     );
   await until(removed);
 });
+
+test("SyncCollection syncs the Jellyfin Collection, and Seerr reporting a title available starts one", async () => {
+  await settings.update({
+    seerr: { url: "http://seerr.test", apiKey: "key" },
+    jellyfin: { url: "http://jellyfin.test", apiKey: "key", user: "mathieu" },
+  });
+  await settings.setSeerrToken("seerr-token");
+  const id = await shares.create({ text: "Dune" }, "text");
+  await shares.addAddition(id, {
+    tmdbId: 438631,
+    type: "MOVIE",
+    target: "SEERR",
+    status: "REQUESTED",
+    automatic: false,
+  });
+  // Dune lands in Jellyfin only once Seerr reports it available.
+  let downloaded = false;
+  const fetch = fakeFetch({
+    "/api/v1/movie/438631": getGetMovieMovieIdResponseMock({ mediaInfo: { status: 5 } }),
+    "/Users": [{ Name: "Mathieu", Id: "u1" }],
+    "/Items": (url) => {
+      if (url.searchParams.getAll("includeItemTypes").includes("BoxSet")) {
+        return { Items: [{ Id: "c1", Name: "Spotted" }] };
+      }
+      if (url.searchParams.get("parentId") === "c1") return { Items: [] };
+      if (!downloaded) return { Items: [] };
+      return { Items: [{ Id: "dune", Type: "Movie", ProviderIds: { Tmdb: "438631" } }] };
+    },
+    "/Collections/c1/Items": 204,
+  });
+
+  // Earlier tests added titles too: none of them is in this Jellyfin either.
+  const res = await authed("SyncCollection");
+  const synced = await res.json();
+  expect(synced.collection).toBe("Spotted");
+  expect(synced.titles).toBeUndefined(); // 0, which JSON leaves out
+  expect(synced.notInJellyfin).toBeGreaterThanOrEqual(1);
+
+  downloaded = true;
+  await app.request("/seerr/webhook", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "seerr-token" },
+    body: JSON.stringify({ type: "movie", tmdbId: "438631" }),
+  });
+  await until(async () =>
+    fetch.mock.calls.some(([url]) => String(url).endsWith("/Collections/c1/Items?ids=dune")),
+  );
+});

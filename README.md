@@ -13,6 +13,7 @@ Share any link from your iPhone (a reel, a TikTok, a YouTube video, an article, 
 - ➕ **Adds in one click**, or on its own: auto add requests a candidate on its own when one of your rules holds (movies or TV shows, a single candidate, confidence, TMDB rating), with a preview of what each rule would have added. A TV show gets season 1 only.
 - 📺 **Says where to watch it already**: pick your country and the streaming platforms you subscribe to (Settings → Streaming), and a candidate streaming on one of them links to it, next to a link to your library (Jellyfin, Plex) when the title is there. No need to add what you can already watch.
 - ⭐ **Keeps the rest for later.** A rule can put candidates in Seerr's watchlist instead of requesting them: nothing is downloaded, JellyTV shows them, and a title leaves the watchlist once available. Seerr must use Jellyfin or Emby: it hides its own watchlist from Plex accounts.
+- 📺 **Waits for you on the TV.** With Jellyfin, a collection keeps what you spotted, once downloaded and until watched: under Collections, on the Apple TV too.
 - 🖥️ **A web UI** for the history, the candidates and the settings, in light and dark.
 
 ## 🏠 Install
@@ -37,7 +38,8 @@ Run `docker compose up -d`, then open http://localhost:3000. The API token is pr
 **Then, in Settings**:
 1. Paste an [OpenRouter](https://openrouter.ai) API key (or any OpenAI-compatible API) and a [TMDB](https://www.themoviedb.org/settings/api) read access token.
 2. Set Seerr's URL and API key.
-3. Check that the Status at the top shows everything as Working.
+3. Optional: in the Jellyfin tab, set Jellyfin's URL, an API key (Dashboard → API Keys) and your user. Spotarr keeps a collection, "Spotted", of the titles added from a Share that Jellyfin has and you have not watched. It shows under Collections, in the browser and in JellyTV.
+4. Check that the Status at the top shows everything as Working.
 
 An identification costs about $0.01 with the default model. Settings shows the cost of the last 30 days.
 
