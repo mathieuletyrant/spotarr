@@ -75,20 +75,6 @@ public protocol Spotarr_V1_SpotarrServiceClientInterface: Sendable {
     @available(iOS 13, *)
     func `deleteShare`(request: Spotarr_V1_DeleteShareRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_DeleteShareResponse>
 
-    @available(iOS 13, *)
-    func `listWebhooks`(request: Spotarr_V1_ListWebhooksRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_ListWebhooksResponse>
-
-    /// Creates the Webhook when its id is empty, else replaces it.
-    @available(iOS 13, *)
-    func `saveWebhook`(request: Spotarr_V1_SaveWebhookRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_SaveWebhookResponse>
-
-    @available(iOS 13, *)
-    func `deleteWebhook`(request: Spotarr_V1_DeleteWebhookRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_DeleteWebhookResponse>
-
-    /// Sends a sample "test" event to one Webhook; returns it with that delivery.
-    @available(iOS 13, *)
-    func `testWebhook`(request: Spotarr_V1_TestWebhookRequest, headers: Connect.Headers) async -> ResponseMessage<Spotarr_V1_TestWebhookResponse>
-
     /// Auto add's Rules, oldest first. A Candidate is requested, or put in Seerr's
     /// watchlist, without a click when one enabled Rule holds for it. A Rule that
     /// requests wins over one that puts in the watchlist; among the same action,
@@ -203,26 +189,6 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
     }
 
     @available(iOS 13, *)
-    public func `listWebhooks`(request: Spotarr_V1_ListWebhooksRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_ListWebhooksResponse> {
-        return await self.client.unary(path: "/spotarr.v1.SpotarrService/ListWebhooks", idempotencyLevel: .unknown, request: request, headers: headers)
-    }
-
-    @available(iOS 13, *)
-    public func `saveWebhook`(request: Spotarr_V1_SaveWebhookRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_SaveWebhookResponse> {
-        return await self.client.unary(path: "/spotarr.v1.SpotarrService/SaveWebhook", idempotencyLevel: .unknown, request: request, headers: headers)
-    }
-
-    @available(iOS 13, *)
-    public func `deleteWebhook`(request: Spotarr_V1_DeleteWebhookRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_DeleteWebhookResponse> {
-        return await self.client.unary(path: "/spotarr.v1.SpotarrService/DeleteWebhook", idempotencyLevel: .unknown, request: request, headers: headers)
-    }
-
-    @available(iOS 13, *)
-    public func `testWebhook`(request: Spotarr_V1_TestWebhookRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_TestWebhookResponse> {
-        return await self.client.unary(path: "/spotarr.v1.SpotarrService/TestWebhook", idempotencyLevel: .unknown, request: request, headers: headers)
-    }
-
-    @available(iOS 13, *)
     public func `listRules`(request: Spotarr_V1_ListRulesRequest, headers: Connect.Headers = [:]) async -> ResponseMessage<Spotarr_V1_ListRulesResponse> {
         return await self.client.unary(path: "/spotarr.v1.SpotarrService/ListRules", idempotencyLevel: .unknown, request: request, headers: headers)
     }
@@ -269,10 +235,6 @@ public final class Spotarr_V1_SpotarrServiceClient: Spotarr_V1_SpotarrServiceCli
             public static let retryIdentification = Connect.MethodSpec(name: "RetryIdentification", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let add = Connect.MethodSpec(name: "Add", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let deleteShare = Connect.MethodSpec(name: "DeleteShare", service: "spotarr.v1.SpotarrService", type: .unary)
-            public static let listWebhooks = Connect.MethodSpec(name: "ListWebhooks", service: "spotarr.v1.SpotarrService", type: .unary)
-            public static let saveWebhook = Connect.MethodSpec(name: "SaveWebhook", service: "spotarr.v1.SpotarrService", type: .unary)
-            public static let deleteWebhook = Connect.MethodSpec(name: "DeleteWebhook", service: "spotarr.v1.SpotarrService", type: .unary)
-            public static let testWebhook = Connect.MethodSpec(name: "TestWebhook", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let listRules = Connect.MethodSpec(name: "ListRules", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let saveRule = Connect.MethodSpec(name: "SaveRule", service: "spotarr.v1.SpotarrService", type: .unary)
             public static let deleteRule = Connect.MethodSpec(name: "DeleteRule", service: "spotarr.v1.SpotarrService", type: .unary)

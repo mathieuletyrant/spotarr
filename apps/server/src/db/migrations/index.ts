@@ -10,6 +10,7 @@ import * as hint from "./2026-10-13T1900-hint";
 import * as autoAddRules from "./2026-10-14T0900-auto-add-rules";
 import * as libraryStateFromAdditions from "./2026-10-15T1000-library-state-from-additions";
 import * as ruleAction from "./2026-10-17T1000-rule-action";
+import * as dropWebhooks from "./2026-10-18T1500-drop-webhooks";
 
 // Listed by hand rather than read from disk: the list survives bundling.
 // Kysely applies them in the alphabetical order of their names, so a name is
@@ -27,4 +28,5 @@ export const migrations: Record<string, Migration> = {
   "2026-10-14T0900-auto-add-rules": autoAddRules,
   "2026-10-15T1000-library-state-from-additions": libraryStateFromAdditions,
   "2026-10-17T1000-rule-action": ruleAction,
+  "2026-10-18T1500-drop-webhooks": dropWebhooks,
 };

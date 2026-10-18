@@ -112,10 +112,3 @@ _Avoid_: status (alone), global status
 A program or service Spotarr needs to identify and add: the LLM, TMDB, Seerr, yt-dlp, ffmpeg. Each one is OK, not configured, or in error with the reason.
 _Avoid_: service, health, integration
 
-**Event**:
-Something a Share went through that outside services may react to: `identification.ready`, `identification.no_match`, `identification.failed`, `media.added`.
-_Avoid_: notification, hook, trigger
-
-**Webhook**:
-A URL Spotarr calls with the full Event payload, chosen per Event. Spotarr knows nothing about what sits behind it.
-_Avoid_: integration, notifier

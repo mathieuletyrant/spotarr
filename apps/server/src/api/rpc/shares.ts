@@ -10,14 +10,12 @@ import { listHistory } from "../../domain/shares/use-cases/list-history";
 import { watchCandidate } from "../../domain/watchlist/use-cases/watch-candidate";
 import { SpotarrError } from "../../errors";
 import { shareMessage } from "../messages";
-import type { WebhookSender } from "../webhooks/sender";
 import type { Rpcs } from "./types";
 
 // Each RPC translates the contract into a use case of domain/shares, and back.
 export function shareRpcs(
   shares: ShareRepository,
   settings: SettingsRepository,
-  sender: WebhookSender,
 ): Rpcs<"createShare" | "getShare" | "listShares" | "retryIdentification" | "add" | "deleteShare"> {
   async function shareAnswer(id: string) {
     const share = await shares.get(id);
@@ -72,7 +70,7 @@ export function shareRpcs(
           type: mediaTypeOf(req.type),
           target: req.target === Target.ARR ? "ARR" : "SEERR",
         },
-        { shares, settings, emit: (event) => sender.emit(event) },
+        { shares, settings },
       );
       return shareAnswer(req.shareId);
     },

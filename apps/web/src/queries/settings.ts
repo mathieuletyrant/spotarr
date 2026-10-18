@@ -23,10 +23,6 @@ export function rulesQuery() {
   return queryOptions(createQueryOptions(SpotarrService.method.listRules, {}, { transport }));
 }
 
-export function webhooksQuery() {
-  return queryOptions(createQueryOptions(SpotarrService.method.listWebhooks, {}, { transport }));
-}
-
 // TMDB's list of Platforms in the settings' country: it hardly changes.
 export function platformsQuery() {
   return queryOptions({

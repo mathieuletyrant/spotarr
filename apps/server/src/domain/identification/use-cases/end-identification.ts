@@ -1,9 +1,7 @@
 import type { RuleRepository } from "../../auto-add/repository";
 import type { SettingsRepository } from "../../settings/repository";
-import type { Emit, IdentificationEventName } from "../../shares/events";
 import type { ShareRepository } from "../../shares/repository";
 import { candidatesToAutoAdd } from "../../shares/rules/candidates-to-auto-add";
-import type { Share } from "../../shares/types";
 import { addToLibrary } from "../../shares/use-cases/add-to-library";
 import { watchTitle } from "../../watchlist/use-cases/watch-title";
 
@@ -11,19 +9,16 @@ type EndIdentificationDeps = {
   shares: ShareRepository;
   settings: SettingsRepository;
   rules: RuleRepository;
-  emit: Emit;
 };
 
-// When an Identification ends, its Event is emitted, then auto add requests
-// the Candidates its Rules allow (each one emits media.added), or puts them in
-// Seerr's watchlist when the Rule says so.
+// When an Identification ends, auto add requests the Candidates its Rules
+// allow, or puts them in Seerr's watchlist when the Rule says so.
 export async function endIdentification(
   shareId: string,
-  { shares, settings, rules, emit }: EndIdentificationDeps,
+  { shares, settings, rules }: EndIdentificationDeps,
 ): Promise<void> {
   const share = await shares.get(shareId);
   if (!share) return;
-  await emit({ name: endedEventOf(share), share });
 
   // Auto add: only a READY Share has Candidates to request.
   if (share.identification.status !== "READY") return;
@@ -40,13 +35,6 @@ export async function endIdentification(
       automatic: true,
       rule: rule.name,
     };
-    await addToLibrary(share.id, request, { shares, settings, emit });
+    await addToLibrary(share.id, request, { shares, settings });
   }
-}
-
-// Which Event an ended Identification is: READY, NO_MATCH, else FAILED.
-function endedEventOf(share: Share): IdentificationEventName {
-  if (share.identification.status === "READY") return "identification.ready";
-  if (share.identification.status === "NO_MATCH") return "identification.no_match";
-  return "identification.failed";
 }

@@ -3,7 +3,6 @@ import type { RuleRepository } from "../auto-add/repository";
 import { endIdentification } from "../identification/use-cases/end-identification";
 import { startIdentification } from "../identification/use-cases/start-identification";
 import type { SettingsRepository } from "../settings/repository";
-import type { Emit } from "./events";
 import type { ShareRepository } from "./repository";
 import type { IdentificationResult, RetryRequest, ShareInput } from "./types";
 
@@ -20,12 +19,11 @@ export type Identify = (
 // identify it, start over; with nothing waiting, look again a second later.
 //
 // A Share's whole lifecycle happens here: claimed, identified, finished or
-// failed, then ended (its Event emitted, then auto add).
+// failed, then ended (auto add).
 export class ShareQueue {
   private readonly shares: ShareRepository;
   private readonly settings: SettingsRepository;
   private readonly rules: RuleRepository;
-  private readonly emit: Emit;
   private readonly identify: Identify;
   private readonly idleMs: number;
 
@@ -34,7 +32,6 @@ export class ShareQueue {
     settings: SettingsRepository;
     // Auto add's Rules, read when an Identification ends.
     rules: RuleRepository;
-    emit: Emit;
     // The Identification itself. Tests replace it, so no LLM is called.
     identify?: Identify;
     // How long a worker waits when nothing is queued. Tests shorten it.
@@ -43,7 +40,6 @@ export class ShareQueue {
     this.shares = deps.shares;
     this.settings = deps.settings;
     this.rules = deps.rules;
-    this.emit = deps.emit;
     this.identify =
       deps.identify ??
       ((shareId, input, retry) => startIdentification(shareId, input, retry, deps.settings));
@@ -88,7 +84,6 @@ export class ShareQueue {
       shares: this.shares,
       settings: this.settings,
       rules: this.rules,
-      emit: this.emit,
     };
     await endIdentification(id, deps).catch((error) =>
       log({ shareId: id, step: "ended", error: String(error) }),
