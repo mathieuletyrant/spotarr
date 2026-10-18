@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.11.0](https://github.com/mathieuletyrant/spotarr/compare/v0.10.0...v0.11.0) (2026-10-18)
+
+
+### Features
+
+* a Rule can put Candidates in Seerr's watchlist instead of requesting them ([#170](https://github.com/mathieuletyrant/spotarr/issues/170)) ([a7ef905](https://github.com/mathieuletyrant/spotarr/commit/a7ef905c1919bb4357c0cd26e9c193c1ad8b920d))
+* keep a Jellyfin collection of what was spotted, for the TV ([#169](https://github.com/mathieuletyrant/spotarr/issues/169)) ([3a14e4b](https://github.com/mathieuletyrant/spotarr/commit/3a14e4b8397ab648b48161276a876453b5e20308))
+* streaming platforms, and a Share's best match with where to watch it ([#173](https://github.com/mathieuletyrant/spotarr/issues/173)) ([af89ba7](https://github.com/mathieuletyrant/spotarr/commit/af89ba778d2ef098496fa9fb6072f5a347a34a0e))
+* **web:** collapse Seerr's Notifications setup ([#181](https://github.com/mathieuletyrant/spotarr/issues/181)) ([0c2a4af](https://github.com/mathieuletyrant/spotarr/commit/0c2a4affef490c5bc18aaa5963d83c86f855d8df))
+* **web:** Settings tabs by kind, Connections and Automation ([#177](https://github.com/mathieuletyrant/spotarr/issues/177)) ([bf2842d](https://github.com/mathieuletyrant/spotarr/commit/bf2842dbd3e3b7b22741de3bf34aaa27602e42f7))
+
+
+### Bug Fixes
+
+* **web:** a menu for the header on a phone, so the logo stays visible ([#176](https://github.com/mathieuletyrant/spotarr/issues/176)) ([745f281](https://github.com/mathieuletyrant/spotarr/commit/745f281b7603b9163915b9fdd4c16e12f8a9b4ed))
+
 ## [0.10.0](https://github.com/mathieuletyrant/spotarr/compare/v0.9.0...v0.10.0) (2026-10-15)
 
 

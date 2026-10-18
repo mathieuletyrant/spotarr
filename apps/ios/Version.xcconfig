@@ -1,4 +1,4 @@
 // The app's version, the same as Spotarr's server: release-please updates the
 // line marked x-release-please-version in each release PR. Xcode never rewrites
 // this file, unlike project.pbxproj.
-MARKETING_VERSION = 0.10.0 // x-release-please-version
+MARKETING_VERSION = 0.11.0 // x-release-please-version
