@@ -2,7 +2,6 @@
 // (light colors and every other token, which become Tailwind utilities like
 // bg-surface or rounded-md) and a .dark block that swaps the colors.
 // Icons are names for the components, not CSS: they are left out here.
-// Swift output comes with the iOS app.
 import StyleDictionary from "style-dictionary";
 import type { TransformedToken } from "style-dictionary/types";
 

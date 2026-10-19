@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignore": ["**/gen/**", "apps/ios/**"],
+  "ignore": ["**/gen/**"],
   "workspaces": {
     ".": {
       "entry": ["scripts/*.ts", "shortcuts/build.ts"]
