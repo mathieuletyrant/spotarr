@@ -24,7 +24,7 @@ jobs:
         with:
           bun-version-file: .bun-version
       # The frame extraction tests run the real ffmpeg on a tiny bundled video.
-      # A static build, cached between runs: much faster than apt-get.
-      - uses: FedericoCarboni/setup-ffmpeg@37062fbf7149fc5578d6c57e08aed62458b375d6 # v3.1
+      # Ubuntu's own: setup-ffmpeg's download broke on 2026-10-19 ("fetch failed").
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
       - run: pnpm install --frozen-lockfile
       - run: pnpm check
