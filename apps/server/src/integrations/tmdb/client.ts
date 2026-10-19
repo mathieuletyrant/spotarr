@@ -6,6 +6,7 @@ import {
   genreTvList,
   type MovieDetails200,
   movieDetails,
+  movieKeywords,
   movieWatchProviders,
   type SearchMovie200ResultsItem,
   type SearchTv200ResultsItem,
@@ -13,6 +14,7 @@ import {
   searchTv,
   type TvSeriesDetails200,
   tvSeriesDetails,
+  tvSeriesKeywords,
   tvSeriesWatchProviders,
   watchProvidersAvailableRegions,
   watchProvidersMovieList,
@@ -198,6 +200,26 @@ export class Tmdb {
       if (platform && !platforms.has(platform.id)) platforms.set(platform.id, platform);
     }
     return { link: offers.link, platforms: [...platforms.values()] };
+  }
+
+  // The keywords TMDB's users tagged a title with: "detective", "based on novel
+  // or book". TMDB has them in English only, whatever the language asked.
+  async keywords(type: TmdbTitle["type"], id: number): Promise<string[]> {
+    const { options } = this.request();
+    let items: { name?: string }[] | undefined;
+    if (type === "MOVIE") {
+      const res = await movieKeywords(String(id), options).catch(unreachable);
+      if (isMissing(res.status)) return [];
+      checkStatus(res.status);
+      items = res.data.keywords;
+    } else {
+      const res = await tvSeriesKeywords(id, options).catch(unreachable);
+      if (isMissing(res.status)) return [];
+      checkStatus(res.status);
+      // TMDB names the list `keywords` for a movie, `results` for a show.
+      items = res.data.results;
+    }
+    return (items ?? []).map((k) => k.name).filter((name) => name !== undefined);
   }
 
   // TMDB's names of the movie or TV genres, by id, in the language asked. A

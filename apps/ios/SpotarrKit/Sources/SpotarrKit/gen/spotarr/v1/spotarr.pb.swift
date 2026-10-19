@@ -1778,133 +1778,154 @@ public nonisolated struct Spotarr_V1_Clues: Sendable {
   fileprivate var _subtitles: String? = nil
 }
 
-public nonisolated struct Spotarr_V1_Candidate: Sendable {
+public nonisolated struct Spotarr_V1_Candidate: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var tmdbID: Int32 = 0
+  public var tmdbID: Int32 {
+    get {_storage._tmdbID}
+    set {_uniqueStorage()._tmdbID = newValue}
+  }
 
-  public var type: Spotarr_V1_MediaType = .unspecified
+  public var type: Spotarr_V1_MediaType {
+    get {_storage._type}
+    set {_uniqueStorage()._type = newValue}
+  }
 
-  public var title: String = String()
+  public var title: String {
+    get {_storage._title}
+    set {_uniqueStorage()._title = newValue}
+  }
 
   public var originalTitle: String {
-    get {_originalTitle ?? String()}
-    set {_originalTitle = newValue}
+    get {_storage._originalTitle ?? String()}
+    set {_uniqueStorage()._originalTitle = newValue}
   }
   /// Returns true if `originalTitle` has been explicitly set.
-  public var hasOriginalTitle: Bool {self._originalTitle != nil}
+  public var hasOriginalTitle: Bool {_storage._originalTitle != nil}
   /// Clears the value of `originalTitle`. Subsequent reads from it will return its default value.
-  public mutating func clearOriginalTitle() {self._originalTitle = nil}
+  public mutating func clearOriginalTitle() {_uniqueStorage()._originalTitle = nil}
 
   public var year: Int32 {
-    get {_year ?? 0}
-    set {_year = newValue}
+    get {_storage._year ?? 0}
+    set {_uniqueStorage()._year = newValue}
   }
   /// Returns true if `year` has been explicitly set.
-  public var hasYear: Bool {self._year != nil}
+  public var hasYear: Bool {_storage._year != nil}
   /// Clears the value of `year`. Subsequent reads from it will return its default value.
-  public mutating func clearYear() {self._year = nil}
+  public mutating func clearYear() {_uniqueStorage()._year = nil}
 
   public var posterURL: String {
-    get {_posterURL ?? String()}
-    set {_posterURL = newValue}
+    get {_storage._posterURL ?? String()}
+    set {_uniqueStorage()._posterURL = newValue}
   }
   /// Returns true if `posterURL` has been explicitly set.
-  public var hasPosterURL: Bool {self._posterURL != nil}
+  public var hasPosterURL: Bool {_storage._posterURL != nil}
   /// Clears the value of `posterURL`. Subsequent reads from it will return its default value.
-  public mutating func clearPosterURL() {self._posterURL = nil}
+  public mutating func clearPosterURL() {_uniqueStorage()._posterURL = nil}
 
   /// 0 to 1. Absent for a direct ID, which is certain.
   public var confidence: Float {
-    get {_confidence ?? 0}
-    set {_confidence = newValue}
+    get {_storage._confidence ?? 0}
+    set {_uniqueStorage()._confidence = newValue}
   }
   /// Returns true if `confidence` has been explicitly set.
-  public var hasConfidence: Bool {self._confidence != nil}
+  public var hasConfidence: Bool {_storage._confidence != nil}
   /// Clears the value of `confidence`. Subsequent reads from it will return its default value.
-  public mutating func clearConfidence() {self._confidence = nil}
+  public mutating func clearConfidence() {_uniqueStorage()._confidence = nil}
 
-  public var libraryState: Spotarr_V1_LibraryState = .unspecified
+  public var libraryState: Spotarr_V1_LibraryState {
+    get {_storage._libraryState}
+    set {_uniqueStorage()._libraryState = newValue}
+  }
 
   /// TMDB's users' average, out of 10, and how many votes it rests on.
   /// Absent when nobody rated it, and on Shares identified before ratings were
   /// kept, until Spotarr fills them at its next start.
   public var tmdbRating: Float {
-    get {_tmdbRating ?? 0}
-    set {_tmdbRating = newValue}
+    get {_storage._tmdbRating ?? 0}
+    set {_uniqueStorage()._tmdbRating = newValue}
   }
   /// Returns true if `tmdbRating` has been explicitly set.
-  public var hasTmdbRating: Bool {self._tmdbRating != nil}
+  public var hasTmdbRating: Bool {_storage._tmdbRating != nil}
   /// Clears the value of `tmdbRating`. Subsequent reads from it will return its default value.
-  public mutating func clearTmdbRating() {self._tmdbRating = nil}
+  public mutating func clearTmdbRating() {_uniqueStorage()._tmdbRating = nil}
 
   public var tmdbVotes: Int32 {
-    get {_tmdbVotes ?? 0}
-    set {_tmdbVotes = newValue}
+    get {_storage._tmdbVotes ?? 0}
+    set {_uniqueStorage()._tmdbVotes = newValue}
   }
   /// Returns true if `tmdbVotes` has been explicitly set.
-  public var hasTmdbVotes: Bool {self._tmdbVotes != nil}
+  public var hasTmdbVotes: Bool {_storage._tmdbVotes != nil}
   /// Clears the value of `tmdbVotes`. Subsequent reads from it will return its default value.
-  public mutating func clearTmdbVotes() {self._tmdbVotes = nil}
+  public mutating func clearTmdbVotes() {_uniqueStorage()._tmdbVotes = nil}
 
   /// Where the Candidate stands. Derived, never stored.
-  public var status: Spotarr_V1_CandidateStatus = .unspecified
+  public var status: Spotarr_V1_CandidateStatus {
+    get {_storage._status}
+    set {_uniqueStorage()._status = newValue}
+  }
 
   /// REQUESTED or ADDED by auto add, without a click.
-  public var automatic: Bool = false
+  public var automatic: Bool {
+    get {_storage._automatic}
+    set {_uniqueStorage()._automatic = newValue}
+  }
 
   /// CAN_ADD after a failed Addition: its error, to show next to "Try again".
   public var failure: String {
-    get {_failure ?? String()}
-    set {_failure = newValue}
+    get {_storage._failure ?? String()}
+    set {_uniqueStorage()._failure = newValue}
   }
   /// Returns true if `failure` has been explicitly set.
-  public var hasFailure: Bool {self._failure != nil}
+  public var hasFailure: Bool {_storage._failure != nil}
   /// Clears the value of `failure`. Subsequent reads from it will return its default value.
-  public mutating func clearFailure() {self._failure = nil}
+  public mutating func clearFailure() {_uniqueStorage()._failure = nil}
 
   /// TMDB's genres, in the settings' language: "Science-Fiction", "Drame".
   /// Empty when unknown, as on a Share identified before genres were kept,
   /// until Spotarr fills them at its next start.
-  public var genres: [String] = []
+  public var genres: [String] {
+    get {_storage._genres}
+    set {_uniqueStorage()._genres = newValue}
+  }
 
   /// REQUESTED or ADDED by auto add: the name of the Rule that did it.
   public var rule: String {
-    get {_rule ?? String()}
-    set {_rule = newValue}
+    get {_storage._rule ?? String()}
+    set {_uniqueStorage()._rule = newValue}
   }
   /// Returns true if `rule` has been explicitly set.
-  public var hasRule: Bool {self._rule != nil}
+  public var hasRule: Bool {_storage._rule != nil}
   /// Clears the value of `rule`. Subsequent reads from it will return its default value.
-  public mutating func clearRule() {self._rule = nil}
+  public mutating func clearRule() {_uniqueStorage()._rule = nil}
 
   /// TMDB's synopsis, in the settings' language. Absent when TMDB has none in
   /// it, and on Shares identified before overviews were kept, until Spotarr
   /// fills them at its next start.
   public var overview: String {
-    get {_overview ?? String()}
-    set {_overview = newValue}
+    get {_storage._overview ?? String()}
+    set {_uniqueStorage()._overview = newValue}
   }
   /// Returns true if `overview` has been explicitly set.
-  public var hasOverview: Bool {self._overview != nil}
+  public var hasOverview: Bool {_storage._overview != nil}
   /// Clears the value of `overview`. Subsequent reads from it will return its default value.
-  public mutating func clearOverview() {self._overview = nil}
+  public mutating func clearOverview() {_uniqueStorage()._overview = nil}
+
+  /// TMDB's keywords, in English only: "detective", "based on novel or book".
+  /// Empty when unknown, as on a Share identified before keywords were kept,
+  /// until Spotarr fills them at its next start.
+  public var keywords: [String] {
+    get {_storage._keywords}
+    set {_uniqueStorage()._keywords = newValue}
+  }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 
-  fileprivate var _originalTitle: String? = nil
-  fileprivate var _year: Int32? = nil
-  fileprivate var _posterURL: String? = nil
-  fileprivate var _confidence: Float? = nil
-  fileprivate var _tmdbRating: Float? = nil
-  fileprivate var _tmdbVotes: Int32? = nil
-  fileprivate var _failure: String? = nil
-  fileprivate var _rule: String? = nil
-  fileprivate var _overview: String? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 public nonisolated struct Spotarr_V1_Addition: Sendable {
@@ -2086,7 +2107,8 @@ public nonisolated struct Spotarr_V1_ListSharesRequest: Sendable {
   /// Only these summaries; all when empty.
   public var summaries: [Spotarr_V1_Summary] = []
 
-  /// Matches the source, the URL, the text, the candidates' titles and genres.
+  /// Matches the source, the URL, the text, the candidates' titles, genres and
+  /// keywords.
   public var query: String {
     get {_query ?? String()}
     set {_query = newValue}
@@ -2099,6 +2121,10 @@ public nonisolated struct Spotarr_V1_ListSharesRequest: Sendable {
   /// Only the Shares with a Candidate of one of these genres ("Horreur");
   /// all when empty.
   public var genres: [String] = []
+
+  /// Only the Shares with a Candidate tagged with one of these keywords
+  /// ("detective"); all when empty.
+  public var keywords: [String] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -4409,108 +4435,181 @@ nonisolated extension Spotarr_V1_Clues: SwiftProtobuf.Message, SwiftProtobuf._Me
 
 nonisolated extension Spotarr_V1_Candidate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".Candidate"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0\u{1}status\0\u{1}automatic\0\u{1}failure\0\u{1}genres\0\u{1}rule\0\u{1}overview\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}tmdb_id\0\u{1}type\0\u{1}title\0\u{3}original_title\0\u{1}year\0\u{3}poster_url\0\u{1}confidence\0\u{3}library_state\0\u{3}tmdb_rating\0\u{3}tmdb_votes\0\u{1}status\0\u{1}automatic\0\u{1}failure\0\u{1}genres\0\u{1}rule\0\u{1}overview\0\u{1}keywords\0")
+
+  fileprivate class _StorageClass {
+    var _tmdbID: Int32 = 0
+    var _type: Spotarr_V1_MediaType = .unspecified
+    var _title: String = String()
+    var _originalTitle: String? = nil
+    var _year: Int32? = nil
+    var _posterURL: String? = nil
+    var _confidence: Float? = nil
+    var _libraryState: Spotarr_V1_LibraryState = .unspecified
+    var _tmdbRating: Float? = nil
+    var _tmdbVotes: Int32? = nil
+    var _status: Spotarr_V1_CandidateStatus = .unspecified
+    var _automatic: Bool = false
+    var _failure: String? = nil
+    var _genres: [String] = []
+    var _rule: String? = nil
+    var _overview: String? = nil
+    var _keywords: [String] = []
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _tmdbID = source._tmdbID
+      _type = source._type
+      _title = source._title
+      _originalTitle = source._originalTitle
+      _year = source._year
+      _posterURL = source._posterURL
+      _confidence = source._confidence
+      _libraryState = source._libraryState
+      _tmdbRating = source._tmdbRating
+      _tmdbVotes = source._tmdbVotes
+      _status = source._status
+      _automatic = source._automatic
+      _failure = source._failure
+      _genres = source._genres
+      _rule = source._rule
+      _overview = source._overview
+      _keywords = source._keywords
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularInt32Field(value: &self.tmdbID) }()
-      case 2: try { try decoder.decodeSingularEnumField(value: &self.type) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self.title) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self._originalTitle) }()
-      case 5: try { try decoder.decodeSingularInt32Field(value: &self._year) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self._posterURL) }()
-      case 7: try { try decoder.decodeSingularFloatField(value: &self._confidence) }()
-      case 8: try { try decoder.decodeSingularEnumField(value: &self.libraryState) }()
-      case 9: try { try decoder.decodeSingularFloatField(value: &self._tmdbRating) }()
-      case 10: try { try decoder.decodeSingularInt32Field(value: &self._tmdbVotes) }()
-      case 11: try { try decoder.decodeSingularEnumField(value: &self.status) }()
-      case 12: try { try decoder.decodeSingularBoolField(value: &self.automatic) }()
-      case 13: try { try decoder.decodeSingularStringField(value: &self._failure) }()
-      case 14: try { try decoder.decodeRepeatedStringField(value: &self.genres) }()
-      case 15: try { try decoder.decodeSingularStringField(value: &self._rule) }()
-      case 16: try { try decoder.decodeSingularStringField(value: &self._overview) }()
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularInt32Field(value: &_storage._tmdbID) }()
+        case 2: try { try decoder.decodeSingularEnumField(value: &_storage._type) }()
+        case 3: try { try decoder.decodeSingularStringField(value: &_storage._title) }()
+        case 4: try { try decoder.decodeSingularStringField(value: &_storage._originalTitle) }()
+        case 5: try { try decoder.decodeSingularInt32Field(value: &_storage._year) }()
+        case 6: try { try decoder.decodeSingularStringField(value: &_storage._posterURL) }()
+        case 7: try { try decoder.decodeSingularFloatField(value: &_storage._confidence) }()
+        case 8: try { try decoder.decodeSingularEnumField(value: &_storage._libraryState) }()
+        case 9: try { try decoder.decodeSingularFloatField(value: &_storage._tmdbRating) }()
+        case 10: try { try decoder.decodeSingularInt32Field(value: &_storage._tmdbVotes) }()
+        case 11: try { try decoder.decodeSingularEnumField(value: &_storage._status) }()
+        case 12: try { try decoder.decodeSingularBoolField(value: &_storage._automatic) }()
+        case 13: try { try decoder.decodeSingularStringField(value: &_storage._failure) }()
+        case 14: try { try decoder.decodeRepeatedStringField(value: &_storage._genres) }()
+        case 15: try { try decoder.decodeSingularStringField(value: &_storage._rule) }()
+        case 16: try { try decoder.decodeSingularStringField(value: &_storage._overview) }()
+        case 17: try { try decoder.decodeRepeatedStringField(value: &_storage._keywords) }()
+        default: break
+        }
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    if self.tmdbID != 0 {
-      try visitor.visitSingularInt32Field(value: self.tmdbID, fieldNumber: 1)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      if _storage._tmdbID != 0 {
+        try visitor.visitSingularInt32Field(value: _storage._tmdbID, fieldNumber: 1)
+      }
+      if _storage._type != .unspecified {
+        try visitor.visitSingularEnumField(value: _storage._type, fieldNumber: 2)
+      }
+      if !_storage._title.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._title, fieldNumber: 3)
+      }
+      try { if let v = _storage._originalTitle {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+      } }()
+      try { if let v = _storage._year {
+        try visitor.visitSingularInt32Field(value: v, fieldNumber: 5)
+      } }()
+      try { if let v = _storage._posterURL {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 6)
+      } }()
+      try { if let v = _storage._confidence {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 7)
+      } }()
+      if _storage._libraryState != .unspecified {
+        try visitor.visitSingularEnumField(value: _storage._libraryState, fieldNumber: 8)
+      }
+      try { if let v = _storage._tmdbRating {
+        try visitor.visitSingularFloatField(value: v, fieldNumber: 9)
+      } }()
+      try { if let v = _storage._tmdbVotes {
+        try visitor.visitSingularInt32Field(value: v, fieldNumber: 10)
+      } }()
+      if _storage._status != .unspecified {
+        try visitor.visitSingularEnumField(value: _storage._status, fieldNumber: 11)
+      }
+      if _storage._automatic != false {
+        try visitor.visitSingularBoolField(value: _storage._automatic, fieldNumber: 12)
+      }
+      try { if let v = _storage._failure {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 13)
+      } }()
+      if !_storage._genres.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._genres, fieldNumber: 14)
+      }
+      try { if let v = _storage._rule {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 15)
+      } }()
+      try { if let v = _storage._overview {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 16)
+      } }()
+      if !_storage._keywords.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._keywords, fieldNumber: 17)
+      }
     }
-    if self.type != .unspecified {
-      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 2)
-    }
-    if !self.title.isEmpty {
-      try visitor.visitSingularStringField(value: self.title, fieldNumber: 3)
-    }
-    try { if let v = self._originalTitle {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
-    } }()
-    try { if let v = self._year {
-      try visitor.visitSingularInt32Field(value: v, fieldNumber: 5)
-    } }()
-    try { if let v = self._posterURL {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
-    } }()
-    try { if let v = self._confidence {
-      try visitor.visitSingularFloatField(value: v, fieldNumber: 7)
-    } }()
-    if self.libraryState != .unspecified {
-      try visitor.visitSingularEnumField(value: self.libraryState, fieldNumber: 8)
-    }
-    try { if let v = self._tmdbRating {
-      try visitor.visitSingularFloatField(value: v, fieldNumber: 9)
-    } }()
-    try { if let v = self._tmdbVotes {
-      try visitor.visitSingularInt32Field(value: v, fieldNumber: 10)
-    } }()
-    if self.status != .unspecified {
-      try visitor.visitSingularEnumField(value: self.status, fieldNumber: 11)
-    }
-    if self.automatic != false {
-      try visitor.visitSingularBoolField(value: self.automatic, fieldNumber: 12)
-    }
-    try { if let v = self._failure {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 13)
-    } }()
-    if !self.genres.isEmpty {
-      try visitor.visitRepeatedStringField(value: self.genres, fieldNumber: 14)
-    }
-    try { if let v = self._rule {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 15)
-    } }()
-    try { if let v = self._overview {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 16)
-    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Spotarr_V1_Candidate, rhs: Spotarr_V1_Candidate) -> Bool {
-    if lhs.tmdbID != rhs.tmdbID {return false}
-    if lhs.type != rhs.type {return false}
-    if lhs.title != rhs.title {return false}
-    if lhs._originalTitle != rhs._originalTitle {return false}
-    if lhs._year != rhs._year {return false}
-    if lhs._posterURL != rhs._posterURL {return false}
-    if lhs._confidence != rhs._confidence {return false}
-    if lhs.libraryState != rhs.libraryState {return false}
-    if lhs._tmdbRating != rhs._tmdbRating {return false}
-    if lhs._tmdbVotes != rhs._tmdbVotes {return false}
-    if lhs.status != rhs.status {return false}
-    if lhs.automatic != rhs.automatic {return false}
-    if lhs._failure != rhs._failure {return false}
-    if lhs.genres != rhs.genres {return false}
-    if lhs._rule != rhs._rule {return false}
-    if lhs._overview != rhs._overview {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._tmdbID != rhs_storage._tmdbID {return false}
+        if _storage._type != rhs_storage._type {return false}
+        if _storage._title != rhs_storage._title {return false}
+        if _storage._originalTitle != rhs_storage._originalTitle {return false}
+        if _storage._year != rhs_storage._year {return false}
+        if _storage._posterURL != rhs_storage._posterURL {return false}
+        if _storage._confidence != rhs_storage._confidence {return false}
+        if _storage._libraryState != rhs_storage._libraryState {return false}
+        if _storage._tmdbRating != rhs_storage._tmdbRating {return false}
+        if _storage._tmdbVotes != rhs_storage._tmdbVotes {return false}
+        if _storage._status != rhs_storage._status {return false}
+        if _storage._automatic != rhs_storage._automatic {return false}
+        if _storage._failure != rhs_storage._failure {return false}
+        if _storage._genres != rhs_storage._genres {return false}
+        if _storage._rule != rhs_storage._rule {return false}
+        if _storage._overview != rhs_storage._overview {return false}
+        if _storage._keywords != rhs_storage._keywords {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4734,7 +4833,7 @@ nonisolated extension Spotarr_V1_GetShareResponse: SwiftProtobuf.Message, SwiftP
 
 nonisolated extension Spotarr_V1_ListSharesRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ListSharesRequest"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}page_size\0\u{1}cursor\0\u{1}summaries\0\u{1}query\0\u{1}genres\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{3}page_size\0\u{1}cursor\0\u{1}summaries\0\u{1}query\0\u{1}genres\0\u{1}keywords\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -4747,6 +4846,7 @@ nonisolated extension Spotarr_V1_ListSharesRequest: SwiftProtobuf.Message, Swift
       case 3: try { try decoder.decodeRepeatedEnumField(value: &self.summaries) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self._query) }()
       case 5: try { try decoder.decodeRepeatedStringField(value: &self.genres) }()
+      case 6: try { try decoder.decodeRepeatedStringField(value: &self.keywords) }()
       default: break
       }
     }
@@ -4772,6 +4872,9 @@ nonisolated extension Spotarr_V1_ListSharesRequest: SwiftProtobuf.Message, Swift
     if !self.genres.isEmpty {
       try visitor.visitRepeatedStringField(value: self.genres, fieldNumber: 5)
     }
+    if !self.keywords.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.keywords, fieldNumber: 6)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4781,6 +4884,7 @@ nonisolated extension Spotarr_V1_ListSharesRequest: SwiftProtobuf.Message, Swift
     if lhs.summaries != rhs.summaries {return false}
     if lhs._query != rhs._query {return false}
     if lhs.genres != rhs.genres {return false}
+    if lhs.keywords != rhs.keywords {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -23,6 +23,10 @@ export const CandidateSchema = z.object({
   // TMDB's genres, in the settings' language. Absent when unknown: Shares
   // identified before genres were kept, until fillMissingDetails() runs.
   genres: z.array(z.string()).optional(),
+  // TMDB's keywords, in English only: "detective", "based on novel or book".
+  // Absent when unknown: TMDB failed, or Shares identified before keywords
+  // were kept, until fillMissingDetails() runs.
+  keywords: z.array(z.string()).optional(),
   // TMDB's synopsis, in the settings' language. Absent when TMDB has none in
   // it, and on Shares identified before overviews were kept, until
   // fillMissingDetails() runs.

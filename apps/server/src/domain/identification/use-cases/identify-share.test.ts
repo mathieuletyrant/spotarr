@@ -4,6 +4,7 @@ import { Tmdb } from "../../../integrations/tmdb/client";
 import {
   getFindByIdResponseMock,
   getMovieDetailsResponseMock,
+  getMovieKeywordsResponseMock,
 } from "../../../integrations/tmdb/gen/tmdb.faker";
 import { fakeFetch } from "../../../testing/fake-fetch";
 import type { Candidate } from "../../shares/types";
@@ -71,6 +72,35 @@ test("a TMDB link works the same way", async () => {
     { tmdb, readLink: notCalled, llm: notCalled, libraryState: available },
   );
   expect(result.candidates.map((c) => c.title)).toEqual(["Dune : Deuxième partie"]);
+});
+
+test("each Candidate gets TMDB's keywords", async () => {
+  fakeFetch({
+    "/3/movie/693134": dune,
+    "/3/movie/693134/keywords": getMovieKeywordsResponseMock({
+      keywords: [{ id: 818, name: "based on novel or book" }],
+    }),
+  });
+  const result = await identifyShare(
+    "shr_test",
+    { url: "https://www.themoviedb.org/movie/693134" },
+    { tmdb, readLink: notCalled, llm: notCalled, libraryState: available },
+  );
+  expect(result.candidates[0]?.keywords).toEqual(["based on novel or book"]);
+});
+
+test("TMDB failing on the keywords leaves them unknown, without failing", async () => {
+  fakeFetch({ "/3/movie/693134": dune, "/3/movie/693134/keywords": 503 });
+  const result = await identifyShare(
+    "shr_test",
+    { url: "https://www.themoviedb.org/movie/693134" },
+    { tmdb, readLink: notCalled, llm: notCalled, libraryState: available },
+  );
+  expect(result).toMatchObject({
+    status: "READY",
+    candidates: [{ title: "Dune : Deuxième partie" }],
+  });
+  expect(result.candidates[0]?.keywords).toBeUndefined();
 });
 
 test("a reel the LLM cannot name ends NO_MATCH, with its reasoning and frames", async () => {
@@ -263,7 +293,13 @@ test("every step of an Identification logs one line with the Share's id", async 
   }
 
   const lines = printed.mock.calls.map(([line]) => JSON.parse(String(line)));
-  expect(lines.map((line) => line.step)).toEqual(["read", "llm", "tmdb", "library-check"]);
+  expect(lines.map((line) => line.step)).toEqual([
+    "read",
+    "llm",
+    "tmdb",
+    "keywords",
+    "library-check",
+  ]);
   expect(lines.every((line) => line.shareId === "shr_42")).toBe(true);
   expect(lines[0]).toMatchObject({ extractor: "video", images: 1, audio: false, directIds: 0 });
   expect(lines[1]).toMatchObject({ guesses: 0, costUsd: 0.0012 });

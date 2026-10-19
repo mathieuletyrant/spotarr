@@ -12,6 +12,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, BookmarkCheck, Play, Plus } from "lucide-react";
 import { watchLinksQuery } from "../../queries/shares";
+import { Keywords } from "../keywords";
 import { Poster } from "../poster";
 import { StatusBadge } from "../status-badge";
 import { TmdbRating } from "../tmdb-rating";
@@ -85,6 +86,7 @@ function BestMatch({ share, candidate }: { share: Share; candidate: Candidate })
           <BestMatchActions share={share} candidate={candidate} links={links} />
         </div>
       </div>
+      <Keywords keywords={candidate.keywords} />
     </div>
   );
 }
