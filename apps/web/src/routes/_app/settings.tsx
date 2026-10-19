@@ -118,7 +118,7 @@ function SettingsForm({ saved }: { saved: Values }) {
       onSubmit={submit}
       className="grid grid-cols-1 gap-6 pb-24 md:grid-cols-[12rem_minmax(0,1fr)] md:items-start"
     >
-      <SectionTabs current={section} marked={marked} />
+      <SectionTabs marked={marked} />
       {/* A tab is a column of cards: a connection, or a group of settings. */}
       <div className="flex min-w-0 flex-col gap-6">
         {section === "connections" && (
@@ -162,22 +162,15 @@ function SettingsForm({ saved }: { saved: Values }) {
   );
 }
 
-// A row to scroll sideways on a phone, a column on the left from md up. The
-// Link marks the current tab itself, with aria-current="page". A dot marks a
-// tab with unsaved changes or an error.
-function SectionTabs({
-  current,
-  marked,
-}: {
-  current: SectionId;
-  marked: Set<SectionId | undefined>;
-}) {
+// A row that wraps on a phone, so every tab shows, a column on the left from
+// md up. The Link marks the current tab itself, with aria-current="page". A
+// dot marks a tab with unsaved changes or an error.
+function SectionTabs({ marked }: { marked: Set<SectionId | undefined> }) {
   return (
-    <nav className="-mx-4 flex gap-1 overflow-x-auto px-4 text-sm md:sticky md:top-6 md:mx-0 md:flex-col md:gap-0.5 md:px-0">
+    <nav className="flex flex-wrap gap-1 text-sm md:sticky md:top-6 md:flex-col md:gap-0.5">
       {MENU.map(({ id, label, icon: Icon }) => (
         <Link
           key={id}
-          ref={id === current ? scrollIntoView : undefined}
           to="/settings"
           search={{ section: id }}
           className="flex shrink-0 items-center gap-2.5 rounded-md px-3 py-2 whitespace-nowrap text-text-muted hover:bg-text/8 hover:text-text focus-visible:outline-2 focus-visible:outline-accent aria-[current]:bg-text/8 aria-[current]:font-medium aria-[current]:text-text"
@@ -193,11 +186,4 @@ function SectionTabs({
       ))}
     </nav>
   );
-}
-
-// On a phone the row is wider than the screen: the current tab is brought into
-// view. A ref callback runs when it attaches to a tab, so on each new current
-// tab, and not on every render: it is the same function each time.
-function scrollIntoView(tab: HTMLAnchorElement | null) {
-  tab?.scrollIntoView({ block: "nearest", inline: "nearest" });
 }

@@ -57,7 +57,7 @@ export function HistoryFilters(props: Props) {
             e.target.value === "" ? undefined : (Number(e.target.value) as Summary),
           )
         }
-        className="h-9 min-w-0 flex-1 rounded-md border border-border bg-surface px-2 text-sm sm:flex-none lg:hidden"
+        className="h-10 min-w-0 flex-1 rounded-md border border-border bg-surface px-2 text-sm sm:flex-none lg:hidden"
       >
         <option value="">All ({props.total})</option>
         {FILTERS.filter((summary) => countOf(summary) > 0 || props.summary === summary).map(
@@ -97,7 +97,7 @@ export function HistoryFilters(props: Props) {
           aria-label="Filter by genre"
           value={props.genre ?? ""}
           onChange={(e) => props.onGenreChange(e.target.value || undefined)}
-          className="h-9 min-w-0 flex-1 rounded-md border border-border bg-surface px-2 text-sm sm:max-w-44 sm:flex-none lg:ml-auto"
+          className="h-10 min-w-0 flex-1 rounded-md border border-border bg-surface px-2 text-sm sm:max-w-44 sm:flex-none lg:ml-auto lg:h-9"
         >
           <option value="">All genres</option>
           {props.genres.map(({ genre, count }) => (
@@ -108,7 +108,7 @@ export function HistoryFilters(props: Props) {
         </select>
       )}
 
-      <label className="flex h-9 min-w-0 basis-full items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm sm:flex-1 sm:basis-0 lg:w-64 lg:flex-none lg:basis-auto">
+      <label className="flex h-10 min-w-0 basis-full items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm sm:flex-1 sm:basis-0 lg:h-9 lg:w-64 lg:flex-none lg:basis-auto">
         <Search aria-hidden className="size-4 text-text-muted" />
         <span className="sr-only">Search by title, genre or source</span>
         <input

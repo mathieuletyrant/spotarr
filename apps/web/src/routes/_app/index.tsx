@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useDeferredValue, useState } from "react";
 import { EmptyHistory } from "../../components/history/empty-history";
 import { HistoryFilters } from "../../components/history/history-filters";
+import { HistorySkeleton } from "../../components/history/history-skeleton";
 import { HistoryTable } from "../../components/history/history-table";
 import { historyQuery } from "../../queries/shares";
 
@@ -39,7 +40,7 @@ function HistoryPage() {
         onSearchChange={setSearch}
       />
 
-      {history.isPending && <p className="text-text-muted">Loading…</p>}
+      {history.isPending && <HistorySkeleton />}
       {history.error && <p className="text-status-error">{history.error.message}</p>}
       {history.isSuccess && shares.length === 0 && (
         <EmptyHistory

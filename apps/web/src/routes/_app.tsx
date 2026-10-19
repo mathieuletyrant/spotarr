@@ -64,7 +64,7 @@ function AppLayout() {
             ))}
           </nav>
           {/* The page's main action, on every page: share a link from the computer.
-              On a phone, the theme and Share go in the menu with the pages. */}
+              On a phone, the theme goes in the menu with the pages. */}
           <div className="ml-auto flex shrink-0 items-center gap-1">
             <ServicesStatus />
             <div className="hidden items-center gap-1 sm:flex">
@@ -78,6 +78,15 @@ function AppLayout() {
                 Share
               </Link>
             </div>
+            {/* The main action stays one tap away on a phone: an icon beside the menu. */}
+            <Link
+              to="."
+              search={(previous) => ({ ...previous, share: true })}
+              aria-label="Share a link"
+              className="flex size-9 items-center justify-center rounded-md bg-accent text-accent-text sm:hidden"
+            >
+              <Plus aria-hidden className="size-5" />
+            </Link>
             <button
               type="button"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -110,15 +119,6 @@ function AppLayout() {
               </Link>
             ))}
             <ThemeButton withLabel />
-            <Link
-              to="."
-              search={(previous) => ({ ...previous, share: true })}
-              onClick={() => setMenuOpen(false)}
-              className="mt-1 mb-1 flex h-10 items-center justify-center gap-1.5 rounded-md bg-accent px-3 font-medium text-accent-text"
-            >
-              <Plus aria-hidden className="size-4" />
-              Share a link
-            </Link>
           </nav>
         )}
         <main className="mx-auto max-w-7xl p-4 md:p-6">

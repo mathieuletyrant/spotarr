@@ -59,10 +59,10 @@ export function ServicesStatus() {
       >
         <span className="relative flex size-2.5">
           {state === DependencyState.ERROR && (
-            <span className="absolute inset-0 animate-ping rounded-full bg-status-error opacity-60" />
+            <span className="absolute inset-0 animate-ping rounded-full bg-status-error opacity-60 motion-reduce:animate-none" />
           )}
           <span
-            className={`relative size-2.5 rounded-full ${DOTS[state]} ${!data ? "animate-pulse" : ""}`}
+            className={`relative size-2.5 rounded-full ${DOTS[state]} ${!data ? "animate-pulse motion-reduce:animate-none" : ""}`}
           />
         </span>
         <span className="hidden md:inline">{summary}</span>

@@ -1,6 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import type { Share } from "@spotarr/contract";
-import { ExternalLink } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { shareDate } from "../../lib/format";
 import { DeleteShareButton } from "./delete-share-button";
 import { RetryButton } from "./retry-button";
@@ -13,6 +14,14 @@ export function ShareHeader({ share }: { share: Share }) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
+          {/* The way back: on an iPhone's Home Screen the app has no browser bar. */}
+          <Link
+            to="/"
+            className="mb-2 inline-flex h-8 items-center gap-1 text-sm text-text-muted hover:text-text"
+          >
+            <ArrowLeft aria-hidden className="size-4" />
+            History
+          </Link>
           <h1 className="text-3xl font-semibold">
             Share of{" "}
             {day.toLowerCase() === "today" || day === "Yesterday" ? day.toLowerCase() : day} at{" "}
