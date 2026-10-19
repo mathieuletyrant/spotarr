@@ -449,6 +449,10 @@ message Candidate {
   // it, and on Shares identified before overviews were kept, until Spotarr
   // fills them at its next start.
   optional string overview = 16;
+  // TMDB's keywords, in English only: "detective", "based on novel or book".
+  // Empty when unknown, as on a Share identified before keywords were kept,
+  // until Spotarr fills them at its next start.
+  repeated string keywords = 17;
 }
 
 message Addition {
@@ -561,11 +565,15 @@ message ListSharesRequest {
   optional string cursor = 2;
   // Only these summaries; all when empty.
   repeated Summary summaries = 3;
-  // Matches the source, the URL, the text, the candidates' titles and genres.
+  // Matches the source, the URL, the text, the candidates' titles, genres and
+  // keywords.
   optional string query = 4;
   // Only the Shares with a Candidate of one of these genres ("Horreur");
   // all when empty.
   repeated string genres = 5;
+  // Only the Shares with a Candidate tagged with one of these keywords
+  // ("detective"); all when empty.
+  repeated string keywords = 6;
 }
 
 message ListSharesResponse {

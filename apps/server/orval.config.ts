@@ -17,6 +17,8 @@ const TMDB_ROUTES = [
   "/3/search/tv",
   "/3/genre/movie/list",
   "/3/genre/tv/list",
+  "/3/movie/{movie_id}/keywords",
+  "/3/tv/{series_id}/keywords",
   "/3/movie/{movie_id}/watch/providers",
   "/3/tv/{series_id}/watch/providers",
   "/3/watch/providers/movie",

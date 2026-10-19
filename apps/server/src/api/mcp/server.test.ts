@@ -27,6 +27,7 @@ const dueDate: Candidate = {
   title: "Date limite",
   year: 2010,
   genres: ["Comédie"],
+  keywords: ["road trip"],
   tmdbRating: 6.4,
   tmdbVotes: 5321,
   overview: "Un futur papa traverse le pays avec un inconnu.",
@@ -63,7 +64,14 @@ await shares.finish(
     extractors: [],
     clues: {},
     candidates: [
-      { tmdbId: 95396, type: "TV", title: "Severance", genres: ["Drame"], libraryState: "ABSENT" },
+      {
+        tmdbId: 95396,
+        type: "TV",
+        title: "Severance",
+        genres: ["Drame"],
+        keywords: ["workplace", "dystopia"],
+        libraryState: "ABSENT",
+      },
     ],
   },
   5,
@@ -86,12 +94,13 @@ async function listShares(client: Client, args: Record<string, unknown>) {
   return JSON.parse(content?.text ?? "");
 }
 
-test("with the MCP token, a client finds list_shares and list_genres, read-only", async () => {
+test("with the MCP token, a client finds list_shares, list_genres and list_keywords, read-only", async () => {
   const client = await connect("mcp-token");
   const { tools } = await client.listTools();
   expect(tools.map((tool) => [tool.name, tool.annotations?.readOnlyHint])).toEqual([
     ["list_shares", true],
     ["list_genres", true],
+    ["list_keywords", true],
   ]);
   await client.close();
 });
@@ -114,6 +123,7 @@ test("list_shares filters by genre and marks the added Candidate", async () => {
       title: "Date limite",
       year: 2010,
       genres: ["Comédie"],
+      keywords: ["road trip"],
       tmdbRating: 6.4,
       tmdbVotes: 5321,
       overview: "Un futur papa traverse le pays avec un inconnu.",
@@ -145,6 +155,30 @@ test("list_genres gives every genre of the history, most Shares first", async ()
       { genre: "Comédie", count: 1 },
     ],
   });
+  await client.close();
+});
+
+test("list_shares filters by keyword", async () => {
+  const client = await connect("mcp-token");
+  const answer = await listShares(client, { keywords: ["dystopia"] });
+  expect(answer.shares.map((s: { id: string }) => s.id)).toEqual([other]);
+  await client.close();
+});
+
+test("list_keywords gives the history's keywords, all or those containing some letters", async () => {
+  const client = await connect("mcp-token");
+  const keywords = async (args: Record<string, unknown>) => {
+    const result = await client.callTool({ name: "list_keywords", arguments: args });
+    const [content] = result.content as { type: string; text: string }[];
+    return JSON.parse(content?.text ?? "").keywords;
+  };
+
+  expect(await keywords({})).toEqual([
+    { keyword: "dystopia", count: 1 },
+    { keyword: "road trip", count: 1 },
+    { keyword: "workplace", count: 1 },
+  ]);
+  expect(await keywords({ contains: "TRIP" })).toEqual([{ keyword: "road trip", count: 1 }]);
   await client.close();
 });
 
@@ -227,6 +261,7 @@ test("every input of list_shares is described, each Summary included", async () 
   expect(Object.keys(properties).sort()).toEqual([
     "cursor",
     "genres",
+    "keywords",
     "pageSize",
     "query",
     "summaries",

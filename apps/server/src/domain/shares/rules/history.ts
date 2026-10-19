@@ -8,16 +8,20 @@ export type HistoryRequest = {
   cursor?: string;
   // Only these Summaries; all when empty.
   summaries: Summary[];
-  // Searched in the source, the URL, the text, the candidates' titles and genres.
+  // Searched in the source, the URL, the text, the candidates' titles, genres
+  // and keywords.
   query?: string;
   // Only the Shares with a Candidate of one of these genres; all when empty.
   genres?: string[];
+  // Only the Shares with a Candidate tagged with one of these keywords; all when empty.
+  keywords?: string[];
 };
 
 // One page of the history, newest first. `shares` is the whole history, newest first.
 export function historyPage(shares: Share[], request: HistoryRequest) {
   const { cursor, summaries, query } = request;
   const genres = request.genres ?? [];
+  const keywords = request.keywords ?? [];
   if (request.limit !== undefined && request.limit < 1) {
     throw new SpotarrError("invalid_input", "page_size: at least 1");
   }
@@ -28,6 +32,7 @@ export function historyPage(shares: Share[], request: HistoryRequest) {
       (summaries.length === 0 || summaries.includes(share.summary)) &&
       (!query || matches(share, query)) &&
       (genres.length === 0 || genres.some((genre) => hasGenre(share, genre))) &&
+      (keywords.length === 0 || keywords.some((keyword) => hasKeyword(share, keyword))) &&
       // Ids sort by creation time, so "after the cursor" means "older than it".
       (!cursor || share.id < cursor),
   );
@@ -47,6 +52,10 @@ function hasGenre(share: Share, genre: string): boolean {
   return share.candidates.some((c) => c.genres?.includes(genre));
 }
 
+function hasKeyword(share: Share, keyword: string): boolean {
+  return share.candidates.some((c) => c.keywords?.includes(keyword));
+}
+
 // How many Shares per genre, over the whole history: most Shares first, then
 // alphabetical. A Share counts once per genre, however many Candidates have it.
 export function countByGenre(shares: Share[]): { genre: string; count: number }[] {
@@ -58,6 +67,18 @@ export function countByGenre(shares: Share[]): { genre: string; count: number }[
   return [...counts]
     .map(([genre, count]) => ({ genre, count }))
     .sort((a, b) => b.count - a.count || a.genre.localeCompare(b.genre));
+}
+
+// How many Shares per keyword, over the whole history, like countByGenre().
+export function countByKeyword(shares: Share[]): { keyword: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const share of shares) {
+    const keywords = new Set(share.candidates.flatMap((c) => c.keywords ?? []));
+    for (const keyword of keywords) counts.set(keyword, (counts.get(keyword) ?? 0) + 1);
+  }
+  return [...counts]
+    .map(([keyword, count]) => ({ keyword, count }))
+    .sort((a, b) => b.count - a.count || a.keyword.localeCompare(b.keyword));
 }
 
 // How many Shares per Summary, over the whole history.
@@ -74,6 +95,7 @@ function matches(share: Share, query: string): boolean {
     share.input.text,
     ...share.candidates.map((c) => c.title),
     ...share.candidates.flatMap((c) => c.genres ?? []),
+    ...share.candidates.flatMap((c) => c.keywords ?? []),
   ];
   return words.join(" ").toLowerCase().includes(query.toLowerCase());
 }

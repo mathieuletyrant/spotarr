@@ -142,6 +142,16 @@ export type MovieDetails200 = {
   vote_count?: number;
 };
 
+export type MovieKeywords200KeywordsItem = {
+  id?: number;
+  name?: string;
+};
+
+export type MovieKeywords200 = {
+  id?: number;
+  keywords?: MovieKeywords200KeywordsItem[];
+};
+
 export type MovieWatchProviders200ResultsAEFlatrateItem = {
   logo_path?: string;
   provider_id?: number;
@@ -2389,6 +2399,16 @@ export type TvSeriesDetails200 = {
   vote_count?: number;
 };
 
+export type TvSeriesKeywords200ResultsItem = {
+  name?: string;
+  id?: number;
+};
+
+export type TvSeriesKeywords200 = {
+  id?: number;
+  results?: TvSeriesKeywords200ResultsItem[];
+};
+
 export type TvSeriesWatchProviders200ResultsAEFlatrateItem = {
   logo_path?: string;
   provider_id?: number;
@@ -4081,6 +4101,49 @@ export const movieDetails = async (movieId: number,
 
 
 
+export type movieKeywordsResponse200 = {
+  data: MovieKeywords200
+  status: 200
+}
+
+export type movieKeywordsResponseSuccess = (movieKeywordsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type movieKeywordsResponse = (movieKeywordsResponseSuccess)
+
+export const getMovieKeywordsUrl = (movieId: string,) => {
+
+
+
+
+  return `https://api.themoviedb.org/3/movie/${movieId}/keywords`
+}
+
+/**
+ * @summary Keywords
+ */
+export const movieKeywords = async (movieId: string, options?: RequestInit): Promise<movieKeywordsResponse> => {
+
+  const res = await fetch(getMovieKeywordsUrl(movieId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: movieKeywordsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as movieKeywordsResponse
+}
+
+
+
 export type movieWatchProvidersResponse200 = {
   data: MovieWatchProviders200
   status: 200
@@ -4276,6 +4339,50 @@ export const tvSeriesDetails = async (seriesId: number,
 
   const data: tvSeriesDetailsResponse['data'] = body ? JSON.parse(body) : {}
   return { data, status: res.status, headers: res.headers } as tvSeriesDetailsResponse
+}
+
+
+
+export type tvSeriesKeywordsResponse200 = {
+  data: TvSeriesKeywords200
+  status: 200
+}
+
+export type tvSeriesKeywordsResponseSuccess = (tvSeriesKeywordsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type tvSeriesKeywordsResponse = (tvSeriesKeywordsResponseSuccess)
+
+export const getTvSeriesKeywordsUrl = (seriesId: number,) => {
+
+
+
+
+  return `https://api.themoviedb.org/3/tv/${seriesId}/keywords`
+}
+
+/**
+ * Get a list of keywords that have been added to a TV show.
+ * @summary Keywords
+ */
+export const tvSeriesKeywords = async (seriesId: number, options?: RequestInit): Promise<tvSeriesKeywordsResponse> => {
+
+  const res = await fetch(getTvSeriesKeywordsUrl(seriesId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+)
+
+
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text();
+
+  const data: tvSeriesKeywordsResponse['data'] = body ? JSON.parse(body) : {}
+  return { data, status: res.status, headers: res.headers } as tvSeriesKeywordsResponse
 }
 
 

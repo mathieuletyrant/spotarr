@@ -1,22 +1,37 @@
 import type { Summary } from "@spotarr/contract";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useDeferredValue, useState } from "react";
 import { EmptyHistory } from "../../components/history/empty-history";
 import { HistoryFilters } from "../../components/history/history-filters";
 import { HistoryTable } from "../../components/history/history-table";
 import { historyQuery } from "../../queries/shares";
 
-export const Route = createFileRoute("/_app/")({ component: HistoryPage });
+export const Route = createFileRoute("/_app/")({
+  // ?keyword=detective shows the Shares tagged with it: a Share's keywords link here.
+  validateSearch: (search: Record<string, unknown>): { keyword?: string } =>
+    typeof search.keyword === "string" && search.keyword !== "" ? { keyword: search.keyword } : {},
+  component: HistoryPage,
+});
 
 function HistoryPage() {
   const [summary, setSummary] = useState<Summary>();
   const [genre, setGenre] = useState<string>();
   const [search, setSearch] = useState("");
+  const { keyword } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const clearKeyword = () => navigate({ search: (prev) => ({ ...prev, keyword: undefined }) });
   // Typing stays smooth: the list follows a moment after the keystrokes.
   const query = useDeferredValue(search.trim());
 
-  const history = useInfiniteQuery(historyQuery({ summary, genres: genre ? [genre] : [], query }));
+  const history = useInfiniteQuery(
+    historyQuery({
+      summary,
+      genres: genre ? [genre] : [],
+      keywords: keyword ? [keyword] : [],
+      query,
+    }),
+  );
   const firstPage = history.data?.pages[0];
   const shares = history.data?.pages.flatMap((page) => page.shares) ?? [];
 
@@ -35,6 +50,8 @@ function HistoryPage() {
         genres={firstPage?.genres ?? []}
         genre={genre}
         onGenreChange={setGenre}
+        keyword={keyword}
+        onKeywordClear={clearKeyword}
         search={search}
         onSearchChange={setSearch}
       />
@@ -43,11 +60,14 @@ function HistoryPage() {
       {history.error && <p className="text-status-error">{history.error.message}</p>}
       {history.isSuccess && shares.length === 0 && (
         <EmptyHistory
-          filtered={summary !== undefined || genre !== undefined || query !== ""}
+          filtered={
+            summary !== undefined || genre !== undefined || keyword !== undefined || query !== ""
+          }
           onClear={() => {
             setSummary(undefined);
             setGenre(undefined);
             setSearch("");
+            clearKeyword();
           }}
         />
       )}

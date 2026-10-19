@@ -1,5 +1,5 @@
 import { type GenreCount, Summary, type SummaryCount } from "@spotarr/contract";
-import { Search } from "lucide-react";
+import { Search, Tag, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { SUMMARY_LABELS, SummaryLabel } from "../status-badge";
 
@@ -36,12 +36,15 @@ type Props = {
   genres: GenreCount[];
   genre?: string;
   onGenreChange: (genre?: string) => void;
+  // Chosen by clicking a keyword on a Share's page: shown with a way to remove it.
+  keyword?: string;
+  onKeywordClear: () => void;
   search: string;
   onSearchChange: (search: string) => void;
 };
 
-// The Summary filters with their counts, then the genre menu and the search, on
-// one line. A Summary with no share is hidden, unless it is the one selected.
+// The Summary filters with their counts, then the genre menu, the keyword
+// chosen and the search, on one line. A Summary with no share is hidden, unless it is the one selected.
 export function HistoryFilters(props: Props) {
   const countOf = (summary: Summary) => props.counts.find((c) => c.summary === summary)?.count ?? 0;
 
@@ -108,9 +111,22 @@ export function HistoryFilters(props: Props) {
         </select>
       )}
 
+      {props.keyword && (
+        <button
+          type="button"
+          onClick={props.onKeywordClear}
+          className="flex h-9 max-w-full min-w-0 items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 text-sm hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
+        >
+          <Tag aria-hidden className="size-4 shrink-0 text-text-muted" />
+          <span className="truncate">{props.keyword}</span>
+          <X aria-hidden className="size-4 shrink-0 text-text-muted" />
+          <span className="sr-only">(remove the keyword filter)</span>
+        </button>
+      )}
+
       <label className="flex h-9 min-w-0 basis-full items-center gap-2 rounded-md border border-border bg-surface px-3 text-sm sm:flex-1 sm:basis-0 lg:w-64 lg:flex-none lg:basis-auto">
         <Search aria-hidden className="size-4 text-text-muted" />
-        <span className="sr-only">Search by title, genre or source</span>
+        <span className="sr-only">Search by title, genre, keyword or source</span>
         <input
           type="search"
           placeholder="Title, genre or source"

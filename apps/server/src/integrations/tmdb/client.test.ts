@@ -5,8 +5,10 @@ import {
   getFindByIdResponseMock,
   getGenreMovieListResponseMock,
   getMovieDetailsResponseMock,
+  getMovieKeywordsResponseMock,
   getSearchMovieResponseMock,
   getTvSeriesDetailsResponseMock,
+  getTvSeriesKeywordsResponseMock,
 } from "./gen/tmdb.faker";
 
 afterEach(() => mock.restore());
@@ -234,4 +236,26 @@ test("countries are named in the language asked, sorted by name", async () => {
     { code: "DE", name: "Germany" },
     { code: "JP", name: "Japon" },
   ]);
+});
+
+test("a movie's keywords and a show's keywords, whose lists TMDB names differently", async () => {
+  fakeFetch({
+    "/3/movie/693134/keywords": getMovieKeywordsResponseMock({
+      keywords: [
+        { id: 818, name: "based on novel or book" },
+        { id: 3386, name: "space war" },
+      ],
+    }),
+    "/3/tv/95396/keywords": getTvSeriesKeywordsResponseMock({
+      results: [{ id: 6149, name: "workplace" }],
+    }),
+  });
+
+  expect(await tmdb().keywords("MOVIE", 693134)).toEqual(["based on novel or book", "space war"]);
+  expect(await tmdb().keywords("TV", 95396)).toEqual(["workplace"]);
+});
+
+test("a title TMDB does not know has no keywords", async () => {
+  fakeFetch({ "/3/movie/1/keywords": 404 });
+  expect(await tmdb().keywords("MOVIE", 1)).toEqual([]);
 });

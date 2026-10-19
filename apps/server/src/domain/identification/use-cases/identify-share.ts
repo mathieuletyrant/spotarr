@@ -90,7 +90,8 @@ export async function identifyShare(
     () => confirmOnTmdb(answer.guesses, tmdb),
     (titles) => ({ candidates: titles.length }),
   );
-  const candidates = await checkLibrary(shareId, confirmed, libraryState);
+  const tagged = await addKeywords(shareId, confirmed, tmdb);
+  const candidates = await checkLibrary(shareId, tagged, libraryState);
   return {
     status: candidates.length > 0 ? "READY" : "NO_MATCH",
     method: "LLM",
@@ -139,7 +140,28 @@ async function identifyByIds(
     () => lookUpAll(ids, tmdb),
     (titles) => ({ candidates: titles.length }),
   );
-  return checkLibrary(shareId, found, libraryState);
+  const tagged = await addKeywords(shareId, found, tmdb);
+  return checkLibrary(shareId, tagged, libraryState);
+}
+
+// TMDB's keywords of each Candidate, one call each: searches do not carry them.
+// A failure only costs that Candidate's keywords, filled at the next start.
+function addKeywords(shareId: string, candidates: Candidate[], tmdb: Tmdb): Promise<Candidate[]> {
+  return step(
+    shareId,
+    "keywords",
+    async () => {
+      const tagged: Candidate[] = [];
+      for (const candidate of candidates) {
+        const keywords = await tmdb
+          .keywords(candidate.type, candidate.tmdbId)
+          .catch(() => undefined);
+        tagged.push({ ...candidate, keywords });
+      }
+      return tagged;
+    },
+    (tagged) => ({ missing: tagged.filter((c) => c.keywords === undefined).length }),
+  );
 }
 
 async function lookUpAll(ids: DirectId[], tmdb: Tmdb): Promise<Candidate[]> {

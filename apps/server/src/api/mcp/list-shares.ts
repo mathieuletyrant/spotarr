@@ -24,11 +24,17 @@ const ListSharesInput = {
     .describe(
       'Only the Shares with at least one Candidate of one of these genres. Use the exact names list_genres gives, in Spotarr\'s language: ["Comédie"], not ["Comedy"].',
     ),
+  keywords: z
+    .array(z.string())
+    .optional()
+    .describe(
+      'Only the Shares with at least one Candidate tagged with one of these keywords. Use the exact names list_keywords gives, in English: ["based on novel or book"].',
+    ),
   query: z
     .string()
     .optional()
     .describe(
-      'A word or a title, searched as is (case-insensitive, not by meaning) in the shared URL and text, the source ("instagram.com") and the Candidates\' titles and genres. E.g. "Dune" or "tiktok". Not a sentence: "a funny movie" matches nothing.',
+      'A word or a title, searched as is (case-insensitive, not by meaning) in the shared URL and text, the source ("instagram.com") and the Candidates\' titles, genres and keywords. E.g. "Dune" or "tiktok". Not a sentence: "a funny movie" matches nothing.',
     ),
   summaries: z
     .array(z.enum(SUMMARIES))
@@ -58,7 +64,7 @@ E.g. ["TO_CHOOSE"] for what was shared but never added.`),
 
 const DESCRIPTION = `Lists what the user shared to Spotarr (links to videos, articles or films' pages, screenshots, text), newest first, with the movies and TV shows each Share was identified as. Read-only. Filters combine: a Share must pass all of them.
 
-Each Share holds its Candidates: the works Spotarr's identification guessed, best first, with a confidence from 0 to 1. One Share often has several guesses, of which one or none is right. A Candidate carries its TMDB type (MOVIE or TV), year, genres, rating out of 10 and votes, overview (the synopsis), and:
+Each Share holds its Candidates: the works Spotarr's identification guessed, best first, with a confidence from 0 to 1. One Share often has several guesses, of which one or none is right. A Candidate carries its TMDB type (MOVIE or TV), year, genres, keywords (TMDB's tags, in English: "detective"), rating out of 10 and votes, overview (the synopsis), and:
 - status, where it stands now: REQUESTED when it was requested through Seerr (from this Share, or already before), ADDED when added to Radarr or Sonarr directly (not used yet), ALREADY_PRESENT when it is in the library (all or some seasons), CAN_ADD when it is not in the library.
 - libraryState: where the library stands, as Seerr last reported: ABSENT, REQUESTED, PARTIAL (some seasons) or AVAILABLE.`;
 
@@ -79,6 +85,7 @@ export function registerListShares(server: McpServer, shares: ShareRepository): 
           summaries: input.summaries ?? [],
           query: input.query?.trim(),
           genres: input.genres,
+          keywords: input.keywords,
         },
         { shares },
       );
@@ -106,6 +113,7 @@ function shareForMcp(share: Share) {
       originalTitle: candidate.originalTitle,
       year: candidate.year,
       genres: candidate.genres,
+      keywords: candidate.keywords,
       tmdbRating: candidate.tmdbRating,
       tmdbVotes: candidate.tmdbVotes,
       overview: candidate.overview,

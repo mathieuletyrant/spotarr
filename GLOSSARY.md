@@ -48,6 +48,10 @@ _Avoid_: result, match, suggestion
 A Candidate's TMDB genre, in the settings' language ("Horreur", "Science-Fiction"). The History filters by it: a Share matches when one of its Candidates has it.
 _Avoid_: theme, category, tag
 
+**Keyword**:
+A word TMDB's users attach to a title, more precise than a Genre ("detective", "based on novel or book"), in English only: TMDB does not translate them. Shown under the best match on a Share's page, as Seerr does; clicking one filters the History by it, the same way as a Genre.
+_Avoid_: tag, label
+
 **Overview**:
 A Candidate's TMDB synopsis, in the settings' language; none when TMDB has none in it. Kept for the MCP client, so Claude can judge a title it does not know.
 _Avoid_: description, summary, plot

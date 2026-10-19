@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import type { Share } from "../types";
-import { historyPage } from "./history";
+import { countByKeyword, historyPage } from "./history";
 
 function share(id: string, summary: Share["summary"], text = ""): Share {
   return {
@@ -96,4 +96,40 @@ test("counts Shares per genre over the whole history, most first, then alphabeti
 test("the text search finds a genre", () => {
   const page = historyPage(genred, { limit: 10, summaries: [], query: "comédie" });
   expect(page.shares.map((s) => s.id)).toEqual(["shr_2"]);
+});
+
+// Two Shares with keywords, the oldest one without.
+function withKeywords(id: string, keywords: string[] | undefined): Share {
+  const base = share(id, "TO_CHOOSE");
+  return { ...base, candidates: [{ ...base.candidates[0], keywords } as Share["candidates"][0]] };
+}
+const tagged = [
+  withKeywords("shr_3", ["detective", "based on novel or book"]),
+  withKeywords("shr_2", ["time travel"]),
+  withKeywords("shr_1", undefined),
+];
+
+test("filters by any of the keywords chosen", () => {
+  const one = historyPage(tagged, { limit: 10, summaries: [], keywords: ["detective"] });
+  expect(one.shares.map((s) => s.id)).toEqual(["shr_3"]);
+  const two = historyPage(tagged, {
+    limit: 10,
+    summaries: [],
+    keywords: ["detective", "time travel"],
+  });
+  expect(two.shares.map((s) => s.id)).toEqual(["shr_3", "shr_2"]);
+});
+
+test("counts Shares per keyword over the whole history, most first, then alphabetical", () => {
+  const history = [...tagged, withKeywords("shr_0", ["time travel"])];
+  expect(countByKeyword(history)).toEqual([
+    { keyword: "time travel", count: 2 },
+    { keyword: "based on novel or book", count: 1 },
+    { keyword: "detective", count: 1 },
+  ]);
+});
+
+test("the text search finds a keyword", () => {
+  const page = historyPage(tagged, { limit: 10, summaries: [], query: "novel" });
+  expect(page.shares.map((s) => s.id)).toEqual(["shr_3"]);
 });

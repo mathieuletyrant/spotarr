@@ -3,7 +3,8 @@ import type { ShareRepository } from "../repository";
 import type { Candidate } from "../types";
 
 // Shares identified before Spotarr kept a detail get it from TMDB's details:
-// genres, rating and votes, release date, overview. A title without a rating
+// genres, rating and votes, release date, overview, and keywords from their
+// own call. A title without a rating
 // or an overview, or not out yet, is asked again too: it gets them once out.
 // Run at start, in the background. A Candidate TMDB fails for stays as it
 // was, and is tried again at the next start. `today` is "2026-10-14".
@@ -15,13 +16,14 @@ export async function fillMissingDetails(
 ): Promise<number> {
   let filled = 0;
   for (const share of await shares.all()) {
-    if (!share.candidates.some((c) => needsDetails(c, today))) continue;
+    if (!share.candidates.some((c) => needsDetails(c, today) || c.keywords === undefined)) {
+      continue;
+    }
 
     const candidates: Candidate[] = [];
     let changed = false;
     for (const candidate of share.candidates) {
-      const title = needsDetails(candidate, today) ? await detailsOf(candidate, tmdb) : undefined;
-      const updated = title ? withDetails(candidate, title) : candidate;
+      const updated = await withWhatTmdbAdds(candidate, tmdb, today);
       // TMDB down, or nothing new (a title still without a date): nothing to write.
       if (JSON.stringify(updated) !== JSON.stringify(candidate)) {
         filled++;
@@ -44,6 +46,24 @@ function needsDetails(candidate: Candidate, today: string): boolean {
   if (candidate.tmdbRating === undefined) return true;
   if (candidate.overview === undefined) return true;
   return candidate.releaseDate > today;
+}
+
+// The Candidate with the details and keywords it misses, those TMDB gave.
+async function withWhatTmdbAdds(
+  candidate: Candidate,
+  tmdb: Tmdb,
+  today: string,
+): Promise<Candidate> {
+  let updated = candidate;
+  if (needsDetails(candidate, today)) {
+    const title = await detailsOf(candidate, tmdb);
+    if (title) updated = withDetails(updated, title);
+  }
+  if (candidate.keywords === undefined) {
+    const keywords = await tmdb.keywords(candidate.type, candidate.tmdbId).catch(() => undefined);
+    if (keywords) updated = { ...updated, keywords };
+  }
+  return updated;
 }
 
 // TMDB's latest word on the title; the rest of the Candidate is kept.
