@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.13.0](https://github.com/mathieuletyrant/spotarr/compare/v0.12.0...v0.13.0) (2026-10-19)
+
+
+### Features
+
+* keep each Candidate's TMDB keywords and filter the History by keyword ([2cfad37](https://github.com/mathieuletyrant/spotarr/commit/2cfad378f4c172606844016da69690230b04502b))
+
+
+### Bug Fixes
+
+* **ci:** install ffmpeg with apt, setup-ffmpeg's download fails ([#190](https://github.com/mathieuletyrant/spotarr/issues/190)) ([58818b5](https://github.com/mathieuletyrant/spotarr/commit/58818b55ebff2294592e65debefd40ca239d1bb4))
+
 ## [0.12.0](https://github.com/mathieuletyrant/spotarr/compare/v0.11.0...v0.12.0) (2026-10-18)
 
 
