@@ -7,8 +7,7 @@
   "packages": {
     ".": {
       "extra-files": [
-        { "type": "json", "path": "apps/server/package.json", "jsonpath": "$.version" },
-        { "type": "generic", "path": "apps/ios/Version.xcconfig" }
+        { "type": "json", "path": "apps/server/package.json", "jsonpath": "$.version" }
       ]
     }
   }
