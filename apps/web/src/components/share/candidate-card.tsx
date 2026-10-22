@@ -11,7 +11,7 @@ import {
 } from "@spotarr/contract";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { BookmarkCheck, Play } from "lucide-react";
+import { BookmarkCheck, ChevronDown, Play } from "lucide-react";
 import { ACTION_BUTTONS, shareActions } from "../../lib/actions";
 import { settingsQuery } from "../../queries/settings";
 import { watchLinksQuery } from "../../queries/shares";
@@ -94,8 +94,9 @@ function BestMatch({ share, candidate }: { share: Share; candidate: Candidate })
   );
 }
 
-// Watch it where it already is, else the main Action (Settings → Automation)
-// and the others set up. Adding stays possible, quieter, when it can be watched.
+// Watch it where it already is, else the main Action (Settings → Automation),
+// the others in a menu beside it. When it can be watched, every Action waits in
+// a quieter "Other actions" menu.
 function BestMatchActions({
   share,
   candidate,
@@ -106,6 +107,7 @@ function BestMatchActions({
   links: WatchLink[];
 }) {
   const actions = useShareActions(candidate);
+  const [main, ...others] = actions;
   const [first, ...more] = links;
   const canAdd = candidate.status === CandidateStatus.CAN_ADD;
 
@@ -137,31 +139,26 @@ function BestMatchActions({
             <span className="sr-only">(watch there, opens a new tab)</span>
           </a>
         ))}
-        {canAdd &&
-          !first &&
-          actions.map((action, i) => (
+        {canAdd && !first && main !== undefined && (
+          <div className="flex">
             <ActionButton
-              key={action}
               share={share}
               candidate={candidate}
-              action={action}
-              look={i === 0 ? "main" : "secondary"}
+              action={main}
+              look="main"
+              joined={others.length > 0}
             />
-          ))}
+            {others.length > 0 && (
+              <ActionsMenu share={share} candidate={candidate} actions={others} trigger="joined" />
+            )}
+          </div>
+        )}
         {canAdd && actions.length === 0 && <NothingSetUp />}
         {!canAdd && <Status candidate={candidate} />}
       </div>
-      {canAdd && first && (
-        <div className="flex flex-wrap gap-x-4 gap-y-1 self-center md:self-start">
-          {actions.map((action) => (
-            <ActionButton
-              key={action}
-              share={share}
-              candidate={candidate}
-              action={action}
-              look="link"
-            />
-          ))}
+      {canAdd && first && actions.length > 0 && (
+        <div className="self-center md:self-start">
+          <ActionsMenu share={share} candidate={candidate} actions={actions} trigger="text" />
         </div>
       )}
       {candidate.failure && <p className="text-sm text-status-error">{candidate.failure}</p>}
@@ -178,6 +175,7 @@ const BUTTON_LOOKS = {
     "flex h-9 items-center gap-1 rounded-md border border-border px-2.5 text-sm font-medium hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent",
   smallMain:
     "flex h-9 items-center gap-1 rounded-md bg-accent px-2.5 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent",
+  item: "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm whitespace-nowrap hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent",
 };
 
 // One Action on one Candidate: its button, then what it did. A request shows in
@@ -189,11 +187,14 @@ function ActionButton({
   candidate,
   action,
   look,
+  joined = false,
 }: {
   share: Share;
   candidate: Candidate;
   action: RuleAction;
   look: keyof typeof BUTTON_LOOKS;
+  // Its right side is the menu's ▾: no rounded corners there.
+  joined?: boolean;
 }) {
   const add = useAdd(share, candidate, action);
   const button = ACTION_BUTTONS[action];
@@ -209,8 +210,11 @@ function ActionButton({
     );
   }
   let text = small ? button.short : button.label;
-  // A phone has room for the short "Add to Snug", not "Add to Snug's Watchlist".
-  let phoneText = small ? button.short : button.phone;
+  // A phone has room for the short "Add to Snug", not "Add to Snug's Watchlist";
+  // a menu has room for the whole label.
+  let phoneText = button.phone;
+  if (small) phoneText = button.short;
+  if (look === "item") phoneText = button.label;
   if (add.isPending) {
     text = "Adding…";
     phoneText = text;
@@ -225,7 +229,7 @@ function ActionButton({
         onClick={add.start}
         disabled={add.isPending}
         title={add.error?.message ?? button.label}
-        className={BUTTON_LOOKS[look]}
+        className={joined ? `${BUTTON_LOOKS[look]} rounded-r-none` : BUTTON_LOOKS[look]}
       >
         {look !== "link" && <Icon aria-hidden className="size-4" />}
         {small && <span className="sr-only md:not-sr-only">{text}</span>}
@@ -236,6 +240,63 @@ function ActionButton({
       {add.error && !small && (
         <p className="basis-full text-sm text-status-error">{add.error.message}</p>
       )}
+    </>
+  );
+}
+
+const MENU_TRIGGERS = {
+  // Glued to the main button's right side.
+  joined:
+    "flex h-10 items-center rounded-r-md border-l border-accent-text/20 bg-accent px-2 text-accent-text focus-visible:outline-2 focus-visible:outline-accent",
+  small:
+    "flex h-9 items-center rounded-md border border-border px-1.5 hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent",
+  text: "flex items-center gap-1 text-sm text-text-muted underline hover:text-text",
+};
+
+// Actions in a menu under a ▾: the page keeps one clear button, every Action
+// stays one tap away. A native popover, placed under its trigger like the
+// Services one (inset-auto undoes a popover's default inset: 0, which pins it
+// left); it flips above when there is no room below.
+function ActionsMenu({
+  share,
+  candidate,
+  actions,
+  trigger,
+}: {
+  share: Share;
+  candidate: Candidate;
+  actions: RuleAction[];
+  trigger: keyof typeof MENU_TRIGGERS;
+}) {
+  const id = `actions-${MediaType[candidate.type]}-${candidate.tmdbId}`;
+  return (
+    <>
+      <button
+        type="button"
+        popoverTarget={id}
+        aria-label={trigger === "text" ? undefined : "Other actions"}
+        style={{ anchorName: `--${id}` }}
+        className={MENU_TRIGGERS[trigger]}
+      >
+        {trigger === "text" && "Other actions"}
+        <ChevronDown aria-hidden className="size-4" />
+      </button>
+      <div
+        id={id}
+        popover="auto"
+        style={{ positionAnchor: `--${id}` }}
+        className="inset-auto m-0 mt-1 w-max min-w-52 rounded-xl border border-border bg-surface-raised p-1 text-text shadow-lg [position-try-fallbacks:flip-block] [right:anchor(right)] [top:anchor(bottom)]"
+      >
+        {actions.map((action) => (
+          <ActionButton
+            key={action}
+            share={share}
+            candidate={candidate}
+            action={action}
+            look="item"
+          />
+        ))}
+      </div>
     </>
   );
 }
@@ -306,22 +367,19 @@ function OtherCandidate({ share, candidate }: { share: Share; candidate: Candida
   );
 }
 
-// The Actions set up for its type, the main one first: icons alone on a phone,
-// a word beside them from md up.
+// The main Action, an icon alone on a phone and a word beside it from md up,
+// then the others in a menu.
 function SmallAction({ share, candidate }: { share: Share; candidate: Candidate }) {
   const actions = useShareActions(candidate);
+  const [main, ...others] = actions;
   if (candidate.status !== CandidateStatus.CAN_ADD) return <Status candidate={candidate} />;
+  if (main === undefined) return null;
   return (
     <div className="flex gap-1.5">
-      {actions.map((action, i) => (
-        <ActionButton
-          key={action}
-          share={share}
-          candidate={candidate}
-          action={action}
-          look={i === 0 ? "smallMain" : "small"}
-        />
-      ))}
+      <ActionButton share={share} candidate={candidate} action={main} look="smallMain" />
+      {others.length > 0 && (
+        <ActionsMenu share={share} candidate={candidate} actions={others} trigger="small" />
+      )}
     </div>
   );
 }
