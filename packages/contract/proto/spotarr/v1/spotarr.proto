@@ -176,6 +176,7 @@ message Settings {
   StreamingSettings streaming = 7;
   JellyfinSettings jellyfin = 8;
   SnugSettings snug = 9;
+  ShareActionsSettings share_actions = 10;
 }
 
 message StreamingSettings {
@@ -207,6 +208,15 @@ message SnugSettings {
   // "https://snug…/api/watchlist/<token>". Empty: off, and the
   // SNUG_WATCHLIST Action is not offered.
   optional string watchlist_url = 1;
+}
+
+// The big button on a Share's best match, by type. The other Actions set up
+// show as smaller buttons. Written as a RuleAction's name without its prefix:
+// "SEERR_REQUEST", "SEERR_WATCHLIST" or "SNUG_WATCHLIST" (TV shows only).
+// Empty: the first Action set up.
+message ShareActionsSettings {
+  optional string movie = 1;
+  optional string tv = 2;
 }
 
 // Replaced by the Rules.

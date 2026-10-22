@@ -23,6 +23,7 @@ export class SettingsRepository {
         seerr: { ...current.seerr, ...present(patch.seerr) },
         jellyfin: { ...current.jellyfin, ...present(patch.jellyfin) },
         snug: { ...current.snug, ...present(patch.snug) },
+        shareActions: { ...current.shareActions, ...present(patch.shareActions) },
         extraction: { ...current.extraction, ...present(patch.extraction) },
         streaming: { ...current.streaming, ...present(patch.streaming) },
         access: {

@@ -14,6 +14,7 @@ import { McpSection } from "../../components/settings/mcp-section";
 import { RulesSection } from "../../components/settings/rules-section";
 import { SaveBar } from "../../components/settings/save-bar";
 import { SeerrSection } from "../../components/settings/seerr-section";
+import { ShareActionsSection } from "../../components/settings/share-actions-section";
 import { SnugSection } from "../../components/settings/snug-section";
 import { StreamingSection } from "../../components/settings/streaming-section";
 import { useToast } from "../../components/toast";
@@ -47,6 +48,7 @@ function tabOf(field: string): SectionId | undefined {
   if (prefix === "identification" || prefix === "extraction") return "identification";
   if (prefix === "seerr" || prefix === "jellyfin" || prefix === "snug") return "connections";
   if (prefix === "access") return "access";
+  if (prefix === "shareActions") return "automation";
   return undefined;
 }
 
@@ -132,6 +134,7 @@ function SettingsForm({ saved }: { saved: Values }) {
         {section === "automation" && (
           <>
             <RulesSection />
+            <ShareActionsSection form={form} />
             <CollectionSection
               form={form}
               unsaved={changed.some((name) => name.startsWith("jellyfin."))}

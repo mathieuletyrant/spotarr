@@ -48,6 +48,14 @@ export const SettingsSchema = z.object({
       watchlistUrl: optionalUrl.default(""),
     })
     .prefault({}),
+  // The main Action on a Share, by type; "" is the first one set up.
+  // Snug tracks TV shows only, so it can't be the movies' one.
+  shareActions: z
+    .object({
+      movie: z.enum(["", "SEERR_REQUEST", "SEERR_WATCHLIST"]).default(""),
+      tv: z.enum(["", "SEERR_REQUEST", "SEERR_WATCHLIST", "SNUG_WATCHLIST"]).default(""),
+    })
+    .prefault({}),
   extraction: z
     .object({
       // 15 images at most reach the LLM per Identification: each one costs tokens.
