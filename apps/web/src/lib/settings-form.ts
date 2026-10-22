@@ -4,7 +4,15 @@ import type { Settings } from "@spotarr/contract";
 // settings: "seerr.apiKey". The server's validation errors name the same paths.
 export type Values = Record<string, string>;
 
-const SECTIONS = ["identification", "seerr", "jellyfin", "extraction", "access"] as const;
+const SECTIONS = [
+  "identification",
+  "seerr",
+  "jellyfin",
+  "snug",
+  "shareActions",
+  "extraction",
+  "access",
+] as const;
 const NUMBERS = ["extraction.framesPerVideo", "extraction.maxVideoMb", "extraction.concurrency"];
 
 export function toValues(settings: Settings): Values {

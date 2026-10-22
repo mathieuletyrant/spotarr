@@ -58,3 +58,16 @@ test("the MCP token is read-only for update, set only by setMcpToken", async () 
 
   expect((await settings.get()).access.mcpToken).toBe("mcp");
 });
+
+test("a Share's main Action is chosen by type, and Snug never for movies", async () => {
+  const settings = await repository();
+  expect((await settings.get()).shareActions).toEqual({ movie: "", tv: "" });
+
+  await settings.update({ shareActions: { movie: "SEERR_WATCHLIST", tv: "SNUG_WATCHLIST" } });
+  expect((await settings.get()).shareActions).toEqual({
+    movie: "SEERR_WATCHLIST",
+    tv: "SNUG_WATCHLIST",
+  });
+
+  await expect(settings.update({ shareActions: { movie: "SNUG_WATCHLIST" } })).rejects.toThrow();
+});

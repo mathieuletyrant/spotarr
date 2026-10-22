@@ -10,7 +10,10 @@ import {
   type WatchLink,
 } from "@spotarr/contract";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bookmark, BookmarkCheck, Play, Plus } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { BookmarkCheck, ChevronDown, Play } from "lucide-react";
+import { ACTION_BUTTONS, shareActions } from "../../lib/actions";
+import { settingsQuery } from "../../queries/settings";
 import { watchLinksQuery } from "../../queries/shares";
 import { Keywords } from "../keywords";
 import { Poster } from "../poster";
@@ -19,8 +22,8 @@ import { TmdbRating } from "../tmdb-rating";
 
 // The Candidates of a Share. The first, the most likely (the Identification
 // sorts them by confidence), takes the stage with one big action: watch it
-// where it already is, else add it to the library or to Seerr's watchlist, the
-// same two Actions as a Rule's. The others get one line each.
+// where it already is, else the Actions set up, the same as a Rule's. The
+// others get one line each.
 export function Candidates({ share }: { share: Share }) {
   const [best, ...others] = share.candidates;
   if (!best) return null;
@@ -91,8 +94,9 @@ function BestMatch({ share, candidate }: { share: Share; candidate: Candidate })
   );
 }
 
-// Watch it where it already is, else add it to the library or the watchlist.
-// Adding stays possible, quieter, when it can be watched.
+// Watch it where it already is, else the main Action (Settings → Automation),
+// the others in a menu beside it. When it can be watched, every Action waits in
+// a quieter "Other actions" menu.
 function BestMatchActions({
   share,
   candidate,
@@ -102,11 +106,10 @@ function BestMatchActions({
   candidate: Candidate;
   links: WatchLink[];
 }) {
-  const add = useAdd(share, candidate, RuleAction.SEERR_REQUEST);
-  const watch = useAdd(share, candidate, RuleAction.SEERR_WATCHLIST);
+  const actions = useShareActions(candidate);
+  const [main, ...others] = actions;
   const [first, ...more] = links;
   const canAdd = candidate.status === CandidateStatus.CAN_ADD;
-  const failure = candidate.failure ?? add.error?.message;
 
   return (
     <div className="flex flex-col gap-2">
@@ -136,73 +139,178 @@ function BestMatchActions({
             <span className="sr-only">(watch there, opens a new tab)</span>
           </a>
         ))}
-        {canAdd && !first && (
-          <button
-            type="button"
-            onClick={add.start}
-            disabled={add.isPending}
-            className="flex h-10 items-center gap-1.5 rounded-md bg-accent px-4 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
-          >
-            <Plus aria-hidden className="size-4" />
-            {add.isPending ? "Adding…" : failure ? "Try again" : "Add to the library"}
-          </button>
+        {canAdd && !first && main !== undefined && (
+          <div className="flex">
+            <ActionButton
+              share={share}
+              candidate={candidate}
+              action={main}
+              look="main"
+              joined={others.length > 0}
+            />
+            {others.length > 0 && (
+              <ActionsMenu share={share} candidate={candidate} actions={others} trigger="joined" />
+            )}
+          </div>
         )}
-        {canAdd && !first && <WatchButton watch={watch} />}
+        {canAdd && actions.length === 0 && <NothingSetUp />}
         {!canAdd && <Status candidate={candidate} />}
       </div>
-      {canAdd && first && (
-        <div className="flex flex-wrap gap-x-4 gap-y-1 self-center md:self-start">
-          <button
-            type="button"
-            onClick={add.start}
-            disabled={add.isPending}
-            className="text-sm text-text-muted underline hover:text-text"
-          >
-            {add.isPending ? "Adding…" : failure ? "Try adding again" : "Add to the library anyway"}
-          </button>
-          {watch.isDone ? (
-            <InWatchlist />
-          ) : (
-            <button
-              type="button"
-              onClick={watch.start}
-              disabled={watch.isPending}
-              className="text-sm text-text-muted underline hover:text-text"
-            >
-              {watch.isPending ? "Adding…" : "Add to Seerr's watchlist"}
-            </button>
-          )}
+      {canAdd && first && actions.length > 0 && (
+        <div className="self-center md:self-start">
+          <ActionsMenu share={share} candidate={candidate} actions={actions} trigger="text" />
         </div>
       )}
-      {failure && <p className="text-sm text-status-error">{failure}</p>}
-      {watch.error && <p className="text-sm text-status-error">{watch.error.message}</p>}
+      {candidate.failure && <p className="text-sm text-status-error">{candidate.failure}</p>}
     </div>
   );
 }
 
-// "Add to Seerr's watchlist", then "In watchlist" once Seerr took it.
-function WatchButton({ watch }: { watch: ReturnType<typeof useAdd> }) {
-  if (watch.isDone) return <InWatchlist />;
+const BUTTON_LOOKS = {
+  main: "flex h-10 items-center gap-1.5 rounded-md whitespace-nowrap bg-accent px-4 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent",
+  secondary:
+    "flex h-10 items-center gap-1.5 rounded-md border border-border px-4 whitespace-nowrap text-sm font-medium hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent",
+  link: "text-sm text-text-muted underline hover:text-text",
+  small:
+    "flex h-9 items-center gap-1 rounded-md border border-border px-2.5 text-sm font-medium hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent",
+  smallMain:
+    "flex h-9 items-center gap-1 rounded-md bg-accent px-2.5 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent",
+  item: "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm whitespace-nowrap hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent",
+};
+
+// One Action on one Candidate: its button, then what it did. A request shows in
+// the Candidate's status; a watchlist keeps no trace, so "In …" shows only until
+// the page reloads. A small look is an icon alone on a phone, a word beside it
+// from md up.
+function ActionButton({
+  share,
+  candidate,
+  action,
+  look,
+  joined = false,
+}: {
+  share: Share;
+  candidate: Candidate;
+  action: RuleAction;
+  look: keyof typeof BUTTON_LOOKS;
+  // Its right side is the menu's ▾: no rounded corners there.
+  joined?: boolean;
+}) {
+  const add = useAdd(share, candidate, action);
+  const button = ACTION_BUTTONS[action];
+  const Icon = button.icon;
+  const small = look === "small" || look === "smallMain";
+
+  if (add.isDone && action !== RuleAction.SEERR_REQUEST) {
+    return (
+      <span title={button.done} className="flex items-center gap-1.5 text-sm text-text-muted">
+        <BookmarkCheck aria-hidden className="size-4" />
+        <span className={small ? "sr-only" : ""}>{button.done}</span>
+      </span>
+    );
+  }
+  let text = small ? button.short : button.label;
+  // A phone has room for the short "Add to Snug", not "Add to Snug's Watchlist";
+  // a menu has room for the whole label.
+  let phoneText = button.phone;
+  if (small) phoneText = button.short;
+  if (look === "item") phoneText = button.label;
+  if (add.isPending) {
+    text = "Adding…";
+    phoneText = text;
+  } else if (add.error) {
+    text = "Try again";
+    phoneText = text;
+  }
   return (
-    <button
-      type="button"
-      onClick={watch.start}
-      disabled={watch.isPending}
-      className="flex h-10 items-center gap-1.5 rounded-md border border-border px-4 text-sm font-medium hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
-    >
-      <Bookmark aria-hidden className="size-4" />
-      {watch.isPending ? "Adding…" : "Add to Seerr's watchlist"}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={add.start}
+        disabled={add.isPending}
+        title={add.error?.message ?? button.label}
+        className={joined ? `${BUTTON_LOOKS[look]} rounded-r-none` : BUTTON_LOOKS[look]}
+      >
+        {look !== "link" && <Icon aria-hidden className="size-4" />}
+        {small && <span className="sr-only md:not-sr-only">{text}</span>}
+        {!small && <span className="md:hidden">{phoneText}</span>}
+        {!small && <span className="hidden md:inline">{text}</span>}
+        {small && <span className="sr-only"> ({button.label})</span>}
+      </button>
+      {add.error && !small && (
+        <p className="basis-full text-sm text-status-error">{add.error.message}</p>
+      )}
+    </>
   );
 }
 
-// Spotarr keeps no trace of the watchlist: this shows only until the page reloads.
-function InWatchlist() {
+const MENU_TRIGGERS = {
+  // Glued to the main button's right side.
+  joined:
+    "flex h-10 items-center rounded-r-md border-l border-accent-text/20 bg-accent px-2 text-accent-text focus-visible:outline-2 focus-visible:outline-accent",
+  small:
+    "flex h-9 items-center rounded-md border border-border px-1.5 hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent",
+  text: "flex items-center gap-1 text-sm text-text-muted underline hover:text-text",
+};
+
+// Actions in a menu under a ▾: the page keeps one clear button, every Action
+// stays one tap away. A native popover, placed under its trigger like the
+// Services one (inset-auto undoes a popover's default inset: 0, which pins it
+// left); it flips above when there is no room below.
+function ActionsMenu({
+  share,
+  candidate,
+  actions,
+  trigger,
+}: {
+  share: Share;
+  candidate: Candidate;
+  actions: RuleAction[];
+  trigger: keyof typeof MENU_TRIGGERS;
+}) {
+  const id = `actions-${MediaType[candidate.type]}-${candidate.tmdbId}`;
   return (
-    <span className="flex items-center gap-1.5 text-sm text-text-muted">
-      <BookmarkCheck aria-hidden className="size-4" />
-      In watchlist
-    </span>
+    <>
+      <button
+        type="button"
+        popoverTarget={id}
+        aria-label={trigger === "text" ? undefined : "Other actions"}
+        style={{ anchorName: `--${id}` }}
+        className={MENU_TRIGGERS[trigger]}
+      >
+        {trigger === "text" && "Other actions"}
+        <ChevronDown aria-hidden className="size-4" />
+      </button>
+      <div
+        id={id}
+        popover="auto"
+        style={{ positionAnchor: `--${id}` }}
+        className="inset-auto m-0 mt-1 w-max min-w-52 rounded-xl border border-border bg-surface-raised p-1 text-text shadow-lg [position-try-fallbacks:flip-block] [right:anchor(right)] [top:anchor(bottom)]"
+      >
+        {actions.map((action) => (
+          <ActionButton
+            key={action}
+            share={share}
+            candidate={candidate}
+            action={action}
+            look="item"
+          />
+        ))}
+      </div>
+    </>
+  );
+}
+
+// No Action set up yet: say where to set one.
+function NothingSetUp() {
+  return (
+    <Link
+      to="/settings"
+      search={{ section: "connections" }}
+      className="text-sm text-text-muted underline"
+    >
+      Connect Seerr or Snug to add it
+    </Link>
   );
 }
 
@@ -259,47 +367,18 @@ function OtherCandidate({ share, candidate }: { share: Share; candidate: Candida
   );
 }
 
-// Add to the library or to the watchlist: icons alone on a phone, a word
-// beside them from md up.
+// The main Action, an icon alone on a phone and a word beside it from md up,
+// then the others in a menu.
 function SmallAction({ share, candidate }: { share: Share; candidate: Candidate }) {
-  const add = useAdd(share, candidate, RuleAction.SEERR_REQUEST);
-  const watch = useAdd(share, candidate, RuleAction.SEERR_WATCHLIST);
+  const actions = useShareActions(candidate);
+  const [main, ...others] = actions;
   if (candidate.status !== CandidateStatus.CAN_ADD) return <Status candidate={candidate} />;
-  const failure = candidate.failure ?? add.error?.message;
+  if (main === undefined) return null;
   return (
     <div className="flex gap-1.5">
-      <button
-        type="button"
-        onClick={add.start}
-        disabled={add.isPending}
-        title={failure ?? "Add to the library"}
-        className="flex h-9 items-center gap-1 rounded-md bg-accent px-2.5 text-sm font-medium text-accent-text focus-visible:outline-2 focus-visible:outline-accent"
-      >
-        <Plus aria-hidden className="size-4" />
-        <span className="sr-only md:not-sr-only">
-          {add.isPending ? "Adding…" : failure ? "Retry" : "Library"}
-        </span>
-        <span className="sr-only"> (add to the library)</span>
-      </button>
-      {watch.isDone ? (
-        <span title="In Seerr's watchlist" className="flex h-9 items-center px-2 text-text-muted">
-          <BookmarkCheck aria-hidden className="size-4" />
-          <span className="sr-only">In Seerr's watchlist</span>
-        </span>
-      ) : (
-        <button
-          type="button"
-          onClick={watch.start}
-          disabled={watch.isPending}
-          title={watch.error?.message ?? "Add to Seerr's watchlist"}
-          className="flex h-9 items-center gap-1 rounded-md border border-border px-2.5 text-sm font-medium hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
-        >
-          <Bookmark aria-hidden className="size-4" />
-          <span className="sr-only md:not-sr-only">
-            {watch.isPending ? "Adding…" : watch.error ? "Retry" : "Watchlist"}
-          </span>
-          <span className="sr-only"> (add to Seerr's watchlist)</span>
-        </button>
+      <ActionButton share={share} candidate={candidate} action={main} look="smallMain" />
+      {others.length > 0 && (
+        <ActionsMenu share={share} candidate={candidate} actions={others} trigger="small" />
       )}
     </div>
   );
@@ -332,6 +411,12 @@ function LinkLogo({ link }: { link: WatchLink }) {
       <Play aria-hidden className="size-5" fill="currentColor" />
     </span>
   );
+}
+
+// The buttons of this Candidate: the Actions set up for its type, main first.
+function useShareActions(candidate: Candidate): RuleAction[] {
+  const { data } = useQuery(settingsQuery());
+  return shareActions(data?.settings, candidate.type);
 }
 
 // Adds the Candidate through Seerr, requested or in its watchlist, then

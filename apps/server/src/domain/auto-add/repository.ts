@@ -53,6 +53,14 @@ export class RuleRepository {
   }
 }
 
+// The column holds what save() wrote; anything else reads as requesting, as
+// every Rule did before Actions.
+function actionOf(action: string): Rule["action"] {
+  if (action === "SEERR_WATCHLIST") return "SEERR_WATCHLIST";
+  if (action === "SNUG_WATCHLIST") return "SNUG_WATCHLIST";
+  return "SEERR_REQUEST";
+}
+
 type RuleRow = { id: string; name: string; enabled: number; action: string; conditions: string };
 
 function toRule(row: RuleRow): Rule {
@@ -60,7 +68,7 @@ function toRule(row: RuleRow): Rule {
     id: row.id,
     name: row.name,
     enabled: row.enabled === 1,
-    action: row.action === "SEERR_WATCHLIST" ? "SEERR_WATCHLIST" : "SEERR_REQUEST",
+    action: actionOf(row.action),
     ...ConditionsSchema.parse(JSON.parse(row.conditions)),
   };
 }

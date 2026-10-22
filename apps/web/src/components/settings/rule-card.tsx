@@ -14,9 +14,10 @@ import { inputClass } from "./fields";
 
 // What each Action reads as in the form.
 const ACTION_LABELS: Record<RuleAction, string> = {
-  [RuleAction.UNSPECIFIED]: "Add to the library (request it in Seerr)",
-  [RuleAction.SEERR_REQUEST]: "Add to the library (request it in Seerr)",
+  [RuleAction.UNSPECIFIED]: "Request in Seerr (it downloads)",
+  [RuleAction.SEERR_REQUEST]: "Request in Seerr (it downloads)",
   [RuleAction.SEERR_WATCHLIST]: "Add to Seerr's watchlist (nothing is downloaded)",
+  [RuleAction.SNUG_WATCHLIST]: "Add to Snug's Watchlist (TV shows only, nothing is downloaded)",
 };
 
 const buttonClass = "h-9 rounded-md border border-border px-3 text-sm font-medium";
@@ -126,10 +127,11 @@ export function RuleCard({ rule, onDone }: { rule?: Rule; onDone?: () => void })
 // reads: it requests.
 function actionText(action: RuleAction): string {
   if (action === RuleAction.SEERR_WATCHLIST) return "add to Seerr's watchlist";
-  return "add to the library";
+  if (action === RuleAction.SNUG_WATCHLIST) return "add to Snug's Watchlist";
+  return "request in Seerr";
 }
 
-// "If a movie and a single candidate → add to the library", the conditions as
+// "If a movie and a single candidate → request in Seerr", the conditions as
 // chips: all of them must hold.
 function RuleSentence({ rule }: { rule: Rule }) {
   const conditions = conditionsOf(rule);
@@ -205,7 +207,12 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
           <select
             id={`${id}-action`}
             value={current}
-            onChange={(e) => change({ action: Number(e.target.value) as RuleAction })}
+            onChange={(e) => {
+              const action = Number(e.target.value) as RuleAction;
+              // Snug tracks TV shows only: picking it limits the Rule to them.
+              if (action === RuleAction.SNUG_WATCHLIST) change({ action, type: MediaType.TV });
+              else change({ action });
+            }}
             className={inputClass}
           >
             {actions.map((action) => (
@@ -225,6 +232,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
             id={`${id}-type`}
             value={draft.type}
             onChange={(e) => change({ type: Number(e.target.value) as MediaType })}
+            disabled={draft.action === RuleAction.SNUG_WATCHLIST}
             className={inputClass}
           >
             <option value={MediaType.UNSPECIFIED}>Movies and TV shows</option>
@@ -337,6 +345,11 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
   );
 }
 
+// A watchlist, Seerr's or Snug's: nothing is requested.
+function keepsForLater(action: RuleAction): boolean {
+  return action === RuleAction.SEERR_WATCHLIST || action === RuleAction.SNUG_WATCHLIST;
+}
+
 // How many titles the Rule would have added over the latest Shares, and the
 // first of them, posters first, each opening the Share it came from.
 const PREVIEWED = 6;
@@ -354,11 +367,11 @@ function Preview(props: {
     <div className="flex flex-col gap-2 rounded-md bg-surface p-3">
       <p className="text-sm">
         Over your last {props.shares} identified shares, this rule would have{" "}
-        {props.action === RuleAction.SEERR_WATCHLIST ? "put " : "added "}
+        {keepsForLater(props.action) ? "put " : "added "}
         <span className="font-semibold">
           {count} {count === 1 ? "title" : "titles"}
         </span>
-        {props.action === RuleAction.SEERR_WATCHLIST ? " in the watchlist." : "."}
+        {keepsForLater(props.action) ? " in the watchlist." : "."}
       </p>
       {count > 0 && (
         <ul className="flex flex-wrap gap-3">

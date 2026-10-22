@@ -104,3 +104,20 @@ test("PreviewRules says what unsaved Rules would have added, adding nothing", as
   ]);
   expect((await shares.get(id))?.additions).toEqual([]);
 });
+
+test("SaveRule refuses Snug's watchlist on a Rule not limited to TV shows", async () => {
+  const anything = await call("SaveRule", {
+    rule: { name: "Series", enabled: true, action: "RULE_ACTION_SNUG_WATCHLIST" },
+  });
+  expect(anything.body.code).toBe("invalid_argument");
+  expect(anything.body.message).toContain("type: Snug only tracks TV shows");
+  const shows = await call("SaveRule", {
+    rule: {
+      name: "Series",
+      enabled: true,
+      type: "MEDIA_TYPE_TV",
+      action: "RULE_ACTION_SNUG_WATCHLIST",
+    },
+  });
+  expect(shows.body.rule.action).toBe("RULE_ACTION_SNUG_WATCHLIST");
+});

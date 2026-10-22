@@ -16,15 +16,19 @@ export const ConditionsSchema = z.object({
 });
 
 // What a Rule does with a Candidate: request it through Seerr, or put it in
-// Seerr's watchlist, which requests nothing. Each Action names the connection
-// it belongs to: Radarr and Sonarr have no watchlist, they will bring their own.
-const ACTIONS = ["SEERR_REQUEST", "SEERR_WATCHLIST"] as const;
+// Seerr's or Snug's watchlist, which requests nothing. Each Action names the
+// connection it belongs to: Radarr and Sonarr have no watchlist, they will
+// bring their own. Snug tracks TV shows only.
+const ACTIONS = ["SEERR_REQUEST", "SEERR_WATCHLIST", "SNUG_WATCHLIST"] as const;
 
 // What SaveRule accepts.
 export const RuleSchema = ConditionsSchema.extend({
   name: z.string().trim().min(1, "give the rule a name").max(60),
   enabled: z.boolean(),
   action: z.enum(ACTIONS).default("SEERR_REQUEST"),
+}).refine((rule) => rule.action !== "SNUG_WATCHLIST" || rule.type === "TV", {
+  path: ["type"],
+  message: "Snug only tracks TV shows: limit the rule to TV shows",
 });
 
 // When auto add requests a Candidate, or puts it in the watchlist, without a click.
