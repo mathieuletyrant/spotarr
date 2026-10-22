@@ -2,6 +2,7 @@ import { afterEach, expect, mock, test } from "bun:test";
 import { openDatabase } from "../../../db";
 import {
   getGetMovieMovieIdResponseMock,
+  getGetTvTvIdResponseMock,
   getPostRequestResponseMock,
 } from "../../../integrations/seerr/gen/seerr.faker";
 import { fakeFetch } from "../../../testing/fake-fetch";
@@ -108,4 +109,38 @@ test("Radarr or Sonarr directly, or no type, is refused before anything is writt
     code: "invalid_input",
   });
   expect((await shares.get(id))?.additions).toEqual([]);
+});
+
+test("a TV show requested from Seerr also goes on Snug's Watchlist", async () => {
+  const db = await openDatabase(":memory:");
+  const shares = new ShareRepository(db);
+  const settings = new SettingsRepository(db);
+  await settings.update({
+    seerr: { url: "http://seerr.test", apiKey: "key" },
+    snug: { watchlistUrl: "http://snug.test/api/watchlist/token" },
+  });
+  const id = await shares.create({ url: "https://www.instagram.com/reel/y/" }, "instagram.com");
+  await shares.finish(
+    id,
+    {
+      status: "READY",
+      method: "LLM",
+      extractors: ["video"],
+      clues: {},
+      candidates: [
+        { tmdbId: 95396, type: "TV", title: "Severance", confidence: 0.9, libraryState: "ABSENT" },
+      ],
+    },
+    10,
+  );
+  const fetch = fakeFetch({
+    "/api/v1/tv/95396": getGetTvTvIdResponseMock({ mediaInfo: undefined }),
+    "/api/v1/request": getPostRequestResponseMock(),
+    "/api/watchlist/token": { status: "watchlist", added: true },
+  });
+
+  await addToLibrary(id, { tmdbId: 95396, type: "TV" }, { shares, settings });
+
+  expect(paths(fetch)).toEqual(["/api/v1/tv/95396", "/api/v1/request", "/api/watchlist/token"]);
+  expect((await shares.get(id))?.additions.map((a) => a.status)).toEqual(["REQUESTED"]);
 });

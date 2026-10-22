@@ -42,6 +42,12 @@ export const SettingsSchema = z.object({
       collection: z.string().trim().min(1, "a collection needs a name").default("Spotted"),
     })
     .prefault({}),
+  snug: z
+    .object({
+      // Snug's "Watchlist URL", token included. Empty: Snug is off.
+      watchlistUrl: optionalUrl.default(""),
+    })
+    .prefault({}),
   extraction: z
     .object({
       // 15 images at most reach the LLM per Identification: each one costs tokens.

@@ -1,6 +1,7 @@
 import { Jellyfin } from "../../integrations/jellyfin/client";
 import type { LlmConfig } from "../../integrations/llm/client";
 import { Seerr } from "../../integrations/seerr/client";
+import type { SnugConfig } from "../../integrations/snug/client";
 import { Tmdb } from "../../integrations/tmdb/client";
 import type { Settings } from "./schema";
 
@@ -17,6 +18,11 @@ export function seerrFrom({ seerr }: Settings): Seerr {
 
 export function jellyfinFrom({ jellyfin }: Settings): Jellyfin {
   return new Jellyfin({ url: jellyfin.url, apiKey: jellyfin.apiKey });
+}
+
+// Undefined while Snug's Watchlist URL is empty: Snug is off.
+export function snugConfigFrom({ snug }: Settings): SnugConfig | undefined {
+  return snug.watchlistUrl ? { watchlistUrl: snug.watchlistUrl } : undefined;
 }
 
 export function llmConfigFrom({ identification }: Settings): LlmConfig {

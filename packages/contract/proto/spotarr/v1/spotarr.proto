@@ -175,6 +175,7 @@ message Settings {
   AutoAddSettings auto_add = 6 [deprecated = true];
   StreamingSettings streaming = 7;
   JellyfinSettings jellyfin = 8;
+  SnugSettings snug = 9;
 }
 
 message StreamingSettings {
@@ -199,6 +200,12 @@ message JellyfinSettings {
   // The Collection's name, "Spotted" by default. Spotarr owns it: what is put
   // in it by hand goes at the next sync. Renamed, a new one is made.
   optional string collection = 4;
+}
+
+message SnugSettings {
+  // The URL Snug shows in its Settings → Spotarr: "https://snug…/api/watchlist/<token>".
+  // Every TV show Spotarr adds goes on Snug's Watchlist. Empty: off.
+  optional string watchlist_url = 1;
 }
 
 // Replaced by the Rules.
