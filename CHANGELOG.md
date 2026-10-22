@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/mathieuletyrant/spotarr/compare/v0.13.0...v0.14.0) (2026-10-22)
+
+
+### Features
+
+* Snug's Watchlist as a Rule Action; a Share's buttons are the Rules' Actions ([#193](https://github.com/mathieuletyrant/spotarr/issues/193)) ([e873ff1](https://github.com/mathieuletyrant/spotarr/commit/e873ff12c6bc3f8add369693710e4e3af61a23ab))
+
 ## [0.13.0](https://github.com/mathieuletyrant/spotarr/compare/v0.12.0...v0.13.0) (2026-10-19)
 
 
