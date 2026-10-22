@@ -14,8 +14,8 @@ import { inputClass } from "./fields";
 
 // What each Action reads as in the form.
 const ACTION_LABELS: Record<RuleAction, string> = {
-  [RuleAction.UNSPECIFIED]: "Add to the library (request it in Seerr)",
-  [RuleAction.SEERR_REQUEST]: "Add to the library (request it in Seerr)",
+  [RuleAction.UNSPECIFIED]: "Request in Seerr (it downloads)",
+  [RuleAction.SEERR_REQUEST]: "Request in Seerr (it downloads)",
   [RuleAction.SEERR_WATCHLIST]: "Add to Seerr's watchlist (nothing is downloaded)",
   [RuleAction.SNUG_WATCHLIST]: "Add to Snug's Watchlist (TV shows only, nothing is downloaded)",
 };
@@ -128,10 +128,10 @@ export function RuleCard({ rule, onDone }: { rule?: Rule; onDone?: () => void })
 function actionText(action: RuleAction): string {
   if (action === RuleAction.SEERR_WATCHLIST) return "add to Seerr's watchlist";
   if (action === RuleAction.SNUG_WATCHLIST) return "add to Snug's Watchlist";
-  return "add to the library";
+  return "request in Seerr";
 }
 
-// "If a movie and a single candidate → add to the library", the conditions as
+// "If a movie and a single candidate → request in Seerr", the conditions as
 // chips: all of them must hold.
 function RuleSentence({ rule }: { rule: Rule }) {
   const conditions = conditionsOf(rule);

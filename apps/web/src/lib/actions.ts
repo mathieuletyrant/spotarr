@@ -9,16 +9,16 @@ export const ACTION_BUTTONS: Record<
   { label: string; phone: string; short: string; done: string; icon: LucideIcon }
 > = {
   [RuleAction.UNSPECIFIED]: {
-    label: "Add to the library",
-    phone: "Add to library",
-    short: "Library",
+    label: "Request in Seerr",
+    phone: "Request in Seerr",
+    short: "Request",
     done: "Requested",
     icon: Plus,
   },
   [RuleAction.SEERR_REQUEST]: {
-    label: "Add to the library",
-    phone: "Add to library",
-    short: "Library",
+    label: "Request in Seerr",
+    phone: "Request in Seerr",
+    short: "Request",
     done: "Requested",
     icon: Plus,
   },
