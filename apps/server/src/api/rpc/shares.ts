@@ -7,6 +7,7 @@ import { addToLibrary } from "../../domain/shares/use-cases/add-to-library";
 import { createShare } from "../../domain/shares/use-cases/create-share";
 import { deleteShare } from "../../domain/shares/use-cases/delete-share";
 import { listHistory } from "../../domain/shares/use-cases/list-history";
+import { addToSnug } from "../../domain/snug/use-cases/add-to-snug";
 import { watchCandidate } from "../../domain/watchlist/use-cases/watch-candidate";
 import { SpotarrError } from "../../errors";
 import { shareMessage } from "../messages";
@@ -60,6 +61,12 @@ export function shareRpcs(
     },
 
     async add(req) {
+      if (req.action === RuleAction.SNUG_WATCHLIST) {
+        const type = mediaTypeOf(req.type);
+        if (!type) throw new SpotarrError("invalid_input", "type is required");
+        await addToSnug(req.shareId, { tmdbId: req.tmdbId, type }, { shares, settings });
+        return shareAnswer(req.shareId);
+      }
       if (req.action === RuleAction.SEERR_WATCHLIST) {
         await watchCandidate(req.shareId, req.tmdbId, mediaTypeOf(req.type), { shares, settings });
         return shareAnswer(req.shareId);

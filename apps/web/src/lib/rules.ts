@@ -25,10 +25,13 @@ function ratingOf(rule: Rule): string | undefined {
 }
 
 // The Actions a Rule can take: those of the connections set up. Seerr's need
-// its URL and API key; Radarr and Sonarr will bring their own.
+// its URL and API key, Snug's its Watchlist URL; Radarr and Sonarr will bring
+// their own.
 export function actionsSetUp(settings: Settings | undefined): RuleAction[] {
+  const actions: RuleAction[] = [];
   if (settings?.seerr?.url && settings.seerr.apiKey) {
-    return [RuleAction.SEERR_REQUEST, RuleAction.SEERR_WATCHLIST];
+    actions.push(RuleAction.SEERR_REQUEST, RuleAction.SEERR_WATCHLIST);
   }
-  return [];
+  if (settings?.snug?.watchlistUrl) actions.push(RuleAction.SNUG_WATCHLIST);
+  return actions;
 }

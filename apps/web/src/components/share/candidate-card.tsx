@@ -11,6 +11,7 @@ import {
 } from "@spotarr/contract";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, BookmarkCheck, Play, Plus } from "lucide-react";
+import { settingsQuery } from "../../queries/settings";
 import { watchLinksQuery } from "../../queries/shares";
 import { Keywords } from "../keywords";
 import { Poster } from "../poster";
@@ -103,7 +104,7 @@ function BestMatchActions({
   links: WatchLink[];
 }) {
   const add = useAdd(share, candidate, RuleAction.SEERR_REQUEST);
-  const watch = useAdd(share, candidate, RuleAction.SEERR_WATCHLIST);
+  const watch = useWatchlist(share, candidate);
   const [first, ...more] = links;
   const canAdd = candidate.status === CandidateStatus.CAN_ADD;
   const failure = candidate.failure ?? add.error?.message;
@@ -161,7 +162,7 @@ function BestMatchActions({
             {add.isPending ? "Adding…" : failure ? "Try adding again" : "Add to the library anyway"}
           </button>
           {watch.isDone ? (
-            <InWatchlist />
+            <InWatchlist name={watch.name} />
           ) : (
             <button
               type="button"
@@ -169,7 +170,7 @@ function BestMatchActions({
               disabled={watch.isPending}
               className="text-sm text-text-muted underline hover:text-text"
             >
-              {watch.isPending ? "Adding…" : "Add to Seerr's watchlist"}
+              {watch.isPending ? "Adding…" : `Add to ${watch.name}`}
             </button>
           )}
         </div>
@@ -180,9 +181,9 @@ function BestMatchActions({
   );
 }
 
-// "Add to Seerr's watchlist", then "In watchlist" once Seerr took it.
-function WatchButton({ watch }: { watch: ReturnType<typeof useAdd> }) {
-  if (watch.isDone) return <InWatchlist />;
+// "Add to Seerr's watchlist" (or Snug's), then "In watchlist" once it took it.
+function WatchButton({ watch }: { watch: ReturnType<typeof useWatchlist> }) {
+  if (watch.isDone) return <InWatchlist name={watch.name} />;
   return (
     <button
       type="button"
@@ -191,17 +192,17 @@ function WatchButton({ watch }: { watch: ReturnType<typeof useAdd> }) {
       className="flex h-10 items-center gap-1.5 rounded-md border border-border px-4 text-sm font-medium hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
     >
       <Bookmark aria-hidden className="size-4" />
-      {watch.isPending ? "Adding…" : "Add to Seerr's watchlist"}
+      {watch.isPending ? "Adding…" : `Add to ${watch.name}`}
     </button>
   );
 }
 
 // Spotarr keeps no trace of the watchlist: this shows only until the page reloads.
-function InWatchlist() {
+function InWatchlist({ name }: { name: string }) {
   return (
     <span className="flex items-center gap-1.5 text-sm text-text-muted">
       <BookmarkCheck aria-hidden className="size-4" />
-      In watchlist
+      In {name}
     </span>
   );
 }
@@ -263,7 +264,7 @@ function OtherCandidate({ share, candidate }: { share: Share; candidate: Candida
 // beside them from md up.
 function SmallAction({ share, candidate }: { share: Share; candidate: Candidate }) {
   const add = useAdd(share, candidate, RuleAction.SEERR_REQUEST);
-  const watch = useAdd(share, candidate, RuleAction.SEERR_WATCHLIST);
+  const watch = useWatchlist(share, candidate);
   if (candidate.status !== CandidateStatus.CAN_ADD) return <Status candidate={candidate} />;
   const failure = candidate.failure ?? add.error?.message;
   return (
@@ -282,23 +283,23 @@ function SmallAction({ share, candidate }: { share: Share; candidate: Candidate 
         <span className="sr-only"> (add to the library)</span>
       </button>
       {watch.isDone ? (
-        <span title="In Seerr's watchlist" className="flex h-9 items-center px-2 text-text-muted">
+        <span title={`In ${watch.name}`} className="flex h-9 items-center px-2 text-text-muted">
           <BookmarkCheck aria-hidden className="size-4" />
-          <span className="sr-only">In Seerr's watchlist</span>
+          <span className="sr-only">In {watch.name}</span>
         </span>
       ) : (
         <button
           type="button"
           onClick={watch.start}
           disabled={watch.isPending}
-          title={watch.error?.message ?? "Add to Seerr's watchlist"}
+          title={watch.error?.message ?? `Add to ${watch.name}`}
           className="flex h-9 items-center gap-1 rounded-md border border-border px-2.5 text-sm font-medium hover:bg-text/8 focus-visible:outline-2 focus-visible:outline-accent"
         >
           <Bookmark aria-hidden className="size-4" />
           <span className="sr-only md:not-sr-only">
             {watch.isPending ? "Adding…" : watch.error ? "Retry" : "Watchlist"}
           </span>
-          <span className="sr-only"> (add to Seerr's watchlist)</span>
+          <span className="sr-only"> (add to {watch.name})</span>
         </button>
       )}
     </div>
@@ -332,6 +333,19 @@ function LinkLogo({ link }: { link: WatchLink }) {
       <Play aria-hidden className="size-5" fill="currentColor" />
     </span>
   );
+}
+
+// Where "Watchlist" puts this Candidate: a TV show goes to Snug once Snug is
+// set up (Snug tracks TV shows only), anything else to Seerr's watchlist.
+function useWatchlist(share: Share, candidate: Candidate) {
+  const { data } = useQuery(settingsQuery());
+  const snug = candidate.type === MediaType.TV && !!data?.settings?.snug?.watchlistUrl;
+  const watch = useAdd(
+    share,
+    candidate,
+    snug ? RuleAction.SNUG_WATCHLIST : RuleAction.SEERR_WATCHLIST,
+  );
+  return { ...watch, name: snug ? "Snug's Watchlist" : "Seerr's watchlist" };
 }
 
 // Adds the Candidate through Seerr, requested or in its watchlist, then

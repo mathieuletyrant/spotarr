@@ -4,7 +4,6 @@ import { seerrFrom } from "../../settings/adapters";
 import type { SettingsRepository } from "../../settings/repository";
 import type { ShareRepository } from "../../shares/repository";
 import type { Candidate } from "../../shares/types";
-import { addToSnug } from "../../snug/use-cases/add-to-snug";
 
 // A click on "Add to Seerr's watchlist": the Candidate goes to Seerr's
 // watchlist, without being requested. Unlike auto add, Seerr failing fails
@@ -23,5 +22,4 @@ export async function watchCandidate(
 
   await seerrFrom(await settings.get()).addToWatchlist(type, tmdbId);
   log({ shareId, step: "watchlist", tmdbId });
-  await addToSnug(shareId, { tmdbId, type }, settings);
 }

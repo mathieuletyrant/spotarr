@@ -74,6 +74,7 @@ function fromMessage(rule: RuleMessage | undefined): Rule {
 // UNSPECIFIED, as an older client sends it, means requesting.
 function actionOf(action: RuleAction | undefined): Rule["action"] {
   if (action === RuleAction.SEERR_WATCHLIST) return "SEERR_WATCHLIST";
+  if (action === RuleAction.SNUG_WATCHLIST) return "SNUG_WATCHLIST";
   return "SEERR_REQUEST";
 }
 

@@ -37,3 +37,17 @@ test("a Rule offers Seerr's Actions only once Seerr is set up", () => {
   const seerr = create(SettingsSchema, { seerr: { url: "http://seerr:5055", apiKey: "k" } });
   expect(actionsSetUp(seerr)).toEqual([RuleAction.SEERR_REQUEST, RuleAction.SEERR_WATCHLIST]);
 });
+
+test("a Rule offers Snug's watchlist once Snug's URL is set, with or without Seerr", () => {
+  const snug = create(SettingsSchema, { snug: { watchlistUrl: "http://snug/api/watchlist/t" } });
+  expect(actionsSetUp(snug)).toEqual([RuleAction.SNUG_WATCHLIST]);
+  const both = create(SettingsSchema, {
+    seerr: { url: "http://seerr:5055", apiKey: "k" },
+    snug: { watchlistUrl: "http://snug/api/watchlist/t" },
+  });
+  expect(actionsSetUp(both)).toEqual([
+    RuleAction.SEERR_REQUEST,
+    RuleAction.SEERR_WATCHLIST,
+    RuleAction.SNUG_WATCHLIST,
+  ]);
+});

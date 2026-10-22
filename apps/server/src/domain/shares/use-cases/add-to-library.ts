@@ -1,7 +1,6 @@
 import { SpotarrError } from "../../../errors";
 import { seerrFrom } from "../../settings/adapters";
 import type { SettingsRepository } from "../../settings/repository";
-import { addToSnug } from "../../snug/use-cases/add-to-snug";
 import type { ShareRepository } from "../repository";
 import type { Candidate } from "../types";
 
@@ -23,7 +22,7 @@ export type AdditionRequest = {
 };
 
 // Adds one Candidate of a Share to the library through Seerr, records an
-// Addition saying what happened. A TV show also goes on Snug's Watchlist.
+// Addition saying what happened.
 // Seerr failing is recorded too (FAILED, with the reason), so the history shows it.
 export async function addToLibrary(
   shareId: string,
@@ -60,14 +59,12 @@ export async function addToLibrary(
     if (state !== "ABSENT") {
       await shares.addAddition(shareId, { ...addition, status: "ALREADY_PRESENT" });
       await shares.setLibraryState(type, request.tmdbId, state);
-      await addToSnug(shareId, addition, settings);
       return;
     }
     await seerr.request(type, request.tmdbId);
     await shares.addAddition(shareId, { ...addition, status: "REQUESTED" });
     // Shown at once, without waiting for Seerr to report the request.
     await shares.setLibraryState(type, request.tmdbId, "REQUESTED");
-    await addToSnug(shareId, addition, settings);
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
     await shares.addAddition(shareId, { ...addition, status: "FAILED", error: reason });
