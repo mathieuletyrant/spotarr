@@ -15,7 +15,9 @@ function StatsPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-3xl font-semibold">Stats</h1>
-        <p className="mt-1 text-text-muted">What Spotarr found and added since the first share.</p>
+        <p className="mt-1 hidden text-text-muted sm:block">
+          What Spotarr found and added since the first share.
+        </p>
       </div>
       {isPending && <p className="text-text-muted">Loading…</p>}
       {error && <p className="text-status-error">{error.message}</p>}

@@ -8,6 +8,47 @@
   --shadow-card: 0 1px 2px var(--color-shadow), 0 8px 24px var(--color-shadow);
 }
 
+/* The phone's tab bar: its height, the iPhone's Home indicator included. Zero
+   from sm on, where the pages are in the header. */
+:root {
+  --tab-bar-height: calc(4rem + env(safe-area-inset-bottom));
+}
+@media (width >= 40rem) {
+  :root {
+    --tab-bar-height: 0px;
+  }
+}
+
+/* Room at the bottom of the page for the tab bar, on a phone. */
+@utility pb-tab-bar {
+  padding-bottom: calc(var(--tab-bar-height) + 1.5rem);
+}
+
+/* Floats 1.5rem above the tab bar on a phone, above the screen's edge elsewhere:
+   the Save bar and the toasts. */
+@utility bottom-floating {
+  bottom: calc(var(--tab-bar-height) + 1.5rem);
+}
+
+/* The Home indicator's room, under the tab bar's buttons. */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* A row that scrolls sideways without showing a scrollbar: the status filters
+   and the Settings' tabs, on a phone. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Fades the row's right end out: what is cut there can be scrolled to. */
+@utility fade-right {
+  mask-image: linear-gradient(to right, #000 85%, transparent);
+}
+
 body {
   @apply bg-bg font-sans text-text antialiased;
 }

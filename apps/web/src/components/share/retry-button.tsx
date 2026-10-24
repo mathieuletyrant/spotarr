@@ -5,6 +5,7 @@ import { RotateCw } from "lucide-react";
 import { type SubmitEvent, useRef, useState } from "react";
 import { EFFORTS } from "../../lib/effort";
 import { inputClass } from "../settings/fields";
+import { HEADER_ACTION, HEADER_ACTION_LABEL } from "./header-action";
 
 // "Retry identification" opens a dialog: choose the effort, add a hint for the
 // LLM if you want, then retry. Both are for this retry only. A native <dialog>:
@@ -35,10 +36,10 @@ export function RetryButton({ share }: { share: Share }) {
         type="button"
         onClick={() => dialog.current?.showModal()}
         disabled={share.summary === Summary.IN_PROGRESS}
-        className="flex h-10 items-center gap-2 rounded-md border border-border px-4 whitespace-nowrap hover:bg-surface"
+        className={`${HEADER_ACTION}`}
       >
         <RotateCw aria-hidden className="size-4" />
-        Retry identification
+        <span className={HEADER_ACTION_LABEL}>Retry identification</span>
       </button>
 
       <dialog

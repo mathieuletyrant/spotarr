@@ -31,7 +31,8 @@ export function ShareRow({ share }: { share: Share }) {
 }
 
 // On a phone or a tablet: the poster, then what was found, where and when it came from,
-// and the status.
+// and the status. Three lines beside a medium poster on a phone, so a screen
+// holds twice as many Shares; the genres come back from sm on.
 function ShareCard({ share }: { share: Share }) {
   const { day, time } = shareDate(share.createdAt ? timestampDate(share.createdAt) : new Date());
   const [first] = share.candidates;
@@ -39,14 +40,14 @@ function ShareCard({ share }: { share: Share }) {
     <Link
       to="/shares/$shareId"
       params={{ shareId: share.id }}
-      className="flex gap-3 p-3 hover:bg-text/4 lg:hidden"
+      className="flex gap-3 px-3 py-2.5 hover:bg-text/4 lg:hidden"
     >
       {first ? (
-        <Poster title={first.title} url={first.posterUrl} size="large" />
+        <Poster title={first.title} url={first.posterUrl} />
       ) : (
         <div
           aria-hidden
-          className="h-27 w-18 shrink-0 rounded-md border border-dashed border-border"
+          className="h-21 w-14 shrink-0 rounded-md border border-dashed border-border"
         />
       )}
       <div className="flex min-w-0 flex-1 flex-col justify-center gap-1">
@@ -57,9 +58,11 @@ function ShareCard({ share }: { share: Share }) {
           {share.source} · {day} {time}
         </p>
         {first && share.candidates.length === 1 && first.genres.length > 0 && (
-          <p className="truncate text-xs text-text-muted">{first.genres.join(" · ")}</p>
+          <p className="hidden truncate text-xs text-text-muted sm:block">
+            {first.genres.join(" · ")}
+          </p>
         )}
-        <div className="mt-1 flex items-center gap-3">
+        <div className="flex items-center gap-3">
           <Status share={share} />
           {/* Outside the title, whose line is cut short on a phone. */}
           {first && share.candidates.length === 1 && (
