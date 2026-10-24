@@ -19,21 +19,19 @@ export function RulesList() {
     <div className="flex flex-col gap-3 md:col-span-2">
       {!canAct && (
         <p className="text-sm text-text-muted">
-          A rule needs somewhere to send candidates: set up Seerr in{" "}
+          Set up Seerr in{" "}
           <Link
             to="/settings"
             search={{ section: "connections" }}
             className="font-medium text-text underline"
           >
             Connections
-          </Link>
-          .
+          </Link>{" "}
+          first.
         </p>
       )}
       {canAct && rules.length === 0 && !adding && (
-        <p className="text-sm text-text-muted">
-          No rule yet: you choose every candidate yourself, in the History.
-        </p>
+        <p className="text-sm text-text-muted">No rule yet: you pick every candidate yourself.</p>
       )}
       {rules.map((rule) => (
         <RuleCard key={rule.id} rule={rule} />

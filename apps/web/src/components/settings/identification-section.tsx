@@ -10,10 +10,7 @@ export function IdentificationSection({ form }: { form: Form }) {
       title="Identification"
       description="The LLM names the works, TMDB confirms them."
     >
-      <SubHeading
-        title="LLM"
-        description="Reads what was shared and names the works. Any OpenAI-compatible API works."
-      />
+      <SubHeading title="LLM" description="Any OpenAI-compatible API." />
       <TextField form={form} name="identification.llmApiUrl" label="API URL" />
       <SecretField form={form} name="identification.llmApiKey" label="API key" />
       <TextField
@@ -21,24 +18,24 @@ export function IdentificationSection({ form }: { form: Form }) {
         name="identification.model"
         label="Model"
         placeholder="provider/model"
-        hint="It gets a video's frames and sound, or a page's text and pictures: it must read images and hear audio."
+        hint="Must handle images and audio."
       />
       <SelectField
         form={form}
         name="identification.effort"
         label="Effort"
-        hint="How long the LLM thinks: higher is slower and dearer. Retry can ask for another."
+        hint="Higher is slower and costs more."
         options={EFFORTS}
       />
 
-      <SubHeading title="TMDB" description="Confirms the works and gives their details." />
+      <SubHeading title="TMDB" description="Confirms the works and fetches details." />
       <SecretField form={form} name="identification.tmdbToken" label="Read access token" />
       <TextField
         form={form}
         name="identification.language"
         label="Title language"
         placeholder="fr-FR"
-        hint="Language of the titles and overviews, as a tag like fr-FR or en-US."
+        hint="For titles and overviews, like fr-FR."
       />
     </Section>
   );

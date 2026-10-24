@@ -8,13 +8,13 @@ export function ApiSection({ form }: { form: Form }) {
       id="access"
       icon={<KeyRound aria-hidden className="size-5" />}
       title="API"
-      description="What lets the iPhone and scripts call Spotarr, with every right."
+      description="Full access for the iPhone Shortcut and scripts."
     >
       <CopyField
         id="api-token"
         label="API token"
         value={form.values["access.apiToken"] ?? ""}
-        hint="Sent by the iPhone and scripts in the Authorization header. It also signs in to this page."
+        hint="Sent in the Authorization header. Also signs in to this page."
       />
     </Section>
   );

@@ -16,8 +16,8 @@ export function ShareActionsSection({ form }: { form: Form }) {
       id="share-actions"
       icon={<MousePointerClick aria-hidden className="size-5" />}
       title="Buttons on a Share"
-      description="The same Actions as a rule's, by hand: pick the big button for movies and for TV shows."
-      info="The other Actions set up show beside it, smaller. An Action shows once its connection is set: Seerr's need its URL and API key, Snug's its Watchlist URL, and Snug takes TV shows only."
+      description="The main button on a share, for movies and TV shows."
+      info="Other actions go in the menu next to it. An action shows once its connection is set up. Snug takes TV shows only."
     >
       <SelectField
         form={form}
@@ -42,9 +42,7 @@ function optionsFor(actions: RuleAction[]) {
     {
       value: "",
       label:
-        first === undefined
-          ? "Nothing set up yet"
-          : `${ACTION_BUTTONS[first].label} (first set up)`,
+        first === undefined ? "Nothing set up yet" : `${ACTION_BUTTONS[first].label} (default)`,
     },
   ];
   for (const action of actions) {
