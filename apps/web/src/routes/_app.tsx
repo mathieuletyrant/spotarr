@@ -73,7 +73,7 @@ function AppLayout() {
             ))}
           </nav>
           {/* The page's main action, on every page: share a link from the computer.
-              On a phone, Share is in the tab bar. */}
+              Not on a phone, where links are shared through the Shortcut. */}
           <div className="ml-auto flex shrink-0 items-center gap-1">
             <ServicesStatus />
             <ThemeButton />
@@ -102,8 +102,9 @@ function AppLayout() {
   );
 }
 
-// On a phone: the pages and Share at the bottom of the screen, where the thumb
-// is, like an iOS app. Above the iPhone's Home indicator (pb-safe).
+// On a phone: the pages at the bottom of the screen, where the thumb is, like
+// an iOS app. Above the iPhone's Home indicator (pb-safe). No Share: on a phone
+// a link is shared from the app it is in, through the Shortcut.
 function TabBar() {
   // A Share's page belongs to the History: its tab stays lit there.
   const onShare = useLocation({ select: (location) => location.pathname.startsWith("/shares/") });
@@ -118,23 +119,10 @@ function TabBar() {
             data-lit={page.to === "/" && onShare}
             className="flex flex-1 flex-col items-center justify-center gap-1 text-xs text-text-muted data-[lit=true]:font-medium data-[lit=true]:text-text [&.active]:font-medium [&.active]:text-text"
           >
-            {/* As tall as Share's pill, so the four labels line up. */}
-            <span className="flex h-7 items-center">
-              <page.icon aria-hidden className="size-5" />
-            </span>
+            <page.icon aria-hidden className="size-5" />
             {page.label}
           </Link>
         ))}
-        <Link
-          to="."
-          search={(previous) => ({ ...previous, share: true })}
-          className="flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium text-text"
-        >
-          <span className="flex h-7 w-11 items-center justify-center rounded-full bg-accent text-accent-text">
-            <Plus aria-hidden className="size-5" />
-          </span>
-          Share
-        </Link>
       </div>
     </nav>
   );
