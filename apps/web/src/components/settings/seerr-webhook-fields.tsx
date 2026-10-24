@@ -41,28 +41,25 @@ export function SeerrWebhookFields({ form }: { form: Form }) {
 
   return (
     <ol className="flex flex-col gap-6 md:col-span-2">
-      <Step
-        n={1}
-        title="In Seerr, open Settings → Notifications → Webhook and tick Enable Agent."
-      />
-      <Step n={2} title="Copy these three values into it.">
+      <Step n={1} title="In Seerr: Settings → Notifications → Webhook, tick Enable Agent." />
+      <Step n={2} title="Copy these three values.">
         <CopyField
           id="seerr-webhook-url"
           label="Webhook URL"
           value={`${window.location.origin}/seerr/webhook`}
           secret={false}
-          hint="It uses this page's address; change it if Seerr reaches Spotarr at another one."
+          hint="Change it if Seerr reaches Spotarr at another address."
         />
         <CopyField
           id="seerr-token"
           label="Authorization header"
           value={token}
-          hint="The Seerr token: it only lets Seerr report changes."
+          hint="Only lets Seerr report changes."
         >
           <RegenerateButton
             id="regenerate-seerr"
             question="Make a new Seerr token?"
-            warning="The current one stops working at once: paste the new one into Seerr's Webhook agent."
+            warning="The current one stops working. Paste the new one into Seerr."
             regenerate={() => regenerate.mutateAsync({})}
           />
         </CopyField>
@@ -71,10 +68,10 @@ export function SeerrWebhookFields({ form }: { form: Form }) {
           label="JSON payload"
           value={PAYLOAD}
           secret={false}
-          hint="Replaces Seerr's default payload: Spotarr only needs the title."
+          hint="Replaces Seerr's default payload."
         />
       </Step>
-      <Step n={3} title="Tick these notification types, and leave the Issue ones.">
+      <Step n={3} title="Tick these types (not the Issue ones).">
         <ul className="flex flex-wrap gap-1.5">
           {NOTIFICATION_TYPES.map((type) => (
             <li key={type} className="rounded-full bg-text/8 px-2.5 py-1 text-xs font-medium">
@@ -83,7 +80,7 @@ export function SeerrWebhookFields({ form }: { form: Form }) {
           ))}
         </ul>
       </Step>
-      <Step n={4} title="Press Test: Seerr shows it passed. Then Save." />
+      <Step n={4} title="Press Test, then Save." />
     </ol>
   );
 }
