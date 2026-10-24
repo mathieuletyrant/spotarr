@@ -103,23 +103,24 @@ function AppLayout() {
 }
 
 // On a phone: the pages at the bottom of the screen, where the thumb is, like
-// an iOS app. Above the iPhone's Home indicator (pb-safe). No Share: on a phone
-// a link is shared from the app it is in, through the Shortcut.
+// an iOS app. Its buttons hug the top edge, as Snug's and iOS's do, above the
+// iPhone's Home indicator (pb-safe). No Share: on a phone a link is shared from
+// the app it is in, through the Shortcut.
 function TabBar() {
   // A Share's page belongs to the History: its tab stays lit there.
   const onShare = useLocation({ select: (location) => location.pathname.startsWith("/shares/") });
 
   return (
     <nav className="pb-safe fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface sm:hidden">
-      <div className="mx-auto flex h-16 max-w-md items-stretch">
+      <div className="mx-auto flex max-w-md">
         {pages.map((page) => (
           <Link
             key={page.to}
             to={page.to}
             data-lit={page.to === "/" && onShare}
-            className="flex flex-1 flex-col items-center justify-center gap-1 text-xs text-text-muted data-[lit=true]:font-medium data-[lit=true]:text-text [&.active]:font-medium [&.active]:text-text"
+            className="flex flex-1 flex-col items-center gap-0.5 pt-2 pb-1 text-xs text-text-muted data-[lit=true]:font-medium data-[lit=true]:text-text [&.active]:font-medium [&.active]:text-text"
           >
-            <page.icon aria-hidden className="size-5" />
+            <page.icon aria-hidden className="size-6" />
             {page.label}
           </Link>
         ))}
