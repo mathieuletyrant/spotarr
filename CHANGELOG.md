@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.1](https://github.com/mathieuletyrant/spotarr/compare/v0.15.0...v0.15.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **web:** give the logo and Home Screen icon hashed names ([#199](https://github.com/mathieuletyrant/spotarr/issues/199)) ([b3df6e3](https://github.com/mathieuletyrant/spotarr/commit/b3df6e34a7168115e9168c4813a63886214c82ff))
+
 ## [0.15.0](https://github.com/mathieuletyrant/spotarr/compare/v0.14.0...v0.15.0) (2026-10-24)
 
 
