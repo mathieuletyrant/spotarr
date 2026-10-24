@@ -2,6 +2,7 @@ import { Code, ConnectError } from "@connectrpc/connect";
 import { createFileRoute, Link, Outlet, redirect, useNavigate } from "@tanstack/react-router";
 import { Menu, Plus, X } from "lucide-react";
 import { useState } from "react";
+import logo from "../assets/logo.svg";
 import { ServicesStatus } from "../components/services-status";
 import { ShareDialog } from "../components/share-dialog";
 import { ThemeButton } from "../components/theme-button";
@@ -48,7 +49,7 @@ function AppLayout() {
       <div className="min-h-screen">
         <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
           <Link to="/" className="flex shrink-0 items-center gap-2 font-semibold">
-            <img src="/favicon.svg" alt="" className="size-6 shrink-0" />
+            <img src={logo} alt="" className="size-6 shrink-0" />
             Spotarr
           </Link>
           {/* On a phone the pages don't fit beside the actions: they go in the menu below. */}

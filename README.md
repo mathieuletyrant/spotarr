@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="apps/web/public/favicon.svg" width="96" alt="Spotarr" />
+<img src="apps/web/src/assets/logo.svg" width="96" alt="Spotarr" />
 
 # Spotarr
 
