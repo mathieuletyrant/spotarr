@@ -28,7 +28,7 @@ function Showcase() {
     <div className="flex flex-col justify-center gap-10 border-b border-border bg-surface p-8 sm:p-12 lg:border-r lg:border-b-0 lg:p-16">
       <div className="flex items-center gap-3">
         <img src={logo} alt="" className="size-12 lg:size-16" />
-        <span className="text-3xl font-semibold lg:text-4xl">Spotarr</span>
+        <span className="font-display text-3xl font-semibold lg:text-4xl">Spotarr</span>
       </div>
       <div className="flex flex-col gap-3">
         <p className="text-2xl font-semibold lg:text-3xl">Share a link. Get the film.</p>

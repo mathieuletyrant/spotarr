@@ -1,12 +1,35 @@
 @import "tailwindcss";
 /* Colors, fonts, spacing and radii from packages/design-tokens: bg-surface, text-muted, rounded-md… */
 @import "@spotarr/design-tokens/tokens.css";
+@import "@fontsource-variable/fraunces";
+
+/* The cards' soft shadow, tinted by the shadow token (none in dark mode): shadow-card. */
+@theme {
+  --shadow-card: 0 1px 2px var(--color-shadow), 0 8px 24px var(--color-shadow);
+}
 
 body {
   @apply bg-bg font-sans text-text antialiased;
 }
 
 @layer base {
+  /* Page and card titles in Fraunces; everything else stays in Inter. */
+  h1,
+  h2 {
+    @apply font-display tracking-tight;
+  }
+
+  /* A lamp's light at the top of the page, in dark mode only (the glow token is
+     transparent in light mode). A fixed layer, so scrolling does not repaint it. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse at top, var(--color-glow), transparent 55%);
+  }
+
   /* Tailwind v4 dropped the pointer cursor on buttons; bring it back everywhere. */
   button:not(:disabled),
   [role="button"]:not(:disabled) {

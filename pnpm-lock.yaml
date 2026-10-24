@@ -242,6 +242,9 @@ importers:
       '@connectrpc/connect-web':
         specifier: 2.2.0
         version: 2.2.0(@bufbuild/protobuf@2.16.0)(@connectrpc/connect@2.2.0(@bufbuild/protobuf@2.16.0))
+      '@fontsource-variable/fraunces':
+        specifier: 5.3.0
+        version: 5.3.0
       '@spotarr/contract':
         specifier: workspace:*
         version: link:../../packages/contract
@@ -747,6 +750,9 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@fontsource-variable/fraunces@5.3.0':
+    resolution: {integrity: sha512-9BYGySn4AHEJdgp9Z28tQ3X+laJMEOITXkQarZXeloWQZDq5oOvXJ3kDA8c7MGIfpogIaZfjrQBqmda8POOCKA==}
 
   '@hono/mcp@0.3.2':
     resolution: {integrity: sha512-IJQ4RazhwFLRwcTM95Dj9YfNBYXwOQzd1IfnDy4S3hiaBbtnVY0sWiT83auOOnhaCiE0TTbud4JV9UD30zknXA==}
@@ -4094,6 +4100,8 @@ snapshots:
       '@floating-ui/utils': 0.2.12
 
   '@floating-ui/utils@0.2.12': {}
+
+  '@fontsource-variable/fraunces@5.3.0': {}
 
   '@hono/mcp@0.3.2(@modelcontextprotocol/sdk@1.32.1(supports-color@7.2.0)(zod@4.6.6))(hono-rate-limiter@0.5.4(hono@4.13.13))(hono@4.13.13)(zod@4.6.6)':
     dependencies:

@@ -11,7 +11,7 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="apple-mobile-web-app-title" content="Spotarr" />
     <!-- The bar above the page, on a phone: the header's color, set by applyTheme. -->
-    <meta name="theme-color" content="#F6F7F9" />
+    <meta name="theme-color" content="#F5F0E8" />
     <script>
       // The theme: the one chosen with the header's button (saved in this
       // browser), or the system's. Applied before the page draws, so it never
@@ -29,7 +29,7 @@
         // the CSS that holds it may not be loaded yet.
         document
           .querySelector('meta[name="theme-color"]')
-          .setAttribute("content", dark ? "#15181C" : "#F6F7F9");
+          .setAttribute("content", dark ? "#1D1915" : "#F5F0E8");
       };
       window.applyTheme();
       systemDark.addEventListener("change", window.applyTheme);

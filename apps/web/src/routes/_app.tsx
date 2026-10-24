@@ -48,7 +48,10 @@ function AppLayout() {
     <ToastProvider>
       <div className="min-h-screen">
         <header className="flex items-center gap-4 border-b border-border bg-surface px-4 py-3 md:gap-6 md:px-6">
-          <Link to="/" className="flex shrink-0 items-center gap-2 font-semibold">
+          <Link
+            to="/"
+            className="flex shrink-0 items-center gap-2 font-display text-lg font-semibold"
+          >
             <img src={logo} alt="" className="size-6 shrink-0" />
             Spotarr
           </Link>
