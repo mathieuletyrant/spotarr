@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/mathieuletyrant/spotarr/compare/v0.14.0...v0.15.0) (2026-10-24)
+
+
+### Features
+
+* **web:** new spotlight logo ([#196](https://github.com/mathieuletyrant/spotarr/issues/196)) ([e10e02a](https://github.com/mathieuletyrant/spotarr/commit/e10e02a2a2849ff5f86719bb7ffcbefd8a3809b7)), closes [#195](https://github.com/mathieuletyrant/spotarr/issues/195)
+
 ## [0.14.0](https://github.com/mathieuletyrant/spotarr/compare/v0.13.0...v0.14.0) (2026-10-22)
 
 
