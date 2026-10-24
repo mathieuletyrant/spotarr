@@ -5,6 +5,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Trash2 } from "lucide-react";
 import { useRef } from "react";
 import { useToast } from "../toast";
+import { HEADER_ACTION, HEADER_ACTION_LABEL } from "./header-action";
 
 // Deletes the Share after a confirmation, then goes back to the History and says
 // so in a toast. A
@@ -32,10 +33,10 @@ export function DeleteShareButton({ share }: { share: Share }) {
         type="button"
         onClick={() => dialog.current?.showModal()}
         disabled={processing}
-        className="flex h-10 items-center gap-2 rounded-md border border-border px-4 whitespace-nowrap text-status-error hover:bg-surface"
+        className={`${HEADER_ACTION} text-status-error`}
       >
         <Trash2 aria-hidden className="size-4" />
-        Delete
+        <span className={HEADER_ACTION_LABEL}>Delete</span>
       </button>
 
       <dialog

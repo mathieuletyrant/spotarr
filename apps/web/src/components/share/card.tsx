@@ -11,7 +11,7 @@ export function Card({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-xl border border-border bg-surface-raised p-5">
+    <section className="rounded-xl border border-border bg-surface-raised p-5 shadow-card">
       <h2 className="mb-4 flex items-center gap-2.5 font-semibold">
         <span className="flex size-7 items-center justify-center rounded-md bg-accent/15 text-accent">
           {icon}

@@ -10,7 +10,7 @@ A reel, a TikTok, a YouTube video, an article, a film's page on Letterboxd, Allo
 [![Image](https://img.shields.io/badge/ghcr.io-mathieuletyrant%2Fspotarr-e9a020?logo=docker&logoColor=white)](https://github.com/mathieuletyrant/spotarr/pkgs/container/spotarr)
 ![Bun](https://img.shields.io/badge/Bun-1.4-f6ecdf?logo=bun&logoColor=black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-7-3178c6?logo=typescript&logoColor=white)
-[![Umbrel](https://img.shields.io/badge/Umbrel-community%20app%20store-14171d)](https://github.com/mathieuletyrant/umbrel-community-app-store)
+[![Umbrel](https://img.shields.io/badge/Umbrel-community%20app%20store-3a2a1f)](https://github.com/mathieuletyrant/umbrel-community-app-store)
 
 <img src="docs/screenshots/history-dark.png" alt="The History page, in dark mode" />
 

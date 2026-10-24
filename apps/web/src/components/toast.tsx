@@ -22,7 +22,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         role="status"
-        className="pointer-events-none fixed inset-x-0 bottom-6 z-20 flex justify-center px-4"
+        className="pointer-events-none fixed inset-x-0 bottom-floating z-20 flex justify-center px-4"
       >
         {message && (
           <p className="flex items-center gap-2 rounded-full border border-border bg-surface-raised px-5 py-2.5 text-sm font-medium text-status-ok shadow-lg">

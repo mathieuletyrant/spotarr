@@ -1,7 +1,7 @@
 import { Summary } from "@spotarr/contract";
 import { LoaderCircle } from "lucide-react";
 
-export const SUMMARY_LABELS: Record<Summary, string> = {
+const SUMMARY_LABELS: Record<Summary, string> = {
   [Summary.UNSPECIFIED]: "",
   [Summary.IN_PROGRESS]: "In progress",
   [Summary.TO_CHOOSE]: "To choose",

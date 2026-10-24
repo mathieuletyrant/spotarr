@@ -12,7 +12,7 @@ export function SaveBar({
   onCancel: () => void;
 }) {
   return (
-    <div className="fixed inset-x-0 bottom-6 z-10 flex justify-center px-4">
+    <div className="fixed inset-x-0 bottom-floating z-10 flex justify-center px-4">
       <div className="flex items-center gap-4 rounded-full border border-border bg-surface-raised py-2 pr-2 pl-5 shadow-lg">
         <p className="text-sm">
           {error ? (

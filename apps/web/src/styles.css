@@ -1,12 +1,76 @@
 @import "tailwindcss";
 /* Colors, fonts, spacing and radii from packages/design-tokens: bg-surface, text-muted, rounded-md… */
 @import "@spotarr/design-tokens/tokens.css";
+@import "@fontsource-variable/fraunces";
+
+/* The cards' soft shadow, tinted by the shadow token (none in dark mode): shadow-card. */
+@theme {
+  --shadow-card: 0 1px 2px var(--color-shadow), 0 8px 24px var(--color-shadow);
+}
+
+/* The phone's tab bar: its height, the iPhone's Home indicator included. Zero
+   from sm on, where the pages are in the header. */
+:root {
+  --tab-bar-height: calc(4rem + env(safe-area-inset-bottom));
+}
+@media (width >= 40rem) {
+  :root {
+    --tab-bar-height: 0px;
+  }
+}
+
+/* Room at the bottom of the page for the tab bar, on a phone. */
+@utility pb-tab-bar {
+  padding-bottom: calc(var(--tab-bar-height) + 1.5rem);
+}
+
+/* Floats 1.5rem above the tab bar on a phone, above the screen's edge elsewhere:
+   the Save bar and the toasts. */
+@utility bottom-floating {
+  bottom: calc(var(--tab-bar-height) + 1.5rem);
+}
+
+/* The Home indicator's room, under the tab bar's buttons. */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* A row that scrolls sideways without showing a scrollbar: the status filters
+   and the Settings' tabs, on a phone. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Fades the row's right end out: what is cut there can be scrolled to. */
+@utility fade-right {
+  mask-image: linear-gradient(to right, #000 85%, transparent);
+}
 
 body {
   @apply bg-bg font-sans text-text antialiased;
 }
 
 @layer base {
+  /* Page and card titles in Fraunces; everything else stays in Inter. */
+  h1,
+  h2 {
+    @apply font-display tracking-tight;
+  }
+
+  /* A lamp's light at the top of the page, in dark mode only (the glow token is
+     transparent in light mode). A fixed layer, so scrolling does not repaint it. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse at top, var(--color-glow), transparent 55%);
+  }
+
   /* Tailwind v4 dropped the pointer cursor on buttons; bring it back everywhere. */
   button:not(:disabled),
   [role="button"]:not(:disabled) {

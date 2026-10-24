@@ -69,7 +69,9 @@ function SettingsPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="text-3xl font-semibold">Settings</h1>
-        <p className="mt-1 text-text-muted">Everything Spotarr needs, saved on the server.</p>
+        <p className="mt-1 hidden text-text-muted sm:block">
+          Everything Spotarr needs, saved on the server.
+        </p>
       </div>
       {error && <p className="text-status-error">{error.message}</p>}
       {data?.settings && <SettingsForm saved={toValues(data.settings)} />}
@@ -178,7 +180,7 @@ function SectionTabs({
   marked: Set<SectionId | undefined>;
 }) {
   return (
-    <nav className="-mx-4 flex gap-1 overflow-x-auto px-4 text-sm md:sticky md:top-6 md:mx-0 md:flex-col md:gap-0.5 md:px-0">
+    <nav className="no-scrollbar fade-right -mx-4 flex gap-1 overflow-x-auto px-4 pr-8 text-sm md:sticky md:[mask-image:none] md:top-6 md:mx-0 md:flex-col md:gap-0.5 md:px-0">
       {MENU.map(({ id, label, icon: Icon }) => (
         <Link
           key={id}
