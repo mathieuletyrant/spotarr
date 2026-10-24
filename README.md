@@ -1,8 +1,22 @@
-# 🎬 Spotarr
+<div align="center">
 
-Share any link from your iPhone (a reel, a TikTok, a YouTube video, an article, a film's page on Letterboxd, AlloCiné or Wikipedia): Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr. A personal project, for one user, self-hosted with Docker or on [Umbrel](https://github.com/mathieuletyrant/umbrel-community-app-store).
+<img src="apps/web/public/favicon.svg" width="96" alt="Spotarr" />
 
-![The History page, in dark mode](docs/screenshots/history-dark.png)
+# Spotarr
+
+**Share a link from your iPhone. Get the film.**
+A reel, a TikTok, a YouTube video, an article, a film's page on Letterboxd, AlloCiné or Wikipedia: Spotarr finds the movie or TV show it is about, and adds it to your library through Seerr.
+
+[![Image](https://img.shields.io/badge/ghcr.io-mathieuletyrant%2Fspotarr-e9a020?logo=docker&logoColor=white)](https://github.com/mathieuletyrant/spotarr/pkgs/container/spotarr)
+![Bun](https://img.shields.io/badge/Bun-1.4-f6ecdf?logo=bun&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-7-3178c6?logo=typescript&logoColor=white)
+[![Umbrel](https://img.shields.io/badge/Umbrel-community%20app%20store-14171d)](https://github.com/mathieuletyrant/umbrel-community-app-store)
+
+<img src="docs/screenshots/history-dark.png" alt="The History page, in dark mode" />
+
+</div>
+
+A personal project, for one user, self-hosted with Docker or on Umbrel.
 
 ## ✨ What it does
 
