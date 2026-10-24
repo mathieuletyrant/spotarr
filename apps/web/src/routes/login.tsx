@@ -4,6 +4,7 @@ import { SpotarrService } from "@spotarr/contract";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Eye, EyeOff, KeyRound, LibraryBig, ScanSearch, Share } from "lucide-react";
 import { type ReactNode, type SubmitEvent, useState } from "react";
+import logo from "../assets/logo.svg";
 import { queryClient } from "../lib/api";
 
 export const Route = createFileRoute("/login")({ component: Login });
@@ -26,7 +27,7 @@ function Showcase() {
   return (
     <div className="flex flex-col justify-center gap-10 border-b border-border bg-surface p-8 sm:p-12 lg:border-r lg:border-b-0 lg:p-16">
       <div className="flex items-center gap-3">
-        <img src="/favicon.svg" alt="" className="size-12 lg:size-16" />
+        <img src={logo} alt="" className="size-12 lg:size-16" />
         <span className="text-3xl font-semibold lg:text-4xl">Spotarr</span>
       </div>
       <div className="flex flex-col gap-3">

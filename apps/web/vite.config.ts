@@ -13,6 +13,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // Assets stay files with a hash in their name, never inlined: iOS ignores a
+  // Home Screen icon given as a data URL, and a new logo gets a new address
+  // that no cache (Safari's icons, Cloudflare) can answer with the old one.
+  build: { assetsInlineLimit: 0 },
   // In dev the service runs on its own port: Vite forwards API calls to it.
   server: {
     proxy: { "/api": "http://localhost:3000", "/frames": "http://localhost:3000" },
