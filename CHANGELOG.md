@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.1](https://github.com/mathieuletyrant/spotarr/compare/v0.16.0...v0.16.1) (2026-10-24)
+
+
+### Bug Fixes
+
+* **web:** a lower, slimmer tab bar on a phone, like Snug's ([#207](https://github.com/mathieuletyrant/spotarr/issues/207)) ([7645beb](https://github.com/mathieuletyrant/spotarr/commit/7645bebb77f340f7a822fb6d27d54fd37967d446))
+
 ## [0.16.0](https://github.com/mathieuletyrant/spotarr/compare/v0.15.1...v0.16.0) (2026-10-24)
 
 
