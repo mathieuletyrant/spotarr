@@ -14,9 +14,9 @@ A reel, a TikTok, a YouTube video, an article, a film's page on Letterboxd, Allo
 
 <img src="docs/screenshots/history-dark.png" alt="The History page, in dark mode" />
 
-</div>
+<img src="docs/screenshots/phones.png" width="520" alt="The History in light mode and a Share's page in dark mode, on an iPhone" />
 
-A personal project, for one user, self-hosted with Docker or on Umbrel.
+</div>
 
 ## ✨ What it does
 
