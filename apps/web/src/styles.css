@@ -11,7 +11,7 @@
 /* The phone's tab bar: its height, the iPhone's Home indicator included. Zero
    from sm on, where the pages are in the header. */
 :root {
-  --tab-bar-height: calc(4rem + env(safe-area-inset-bottom));
+  --tab-bar-height: calc(3.5rem + max(env(safe-area-inset-bottom), 0.5rem));
 }
 @media (width >= 40rem) {
   :root {
@@ -30,9 +30,9 @@
   bottom: calc(var(--tab-bar-height) + 1.5rem);
 }
 
-/* The Home indicator's room, under the tab bar's buttons. */
+/* The Home indicator's room, under the tab bar's buttons; a little air without one. */
 @utility pb-safe {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
 }
 
 /* A row that scrolls sideways without showing a scrollbar: the status filters
