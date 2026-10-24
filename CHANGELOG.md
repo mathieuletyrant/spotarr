@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/mathieuletyrant/spotarr/compare/v0.15.1...v0.16.0) (2026-10-24)
+
+
+### Features
+
+* **web:** cozier theme and a better phone experience ([#202](https://github.com/mathieuletyrant/spotarr/issues/202)) ([ab66217](https://github.com/mathieuletyrant/spotarr/commit/ab662171ee6339394873a641a01e1bf6658d7cf5))
+
 ## [0.15.1](https://github.com/mathieuletyrant/spotarr/compare/v0.15.0...v0.15.1) (2026-10-24)
 
 
