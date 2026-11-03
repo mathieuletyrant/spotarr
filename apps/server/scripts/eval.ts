@@ -1,7 +1,7 @@
-// The evaluation set: real reels and the works they are about. Runs the real
+// The evaluation set: real Instagram posts and the works they are about. Runs the real
 // Identification (yt-dlp, ffmpeg, the LLM, TMDB; no Seerr) on each and prints
 // whether the expected works are in the first 3 Candidates. Costs about $0.01
-// a reel. Re-run after any change to the prompt, the model or the matching.
+// a post. Re-run after any change to the prompt, the model or the matching.
 //
 //   pnpm --filter @spotarr/server eval        (reads the keys from ../../.env)
 
@@ -10,20 +10,21 @@ import { identifyShare } from "../src/domain/identification/use-cases/identify-s
 import { identificationDeps } from "../src/domain/identification/use-cases/start-identification";
 import { SettingsSchema } from "../src/domain/settings/schema";
 
-type Case = { reel: string; expected: { title: string; tmdbId: number }[] };
+// `post` is the link's path on instagram.com.
+type Case = { post: string; expected: { title: string; tmdbId: number }[] };
 
 const CASES: Case[] = [
   {
-    reel: "DdmFkS8I7ta",
+    post: "reel/DdmFkS8I7ta/",
     expected: [{ title: "L'Invitation (2026)", tmdbId: 950028 }],
   },
   {
-    reel: "DeM363OouRS",
+    post: "reel/DeM363OouRS/",
     expected: [{ title: "Kraken (2026)", tmdbId: 1571766 }],
   },
   {
     // Three films in one reel: all three must be found.
-    reel: "DeHYOAbo14f",
+    post: "reel/DeHYOAbo14f/",
     expected: [
       { title: "Awake", tmdbId: 13483 },
       { title: "Due Date", tmdbId: 41733 },
@@ -31,17 +32,22 @@ const CASES: Case[] = [
     ],
   },
   {
-    reel: "DdrX8Rzo0Z9",
+    post: "reel/DdrX8Rzo0Z9/",
     expected: [{ title: "Otec (2025)", tmdbId: 1516518 }],
   },
   {
     // An Italian TV show, out two weeks before this case was added.
-    reel: "DdekpoZoJr7",
+    post: "reel/DdekpoZoJr7/",
     expected: [{ title: "Académie Minerva (TV, 2026)", tmdbId: 312557 }],
   },
   {
-    reel: "DdO4J0uIxfh",
+    post: "reel/DdO4J0uIxfh/",
     expected: [{ title: "The Uprising (2026)", tmdbId: 977942 }],
+  },
+  {
+    // A carousel of ten films, shared from the eighth picture: that film is the one meant.
+    post: "p/DeMojWljSKo/?img_index=8",
+    expected: [{ title: "Always Be My Maybe (2019)", tmdbId: 513576 }],
   },
 ];
 
@@ -57,12 +63,12 @@ const model = settings.identification.model;
 const deps = identificationDeps(settings);
 
 let passed = 0;
-for (const { reel, expected } of CASES) {
+for (const { post, expected } of CASES) {
   // Kept to print what the LLM said when a case fails.
   let answer: Answer = { reasoning: "", guesses: [] };
   const { candidates } = await identifyShare(
-    `eval_${reel}`,
-    { url: `https://www.instagram.com/reel/${reel}/` },
+    `eval_${post}`,
+    { url: `https://www.instagram.com/${post}` },
     {
       ...deps,
       llm: async (messages) => {
@@ -75,7 +81,7 @@ for (const { reel, expected } of CASES) {
     },
   );
 
-  // A single work must be in the first 3; a reel of several works must list them all.
+  // A single work must be in the first 3; a post of several works must list them all.
   const allowed = Math.max(3, expected.length);
   const found = candidates.slice(0, allowed).map((c) => c.tmdbId);
   const ok = expected.every((work) => found.includes(work.tmdbId));
@@ -83,7 +89,7 @@ for (const { reel, expected } of CASES) {
 
   const got = candidates.slice(0, allowed).map((c) => `${c.title} ${c.year ?? ""}`.trim());
   console.log(
-    `${ok ? "✅" : "❌"} ${reel}  expected ${expected.map((w) => w.title).join(", ")}  got ${got.join(", ") || "nothing"}`,
+    `${ok ? "✅" : "❌"} ${post}  expected ${expected.map((w) => w.title).join(", ")}  got ${got.join(", ") || "nothing"}`,
   );
   if (!ok) {
     // What the LLM said, to tell a wrong guess from a wrong TMDB match.

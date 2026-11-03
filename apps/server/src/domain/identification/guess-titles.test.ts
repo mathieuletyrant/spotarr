@@ -86,3 +86,19 @@ test("a Retry's hint goes after the caption and the author", async () => {
     "Caption: mood ?\nAuthor: (unknown)\nHint from the person who shared it: the Korean show, not the movie",
   );
 });
+
+test("the carousel's picture in view is named, so its work comes first", async () => {
+  let sent: ChatMessage[] = [];
+  const llm = async (messages: ChatMessage[]) => {
+    sent = messages;
+    return { answer };
+  };
+  await guessTitles(
+    { clues: { caption: "Add these to your watchlist" }, images: [], firstImageInView: true },
+    llm,
+  );
+  const user = sent[1]?.content as { type: string; text?: string }[];
+  expect(user[0]?.text).toBe(
+    "Caption: Add these to your watchlist\nAuthor: (unknown)\nThe person shared this carousel while looking at the first picture: its work comes first.",
+  );
+});

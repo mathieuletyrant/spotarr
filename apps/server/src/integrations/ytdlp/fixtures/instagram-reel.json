@@ -8,5 +8,20 @@
   "timestamp": 1791209030,
   "webpage_url": "https://www.instagram.com/reel/DeHYOAbo14f/",
   "extractor": "Instagram",
-  "like_count": 2023
+  "like_count": 2023,
+  "formats": [
+    {
+      "format_id": "1",
+      "ext": "mp4",
+      "width": null,
+      "height": null
+    },
+    {
+      "format_id": "dash-1122703667002766v",
+      "ext": "mp4",
+      "width": 1080,
+      "height": 1920
+    }
+  ],
+  "thumbnail": "https://scontent-ord5-2.cdninstagram.com/v/t51.82787-15/837887914_18119614109004458_4068119332948028755_n.jpg"
 }

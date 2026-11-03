@@ -1,10 +1,7 @@
-import { mkdtemp, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 import { SpotarrError } from "../../../errors";
-import { resizePicture } from "../../../integrations/ffmpeg/picture";
-import { downloadImage, readWebPage } from "../../../integrations/web/page";
+import { readWebPage } from "../../../integrations/web/page";
 import { type DirectId, findDirectIds } from "./direct-ids";
+import { downloadPicture } from "./pictures";
 
 export type Page = {
   caption?: string;
@@ -38,19 +35,6 @@ export async function readPage(url: string): Promise<Page> {
 // A picture that fails to download or to convert is skipped: the others and
 // the text are enough.
 export async function readPagePictures(page: Page): Promise<Uint8Array[]> {
-  const pictures = await Promise.all(page.imageUrls.map(readPicture));
+  const pictures = await Promise.all(page.imageUrls.map(downloadPicture));
   return pictures.filter((picture) => picture !== undefined);
-}
-
-async function readPicture(imageUrl: string): Promise<Uint8Array | undefined> {
-  const dir = await mkdtemp(join(tmpdir(), "spotarr-"));
-  try {
-    const file = join(dir, "picture");
-    await Bun.write(file, await downloadImage(imageUrl));
-    return await resizePicture(file);
-  } catch {
-    return undefined;
-  } finally {
-    await rm(dir, { recursive: true, force: true });
-  }
 }
