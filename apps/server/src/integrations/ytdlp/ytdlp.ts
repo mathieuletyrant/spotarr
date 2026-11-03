@@ -3,45 +3,70 @@ import { z } from "zod";
 import { SpotarrError } from "../../errors";
 import { run } from "../process";
 
-export type VideoInfo = { caption?: string; author?: string };
+// What yt-dlp reads at a link: a video, or a post made of pictures (an
+// Instagram photo post or carousel), with the address of each picture.
+export type VideoInfo = { kind: "video"; caption?: string; author?: string };
+export type PicturesInfo = {
+  kind: "pictures";
+  caption?: string;
+  author?: string;
+  pictureUrls: string[];
+};
 
-// yt-dlp prints a lot about a video; these are the fields that help name the film.
-const YtDlpJson = z.object({
+// A slide is a post, or one entry of a carousel. A picture has no formats;
+// `thumbnail` is the picture itself, or a video's cover.
+const Slide = z.object({
+  formats: z.array(z.unknown()).nullish(),
+  thumbnail: z.string().nullish(),
+});
+
+// yt-dlp prints a lot about a post; these are the fields that help name the film.
+const YtDlpJson = Slide.extend({
   description: z.string().nullish(),
   uploader: z.string().nullish(),
   channel: z.string().nullish(),
+  entries: z.array(Slide).nullish(),
 });
 
 // YouTube needs a JavaScript runtime to read its player; yt-dlp only looks for
 // Deno by default, and the image has Bun.
 const JS_RUNTIME = ["--js-runtimes", "bun"];
 
-// Undefined when the post has no video: yt-dlp only reads videos, and an
-// Instagram post can be made of pictures only.
-export async function readVideoInfo(url: string): Promise<VideoInfo | undefined> {
-  try {
-    const json = await run(
-      ["yt-dlp", ...JS_RUNTIME, "--dump-single-json", "--skip-download", "--no-warnings", url],
-      45_000,
-    );
-    return parseVideoInfo(json);
-  } catch (error) {
-    if (isNoVideoError(error)) return undefined;
-    throw error;
-  }
+// yt-dlp only downloads videos: on a post without one, it fails with "There is
+// no video in this post" (a photo post) or "No video formats found!" (a
+// carousel's picture). `--ignore-no-formats-error` makes it describe the post
+// all the same, pictures included.
+export async function readPostInfo(url: string): Promise<VideoInfo | PicturesInfo> {
+  const json = await run(
+    [
+      "yt-dlp",
+      ...JS_RUNTIME,
+      ...["--dump-single-json", "--skip-download", "--ignore-no-formats-error", "--no-warnings"],
+      url,
+    ],
+    45_000,
+  );
+  return parsePostInfo(json);
 }
 
-export function parseVideoInfo(json: string): VideoInfo {
+export function parsePostInfo(json: string): VideoInfo | PicturesInfo {
   const info = YtDlpJson.parse(JSON.parse(json));
-  return {
-    caption: info.description || undefined,
-    author: info.uploader || info.channel || undefined,
-  };
+  const caption = info.description || undefined;
+  const author = info.uploader || info.channel || undefined;
+  // A carousel lists its slides; any other post is a slide of its own.
+  const slides = info.entries ?? [info];
+  if (slides.every(hasVideo)) return { kind: "video", caption, author };
+
+  // A carousel holding pictures is read as pictures, a video's cover included.
+  const pictureUrls: string[] = [];
+  for (const slide of slides) {
+    if (slide.thumbnail) pictureUrls.push(slide.thumbnail);
+  }
+  return { kind: "pictures", caption, author, pictureUrls };
 }
 
-// yt-dlp's answer for an Instagram post made of pictures only.
-export function isNoVideoError(error: unknown): boolean {
-  return error instanceof SpotarrError && error.message.includes("There is no video in this post");
+function hasVideo(slide: z.infer<typeof Slide>): boolean {
+  return (slide.formats?.length ?? 0) > 0;
 }
 
 // yt-dlp has no extractor for the site (an article, a film's page): it says

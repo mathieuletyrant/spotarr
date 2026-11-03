@@ -1,29 +1,64 @@
 import { expect, test } from "bun:test";
 import { SpotarrError } from "../../errors";
-import { isNoVideoError, isUnknownSiteError, parseVideoInfo } from "./ytdlp";
+import { isUnknownSiteError, parsePostInfo } from "./ytdlp";
 
-// Recorded on 2026-10-12 with `yt-dlp --dump-single-json` on a real reel, trimmed to a few fields.
-const fixture = () => Bun.file(new URL("fixtures/instagram-reel.json", import.meta.url)).text();
+// Recorded with `yt-dlp --dump-single-json --ignore-no-formats-error` on real
+// posts, trimmed to a few fields: a reel on 2026-10-12, a carousel of eleven
+// pictures on 2026-11-03.
+const fixture = (name: string) => Bun.file(new URL(`fixtures/${name}`, import.meta.url)).text();
 
-test("an Instagram reel gives its caption and its author", async () => {
-  expect(parseVideoInfo(await fixture())).toEqual({
+test("an Instagram reel is a video, with its caption and its author", async () => {
+  expect(parsePostInfo(await fixture("instagram-reel.json"))).toEqual({
+    kind: "video",
     caption: "tu as du choix sur Netflix 🍿 t’es dans quel mood ?",
     author: "CameraCam • Recos Films",
   });
 });
 
 test("an empty caption is no caption", () => {
-  expect(parseVideoInfo(JSON.stringify({ description: "", channel: "someone" }))).toEqual({
-    caption: undefined,
-    author: "someone",
+  const json = JSON.stringify({ description: "", channel: "someone", formats: [{}] });
+  expect(parsePostInfo(json)).toEqual({ kind: "video", caption: undefined, author: "someone" });
+});
+
+test("an Instagram carousel of pictures gives every picture, in order", async () => {
+  const info = parsePostInfo(await fixture("instagram-carousel.json"));
+  expect(info).toMatchObject({
+    kind: "pictures",
+    caption: expect.stringContaining("Add these to your watchlist ASAP!"),
+    author: "Tiny Tales",
+  });
+  const pictureUrls = info.kind === "pictures" ? info.pictureUrls : [];
+  expect(pictureUrls).toHaveLength(11);
+  expect(pictureUrls[0]).toEndWith("/838804265_18422273353157212_3785759981116641935_n.jpg");
+});
+
+test("a photo post is one picture", () => {
+  const json = JSON.stringify({
+    description: "NARNIA : LE NEVEU DU MAGICIEN.",
+    uploader: "Netflix France",
+    formats: [],
+    thumbnail: "https://cdn/narnia.jpg",
+  });
+  expect(parsePostInfo(json)).toEqual({
+    kind: "pictures",
+    caption: "NARNIA : LE NEVEU DU MAGICIEN.",
+    author: "Netflix France",
+    pictureUrls: ["https://cdn/narnia.jpg"],
   });
 });
 
-test("a photo post is told apart from other yt-dlp failures", () => {
-  const photo = "yt-dlp failed: ERROR: [Instagram] DeZTyvuF9aF: There is no video in this post";
-  expect(isNoVideoError(new SpotarrError("unavailable", photo))).toBe(true);
-  const other = "yt-dlp failed: ERROR: [Instagram] x: Requested content is not available";
-  expect(isNoVideoError(new SpotarrError("unavailable", other))).toBe(false);
+test("a carousel mixing pictures and videos is read as pictures, a video by its cover", () => {
+  const json = JSON.stringify({
+    _type: "playlist",
+    entries: [
+      { formats: [], thumbnail: "https://cdn/picture.jpg" },
+      { formats: [{ format_id: "1" }], thumbnail: "https://cdn/cover.jpg" },
+    ],
+  });
+  expect(parsePostInfo(json)).toMatchObject({
+    kind: "pictures",
+    pictureUrls: ["https://cdn/picture.jpg", "https://cdn/cover.jpg"],
+  });
 });
 
 test("an unknown site is told apart from a video yt-dlp cannot read", () => {
