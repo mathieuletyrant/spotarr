@@ -16,7 +16,7 @@ export function ExtractionSection({ form }: { form: Form }) {
         form={form}
         name="extraction.framesPerVideo"
         label={`Frames per video: ${frames}`}
-        hint="More frames: better identification, more expensive LLM call."
+        hint="More frames: better results, higher cost."
       >
         <input
           type="range"
@@ -40,8 +40,8 @@ export function ExtractionSection({ form }: { form: Form }) {
       <SelectField
         form={form}
         name="extraction.concurrency"
-        label="Identifications at the same time"
-        hint="Applies when Spotarr restarts."
+        label="Parallel identifications"
+        hint="Applies after a restart."
         options={CONCURRENCY}
       />
     </Section>

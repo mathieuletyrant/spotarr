@@ -9,7 +9,7 @@ export function SeerrSection({ form }: { form: Form }) {
       id="seerr"
       icon={<Library aria-hidden className="size-5" />}
       title="Seerr"
-      description="The library: where requests go, and what tells Spotarr when it changes."
+      description="Your library: where requests go."
       action={<ConnectionState name="Seerr" />}
     >
       <SubHeading
@@ -33,8 +33,7 @@ export function SeerrSection({ form }: { form: Form }) {
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-semibold">Notifications</span>
             <span className="block text-sm text-text-muted">
-              Seerr tells Spotarr when a request is approved, declined or downloaded, and the
-              history follows.
+              Keeps request statuses up to date.
             </span>
           </span>
           <ChevronDown

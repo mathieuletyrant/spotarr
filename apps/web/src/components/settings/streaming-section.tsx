@@ -19,8 +19,8 @@ export function StreamingSection() {
       id="streaming"
       icon={<Tv aria-hidden className="size-5" />}
       title="Streaming"
-      description="Where you can already watch a candidate, shown on its share's page."
-      info="TMDB's list of streaming platforms, from JustWatch, differs from one country to the next. Subscriptions, free and ad-supported streams count; renting and buying do not. The library (Jellyfin, Plex) is linked whenever the title is in it."
+      description="Where you can already watch a candidate."
+      info="Platforms come from TMDB (JustWatch) and vary by country. Subscriptions, free and ad-supported count; rent and buy don't. Titles in your library link to it."
     >
       <StreamingFields />
     </Section>
@@ -143,7 +143,7 @@ function YourPlatforms({
   if (platforms.length === 0) {
     return (
       <p className="rounded-lg border border-dashed border-border p-4 text-center text-sm text-text-muted md:col-span-2">
-        None yet: add the ones you subscribe to below.
+        None yet: add yours below.
       </p>
     );
   }
