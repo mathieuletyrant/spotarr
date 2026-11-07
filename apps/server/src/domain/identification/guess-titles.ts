@@ -30,7 +30,7 @@ export type Answer = z.infer<typeof AnswerSchema>;
 export type LlmReply = { answer: Answer; costUsd?: number };
 export type Llm = (messages: ChatMessage[]) => Promise<LlmReply>;
 
-const INSTRUCTIONS = `You identify films and TV shows from what someone shared: usually a short social media video, sometimes a photo post or a web page.
+const INSTRUCTIONS = `You identify films and TV shows from what someone shared: usually a short social media video, sometimes a post of pictures (a photo or a carousel) or a web page.
 For a video, you get the caption, the author, frames taken across the video, and usually its sound. The person speaking often says the title out loud: listen for it. On-screen text, posters and actors' faces are good clues too.
 For a web page, you get its title and description as the caption, its site as the author, its text and its pictures (posters, stills, the share picture). Name the works the page is about, not every work it mentions in passing.
 
@@ -41,21 +41,23 @@ Rules:
 - Never invent a work: an empty list is a valid answer.
 - A hint from the person who shared the video corrects an earlier wrong answer: follow it.`;
 
-// What the LLM gets: a video's frames and sound, a photo post's picture alone,
-// or a web page's text and pictures, and the hint given with a Retry.
+// What the LLM gets: a video's frames and sound, a post's pictures, or a web
+// page's text and pictures, and the hint given with a Retry.
 type LlmInput = {
   clues: Clues;
   hint?: string;
   text?: string;
   images: Uint8Array[];
   audio?: Uint8Array;
+  // The first image is the carousel's picture the person shared the link from.
+  firstImageInView?: boolean;
 };
 
 // Asks the LLM which works the video shows, from what it reads, sees and hears.
 // `today` matters: without it the LLM dates a film released this year to the
 // years it knows, and TMDB then finds a namesake ("Kraken" 2024 → "Kraken Mare").
 export async function guessTitles(
-  { clues, hint, text, images, audio }: LlmInput,
+  { clues, hint, text, images, audio, firstImageInView }: LlmInput,
   llm: Llm,
   today = new Date(),
 ): Promise<LlmReply> {
@@ -69,7 +71,7 @@ export async function guessTitles(
       content: [
         {
           type: "text",
-          text: cluesText(clues, hint, text),
+          text: cluesText(clues, hint, text, firstImageInView),
         },
         ...images.map(imagePart),
         ...(audio ? [audioPart(audio)] : []),
@@ -78,9 +80,18 @@ export async function guessTitles(
   ]);
 }
 
-function cluesText(clues: Clues, hint: string | undefined, pageText: string | undefined): string {
+function cluesText(
+  clues: Clues,
+  hint: string | undefined,
+  pageText: string | undefined,
+  firstImageInView: boolean | undefined,
+): string {
   let text = `Caption: ${clues.caption ?? "(none)"}\nAuthor: ${clues.author ?? "(unknown)"}`;
   if (pageText) text += `\nPage text:\n${pageText}`;
+  if (firstImageInView) {
+    text +=
+      "\nThe person shared this carousel while looking at the first picture: its work comes first.";
+  }
   if (hint) text += `\nHint from the person who shared it: ${hint}`;
   return text;
 }

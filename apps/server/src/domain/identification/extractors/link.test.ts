@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { SpotarrError } from "../../../errors";
 import { type LinkReaders, readLink } from "./link";
-import type { Photo } from "./photo";
+import type { Pictures } from "./pictures";
 import type { Video } from "./video";
 import type { Page } from "./web-page";
 
@@ -20,15 +20,18 @@ const article: Page = {
   directIds: [],
 };
 const reel: Video = {
+  kind: "video",
   caption: "tu as du choix sur Netflix",
   author: "CameraCam",
   frames: [{ atMs: 2500, jpeg: new Uint8Array([1]), thumbnail: new Uint8Array([2]) }],
   audio: new Uint8Array([3]),
 };
-const photoPost: Photo = {
-  caption: "NARNIA : LE NEVEU DU MAGICIEN.",
-  author: "Netflix France",
-  picture: new Uint8Array([9]),
+const carousel: Pictures = {
+  kind: "pictures",
+  caption: "Add these to your watchlist ASAP!",
+  author: "Tiny Tales",
+  pictures: [new Uint8Array([8]), new Uint8Array([1])],
+  firstInView: true,
 };
 
 const unsupported = new SpotarrError(
@@ -47,8 +50,7 @@ function readers(answers: Partial<LinkReaders>): LinkReaders {
   return {
     readPage: notCalled,
     readPagePictures: notCalled,
-    readVideo: notCalled,
-    readPhoto: notCalled,
+    readPost: notCalled,
     ...answers,
   };
 }
@@ -73,7 +75,7 @@ test("2. a video gives its frames and sound, even when its page could not be rea
     "https://www.instagram.com/reel/x/",
     readers({
       readPage: failing(new SpotarrError("unavailable", "instagram.com answered HTTP 429")),
-      readVideo: async () => reel,
+      readPost: async () => reel,
     }),
   );
   expect(link).toEqual({
@@ -86,20 +88,17 @@ test("2. a video gives its frames and sound, even when its page could not be rea
   });
 });
 
-test("2. a post without a video is an Instagram photo post", async () => {
+test("2. a post of pictures gives them all, the one in view first", async () => {
   const link = await readLink(
-    "https://www.instagram.com/p/x/",
-    readers({
-      readPage: async () => article,
-      readVideo: async () => undefined,
-      readPhoto: async () => photoPost,
-    }),
+    "https://www.instagram.com/p/x/?img_index=8",
+    readers({ readPage: async () => article, readPost: async () => carousel }),
   );
   expect(link).toEqual({
-    extractor: "instagram-photo",
-    caption: "NARNIA : LE NEVEU DU MAGICIEN.",
-    author: "Netflix France",
-    images: [new Uint8Array([9])],
+    extractor: "pictures",
+    caption: "Add these to your watchlist ASAP!",
+    author: "Tiny Tales",
+    images: [new Uint8Array([8]), new Uint8Array([1])],
+    firstImageInView: true,
   });
 });
 
@@ -108,7 +107,7 @@ test("3. a link that is no video: the page's content, its text and pictures, for
     "https://www.ecranlarge.com/x",
     readers({
       readPage: async () => article,
-      readVideo: failing(unsupported),
+      readPost: failing(unsupported),
       readPagePictures: async () => [new Uint8Array([7])],
     }),
   );
@@ -126,7 +125,7 @@ test("a site yt-dlp does not know, whose page fails: the page's error", async ()
   await expect(
     readLink(
       "https://www.premiere.fr/Cinema",
-      readers({ readPage: failing(pageError), readVideo: failing(unsupported) }),
+      readers({ readPage: failing(pageError), readPost: failing(unsupported) }),
     ),
   ).rejects.toThrow("premiere.fr answered HTTP 403 for the page");
 });
@@ -141,7 +140,7 @@ test("a video yt-dlp cannot read, whose page fails too: yt-dlp's error", async (
       "https://www.instagram.com/reel/x/",
       readers({
         readPage: failing(new SpotarrError("unavailable", "the page shows nothing to read")),
-        readVideo: failing(videoError),
+        readPost: failing(videoError),
       }),
     ),
   ).rejects.toThrow("Requested content is not available");

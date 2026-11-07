@@ -124,37 +124,37 @@ test("a reel the LLM cannot name ends NO_MATCH, with its reasoning and frames", 
   });
 });
 
-test("a photo post: the LLM gets its picture alone, without sound, and no frames are kept", async () => {
-  const photo: Link = {
-    extractor: "instagram-photo",
-    caption: "NARNIA : LE NEVEU DU MAGICIEN. Bande-annonce demain.",
-    author: "Netflix France",
-    images: [new Uint8Array([9])],
+test("a carousel: the LLM gets every picture, without sound, and no frames are kept", async () => {
+  const carousel: Link = {
+    extractor: "pictures",
+    caption: "Add these to your watchlist ASAP!",
+    author: "Tiny Tales",
+    images: [new Uint8Array([8]), new Uint8Array([1])],
+    firstImageInView: true,
   };
   let sent: ChatMessage[] = [];
   const llm: Llm = async (messages) => {
     sent = messages;
-    return { answer: { reasoning: "La légende nomme le film.", guesses: [] } };
+    return { answer: { reasoning: "La 8e image nomme le film.", guesses: [] } };
   };
 
   const result = await identifyShare(
     "shr_test",
-    { url: "https://www.instagram.com/p/DeZTyvuF9aF/" },
-    { tmdb, readLink: async () => photo, llm, libraryState: available },
+    { url: "https://www.instagram.com/p/DeMojWljSKo/?img_index=8" },
+    { tmdb, readLink: async () => carousel, llm, libraryState: available },
   );
 
   expect(result).toMatchObject({
     method: "LLM",
-    extractors: ["instagram-photo"],
-    clues: {
-      caption: "NARNIA : LE NEVEU DU MAGICIEN. Bande-annonce demain.",
-      author: "Netflix France",
-    },
+    extractors: ["pictures"],
+    clues: { caption: "Add these to your watchlist ASAP!", author: "Tiny Tales" },
   });
   expect(result.frames).toBeUndefined();
   const content = sent[1]?.content;
   const parts = Array.isArray(content) ? content.map((part) => part.type) : [];
-  expect(parts).toEqual(["text", "image_url"]);
+  expect(parts).toEqual(["text", "image_url", "image_url"]);
+  const text = Array.isArray(content) && content[0]?.type === "text" ? content[0].text : "";
+  expect(text).toContain("while looking at the first picture");
 });
 
 test("a web page linking to IMDb and TMDB gives its work once, without the LLM", async () => {

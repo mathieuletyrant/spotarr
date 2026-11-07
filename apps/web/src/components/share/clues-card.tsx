@@ -5,6 +5,8 @@ import { Card } from "./card";
 
 const EXTRACTORS: Record<string, string> = {
   video: "Video",
+  pictures: "Pictures",
+  // Shares identified before 0.17, when only Instagram photo posts were read.
   "instagram-photo": "Instagram photo",
   "id-link": "IMDb or TMDB link",
   web: "Web page",

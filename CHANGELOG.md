@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/mathieuletyrant/spotarr/compare/v0.16.1...v0.17.0) (2026-11-03)
+
+
+### Features
+
+* **server:** identify Instagram carousels, the picture in view first ([#212](https://github.com/mathieuletyrant/spotarr/issues/212)) ([9553e86](https://github.com/mathieuletyrant/spotarr/commit/9553e8630204723b4344deb0375c61979f244398))
+
 ## [0.16.1](https://github.com/mathieuletyrant/spotarr/compare/v0.16.0...v0.16.1) (2026-10-24)
 
 

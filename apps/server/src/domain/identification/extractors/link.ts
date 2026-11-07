@@ -1,14 +1,15 @@
 import { isUnknownSiteError } from "../../../integrations/ytdlp/ytdlp";
 import type { Settings } from "../../settings/schema";
 import type { DirectId } from "./direct-ids";
-import { type Photo, readPhoto } from "./photo";
-import { readVideo, type Video } from "./video";
+import type { Pictures } from "./pictures";
+import { readPost } from "./post";
+import type { Video } from "./video";
 import { type Page, readPage, readPagePictures } from "./web-page";
 
 // What a shared link gave: the images (and sound) for the LLM, and the frames
-// kept to show on the Share's page, a photo post having none.
+// kept to show on the Share's page, a post of pictures having none.
 export type Link = {
-  extractor: "video" | "instagram-photo" | "web";
+  extractor: "video" | "pictures" | "web";
   caption?: string;
   author?: string;
   // A web page's text, for the LLM only: not kept.
@@ -18,6 +19,8 @@ export type Link = {
   frames?: { atMs: number; thumbnail: Uint8Array }[];
   // The IMDb and TMDB links of a web page: they name its work without the LLM.
   directIds?: DirectId[];
+  // The first image is the carousel's picture the person shared the link from.
+  firstImageInView?: boolean;
 };
 
 // What readLink reads a link with. The real readers download and run yt-dlp;
@@ -25,16 +28,14 @@ export type Link = {
 export type LinkReaders = {
   readPage: (url: string) => Promise<Page>;
   readPagePictures: (page: Page) => Promise<Uint8Array[]>;
-  readVideo: (url: string) => Promise<Video | undefined>;
-  readPhoto: (url: string) => Promise<Photo>;
+  readPost: (url: string) => Promise<Video | Pictures>;
 };
 
 export function linkReaders(extraction: Settings["extraction"]): LinkReaders {
   return {
     readPage,
     readPagePictures,
-    readVideo: (url) => readVideo(url, extraction),
-    readPhoto,
+    readPost: (url) => readPost(url, extraction),
   };
 }
 
@@ -42,7 +43,7 @@ export function linkReaders(extraction: Settings["extraction"]): LinkReaders {
 // IMDb and TMDB links first, its content for the LLM last, when the link is
 // no video. From the surest answer to the least sure:
 //   1. the page's IMDb or TMDB links: certain, no LLM;
-//   2. the video: its frames and sound for the LLM;
+//   2. the post: a video's frames and sound, or a post's pictures, for the LLM;
 //   3. the page's content: its text and pictures for the LLM.
 // Each step's failure is kept as a value (`.catch`): a later step uses it.
 export async function readLink(url: string, readers: LinkReaders): Promise<Link> {
@@ -53,12 +54,15 @@ export async function readLink(url: string, readers: LinkReaders): Promise<Link>
     return fromPageLinks(page);
   }
 
-  // 2. The video. A post without one is an Instagram photo post.
-  const video = await readers.readVideo(url).catch((error: Error) => error);
-  if (video === undefined) return fromPhoto(await readers.readPhoto(url));
-  if (!(video instanceof Error)) return fromVideo(video);
+  // 2. The post, as yt-dlp reads it: a video, or pictures (an Instagram photo
+  // post or carousel).
+  const post = await readers.readPost(url).catch((error: Error) => error);
+  if (!(post instanceof Error)) {
+    if (post.kind === "pictures") return fromPictures(post);
+    return fromVideo(post);
+  }
 
-  // 3. No video (an article, a poster): the page's content goes to the LLM,
+  // 3. No post (an article, a poster): the page's content goes to the LLM,
   // its text and its pictures, downloaded now.
   if (!(page instanceof Error)) {
     return fromPageContent(page, await readers.readPagePictures(page));
@@ -66,8 +70,8 @@ export async function readLink(url: string, readers: LinkReaders): Promise<Link>
 
   // Neither could be read. When yt-dlp knows nothing of the site, why the page
   // could not be read says more.
-  if (isUnknownSiteError(video)) throw page;
-  throw video;
+  if (isUnknownSiteError(post)) throw page;
+  throw post;
 }
 
 // The page's IMDb and TMDB links answer: no pictures to download. Its text
@@ -106,11 +110,12 @@ function fromVideo(video: Video): Link {
   };
 }
 
-function fromPhoto(photo: Photo): Link {
+function fromPictures(post: Pictures): Link {
   return {
-    extractor: "instagram-photo",
-    caption: photo.caption,
-    author: photo.author,
-    images: [photo.picture],
+    extractor: "pictures",
+    caption: post.caption,
+    author: post.author,
+    images: post.pictures,
+    firstImageInView: post.firstInView,
   };
 }

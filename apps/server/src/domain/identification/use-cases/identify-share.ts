@@ -16,7 +16,7 @@ export type IdentifyDeps = {
 };
 
 // An IMDb/TMDB link is enough. Otherwise the shared link is read (a video, a
-// photo post, a web page), the LLM names the works it shows, and TMDB confirms
+// post of pictures, a web page), the LLM names the works it shows, and TMDB confirms
 // them. Each step logs one line with the Share's id. `hint`, given with a
 // Retry, goes to the LLM.
 export async function identifyShare(
@@ -41,7 +41,7 @@ export async function identifyShare(
     }
   }
 
-  // 2. Otherwise the link is read: a video, an Instagram photo post or any web page.
+  // 2. Otherwise the link is read: a video, an Instagram photo post or carousel, or any web page.
   // If it cannot be read, the Identification fails with the reason.
   const url = input.url;
   if (!url) {
@@ -81,7 +81,17 @@ export async function identifyShare(
     shareId,
     "llm",
     () =>
-      guessTitles({ clues, hint, text: read.text, images: read.images, audio: read.audio }, llm),
+      guessTitles(
+        {
+          clues,
+          hint,
+          text: read.text,
+          images: read.images,
+          audio: read.audio,
+          firstImageInView: read.firstImageInView,
+        },
+        llm,
+      ),
     (reply) => ({ guesses: reply.answer.guesses.length, costUsd: reply.costUsd }),
   );
   const confirmed = await step(
