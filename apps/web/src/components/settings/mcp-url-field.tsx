@@ -28,12 +28,12 @@ export function McpUrlField({ form }: { form: Form }) {
       id="mcp-url"
       label="MCP URL"
       value={`${window.location.origin}/mcp?token=${token}`}
-      hint="Give it to an MCP client: an AI assistant like Claude then reads the history through it, and nothing more. It uses this page's address; change it if the client reaches Spotarr at another one."
+      hint="Paste it in your MCP client. Change the address if the client reaches Spotarr another way."
     >
       <RegenerateButton
         id="regenerate-mcp"
         question="Make a new MCP URL?"
-        warning="The current one stops working at once: give the new one to your MCP clients."
+        warning="The current one stops working. Give the new one to your MCP clients."
         regenerate={() => regenerate.mutateAsync({})}
       />
     </CopyField>

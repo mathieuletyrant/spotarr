@@ -14,10 +14,10 @@ import { inputClass } from "./fields";
 
 // What each Action reads as in the form.
 const ACTION_LABELS: Record<RuleAction, string> = {
-  [RuleAction.UNSPECIFIED]: "Request in Seerr (it downloads)",
-  [RuleAction.SEERR_REQUEST]: "Request in Seerr (it downloads)",
-  [RuleAction.SEERR_WATCHLIST]: "Add to Seerr's watchlist (nothing is downloaded)",
-  [RuleAction.SNUG_WATCHLIST]: "Add to Snug's Watchlist (TV shows only, nothing is downloaded)",
+  [RuleAction.UNSPECIFIED]: "Request in Seerr (downloads)",
+  [RuleAction.SEERR_REQUEST]: "Request in Seerr (downloads)",
+  [RuleAction.SEERR_WATCHLIST]: "Add to Seerr's watchlist (no download)",
+  [RuleAction.SNUG_WATCHLIST]: "Add to Snug's Watchlist (TV shows, no download)",
 };
 
 const buttonClass = "h-9 rounded-md border border-border px-3 text-sm font-medium";
@@ -222,8 +222,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
             ))}
           </select>
           <span className="text-sm text-text-muted">
-            A candidate both kinds of rules hold for is added to the library. The watchlist shows in
-            JellyTV, and a title leaves it once available.
+            A request wins over a watchlist. Seerr's watchlist shows in JellyTV.
           </span>
         </label>
         <label htmlFor={`${id}-type`} className="flex flex-col gap-1.5">
@@ -241,7 +240,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
           </select>
         </label>
         <label htmlFor={`${id}-confidence`} className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium">Confidence at least (%)</span>
+          <span className="text-sm font-medium">Min. confidence (%)</span>
           <input
             id={`${id}-confidence`}
             type="number"
@@ -254,7 +253,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
           />
         </label>
         <label htmlFor={`${id}-rating`} className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium">TMDB rating at least</span>
+          <span className="text-sm font-medium">Min. TMDB rating</span>
           <input
             id={`${id}-rating`}
             type="number"
@@ -268,7 +267,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
           />
         </label>
         <label htmlFor={`${id}-votes`} className="flex flex-col gap-1.5">
-          <span className="text-sm font-medium">With at least (votes)</span>
+          <span className="text-sm font-medium">Min. votes</span>
           <input
             id={`${id}-votes`}
             type="number"
@@ -278,9 +277,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
             placeholder="Any"
             className={inputClass}
           />
-          <span className="text-sm text-text-muted">
-            A new release with 3 votes at 9/10 says little.
-          </span>
+          <span className="text-sm text-text-muted">3 votes at 9/10 says little.</span>
         </label>
         <label
           className={`flex items-start gap-2 text-sm md:col-span-2 ${asksRating ? "" : "text-text-muted"}`}
@@ -293,10 +290,8 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
             className="mt-0.5 accent-accent"
           />
           <span>
-            Titles not out yet skip the rating
-            <span className="block text-text-muted">
-              Nobody has rated them: the other conditions still apply.
-            </span>
+            Unreleased titles skip the rating
+            <span className="block text-text-muted">Other conditions still apply.</span>
           </span>
         </label>
         <label className="flex items-center gap-2 text-sm md:col-span-2">
@@ -306,7 +301,7 @@ function RuleForm({ rule, onDone }: { rule?: Rule; onDone: () => void }) {
             onChange={(e) => change({ onlyOne: e.target.checked })}
             className="accent-accent"
           />
-          Only when the identification finds a single candidate
+          Only when there is a single candidate
         </label>
       </div>
 
@@ -366,7 +361,7 @@ function Preview(props: {
   return (
     <div className="flex flex-col gap-2 rounded-md bg-surface p-3">
       <p className="text-sm">
-        Over your last {props.shares} identified shares, this rule would have{" "}
+        On your last {props.shares} shares, this rule would have{" "}
         {keepsForLater(props.action) ? "put " : "added "}
         <span className="font-semibold">
           {count} {count === 1 ? "title" : "titles"}

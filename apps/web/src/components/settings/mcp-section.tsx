@@ -7,16 +7,15 @@ const MCP_TOOLS = [
   {
     name: "list_shares",
     description:
-      "The history, newest first, with each Share's candidates and where they stand. Filters by status, genre, keyword and text.",
+      "Your shares, newest first, with their candidates. Filters by status, genre, keyword or text.",
   },
   {
     name: "list_genres",
-    description: "Every genre of the history, most Shares first: the names list_shares filters by.",
+    description: "Genres in your history, most frequent first.",
   },
   {
     name: "list_keywords",
-    description:
-      'Every TMDB keyword of the history ("based on novel or book"), most Shares first: the names list_shares filters by.',
+    description: "TMDB keywords in your history, most frequent first.",
   },
 ];
 
@@ -26,11 +25,11 @@ export function McpSection({ form }: { form: Form }) {
       id="mcp"
       icon={<Bot aria-hidden className="size-5" />}
       title="MCP"
-      description="Lets an AI assistant like Claude read the history: read-only, it changes nothing."
+      description="Lets an AI assistant like Claude read your history. Read-only."
     >
       <McpUrlField form={form} />
 
-      <SubHeading title="Tools" description="What the assistant can call. They only read." />
+      <SubHeading title="Tools" description="What the assistant can call." />
       <ul className="flex flex-col gap-3 md:col-span-2">
         {MCP_TOOLS.map((tool) => (
           <li key={tool.name} className="flex flex-col gap-0.5 text-sm">
