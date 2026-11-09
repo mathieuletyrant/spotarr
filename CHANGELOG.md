@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.1](https://github.com/mathieuletyrant/spotarr/compare/v0.17.0...v0.17.1) (2026-11-09)
+
+
+### Bug Fixes
+
+* **web:** shorter settings texts ([#210](https://github.com/mathieuletyrant/spotarr/issues/210)) ([096aa8a](https://github.com/mathieuletyrant/spotarr/commit/096aa8acb0e19a9e255ab0136a5c9a19b5f6b3c4))
+
 ## [0.17.0](https://github.com/mathieuletyrant/spotarr/compare/v0.16.1...v0.17.0) (2026-11-03)
 
 
