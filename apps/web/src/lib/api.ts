@@ -7,21 +7,25 @@ import { QueryCache, QueryClient, type QueryMeta } from "@tanstack/react-query";
 // The cast: Bun's types add `fetch.preconnect`, which the browser has no use for.
 export const transport = createConnectTransport({
   baseUrl: "/api",
-  fetch: fetchThroughAccess as typeof fetch,
+  fetch: fetchThroughAuthProxy as typeof fetch,
 });
 
-// Spotarr's API never redirects: a redirect is Cloudflare Access asking to sign
-// in again, once its session has ended. The page's own fetch cannot follow it to
-// another domain, so the page reloads and the browser follows it to the sign-in.
-async function fetchThroughAccess(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+// Spotarr's API never redirects: a redirect comes from an auth proxy in front of
+// Spotarr (Cloudflare Access, Authelia…) asking to sign in again, once its
+// session has ended. The page's own fetch cannot follow it to another domain,
+// so the page reloads and the browser follows it to the sign-in.
+async function fetchThroughAuthProxy(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): Promise<Response> {
   const response = await fetch(input, { ...init, redirect: "manual" });
-  if (response.type === "opaqueredirect") reloadForAccess();
+  if (response.type === "opaqueredirect") reloadForSignIn();
   return response;
 }
 
 // At most once a minute, so a sign-in that keeps failing cannot loop.
-function reloadForAccess() {
-  const key = "spotarr:access-reload";
+function reloadForSignIn() {
+  const key = "spotarr:sign-in-reload";
   const last = Number(sessionStorage.getItem(key) ?? 0);
   if (Date.now() - last < 60_000) return;
   sessionStorage.setItem(key, String(Date.now()));
