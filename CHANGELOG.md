@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.2](https://github.com/mathieuletyrant/spotarr/compare/v0.17.1...v0.17.2) (2026-11-23)
+
+
+### Bug Fixes
+
+* **web:** sign in again when an auth proxy's session ends ([#216](https://github.com/mathieuletyrant/spotarr/issues/216)) ([e06c0bb](https://github.com/mathieuletyrant/spotarr/commit/e06c0bb40ec3f1821779e92c8acb3a1f9adbe5c0))
+
 ## [0.17.1](https://github.com/mathieuletyrant/spotarr/compare/v0.17.0...v0.17.1) (2026-11-09)
 
 
