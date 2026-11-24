@@ -29,6 +29,10 @@ export const SettingsSchema = z.object({
     .object({
       url: optionalUrl.default(""),
       apiKey: z.string().default(""),
+      // The Seerr user requests are made as: "2". Empty: the API key's owner.
+      requestUserId: z
+        .union([z.literal(""), z.string().regex(/^[1-9]\d*$/, "expected a Seerr user id like 2")])
+        .default(""),
     })
     .prefault({}),
   jellyfin: z

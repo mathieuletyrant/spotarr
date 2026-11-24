@@ -51,16 +51,22 @@ export class Seerr {
   }
 
   // Asks Seerr to add a title. A TV show gets its first season only.
-  // Seerr picks the quality profile and the folder; with an admin key, the
-  // request is approved at once and sent on to Radarr or Sonarr.
+  // Seerr picks the quality profile and the folder. As the API key's owner
+  // (the admin), the request is approved at once and sent on to Radarr or
+  // Sonarr. With a request user, Seerr acts as that user (X-Api-User): its
+  // permissions decide, so without Auto-Approve the request waits for approval.
+  // Only requests: the watchlist stays the owner's.
   async request(type: MediaType, tmdbId: number): Promise<void> {
     const body =
       type === "MOVIE"
         ? { mediaType: "movie" as const, mediaId: tmdbId }
         : { mediaType: "tv" as const, mediaId: tmdbId, seasons: [1] };
+    const asUser = this.config.requestUserId
+      ? { "X-Api-User": this.config.requestUserId }
+      : undefined;
     await postRequest(body, {
       seerr: this.config,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...asUser },
     });
   }
 

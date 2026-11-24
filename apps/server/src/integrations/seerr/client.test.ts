@@ -50,6 +50,19 @@ test("a movie is requested whole, a TV show for its first season only", async ()
   expect(fetch.mock.calls[0]?.[1]?.method).toBe("POST");
 });
 
+test("requests are made as the request user, the watchlist stays the key owner's", async () => {
+  const fetch = fakeFetch({
+    "/api/v1/request": getPostRequestResponseMock(),
+    "/api/v1/watchlist": {},
+  });
+  await seerr.request("MOVIE", 1);
+  const asUser = new Seerr({ url: "http://seerr.test", apiKey: "key", requestUserId: "2" });
+  await asUser.request("MOVIE", 1);
+  await asUser.addToWatchlist("MOVIE", 1);
+  const users = fetch.mock.calls.map(([, init]) => new Headers(init?.headers).get("X-Api-User"));
+  expect(users).toEqual([null, "2", null]);
+});
+
 test("errors carry a code", async () => {
   fakeFetch({ "/api/v1/movie/9": 500 });
   await expect(seerr.libraryState("MOVIE", 9)).rejects.toMatchObject({

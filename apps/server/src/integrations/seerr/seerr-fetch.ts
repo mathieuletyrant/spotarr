@@ -1,6 +1,7 @@
 import { SpotarrError } from "../../errors";
 
-export type SeerrConfig = { url: string; apiKey: string };
+// requestUserId: the Seerr user requests are made as; see Seerr.request().
+export type SeerrConfig = { url: string; apiKey: string; requestUserId?: string };
 
 // Seerr's address is a setting, so the client Orval generates (gen/seerr.ts)
 // calls this function with a path like "/movie/424", and the options each call
