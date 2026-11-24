@@ -11,7 +11,7 @@ test("an empty database gives the defaults", async () => {
   expect(s.identification.llmApiUrl).toBe("https://openrouter.ai/api/v1");
   expect(s.identification.language).toBe("fr-FR");
   expect(s.identification.effort).toBe("low");
-  expect(s.seerr).toEqual({ url: "", apiKey: "" });
+  expect(s.seerr).toEqual({ url: "", apiKey: "", requestUserId: "" });
   expect(s.jellyfin).toEqual({ url: "", apiKey: "", user: "", collection: "Spotted" });
   expect(s.extraction).toEqual({
     framesPerVideo: 6,
@@ -26,7 +26,7 @@ test("an update changes only the fields given, and types survive storage", async
   await settings.update({ identification: { language: "en-US" } });
 
   const s = await settings.get();
-  expect(s.seerr).toEqual({ url: "http://seerr:5055", apiKey: "" });
+  expect(s.seerr).toEqual({ url: "http://seerr:5055", apiKey: "", requestUserId: "" });
   expect(s.extraction.concurrency).toBe(1);
   expect(s.extraction.framesPerVideo).toBe(6);
   expect(s.identification.language).toBe("en-US");

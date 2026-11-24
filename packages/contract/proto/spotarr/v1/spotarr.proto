@@ -254,6 +254,10 @@ message IdentificationSettings {
 message SeerrSettings {
   optional string url = 1;
   optional string api_key = 2;
+  // The Seerr user requests are made as ("2"), so they follow that user's
+  // permissions: without Auto-Approve, they wait for approval. Empty: the
+  // API key's owner, Seerr's admin, whose requests are approved at once.
+  optional string request_user_id = 3;
 }
 
 message ExtractionSettings {

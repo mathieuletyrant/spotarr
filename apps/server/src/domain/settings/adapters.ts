@@ -13,7 +13,7 @@ export function tmdbFrom({ identification }: Settings): Tmdb {
 }
 
 export function seerrFrom({ seerr }: Settings): Seerr {
-  return new Seerr({ url: seerr.url, apiKey: seerr.apiKey });
+  return new Seerr({ url: seerr.url, apiKey: seerr.apiKey, requestUserId: seerr.requestUserId });
 }
 
 export function jellyfinFrom({ jellyfin }: Settings): Jellyfin {

@@ -23,6 +23,13 @@ export function SeerrSection({ form }: { form: Form }) {
         label="API key"
         placeholder="Paste Seerr's API key"
       />
+      <TextField
+        form={form}
+        name="seerr.requestUserId"
+        label="Request as user"
+        hint="A Seerr user id: requests follow its permissions, so without Auto-Approve they wait for approval. Empty: the API key's owner, approved at once."
+        placeholder="2"
+      />
 
       {/* Set up once in Seerr, then rarely looked at: closed until asked. */}
       <details className="group rounded-lg border border-border md:col-span-2">

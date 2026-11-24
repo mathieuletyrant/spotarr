@@ -78,7 +78,7 @@ test("UpdateSettings then GetSettings round-trips, with the API token shown read
   expect(update.status).toBe(200);
 
   const { settings } = await (await authed("GetSettings")).json();
-  expect(settings.seerr).toEqual({ url: "http://seerr:5055", apiKey: "k" });
+  expect(settings.seerr).toEqual({ url: "http://seerr:5055", apiKey: "k", requestUserId: "" });
   expect(settings.access.apiToken).toBe("secret-token");
   expect(settings.extraction.framesPerVideo).toBe(6);
 });
