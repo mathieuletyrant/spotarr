@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/mathieuletyrant/spotarr/compare/v0.17.2...v0.18.0) (2026-11-24)
+
+
+### Features
+
+* **seerr:** make requests as a chosen Seerr user ([#218](https://github.com/mathieuletyrant/spotarr/issues/218)) ([9bd3ca7](https://github.com/mathieuletyrant/spotarr/commit/9bd3ca79a3d7e6353ff6cfca5e61811628351fd2))
+
 ## [0.17.2](https://github.com/mathieuletyrant/spotarr/compare/v0.17.1...v0.17.2) (2026-11-23)
 
 

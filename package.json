@@ -1,6 +1,6 @@
 {
   "name": "spotarr",
-  "version": "0.17.2",
+  "version": "0.18.0",
   "private": true,
   "packageManager": "pnpm@12.11.2",
   "engines": {
